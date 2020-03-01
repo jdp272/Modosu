@@ -2,28 +2,81 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.robot.RobotModel;
 import edu.cornell.gdiac.util.SoundController;
+import edu.cornell.gdiac.util.spirit.SpiritModel;
+
+import java.util.ArrayList;
 
 public class CollisionController implements ContactListener {
 
-    /// CUT FROM GAMEPLAY CONTROLLER
+    /** Whether the robot was bounced against a wall this frame */
+    private boolean bounced;
+
+    /** Whether the robot was bounced against a wall this frame */
+    private boolean possessed;
+
+    /** What robot was possessed this frame, null if no possession occurred */
+    private RobotModel robotPossessed;
+
+    // Physics objects for the game
+    /** Reference to the robots */
+    private ArrayList<RobotModel> robotList;
+
+    /** Reference to the spirit */
+    private SpiritModel spirit;
+
+    /**
+     * Creates and initializes a new instance of a CollisionController
+     */
+    public CollisionController(ArrayList<RobotModel> robots, SpiritModel spirit) {
+        this.spirit = spirit;
+        robotList = robots;
+        bounced = false;
+        possessed = false;
+        robotPossessed = null;
+    }
+
+    // ContactListener methods
     /**
      * Callback method for the start of a collision
      *
      * This method is called when we first get a collision between two objects.  We use
      * this method to test if it is the "right" kind of collision.  In particular, we
-     * use it to test if we made it to the win door.
+     * use it to test if the spirit bounced against a wall or if the spirit bounced into a robot.
      *
      * @param contact The two bodies that collided
      */
     public void beginContact(Contact contact) {
-        Body body1 = contact.getFixtureA().getBody();
-        Body body2 = contact.getFixtureB().getBody();
+        // Reset all the fields to reflect this current frame
+        bounced = false;
+        possessed = false;
+        robotPossessed = null;
 
-        if( (body1.getUserData() == rocket   && body2.getUserData() == goalDoor) ||
-                (body1.getUserData() == goalDoor && body2.getUserData() == rocket)) {
-            setComplete(true);
+        Fixture fix1 = contact.getFixtureA();
+        Fixture fix2 = contact.getFixtureB();
+
+        Body body1 = fix1.getBody();
+        Body body2 = fix2.getBody();
+
+        // Collision handling to determine if the spirit collides with any robots
+        for (RobotModel r: robotList){
+            if ((body1.getUserData() == spirit && body2.getUserData() == r) ||
+                    (body1.getUserData() == r && body2.getUserData() == spirit)) {
+                possessed = true;
+                robotPossessed = r;
+            }
+        }
+
+        // Collision handling to determine if the spirit collides with any walls
+        Obstacle bd1 = (Obstacle)body1.getUserData();
+        Obstacle bd2 = (Obstacle)body2.getUserData();
+
+        if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
+                bd1.getName() == "wall" && body2.getUserData() == spirit){
+            bounced = true;
         }
     }
 
@@ -55,28 +108,17 @@ public class CollisionController implements ContactListener {
      * @param  contact  	The two bodies that collided
      * @param  oldManifold  	The collision manifold before contact
      */
+    // Will need to modify this when we include sound effects upon wall and possession collisions
+    public void preSolve(Contact contact, Manifold oldManifold) { }
 
-    public void preSolve(Contact contact, Manifold oldManifold) {
-        float speed = 0;
+    // Getters
 
-        // Use Ian Parberry's method to compute a speed threshold
-        Body body1 = contact.getFixtureA().getBody();
-        Body body2 = contact.getFixtureB().getBody();
-        WorldManifold worldManifold = contact.getWorldManifold();
-        Vector2 wp = worldManifold.getPoints()[0];
-        cache.set(body1.getLinearVelocityFromWorldPoint(wp));
-        cache.sub(body2.getLinearVelocityFromWorldPoint(wp));
-        speed = cache.dot(worldManifold.getNormal());
+    /** Getter method to return the possessed robot */
+    public RobotModel getRobotPossessed() { return robotPossessed; }
 
-        // Play a sound if above threshold
-        if (speed > SOUND_THRESHOLD) {
-            String s1 = ((Obstacle)body1.getUserData()).getName();
-            String s2 = ((Obstacle)body2.getUserData()).getName();
-            if (s1.equals("rocket") || s1.startsWith("crate")) {
-                SoundController.getInstance().play(s1, COLLISION_SOUND, false, 0.5f);
-            }
-            if (s2.equals("rocket") || s2.startsWith("crate")) {
-                SoundController.getInstance().play(s2, COLLISION_SOUND, false, 0.5f);
-            }
-        }
+    /** Getter method to return whether a possession occurred this frame */
+    public boolean isPossessed() { return possessed; }
+
+    /** Getter method to return whether a wall bounce occurred this frame */
+    public boolean isBounced() { return bounced; }
 }
