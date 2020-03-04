@@ -78,9 +78,9 @@ public class RobotModel extends BoxObstacle {
     /** Boolean Whether Bot is Possessed */
     private boolean isPossessed;
     /** Float for default possession time */
-    private float default_possession_time;
+    private float defaultPossessionTime;
     /** Float for remaining possession time */
-    private float remaining_possession_time;
+    private float remainingPossessionTime;
 
 
 
@@ -219,17 +219,17 @@ public class RobotModel extends BoxObstacle {
      *
      * @return float representing time left in bot
      */
-    public float getRemaining_possession_time() {
-        return remaining_possession_time;
+    public float getRemainingPossessionTime() {
+        return remainingPossessionTime;
     }
 
     /**
      *  Sets remaining possession time in a bot.
      *
-     * @param remaining_possession_time the new time left in the bot for possession
+     * @param remainingPossessionTime the new time left in the bot for possession
      */
-    public void setRemaining_possession_time(float remaining_possession_time) {
-        this.remaining_possession_time = remaining_possession_time;
+    public void setRemainingPossessionTime(float remainingPossessionTime) {
+        this.remainingPossessionTime = remainingPossessionTime;
     }
 
     /**
@@ -237,17 +237,17 @@ public class RobotModel extends BoxObstacle {
      *
      * @return float representing default starting time
      */
-    public float getDefault_possession_time() {
-        return default_possession_time;
+    public float getDefaultPossessionTime() {
+        return defaultPossessionTime;
     }
 
     /**
      *  Sets the default starting possession time of a bot.
      *
-     * @param default_possession_time representing the new default possession time
+     * @param defaultPossessionTime representing the new default possession time
      */
-    public void setDefault_possession_time(float default_possession_time) {
-        this.default_possession_time = default_possession_time;
+    public void setDefaultPossessionTime(float defaultPossessionTime) {
+        this.defaultPossessionTime = defaultPossessionTime;
     }
 
     /**
@@ -307,7 +307,7 @@ public class RobotModel extends BoxObstacle {
     /**
      * Returns the animation node for the given charge gauge of the robot
      *
-     * @param ChargeGauge enumeration to identify the charge gauge of the robot
+     * @param gauge enumeration to identify the charge gauge of the robot
      * @return the animation node for the given charge gauge of the robot
      */
     public FilmStrip getChargeGaugeStrip(ChargeGauge gauge) {
@@ -324,7 +324,7 @@ public class RobotModel extends BoxObstacle {
     /**
      * Sets the animation node for the given charge gauge
      *
-     * @param chargeGauge enumeration to identify the specific gauge
+     * @param gauge enumeration to identify the specific gauge
      * @param strip       the animation node for the given gauge
      */
     public void setChargeGauge(ChargeGauge gauge, FilmStrip strip) {
@@ -350,7 +350,7 @@ public class RobotModel extends BoxObstacle {
      * The key should either refer to a valid sound loaded in the AssetManager or
      * be empty ("").  If the key is "", then no sound will play.
      *
-     * @param chargeGauge enumeration to identify the state of the charge gauge
+     * @param gauge enumeration to identify the state of the charge gauge
      * @return the key for the sound to accompany the given charge gauge
      */
     public String getGaugeSound(ChargeGauge gauge) {
