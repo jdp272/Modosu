@@ -18,7 +18,7 @@ import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
 
 /**
- * Avatar representing the possessible golems that roam the map
+ * Avatar representing the possessable golems that roam the map
  *
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
@@ -71,6 +71,18 @@ public class RobotModel extends BoxObstacle {
     String robotSounds;
     /** The animation phase for robot's movements */
     boolean botMvtCycle = true;
+
+    // Attributes Specific to each Bot
+    /** Boolean Whether Game Object is Bot or Not */
+    private boolean isBot;
+    /** Boolean Whether Bot is Possessed */
+    private boolean isPossessed;
+    /** Float for default possession time */
+    private float default_possession_time;
+    /** Float for remaining possession time */
+    private float remaining_possession_time;
+
+
 
 
     /** Cache object for transforming the force according the object angle */
@@ -202,6 +214,77 @@ public class RobotModel extends BoxObstacle {
         return true;
     }
 
+    /**
+     *  Gets remaining possession time in a bot.
+     *
+     * @return float representing time left in bot
+     */
+    public float getRemaining_possession_time() {
+        return remaining_possession_time;
+    }
+
+    /**
+     *  Sets remaining possession time in a bot.
+     *
+     * @param remaining_possession_time the new time left in the bot for possession
+     */
+    public void setRemaining_possession_time(float remaining_possession_time) {
+        this.remaining_possession_time = remaining_possession_time;
+    }
+
+    /**
+     *  Gets the starting possession time of a bot.
+     *
+     * @return float representing default starting time
+     */
+    public float getDefault_possession_time() {
+        return default_possession_time;
+    }
+
+    /**
+     *  Sets the default starting possession time of a bot.
+     *
+     * @param default_possession_time representing the new default possession time
+     */
+    public void setDefault_possession_time(float default_possession_time) {
+        this.default_possession_time = default_possession_time;
+    }
+
+    /**
+     * Gets the boolean value of whether something object is a bot.
+     *
+     * @return boolean representing whether object is a bot
+     */
+    public boolean isBot() {
+        return isBot;
+    }
+
+    /**
+     *  Sets the boolean value of whether something is a bot or not.
+     *
+     * @param bot representing whether object is a bot
+     */
+    public void setBot(boolean bot) {
+        isBot = bot;
+    }
+
+    /**
+     * Gets whether the bot is in the state of possession or not.
+     *
+     * @return boolean representing whether state of possession or not
+     */
+    public boolean isPossessed() {
+        return isPossessed;
+    }
+
+    /**
+     * Sets whether the bot is in the state of possession or not.
+     *
+     * @param possessed representing new state of possession
+     */
+    public void setPossessed(boolean possessed) {
+        isPossessed = possessed;
+    }
 
     /**
      * Applies the force to the body of this robot
