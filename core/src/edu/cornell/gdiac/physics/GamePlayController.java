@@ -43,7 +43,7 @@ public class GamePlayController extends WorldController {
 
 	private RobotController robotController;
 
-	private CollisionController collisionController;
+	protected CollisionController collisionController;
 
 	private LoadData loadData;
 
