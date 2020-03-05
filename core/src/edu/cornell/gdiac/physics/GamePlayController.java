@@ -45,7 +45,7 @@ public class GamePlayController extends WorldController {
 
 	protected CollisionController collisionController;
 
-	private LoadData loadData;
+	private Loader loader;
 
 	/** Reference to the rocket texture */
 	private static final String ROCK_TEXTURE = "robot/robot.png";
@@ -105,7 +105,7 @@ public class GamePlayController extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(AssetManager manager) {
-		loadData.preLoadContent(manager);
+		loader.preLoadContent(manager);
 		if (assetState != AssetState.EMPTY) {
 			return;
 		}
@@ -125,7 +125,7 @@ public class GamePlayController extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(AssetManager manager) {
-		objects = loadData.loadContent(level);
+		objects = loader.loadContent(level);
 		if (assetState != AssetState.LOADING) {
 			return;
 		}
@@ -144,7 +144,7 @@ public class GamePlayController extends WorldController {
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
-		loadData = new LoadData();
+		loader = new Loader();
 		robotController = new RobotController();
 		collisionController = new CollisionController(robots, spirit);
 		level = 0;
@@ -159,7 +159,7 @@ public class GamePlayController extends WorldController {
 	public void reset() {
 		Vector2 gravity = new Vector2(0,0);
 		robotController.reset();
-		loadData.reset(level);
+		loader.reset(level);
 		//parse level
 
 		for(Obstacle obj : objects) {

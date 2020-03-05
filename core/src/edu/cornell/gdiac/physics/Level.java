@@ -1,7 +1,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.robot.RobotModel;
 
 /**
@@ -21,7 +21,7 @@ public class Level {
      */
     public Level(
             Vector2[][] regions,
-            Obstacle[] obstacles,
+            BoxObstacle[] obstacles,
             RobotModel[] robots,
             RobotModel start
     ) {
@@ -44,7 +44,7 @@ public class Level {
     public Vector2[][] regions;
 
     /** An array of the obstacles in the level */
-    public Obstacle[] obstacles;
+    public BoxObstacle[] obstacles;
 
     /** An array of the robots in the level */
     public RobotModel[] robots;
