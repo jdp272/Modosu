@@ -81,8 +81,8 @@ public class RobotModel extends BoxObstacle {
     private float defaultPossessionTime;
     /** Float for remaining possession time */
     private float remainingPossessionTime;
-
-
+    /** Boolean for whether bot is alive */
+    private boolean isAlive;
 
 
     /** Cache object for transforming the force according the object angle */
@@ -215,7 +215,7 @@ public class RobotModel extends BoxObstacle {
     }
 
     /**
-     *  Gets remaining possession time in a bot.
+     * Gets remaining possession time in a bot.
      *
      * @return float representing time left in bot
      */
@@ -224,7 +224,7 @@ public class RobotModel extends BoxObstacle {
     }
 
     /**
-     *  Sets remaining possession time in a bot.
+     * Sets remaining possession time in a bot.
      *
      * @param remainingPossessionTime the new time left in the bot for possession
      */
@@ -233,7 +233,7 @@ public class RobotModel extends BoxObstacle {
     }
 
     /**
-     *  Gets the starting possession time of a bot.
+     * Gets the starting possession time of a bot.
      *
      * @return float representing default starting time
      */
@@ -242,7 +242,7 @@ public class RobotModel extends BoxObstacle {
     }
 
     /**
-     *  Sets the default starting possession time of a bot.
+     * Sets the default starting possession time of a bot.
      *
      * @param defaultPossessionTime representing the new default possession time
      */
@@ -260,7 +260,7 @@ public class RobotModel extends BoxObstacle {
     }
 
     /**
-     *  Sets the boolean value of whether something is a bot or not.
+     * Sets the boolean value of whether something is a bot or not.
      *
      * @param bot representing whether object is a bot
      */
@@ -284,6 +284,24 @@ public class RobotModel extends BoxObstacle {
      */
     public void setPossessed(boolean possessed) {
         isPossessed = possessed;
+    }
+
+    /**
+     * Gets whether the bot is alive or not.
+     *
+     * @return boolean representing bot is alive or not
+     */
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    /**
+     * Sets whether the bot is alive or not.
+     *
+     * @param alive representing whether bot is alive or not
+     */
+    public void setAlive(boolean alive) {
+        isAlive = alive;
     }
 
     /**
@@ -325,7 +343,7 @@ public class RobotModel extends BoxObstacle {
      * Sets the animation node for the given charge gauge
      *
      * @param gauge enumeration to identify the specific gauge
-     * @param strip       the animation node for the given gauge
+     * @param strip the animation node for the given gauge
      */
     public void setChargeGauge(ChargeGauge gauge, FilmStrip strip) {
         switch (gauge) {
