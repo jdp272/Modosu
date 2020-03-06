@@ -48,6 +48,8 @@ public class RobotModel extends BoxObstacle {
     /** The number of frames for the gauge */
     public static final int GAUGE_FRAMES = 4;
 
+    private int charge;
+
     /** The force to apply to this robot */
     private Vector2 force;
 
@@ -286,6 +288,24 @@ public class RobotModel extends BoxObstacle {
         isPossessed = possessed;
     }
 
+
+    public void setCharge(int c){
+        charge = c;
+    }
+
+    public int getCharge(){
+        return charge;
+    }
+
+    public boolean decCharge(){
+        if(charge == 0){
+            return false;
+        }else{
+            charge--;
+            return true;
+        }
+    }
+
     /**
      * Gets whether the bot is alive or not.
      *
@@ -374,9 +394,9 @@ public class RobotModel extends BoxObstacle {
     public String getGaugeSound(ChargeGauge gauge) {
         switch (gauge) {
             case POSSESSED:
-                return possessedBotSound
+                return possessedBotSound;
             case NORMAL:
-                return normalBotSound
+                return normalBotSound;
         }
         assert false : "Invalid gauge enumeration";
         return null;
@@ -422,7 +442,7 @@ public class RobotModel extends BoxObstacle {
                 cycle = possessedCycle;
                 break;
             case NORMAL:
-                node = normalGauge
+                node = normalGauge;
                 cycle = normCycle;
                 break;
             default:

@@ -20,6 +20,7 @@ public class RobotController extends GamePlayController {
     /** Track asset loading from all instances and subclasses */
     private AssetState robotAssetState = AssetState.EMPTY;
 
+<<<<<<< HEAD
     /** List of all the robots */
     private RobotList robotList;
 
@@ -34,6 +35,13 @@ public class RobotController extends GamePlayController {
 
     /** Velocity that the spirit travels travels */
     private Vector2 spiritVelocity;
+=======
+    private Vector2 CLICK_POS;
+
+    private Vector2 SHOOT_VEC;
+
+    //get the list from robotlist
+>>>>>>> 3f2a1b1e2eca152f8d0995acfb766be3f0e5aae7
 
     /**
      * Preloads the assets for this controller.
@@ -114,6 +122,7 @@ public class RobotController extends GamePlayController {
         // populateLevel();
     }
 
+
     /**
      * The core gameplay loop of this world.
      *
@@ -130,13 +139,21 @@ public class RobotController extends GamePlayController {
 
         InputController input = InputController.getInstance();
 
-        input.readInput(bounds, scale);
-
-        // Update the possessed robots position
-        robot.setVX(robot.getVX() * input.getHorizontal());
-        robot.setVY(robot.getVY() * input.getVertical());
-
-        // robot.setTime + 1 (??)
+        input.readInput(bounds, scale); // do we need this?
+        if(possessed != null) {
+            if(possessed.decCharge()){
+                possessed.setVX(robot.getVX() * input.getHorizontal());
+                possessed.setVY(robot.getVX() * input.getVertical());
+            }else{
+                possessed.setVX(0);
+                possessed.setVY(0);
+                //change texture because it blew up
+            }
+        }
+        // check if timer is up? then lose the game? or is that in gameplay controller?
+        // update timer
+        // If almost blow up, add specific animations??
+        // Check if Robot will blow up
 
         if (robot.willExplode()) {
             // robot explode animation
@@ -171,4 +188,5 @@ public class RobotController extends GamePlayController {
              // Arrow Direction?
          }
     }
+
 }

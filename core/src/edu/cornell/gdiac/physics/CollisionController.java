@@ -5,8 +5,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.robot.RobotModel;
+import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
-import edu.cornell.gdiac.util.spirit.SpiritModel;
 
 import java.util.ArrayList;
 
@@ -31,12 +31,20 @@ public class CollisionController implements ContactListener {
     /**
      * Creates and initializes a new instance of a CollisionController
      */
-    public CollisionController(ArrayList<RobotModel> robots, SpiritModel spirit) {
-        this.spirit = spirit;
-        robotList = robots;
+    public CollisionController() {
+        this.spirit = null;
+        robotList = null;
         bounced = false;
         possessed = false;
         robotPossessed = null;
+    }
+
+    public void addRobots(ArrayList<RobotModel> robots){
+        robotList = robots;
+    }
+
+    public void addSpirit(SpiritModel spirit){
+        this.spirit = spirit;
     }
 
     // ContactListener methods
