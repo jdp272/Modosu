@@ -60,6 +60,4 @@ public class AIController extends InputController {
 
 
 
-    }
-
 }
