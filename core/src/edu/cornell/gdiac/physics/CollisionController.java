@@ -5,8 +5,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.robot.RobotModel;
+import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
-import edu.cornell.gdiac.util.spirit.SpiritModel;
 
 import java.util.ArrayList;
 

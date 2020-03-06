@@ -81,7 +81,7 @@ public class RobotList implements Iterable<RobotModel> {
     public int numDead() {
         int robotsDead = 0;
         for (RobotModel r : this) {
-            if (r.isDead()) {
+            if (!r.isAlive()) {
                 robotsDead++;
             }
         }

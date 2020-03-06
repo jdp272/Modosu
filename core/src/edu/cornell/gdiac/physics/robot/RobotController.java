@@ -24,6 +24,10 @@ public class RobotController extends GamePlayController {
     /** Track asset loading from all instances and subclasses */
     private AssetState robotAssetState = AssetState.EMPTY;
 
+    private Vector2 CLICK_POS;
+
+    private Vector2 SHOOT_VEC;
+
     //get the list from robotlist
 
     /**
@@ -106,6 +110,7 @@ public class RobotController extends GamePlayController {
         // populateLevel();
     }
 
+
     /**
      * The core gameplay loop of this world.
      *
@@ -121,10 +126,16 @@ public class RobotController extends GamePlayController {
         InputController input = InputController.getInstance();
 
         input.readInput(bounds, scale); // do we need this?
-
-        possessed.setVX(input.getHorizontal());
-        possessed.setVY(input.getVertical());
-
+        if(possessed != null) {
+            if(possessed.decCharge()){
+                possessed.setVX(input.getHorizontal());
+                possessed.setVY(input.getVertical());
+            }else{
+                possessed.setVX(0);
+                possessed.setVY(0);
+                //change texture because it blew up
+            }
+        }
         // check if timer is up? then lose the game? or is that in gameplay controller?
         // update timer
         // If almost blow up, add specific animations??
@@ -140,12 +151,12 @@ public class RobotController extends GamePlayController {
          //click position, shoot vector
          if(input.didTertiary() && CLICK_POS.x == -1 && CLICK_POS.y == -1){ // initalized with -1,-1
             CLICK_POS = input.getCrossHair();
-      // no arrow
-        }else if (!input.didTertiary() && CLICK_POS.x != -1 && CLICK_POS.y != -1){ // letting go
+         //no arrow
+         }else if (!input.didTertiary() && CLICK_POS.x != -1 && CLICK_POS.y != -1){ // letting go
             SHOOT_VEC = input.getCrossHair().sub(CLICK_POS);
             CLICK_POS.x = -1;
             CLICK_POS.y = -1;
-
+            shootSpirit(SHOOT_VEC);
 //            TextureRegion texture = spiritTexture;
 //            float dwidth  = texture.getRegionWidth()/scale.x;
 //            float dheight = texture.getRegionHeight()/scale.y;
@@ -169,4 +180,5 @@ public class RobotController extends GamePlayController {
 //            addQueue.add(spirit);
         }
     }
+
 }

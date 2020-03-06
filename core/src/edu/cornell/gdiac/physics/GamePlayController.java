@@ -25,6 +25,7 @@ import edu.cornell.gdiac.physics.obstacle.ObstacleSelector;
 import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.physics.robot.RobotController;
 import edu.cornell.gdiac.physics.robot.RobotModel;
+import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.RandomController;
@@ -203,22 +204,27 @@ public class GamePlayController extends WorldController {
 	public void update(float delta) {
 		//calls update on robotcontroller
 		robotController.update(delta);
-		if(collisionController.isBounced()) {
-			if(spirit.bounces == 0) {
-				//mark for removal
-				spirit.markRemoved(true);
-			}else {
-				spirit.decBounce();
-			}
-		}
+
 		if(collisionController.isPossessed()) {
 			possessed = collisionController.getRobotPossessed();
+		}
+
+		if(collisionController.isBounced()) {
+			if(spirit.bounces == 0) {
+				spirit.setPosition(-10,-10);
+			}else {
+				spirit.decBounces();
+			}
 		}
 
 	    // If we use sound, we must remember this.
 	    SoundController.getInstance().update();
 	}
-	
 
+	public void shootSpirit(Vector2 shot){
+		spirit.setPosition(possessed.getPosition());
+		spirit.setLinearVelocity(shot);
+		possessed = null;
 	}
+
 }
