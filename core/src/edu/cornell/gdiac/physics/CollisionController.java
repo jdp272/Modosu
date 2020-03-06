@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.robot.RobotList;
 import edu.cornell.gdiac.physics.robot.RobotModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
@@ -23,7 +24,7 @@ public class CollisionController implements ContactListener {
 
     // Physics objects for the game
     /** Reference to the robots */
-    private ArrayList<RobotModel> robotList;
+    private RobotList robotList;
 
     /** Reference to the spirit */
     private SpiritModel spirit;
@@ -39,7 +40,7 @@ public class CollisionController implements ContactListener {
         robotPossessed = null;
     }
 
-    public void addRobots(ArrayList<RobotModel> robots){
+    public void addRobots(RobotList robots){
         robotList = robots;
     }
 

@@ -2,6 +2,7 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.robot.RobotList;
 import edu.cornell.gdiac.physics.robot.RobotModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
@@ -23,7 +24,7 @@ public class Level {
     public Level(
             Vector2[][] regions,
             BoxObstacle[] obstacles,
-            RobotModel[] robots,
+            RobotList robots,
             SpiritModel start
     ) {
        this.regions = regions;
@@ -48,7 +49,7 @@ public class Level {
     public BoxObstacle[] obstacles;
 
     /** An array of the robots in the level */
-    public RobotModel[] robots;
+    public RobotList robots;
 
     /** The "robot" where the player starts */
     public SpiritModel start;
