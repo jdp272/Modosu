@@ -233,7 +233,7 @@ public class Loader {
         for(int i = 0; i < level.robots.length; i++) {
             RobotData rData = new RobotData();
             rData.location = new Vector2(level.robots[i].getX(), level.robots[i].getY());
-            rData.chargeTime = level.robots[i].getChargeTime();
+            rData.chargeTime = level.robots[i].getDefaultPossessionTime();
             levelData.robotData[i] = rData;
         }
 
@@ -294,6 +294,10 @@ public class Loader {
         return new Level(regions, obstacles, robots, start);
     }
 
+    public Level reset(int level){
+        return loadLevel(level);
+    }
+
     // Private member functions
 
     /**
@@ -339,5 +343,5 @@ public class Loader {
 //
 //    public int getnRobots(){return nRobots;}
 //
-//    public void reset(int level){}
+
 }

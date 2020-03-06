@@ -43,16 +43,12 @@ public class GamePlayController extends WorldController {
 
 	private RobotController robotController;
 
-	protected CollisionController collisionController;
+	private CollisionController collisionController;
 
 	private Loader loader;
 
 	/** Reference to the rocket texture */
 	private static final String ROCK_TEXTURE = "robot/robot.png";
-	/** The reference for the afterburner textures  */
-	private static final String MAIN_FIRE_TEXTURE = "robot/flames.png";
-	private static final String RGHT_FIRE_TEXTURE = "robot/flames-right.png";
-	private static final String LEFT_FIRE_TEXTURE = "robot/flames-left.png";
 
 	private static final String SPIRIT_TEXTURE = "robot/spirit.png";
 	/** Texture file for mouse crosshairs */
@@ -90,9 +86,13 @@ public class GamePlayController extends WorldController {
 	/** Texture asset for mouse crosshairs */
 	private TextureRegion crosshairTexture;
 
-	private int level;
+	private Level level;
 
-	//private Obstacle[] objects;
+	private int lvl;
+
+	protected RobotModel possessed;
+
+	protected SpiritModel spirit;
 	
 	/**
 	 * Preloads the assets for this controller.
@@ -105,7 +105,7 @@ public class GamePlayController extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(AssetManager manager) {
-		loader.preLoadContent(manager);
+		loader.preLoadContent();
 		if (assetState != AssetState.EMPTY) {
 			return;
 		}
@@ -125,7 +125,7 @@ public class GamePlayController extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(AssetManager manager) {
-		objects = loader.loadContent(level);
+		loader.loadContent();
 		if (assetState != AssetState.LOADING) {
 			return;
 		}
@@ -146,8 +146,8 @@ public class GamePlayController extends WorldController {
 		setFailure(false);
 		loader = new Loader();
 		robotController = new RobotController();
-		collisionController = new CollisionController(robots, spirit);
-		level = 0;
+		collisionController = new CollisionController();
+		lvl = 0;
 		world.setContactListener(collisionController);
 	}
 	
@@ -159,7 +159,7 @@ public class GamePlayController extends WorldController {
 	public void reset() {
 		Vector2 gravity = new Vector2(0,0);
 		robotController.reset();
-		loader.reset(level);
+		level = loader.reset(level);
 		//parse level
 
 		for(Obstacle obj : objects) {
@@ -180,7 +180,13 @@ public class GamePlayController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-		//? add Objects?
+		for(Obstacle obj : level.obstacles) {
+			addQueue.add(obj);
+		}
+		for(Obstacle obj : level.robots) {
+			addQueue.add(obj);
+		}
+		addQueue.add(level.start);
 	}
 
 
@@ -198,10 +204,15 @@ public class GamePlayController extends WorldController {
 		//calls update on robotcontroller
 		robotController.update(delta);
 		if(collisionController.isBounced()) {
-
+			if(spirit.bounces == 0) {
+				//mark for removal
+				spirit.markRemoved(true);
+			}else {
+				spirit.decBounce();
+			}
 		}
 		if(collisionController.isPossessed()) {
-
+			possessed = collisionController.getRobotPossessed();
 		}
 
 	    // If we use sound, we must remember this.

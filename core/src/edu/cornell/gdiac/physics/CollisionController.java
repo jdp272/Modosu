@@ -31,12 +31,20 @@ public class CollisionController implements ContactListener {
     /**
      * Creates and initializes a new instance of a CollisionController
      */
-    public CollisionController(ArrayList<RobotModel> robots, SpiritModel spirit) {
-        this.spirit = spirit;
-        robotList = robots;
+    public CollisionController() {
+        this.spirit = null;
+        robotList = null;
         bounced = false;
         possessed = false;
         robotPossessed = null;
+    }
+
+    public void addRobots(ArrayList<RobotModel> robots){
+        robotList = robots;
+    }
+
+    public void addSpirit(SpiritModel spirit){
+        this.spirit = spirit;
     }
 
     // ContactListener methods

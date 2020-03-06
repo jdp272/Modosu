@@ -122,8 +122,8 @@ public class RobotController extends GamePlayController {
 
         input.readInput(bounds, scale); // do we need this?
 
-        collisionController.getRobotPossessed().setVX(input.getHorizontal());
-        collisionController.getRobotPossessed().setVY(input.getVertical());
+        possessed.setVX(input.getHorizontal());
+        possessed.setVY(input.getVertical());
 
         // check if timer is up? then lose the game? or is that in gameplay controller?
         // update timer
@@ -137,7 +137,7 @@ public class RobotController extends GamePlayController {
         // If we use sound, we must remember this.
         //SoundController.getInstance().update();
 
-         click position, shoot vector
+         //click position, shoot vector
          if(input.didTertiary() && CLICK_POS.x == -1 && CLICK_POS.y == -1){ // initalized with -1,-1
             CLICK_POS = input.getCrossHair();
       // no arrow

@@ -62,7 +62,7 @@ public abstract class WorldController implements Screen {
 	/** Track asset loading from all instances and subclasses */
 	protected AssetState worldAssetState = AssetState.EMPTY;
 	/** Track all loaded assets (for unloading purposes) */
-	protected Array<String> assets;	
+	protected Array<String> assets;
 	
 	// Pathnames to shared assets
 	/** File to texture for walls and platforms */
@@ -568,12 +568,12 @@ public abstract class WorldController implements Screen {
 		while (iterator.hasNext()) {
 			PooledList<Obstacle>.Entry entry = iterator.next();
 			Obstacle obj = entry.getValue();
-			if(obj instanceof BoxObstacle){
-				((BoxObstacle) obj).alive -= 1;
-				if(((BoxObstacle) obj).alive == 0){
-					obj.markRemoved(true);
-				}
-			}
+//			if(obj instanceof BoxObstacle){
+//				((BoxObstacle) obj).alive -= 1;
+//				if(((BoxObstacle) obj).alive == 0){
+//					obj.markRemoved(true);
+//				}
+//			}
 			if (obj.isRemoved()) {
 				obj.deactivatePhysics(world);
 				entry.remove();
