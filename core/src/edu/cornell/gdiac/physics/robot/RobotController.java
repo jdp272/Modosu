@@ -29,7 +29,6 @@ public class RobotController extends GamePlayController {
     /** The vector created by the shot */
     private Vector2 shootVector;
 
-
     /**
      * Preloads the assets for this controller.
      *
@@ -122,18 +121,39 @@ public class RobotController extends GamePlayController {
      */
     public void update(float dt) {
 
-        RobotModel robot = collisionController.getRobotPossessed();
+        RobotModel robot = possessed;
 
         InputController input = InputController.getInstance();
 
         input.readInput(bounds, scale); // do we need this?
+
         if (possessed != null) {
             if (possessed.decCharge()){
                 possessed.setVX(robot.getVX() * input.getHorizontal());
                 possessed.setVY(robot.getVX() * input.getVertical());
+
+                // Shooting the
+                if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
+                    // Clicked Mouse
+                    clickPosition = input.getCrossHair();
+                } else if (!input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {// Released Mouse -- Shoot
+                    shootVector = input.getCrossHair().sub(clickPosition);
+                    clickPosition.x = -1;
+                    clickPosition.y = -1;
+
+                    float vx = spirit.getVX() * shootVector.x;
+                    float vy = spirit.getVY() * shootVector.y;
+
+                    spirit.setVX(vx);
+                    spirit.setVY(vy);
+                } else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
+                    // Arrow Direction?
+                }
+
             } else { // ROBOT HAS BLOWN UP
                 possessed.setVX(0);
                 possessed.setVY(0);
+
                 setFailure(true);
                 setComplete(false);
                 // change texture because it blew up
@@ -144,25 +164,6 @@ public class RobotController extends GamePlayController {
 
         // If we use sound, we must remember this.
         //SoundController.getInstance().update();
-
-        // Shooting the
-        if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
-            // Clicked Mouse
-            clickPosition = input.getCrossHair();
-        } else if (!input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
-            // Released Mouse -- Shoot
-            shootVector = input.getCrossHair().sub(clickPosition);
-            clickPosition.x = -1;
-            clickPosition.y = -1;
-
-            float vx = spirit.getVX() * shootVector.x;
-            float vy = spirit.getVY() * shootVector.y;
-
-            spirit.setVX(vx);
-            spirit.setVY(vy);
-         } else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
-             // Arrow Direction?
-         }
     }
 
 }
