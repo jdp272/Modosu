@@ -21,7 +21,7 @@ public class RobotController extends GamePlayController {
     private AssetState robotAssetState = AssetState.EMPTY;
 
     /** List of all the robots */
-    private RobotList robotList;
+    private RobotList robots;
 
     /** The click position of the cursor */
     private Vector2 clickPosition = new Vector2(-1,-1);
@@ -89,10 +89,11 @@ public class RobotController extends GamePlayController {
      *
      * The game has default gravity and other settings
      */
-    public RobotController() {
+    public RobotController(RobotList r) {
         setDebug(false);
         setComplete(false);
         setFailure(false);
+        robots = r;
     }
 
     /**

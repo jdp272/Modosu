@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.files.FileHandle;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.robot.RobotList;
 import edu.cornell.gdiac.physics.robot.RobotModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.PooledList;
@@ -230,11 +231,11 @@ public class Loader {
         }
 
         // Store the robot data
-        levelData.robotData = new RobotData[level.robots.length];
-        for(int i = 0; i < level.robots.length; i++) {
+        levelData.robotData = new RobotData[level.robots.size()];
+        for(int i = 0; i < level.robots.size(); i++) {
             RobotData rData = new RobotData();
-            rData.location = new Vector2(level.robots[i].getX(), level.robots[i].getY());
-            rData.chargeTime = level.robots[i].getDefaultPossessionTime();
+            rData.location = new Vector2(level.robots.get(i).getX(), level.robots.get(i).getY());
+            rData.chargeTime = level.robots.get(i).getDefaultPossessionTime();
             levelData.robotData[i] = rData;
         }
 
@@ -269,10 +270,10 @@ public class Loader {
         }
 
         // Create the robots
-        RobotModel[] robots = new RobotModel[levelData.robotData.length];
+        RobotList robots = new RobotList();
         RobotData rData;
 
-        for (int i = 0; i < robots.length; i++) {
+        for (int i = 0; i < robots.size(); i++) {
             rData = levelData.robotData[i];
 
             /* NOTES: I'm assuming that eventually we'll have a simple creator
@@ -285,7 +286,7 @@ public class Loader {
 
              TODO: Make a robot once RobotModel constructor is ready
              */
-            robots[i] = new RobotModel(rData.location.x, rData.location.y, (int)rData.chargeTime);
+            robots.add(new RobotModel(rData.location.x, rData.location.y, (int)rData.chargeTime), false);
         }
 
         // Create the starting "robot" (with no charge capacity)

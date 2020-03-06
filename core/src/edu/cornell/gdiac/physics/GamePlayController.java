@@ -149,7 +149,7 @@ public class GamePlayController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		loader = new Loader();
-		robotController = new RobotController();
+		robotController = new RobotController(level.robots);
 		collisionController = new CollisionController();
 		lvl = 0;
 		world.setContactListener(collisionController);
@@ -191,7 +191,7 @@ public class GamePlayController extends WorldController {
 			addQueue.add(obj);
 		}
 		addQueue.add(level.start);
-		collisionController.addRobots((ArrayList<RobotModel>)Arrays.asList(level.robots));
+		collisionController.addRobots(level.robots);
 		collisionController.addSpirit(level.start);
 	}
 
