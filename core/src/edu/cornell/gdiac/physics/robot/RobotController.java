@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.physics.robot;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
@@ -23,7 +24,7 @@ public class RobotController {
     private RobotList robots;
 
     /** The click position of the cursor */
-    private Vector2 clickPosition = new Vector2(-1,-1);
+    private Vector2 clickPosition;
 
     /** The vector created by the shot */
     private Vector2 shootVector;
@@ -41,6 +42,7 @@ public class RobotController {
      */
     public RobotController(RobotList r) {
         inputController = new InputController();
+        clickPosition = new Vector2(-1,-1);
         robots = r;
     }
 
@@ -68,41 +70,44 @@ public class RobotController {
      */
     public void update(float dt, RobotModel possessed, SpiritModel spirit) {
 
-        RobotModel robot = possessed;
+        //RobotModel robot = possessed;
 
         InputController input = InputController.getInstance();
 
-       // input.readInput(bounds, scale); // do we need this?
-
         if (possessed != null) {
             if (possessed.decCharge()){
-                possessed.setVX(robot.getVX() * input.getHorizontal());
-                possessed.setVY(robot.getVX() * input.getVertical());
+                possessed.setVX(500 * input.getHorizontal());
+                possessed.setVY(500 * input.getVertical());
 
                 // Shooting the
                 if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
                     // Clicked Mouse
-                    clickPosition = input.getCrossHair();
+                    clickPosition = new Vector2(Gdx.input.getX(),Gdx.input.getY());;//input.getCrossHair();
                 } else if (!input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {// Released Mouse -- Shoot
-                    shootVector = input.getCrossHair().sub(clickPosition);
+                    shootVector = new Vector2(Gdx.input.getX(),Gdx.input.getY());
+                    shootVector = shootVector.sub(clickPosition);
+                    shootVector.x = -shootVector.x;
+
                     clickPosition.x = -1;
                     clickPosition.y = -1;
 
-                    float vx = spirit.getVX() * shootVector.x;
-                    float vy = spirit.getVY() * shootVector.y;
+                    float vx = 50 * shootVector.x;
+                    float vy = 50 * shootVector.y;
 
+                    spirit.setPosition(possessed.getPosition());
                     spirit.setVX(vx);
                     spirit.setVY(vy);
                 } else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
                     // Arrow Direction?
                 }
 
-            } else { // ROBOT HAS BLOWN UP
-                possessed.setVX(0);
-                possessed.setVY(0);
-
-                // change texture because it blew up
             }
+//            else { // ROBOT HAS BLOWN UP
+//                possessed.setVX(0);
+//                possessed.setVY(0);
+//
+//                // change texture because it blew up
+//            }
         }
 
         // Update Animations

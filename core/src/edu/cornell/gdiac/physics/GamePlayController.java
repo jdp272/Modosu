@@ -164,11 +164,14 @@ public class GamePlayController extends WorldController {
 		Vector2 gravity = new Vector2(0,0);
 		BoxObstacle[] obs = {new BoxObstacle(50,50,10,10)};
 		RobotList robs = new RobotList();
-		RobotModel rob = new RobotModel(30,30,10,10, 100);
+		RobotModel rob = new RobotModel(30,30,10,10, 10000);
 		rob.setTexture(robotTex);
 		robs.add(rob,true);
 		SpiritModel spir = new SpiritModel(70,70,10,10,4);
+		spir.setTexture(spiritTex);
 		level = new Level(null, obs, robs, spir);
+		possessed = rob;
+		spirit = spir;
 		//level = loader.reset(lvl);
 		//parse level
 		robotController = new RobotController(level.robots);
@@ -233,10 +236,6 @@ public class GamePlayController extends WorldController {
 	    SoundController.getInstance().update();
 	}
 
-	public void shootSpirit(Vector2 shot){
-		spirit.setPosition(possessed.getPosition());
-		spirit.setLinearVelocity(shot);
-		possessed = null;
-	}
+
 
 }
