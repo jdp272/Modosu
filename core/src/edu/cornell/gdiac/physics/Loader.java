@@ -31,13 +31,13 @@ public class Loader {
     // Static fields
 
     /** Texture file for robot sprite */
-    private static final String ROBOT_FILE = "robot/robot.png";
+    private static final String ROBOT_FILE = "assets/robot/robot.png";
     /** Texture file for spirit sprite */
-    private static final String SPIRIT_FILE = "robot/spirit.png";
+    private static final String SPIRIT_FILE = "assets/robot/spirit.png";
     /** File to texture for obstacles */
     private static String OBSTACLE_FILE = "shared/crate02.png";
     /** File to texture for walls and platforms */
-    private static String EARTH_FILE = "shared/earthtile.png";
+    private static String EARTH_FILE = "assets/shared/earthtile.png";
     /** Retro font for displaying messages */
     private static String FONT_FILE = "shared/RetroGame.ttf";
     private static int FONT_SIZE = 64;
@@ -120,7 +120,7 @@ public class Loader {
         json = new Json();
 
         manager = new AssetManager();
-
+        assets = new Array<String>();
         // Add font support to the asset manager
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
@@ -297,7 +297,12 @@ public class Loader {
     }
 
     public Level reset(int level){
-        return null; //loadLevel();
+        BoxObstacle[] obs = {new BoxObstacle(50,50,10,10)};
+        RobotList robs = new RobotList();
+        robs.add(new RobotModel(30,30,10,10, 100),true);
+        SpiritModel spir = new SpiritModel(70,70,10,10,4);
+        Level lvl = new Level(null, obs, robs, spir);
+        return lvl; //loadLevel();
     }
 
     // Private member functions

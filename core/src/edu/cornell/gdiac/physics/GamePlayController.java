@@ -185,10 +185,10 @@ public class GamePlayController extends WorldController {
 	 */
 	private void populateLevel() {
 		for(Obstacle obj : level.obstacles) {
-			addQueue.add(obj);
+			addObject(obj);
 		}
 		for(Obstacle obj : level.robots) {
-			addQueue.add(obj);
+			addObject(obj);
 		}
 		addQueue.add(level.start);
 		collisionController.addRobots(level.robots);

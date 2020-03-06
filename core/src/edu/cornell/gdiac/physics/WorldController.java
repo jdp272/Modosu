@@ -598,10 +598,11 @@ public abstract class WorldController implements Screen {
 		canvas.clear();
 
 		canvas.begin();
-		canvas.draw(backgroundTexture, 0,0);
+
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
+		canvas.draw(backgroundTexture, 0,0);
 		canvas.end();
 		
 		if (debug) {
