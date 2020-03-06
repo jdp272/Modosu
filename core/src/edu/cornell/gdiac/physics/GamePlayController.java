@@ -162,11 +162,16 @@ public class GamePlayController extends WorldController {
 	 */
 	public void reset() {
 		Vector2 gravity = new Vector2(0,0);
-		BoxObstacle[] obs = {new BoxObstacle(50,50,10,10)};
+		BoxObstacle box = new BoxObstacle(50,50,10,10);
+		box.setTexture(obstacleTex);
+		BoxObstacle[] obs = {box};
 		RobotList robs = new RobotList();
 		RobotModel rob = new RobotModel(30,30,10,10, 10000);
 		rob.setTexture(robotTex);
+		RobotModel rob2 = new RobotModel(100,100,10,10, 10000);
+		rob2.setTexture(robotTex);
 		robs.add(rob,true);
+		robs.add(rob2,false);
 		SpiritModel spir = new SpiritModel(70,70,10,10,4);
 		spir.setTexture(spiritTex);
 		level = new Level(null, obs, robs, spir);
