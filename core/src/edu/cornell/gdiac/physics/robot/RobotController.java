@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.physics.robot;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.audio.*;
@@ -8,17 +9,15 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
+import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.obstacle.*;
 
-public class RobotController extends GamePlayController {
+public class RobotController {
 
     /** Texture assets for the robot */
     private TextureRegion robotTexture;
-
-    /** Track asset loading from all instances and subclasses */
-    private AssetState robotAssetState = AssetState.EMPTY;
 
     /** List of all the robots */
     private RobotList robots;
@@ -29,57 +28,8 @@ public class RobotController extends GamePlayController {
     /** The vector created by the shot */
     private Vector2 shootVector;
 
-    /**
-     * Preloads the assets for this controller.
-     *
-     * To make the game modes more for-loop friendly, we opted for nonstatic loaders
-     * this time.  However, we still want the assets themselves to be static.  So
-     * we have an AssetState that determines the current loading state.  If the
-     * assets are already loaded, this method will do nothing.
-     *
-     * @param manager Reference to global asset manager.
-     */
-    public void preLoadContent(AssetManager manager) {
-        if (robotAssetState != AssetState.EMPTY) {
-            return;
-        }
+    private InputController inputController;
 
-        robotAssetState = AssetState.LOADING;
-
-        // Robot textures
-        // manager.load(ROCK_TEXTURE, Texture.class);
-        // assets.add(ROCK_TEXTURE);
-
-        // Robot sounds
-        // manager.load(MAIN_FIRE_SOUND, Sound.class);
-        // assets.add(MAIN_FIRE_SOUND);
-
-        super.preLoadContent(manager);
-    }
-
-    /**
-     * Loads the assets for this controller.
-     *
-     * To make the game modes more for-loop friendly, we opted for nonstatic loaders
-     * this time.  However, we still want the assets themselves to be static.  So
-     * we have an AssetState that determines the current loading state.  If the
-     * assets are already loaded, this method will do nothing.
-     *
-     * @param manager Reference to global asset manager.
-     */
-    public void loadContent(AssetManager manager) {
-        if (robotAssetState != AssetState.LOADING) {
-            return;
-        }
-
-        // robotTexture = createTexture(manager,ROCK_TEXTURE,false);
-
-        SoundController sounds = SoundController.getInstance();
-        // sounds.allocate(manager,MAIN_FIRE_SOUND);
-
-        super.loadContent(manager);
-        robotAssetState = AssetState.COMPLETE;
-    }
 
     /** The number of ticks since we started this controller */
     private long ticks;
@@ -90,9 +40,7 @@ public class RobotController extends GamePlayController {
      * The game has default gravity and other settings
      */
     public RobotController(RobotList r) {
-        setDebug(false);
-        setComplete(false);
-        setFailure(false);
+        inputController = new InputController();
         robots = r;
     }
 
@@ -104,8 +52,6 @@ public class RobotController extends GamePlayController {
     public void reset() {
         // should robot controller have a list of robots?
         // because initally all of these are gonna be AI
-        setComplete(false);
-        setFailure(false);
         // populateLevel();
     }
 
@@ -120,13 +66,13 @@ public class RobotController extends GamePlayController {
      *
      * @param dt Number of seconds since last animation frame
      */
-    public void update(float dt) {
+    public void update(float dt, RobotModel possessed, SpiritModel spirit) {
 
         RobotModel robot = possessed;
 
         InputController input = InputController.getInstance();
 
-        input.readInput(bounds, scale); // do we need this?
+       // input.readInput(bounds, scale); // do we need this?
 
         if (possessed != null) {
             if (possessed.decCharge()){
@@ -155,8 +101,6 @@ public class RobotController extends GamePlayController {
                 possessed.setVX(0);
                 possessed.setVY(0);
 
-                setFailure(true);
-                setComplete(false);
                 // change texture because it blew up
             }
         }

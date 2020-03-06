@@ -149,7 +149,7 @@ public class GamePlayController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		loader = new Loader();
-		robotController = new RobotController(level.robots);
+		robotController = new RobotController(null);
 		collisionController = new CollisionController();
 		lvl = 0;
 		world.setContactListener(collisionController);
@@ -208,7 +208,7 @@ public class GamePlayController extends WorldController {
 	 */
 	public void update(float delta) {
 		//calls update on robotcontroller
-		robotController.update(delta);
+		robotController.update(delta, possessed, spirit);
 
 		if(collisionController.isPossessed()) {
 			possessed = collisionController.getRobotPossessed();
