@@ -20,7 +20,6 @@ public class RobotController extends GamePlayController {
     /** Track asset loading from all instances and subclasses */
     private AssetState robotAssetState = AssetState.EMPTY;
 
-<<<<<<< HEAD
     /** List of all the robots */
     private RobotList robotList;
 
@@ -30,18 +29,6 @@ public class RobotController extends GamePlayController {
     /** The vector created by the shot */
     private Vector2 shootVector;
 
-    /** Velocity that the robot travels */
-    private Vector2 robotVelocity;
-
-    /** Velocity that the spirit travels travels */
-    private Vector2 spiritVelocity;
-=======
-    private Vector2 CLICK_POS;
-
-    private Vector2 SHOOT_VEC;
-
-    //get the list from robotlist
->>>>>>> 3f2a1b1e2eca152f8d0995acfb766be3f0e5aae7
 
     /**
      * Preloads the assets for this controller.
@@ -140,30 +127,19 @@ public class RobotController extends GamePlayController {
         InputController input = InputController.getInstance();
 
         input.readInput(bounds, scale); // do we need this?
-        if(possessed != null) {
-            if(possessed.decCharge()){
+        if (possessed != null) {
+            if (possessed.decCharge()){
                 possessed.setVX(robot.getVX() * input.getHorizontal());
                 possessed.setVY(robot.getVX() * input.getVertical());
-            }else{
+            } else { // ROBOT HAS BLOWN UP
                 possessed.setVX(0);
                 possessed.setVY(0);
-                //change texture because it blew up
+                setFailure(true);
+                setComplete(false);
+                // change texture because it blew up
             }
         }
-        // check if timer is up? then lose the game? or is that in gameplay controller?
-        // update timer
-        // If almost blow up, add specific animations??
-        // Check if Robot will blow up
 
-        if (robot.willExplode()) {
-            // robot explode animation
-            // reset()
-
-            setFailure(true);
-            setComplete(false);
-        }
-
-        // if not about to die...
         // Update Animations
 
         // If we use sound, we must remember this.
