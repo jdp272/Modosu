@@ -73,6 +73,12 @@ public abstract class WorldController implements Screen {
 	private static String FONT_FILE = "shared/RetroGame.ttf";
 	/** Texture file for background image */
 	private static final String BACKG_FILE = "shared/background.png";
+	/** Texture file for robot sprite */
+	private static final String ROBOT_FILE = "robot/robot.png";
+	/** Texture file for spirit sprite */
+	private static final String SPIRIT_FILE = "robot/spirit.png";
+	/** File to texture for obstacles */
+	private static String OBSTACLE_FILE = "robot/crate02.png";
 
 	private static int FONT_SIZE = 64;
 
@@ -84,6 +90,12 @@ public abstract class WorldController implements Screen {
 	protected BitmapFont displayFont;
 	/** Texture asset for background image */
 	private TextureRegion backgroundTexture;
+	/** The texture for robots */
+	protected TextureRegion robotTex;
+	/** The texture for the spirit */
+	protected TextureRegion spiritTex;
+	/** The texture for the obstacle */
+	protected TextureRegion obstacleTex;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -108,6 +120,16 @@ public abstract class WorldController implements Screen {
 		assets.add(GOAL_FILE);
 		manager.load(BACKG_FILE,Texture.class);
 		assets.add(BACKG_FILE);
+
+
+		manager.load(ROBOT_FILE, Texture.class);
+		assets.add(ROBOT_FILE);
+		manager.load(SPIRIT_FILE, Texture.class);
+		assets.add(SPIRIT_FILE);
+		manager.load(OBSTACLE_FILE, Texture.class);
+		assets.add(OBSTACLE_FILE);
+		manager.load(EARTH_FILE, Texture.class);
+		assets.add(EARTH_FILE);
 		
 		// Load the font
 		FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -136,6 +158,9 @@ public abstract class WorldController implements Screen {
 		earthTile = createTexture(manager,EARTH_FILE,true);
 		goalTile  = createTexture(manager,GOAL_FILE,true);
 		backgroundTexture = createTexture(manager,BACKG_FILE, true);
+		robotTex = createTexture(manager, ROBOT_FILE, true);
+		spiritTex = createTexture(manager, SPIRIT_FILE, true);
+		obstacleTex = createTexture(manager, OBSTACLE_FILE, true);
 		
 		// Allocate the font
 		if (manager.isLoaded(FONT_FILE)) {
@@ -598,11 +623,11 @@ public abstract class WorldController implements Screen {
 		canvas.clear();
 
 		canvas.begin();
-
+		canvas.draw(backgroundTexture, 0,0);
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
-		canvas.draw(backgroundTexture, 0,0);
+
 		canvas.end();
 		
 		if (debug) {

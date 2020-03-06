@@ -24,6 +24,7 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.ObstacleSelector;
 import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
 import edu.cornell.gdiac.physics.robot.RobotController;
+import edu.cornell.gdiac.physics.robot.RobotList;
 import edu.cornell.gdiac.physics.robot.RobotModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.FilmStrip;
@@ -31,6 +32,7 @@ import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.RandomController;
 import edu.cornell.gdiac.util.SoundController;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -109,7 +111,7 @@ public class GamePlayController extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(AssetManager manager) {
-		loader.preLoadContent();
+
 		if (assetState != AssetState.EMPTY) {
 			return;
 		}
@@ -129,7 +131,6 @@ public class GamePlayController extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(AssetManager manager) {
-		loader.loadContent();
 		if (assetState != AssetState.LOADING) {
 			return;
 		}
@@ -149,7 +150,6 @@ public class GamePlayController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		loader = new Loader();
-		robotController = new RobotController(null);
 		collisionController = new CollisionController();
 		lvl = 0;
 		world.setContactListener(collisionController);
@@ -162,9 +162,16 @@ public class GamePlayController extends WorldController {
 	 */
 	public void reset() {
 		Vector2 gravity = new Vector2(0,0);
-		robotController.reset();
-		level = loader.reset(lvl);
+		BoxObstacle[] obs = {new BoxObstacle(50,50,10,10)};
+		RobotList robs = new RobotList();
+		RobotModel rob = new RobotModel(30,30,10,10, 100);
+		rob.setTexture(robotTex);
+		robs.add(rob,true);
+		SpiritModel spir = new SpiritModel(70,70,10,10,4);
+		level = new Level(null, obs, robs, spir);
+		//level = loader.reset(lvl);
 		//parse level
+		robotController = new RobotController(level.robots);
 
 		for(Obstacle obj : objects) {
 			obj.deactivatePhysics(world);

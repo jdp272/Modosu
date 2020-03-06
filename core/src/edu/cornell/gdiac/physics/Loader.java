@@ -297,12 +297,15 @@ public class Loader {
     }
 
     public Level reset(int level){
-        BoxObstacle[] obs = {new BoxObstacle(50,50,10,10)};
-        RobotList robs = new RobotList();
-        robs.add(new RobotModel(30,30,10,10, 100),true);
-        SpiritModel spir = new SpiritModel(70,70,10,10,4);
-        Level lvl = new Level(null, obs, robs, spir);
-        return lvl; //loadLevel();
+        return null;
+//        BoxObstacle[] obs = {new BoxObstacle(50,50,10,10)};
+//        RobotList robs = new RobotList();
+//        RobotModel rob = new RobotModel(30,30,10,10, 100);
+//        //rob.setTexture(robotTex);
+//        robs.add(rob,true);
+//        SpiritModel spir = new SpiritModel(70,70,10,10,4);
+//        Level lvl = new Level(null, obs, robs, spir);
+//        return lvl; //loadLevel();
     }
 
     // Private member functions
@@ -329,6 +332,7 @@ public class Loader {
             }
             return region;
         }
+        System.out.println(file + " was never loaded");
         return null;
     }
 
