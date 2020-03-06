@@ -43,7 +43,9 @@ public class GamePlayController extends WorldController {
 
 	private RobotController robotController;
 
-	protected CollisionController collisionController;
+	private SpiritModel spirit;
+
+	private CollisionController collisionController;
 
 	private LoadData loadData;
 

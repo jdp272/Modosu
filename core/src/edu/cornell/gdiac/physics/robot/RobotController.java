@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.physics.robot;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.audio.*;
@@ -11,11 +12,6 @@ import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.obstacle.*;
 
-// import com.badlogic.gdx.graphics.g2d.TextureRegion;
-// import com.badlogic.gdx.physics.box2d.*;
-// import edu.cornell.gdiac.physics.InputController;
-// import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-
 public class RobotController extends GamePlayController {
 
     /** Texture assets for the robot */
@@ -24,7 +20,20 @@ public class RobotController extends GamePlayController {
     /** Track asset loading from all instances and subclasses */
     private AssetState robotAssetState = AssetState.EMPTY;
 
-    //get the list from robotlist
+    /** List of all the robots */
+    private RobotList robotList;
+
+    /** The click position of the cursor */
+    private Vector2 clickPosition = new Vector2(-1,-1);
+
+    /** The vector created by the shot */
+    private Vector2 shootVector;
+
+    /** Velocity that the robot travels */
+    private Vector2 robotVelocity;
+
+    /** Velocity that the spirit travels travels */
+    private Vector2 spiritVelocity;
 
     /**
      * Preloads the assets for this controller.
@@ -90,7 +99,6 @@ public class RobotController extends GamePlayController {
         setDebug(false);
         setComplete(false);
         setFailure(false);
-        //world.setContactListener(this);
     }
 
     /**
@@ -118,55 +126,49 @@ public class RobotController extends GamePlayController {
      */
     public void update(float dt) {
 
+        RobotModel robot = collisionController.getRobotPossessed();
+
         InputController input = InputController.getInstance();
 
-        input.readInput(bounds, scale); // do we need this?
+        input.readInput(bounds, scale);
 
-        collisionController.getRobotPossessed().setVX(input.getHorizontal());
-        collisionController.getRobotPossessed().setVY(input.getVertical());
+        // Update the possessed robots position
+        robot.setVX(robot.getVX() * input.getHorizontal());
+        robot.setVY(robot.getVY() * input.getVertical());
 
-        // check if timer is up? then lose the game? or is that in gameplay controller?
-        // update timer
-        // If almost blow up, add specific animations??
-        // Check if Robot will blow up
+        // robot.setTime + 1 (??)
 
-        // Update Animations??
+        if (robot.willExplode()) {
+            // robot explode animation
+            // reset()
 
+            setFailure(true);
+            setComplete(false);
+        }
 
+        // if not about to die...
+        // Update Animations
 
         // If we use sound, we must remember this.
         //SoundController.getInstance().update();
 
-         click position, shoot vector
-         if(input.didTertiary() && CLICK_POS.x == -1 && CLICK_POS.y == -1){ // initalized with -1,-1
-            CLICK_POS = input.getCrossHair();
-      // no arrow
-        }else if (!input.didTertiary() && CLICK_POS.x != -1 && CLICK_POS.y != -1){ // letting go
-            SHOOT_VEC = input.getCrossHair().sub(CLICK_POS);
-            CLICK_POS.x = -1;
-            CLICK_POS.y = -1;
+        // Shooting the
+        if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
+            // Clicked Mouse
+            clickPosition = input.getCrossHair();
+        } else if (!input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
+            // Released Mouse -- Shoot
+            shootVector = input.getCrossHair().sub(clickPosition);
+            clickPosition.x = -1;
+            clickPosition.y = -1;
 
-//            TextureRegion texture = spiritTexture;
-//            float dwidth  = texture.getRegionWidth()/scale.x;
-//            float dheight = texture.getRegionHeight()/scale.y;
-//
-//            BoxObstacle spirit = new BoxObstacle(rocket.getX(),rocket.getY(),dwidth,dheight);
-//            spirit.setDensity(CRATE_DENSITY);
-//            spirit.setFriction(CRATE_FRICTION);
-//            spirit.setRestitution(BASIC_RESTITUTION);
-//            spirit.setName("spirit");
-//            spirit.setDrawScale(scale);
-//            spirit.setTexture(texture);
-//            float vx = (thrust/3)*(-2)*(SHOOT_VEC.x);
-//            float vy = (thrust/3)*(-2)*(SHOOT_VEC.y);
-//            spirit.setVX(vx);
-//            spirit.setVY(vy);
-//            Filter filter = spirit.getFilterData();
-//            filter.groupIndex = -1;
-//            spirit.setFilterData(filter);
-//            spirit.alive = 60;
-//            spirit.setRestitution(0.8f);
-//            addQueue.add(spirit);
-        }
+            float vx = spirit.getVX() * shootVector.x;
+            float vy = spirit.getVY() * shootVector.y;
+
+            spirit.setVX(vx);
+            spirit.setVY(vy);
+         } else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
+             // Arrow Direction?
+         }
     }
 }
