@@ -19,6 +19,7 @@ import com.badlogic.gdx.files.FileHandle;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.robot.RobotModel;
+import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.PooledList;
 
 /**
@@ -284,18 +285,18 @@ public class Loader {
 
              TODO: Make a robot once RobotModel constructor is ready
              */
-            robots[i] = new RobotModel(rData.location.x, rData.location.y, rData.chargeTime);
+            robots[i] = new RobotModel(rData.location.x, rData.location.y, (int)rData.chargeTime);
         }
 
         // Create the starting "robot" (with no charge capacity)
-        RobotModel start = new RobotModel(levelData.startLocation.x, levelData.startLocation.y, 0);
+        SpiritModel start = new SpiritModel(levelData.startLocation.x, levelData.startLocation.y, 0);
         // TODO: ensure implementation of 0 charge time means no cap
 
         return new Level(regions, obstacles, robots, start);
     }
 
     public Level reset(int level){
-        return loadLevel(level);
+        return null; //loadLevel();
     }
 
     // Private member functions

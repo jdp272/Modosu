@@ -17,6 +17,19 @@ public class AIController extends InputController {
         DISPOSSESS
     }
 
+    private static enum Move {
+        /** The AI does not move */
+        LEFT,
+        /** The AI moves back and forth from the set path */
+        RIGHT,
+        /** The AI has been possessed by the player */
+        UP,
+        /** The AI pathfinds back to the set path */
+        DOWN,
+
+        STOP
+    }
+
     // Instance Attributes
     /** The robot being controlled by this AIController */
     private RobotModel robot;
@@ -31,10 +44,12 @@ public class AIController extends InputController {
     private FSMState state;
 
     /** The AI's next action */
-    private int move; // A ControlCode
+    private Move move; // A ControlCode
 
     /** The number of ticks since we started this controller */
     private long ticks;
+
+    private int target;
 
     /**
      * Creates an AIController for the robot with the given id.
@@ -43,18 +58,21 @@ public class AIController extends InputController {
      // * @param board The game board (for pathfinding)
      // * @param ships The list of ships (for targetting)
      */
-    public AIController(int id, Board board, ShipList ships) {
-        this.ship = ships.get(id);
-        this.board = board;
-        this.fleet = ships;
+    public AIController(int id, RobotList robots) {
+        this.robot = robots.get(id);
+        this.fleet = robots;
 
-        state = FSMState.SPAWN;
-        move  = CONTROL_NO_ACTION;
+        state = FSMState.STATIC;
+        move  = Move.STOP;
         ticks = 0;
 
         // Select an initial target
-        target = null;
+        target = 0;
         selectTarget();
+    }
+
+    public void selectTarget(){
+
     }
 
 

@@ -173,8 +173,8 @@ public class RobotModel extends BoxObstacle {
      * @param width  The object width in physics units
      * @param height The object width in physics units
      */
-    public RobotModel(float width, float height) {
-        this(0, 0, width, height);
+    public RobotModel(float width, float height, int c) {
+        this(0, 0, width, height, c);
     }
 
     /**
@@ -189,9 +189,10 @@ public class RobotModel extends BoxObstacle {
      * @param width  The object width in physics units
      * @param height The object width in physics units
      */
-    public RobotModel(float x, float y, float width, float height) {
+    public RobotModel(float x, float y, float width, float height, int c) {
         super(x, y, width, height);
         force = new Vector2();
+        charge = c;
         setDensity(DEFAULT_DENSITY);
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);

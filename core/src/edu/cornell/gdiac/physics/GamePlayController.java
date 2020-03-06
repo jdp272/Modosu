@@ -31,6 +31,9 @@ import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.RandomController;
 import edu.cornell.gdiac.util.SoundController;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Gameplay specific controller for the rocket lander game.
  *
@@ -160,7 +163,7 @@ public class GamePlayController extends WorldController {
 	public void reset() {
 		Vector2 gravity = new Vector2(0,0);
 		robotController.reset();
-		level = loader.reset(level);
+		level = loader.reset(lvl);
 		//parse level
 
 		for(Obstacle obj : objects) {
@@ -188,6 +191,8 @@ public class GamePlayController extends WorldController {
 			addQueue.add(obj);
 		}
 		addQueue.add(level.start);
+		collisionController.addRobots((ArrayList<RobotModel>)Arrays.asList(level.robots));
+		collisionController.addSpirit(level.start);
 	}
 
 
