@@ -166,7 +166,7 @@ public class GamePlayController extends WorldController {
 		box.setTexture(obstacleTex);
 		BoxObstacle[] obs = {box};
 		RobotList robs = new RobotList();
-		RobotModel rob = new RobotModel(30,30,10,10, 10000);
+		RobotModel rob = new RobotModel(30,30,10,10, 100);
 		rob.setTexture(robotTex);
 		RobotModel rob2 = new RobotModel(100,100,10,10, 10000);
 		rob2.setTexture(robotTex);

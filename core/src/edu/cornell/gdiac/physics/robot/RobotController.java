@@ -76,8 +76,8 @@ public class RobotController {
 
         if (possessed != null) {
             if (possessed.decCharge()){
-                possessed.setVX(500 * input.getHorizontal());
-                possessed.setVY(500 * input.getVertical());
+                possessed.setVX(500000 * input.getHorizontal());
+                possessed.setVY(500000 * input.getVertical());
 
                 // Shooting the
                 if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
@@ -102,12 +102,12 @@ public class RobotController {
                 }
 
             }
-//            else { // ROBOT HAS BLOWN UP
-//                possessed.setVX(0);
-//                possessed.setVY(0);
-//
-//                // change texture because it blew up
-//            }
+            else { // ROBOT HAS BLOWN UP
+                possessed.setVX(0);
+                possessed.setVY(0);
+
+                // change texture because it blew up
+            }
         }
 
         // Update Animations
