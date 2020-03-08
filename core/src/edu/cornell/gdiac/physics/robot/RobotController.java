@@ -105,7 +105,6 @@ public class RobotController {
             else { // ROBOT HAS BLOWN UP
                 possessed.setVX(0);
                 possessed.setVY(0);
-
                 // change texture because it blew up
             }
         }
