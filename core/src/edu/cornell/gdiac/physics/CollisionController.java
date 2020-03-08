@@ -93,7 +93,6 @@ public class CollisionController implements ContactListener {
 
     /**
      * Callback method for the start of a collision
-     *
      * This method is called when two objects cease to touch.  We do not use it.
      */
     public void endContact(Contact contact) {}
