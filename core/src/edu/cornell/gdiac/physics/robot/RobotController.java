@@ -31,6 +31,7 @@ public class RobotController {
 
     /** Constant to change the speed of golem movement */
     private static final float GOLEM_MOVEMENT_SPEED = 500000;
+    private static final float MINIMUM_SHOT_SPEED = 50;
 
     /** The number of ticks since we started this controller */
     private long ticks;
@@ -99,7 +100,9 @@ public class RobotController {
                         spirit.setPosition(possessed.getPosition());
                         spirit.setVX(vx);
                         spirit.setVY(vy);
-                        spirit.setHasLaunched(true);
+
+                        if (Math.abs(vx) > MINIMUM_SHOT_SPEED || Math.abs(vy) > MINIMUM_SHOT_SPEED) spirit.setHasLaunched(true);
+
                     } else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
                         // Arrow Direction?
                         spirit.setPosition(possessed.getPosition());
