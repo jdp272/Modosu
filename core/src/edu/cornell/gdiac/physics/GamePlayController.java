@@ -32,6 +32,7 @@ import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.RandomController;
 import edu.cornell.gdiac.util.SoundController;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,7 +100,20 @@ public class GamePlayController extends WorldController {
 	protected RobotModel possessed;
 
 	protected SpiritModel spirit;
-	
+
+
+	// Other game objects
+	/** The initial rocket position */
+	private static Vector2 SPIRIT_POS = new Vector2(500, 100);
+
+	// The positions of the crate pyramid
+	private static final float[] ROBOTS = { SPIRIT_POS.x,SPIRIT_POS.y, 200.0f, 400.0f, 800.0f, 100.0f};
+
+	// The positions of the walls
+	private static final float[] BOXES = { 350.0f, 32.0f, 350.0f, 96.0f, 350.0f, 160.f, 350.f, 224.0f, // LEFT
+											32.0f, 500.0f, 96.0f, 500.0f, 160.0f, 500.0f, 224.0f, 500.0f, 288.0f, 500.0f, 352.0f, 500.0f, // TOP
+											650.0f, 32.0f, 650.0f, 96.0f, 650.0f, 160.f, 650.f, 224.0f}; // RIGHT
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -154,36 +168,55 @@ public class GamePlayController extends WorldController {
 		lvl = 0;
 		world.setContactListener(collisionController);
 	}
-	
+
+
+
 	/**
 	 * Resets the status of the game so that we can play again.
 	 *
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-		Vector2 gravity = new Vector2(0,0);
-		BoxObstacle box = new BoxObstacle(50,50,10,10);
-		box.setTexture(obstacleTex);
-		BoxObstacle[] obs = {box};
+		Vector2 gravity = new Vector2(world.getGravity());
+		BoxObstacle[] obs = new BoxObstacle[BOXES.length/2];
+
+		float dwidth  = obstacleTex.getRegionWidth();
+		float dheight = obstacleTex.getRegionHeight();
+
+		BoxObstacle box;
+		for (int i = 0; i < BOXES.length; i+=2) {
+			box = new BoxObstacle(BOXES[i],BOXES[i+1], dwidth, dheight);
+			box.setTexture(obstacleTex);
+			box.setBodyType(BodyDef.BodyType.StaticBody);
+			obs[i/2] = box;
+		}
+
 		RobotList robs = new RobotList();
-		RobotModel rob = new RobotModel(30,30,10,10, 100);
-		rob.setTexture(robotTex);
-		RobotModel rob2 = new RobotModel(100,100,10,10, 10000);
-		rob2.setTexture(robotTex);
-		robs.add(rob,true);
-		robs.add(rob2,false);
-		SpiritModel spir = new SpiritModel(70,70,10,10,4);
-		spir.setTexture(spiritTex);
-		level = new Level(null, obs, robs, spir);
-		possessed = rob;
-		spirit = spir;
+
+		dwidth  = robotTex.getRegionWidth();
+		dheight = robotTex.getRegionHeight();
+
+		RobotModel rob;
+		for (int i = 0; i < ROBOTS.length; i+=2) {
+			rob = new RobotModel(ROBOTS[i],ROBOTS[i+1], dwidth, dheight, 10000);
+			rob.setTexture(robotTex);
+			robs.add(rob,false);
+		}
+
+		SpiritModel spark = new SpiritModel(SPIRIT_POS.x,SPIRIT_POS.y,spiritTex.getRegionWidth(),spiritTex.getRegionHeight(),10);
+		spark.setTexture(spiritTex);
+
+		level = new Level(null, obs, robs, spark);
+		possessed = robs.get(0);
+		spirit = spark;
 		//level = loader.reset(lvl);
 		//parse level
 		robotController = new RobotController(level.robots);
 
-		for(Obstacle obj : objects) {
-			obj.deactivatePhysics(world);
+		for(Obstacle o : objects) {
+			o.deactivatePhysics(world);
 		}
+
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
@@ -223,16 +256,17 @@ public class GamePlayController extends WorldController {
 	 */
 	public void update(float delta) {
 		//calls update on robotcontroller
+
 		robotController.update(delta, possessed, spirit);
 
-		if(collisionController.isPossessed()) {
+		if (collisionController.isPossessed()) {
 			possessed = collisionController.getRobotPossessed();
-		}
+		} else { possessed = null; }
 
-		if(collisionController.isBounced()) {
-			if(spirit.bounces == 0) {
+		if (collisionController.isBounced()) {
+			if (spirit.bounces == 0) {
 				spirit.setPosition(-10,-10);
-			}else {
+			} else {
 				spirit.decBounces();
 			}
 		}

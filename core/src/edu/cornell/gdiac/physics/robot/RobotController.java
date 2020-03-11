@@ -22,15 +22,15 @@ public class RobotController {
 
     /** List of all the robots */
     private RobotList robots;
-
     /** The click position of the cursor */
     private Vector2 clickPosition;
-
     /** The vector created by the shot */
     private Vector2 shootVector;
 
-    private InputController inputController;
+    private InputController input;
 
+    /** Constant to change the speed of golem movement */
+    private static final float GOLEM_MOVEMENT_SPEED = 500000;
 
     /** The number of ticks since we started this controller */
     private long ticks;
@@ -41,7 +41,7 @@ public class RobotController {
      * The game has default gravity and other settings
      */
     public RobotController(RobotList r) {
-        inputController = new InputController();
+        input = InputController.getInstance();
         clickPosition = new Vector2(-1,-1);
         robots = r;
     }
@@ -71,41 +71,45 @@ public class RobotController {
     public void update(float dt, RobotModel possessed, SpiritModel spirit) {
 
         //RobotModel robot = possessed;
-
-        InputController input = InputController.getInstance();
+        input = InputController.getInstance();
 
         if (possessed != null) {
-            if (possessed.decCharge()){
-                possessed.setVX(500000 * input.getHorizontal());
-                possessed.setVY(500000 * input.getVertical());
+            if (!spirit.getHasLaunched()) { spirit.setPosition(possessed.getPosition()); }
 
-                // Shooting the
-                if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
-                    // Clicked Mouse
-                    clickPosition = new Vector2(Gdx.input.getX(),Gdx.input.getY());;//input.getCrossHair();
-                } else if (!input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {// Released Mouse -- Shoot
-                    shootVector = new Vector2(Gdx.input.getX(),Gdx.input.getY());
-                    shootVector = shootVector.sub(clickPosition);
-                    shootVector.x = -shootVector.x;
+            if (possessed.decCharge()) {
+                possessed.setVX(GOLEM_MOVEMENT_SPEED * input.getHorizontal());
+                possessed.setVY(GOLEM_MOVEMENT_SPEED * input.getVertical());
 
-                    clickPosition.x = -1;
-                    clickPosition.y = -1;
+                if (!spirit.getHasLaunched()) {
+                    // Shooting the spirit
+                    if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) { // Clicked Mouse
+                        spirit.setPosition(possessed.getPosition());
+                        clickPosition = new Vector2(Gdx.input.getX(), Gdx.input.getY()); //input.getCrossHair();
+                    } else if (!input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) { // Released Mouse -- Shoot
+                        shootVector = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+                        shootVector = shootVector.sub(clickPosition);
+                        shootVector.x = -shootVector.x;
 
-                    float vx = 50 * shootVector.x;
-                    float vy = 50 * shootVector.y;
+                        clickPosition.x = -1;
+                        clickPosition.y = -1;
 
-                    spirit.setPosition(possessed.getPosition());
-                    spirit.setVX(vx);
-                    spirit.setVY(vy);
-                } else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
-                    // Arrow Direction?
+                        float vx = shootVector.x;
+                        float vy = shootVector.y;
+
+                        spirit.setPosition(possessed.getPosition());
+                        spirit.setVX(vx);
+                        spirit.setVY(vy);
+                        spirit.setHasLaunched(true);
+                    } else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
+                        // Arrow Direction?
+                        spirit.setPosition(possessed.getPosition());
+                    }
                 }
-
             }
-            else { // ROBOT HAS BLOWN UP
+            else {
+                System.out.println("THE GOLEM HAS BLOWN UP.");
                 possessed.setVX(0);
                 possessed.setVY(0);
-
                 // change texture because it blew up
             }
         }
