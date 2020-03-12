@@ -78,10 +78,9 @@ public class RobotController {
             if (!spirit.getHasLaunched()) { spirit.setPosition(possessed.getPosition()); }
 
             if (possessed.decCharge()) {
-                possessed.setVX(GOLEM_MOVEMENT_SPEED * input.getHorizontal());
-                possessed.setVY(GOLEM_MOVEMENT_SPEED * input.getVertical());
-
                 if (!spirit.getHasLaunched()) {
+                    possessed.setVX(GOLEM_MOVEMENT_SPEED * input.getHorizontal());
+                    possessed.setVY(GOLEM_MOVEMENT_SPEED * input.getVertical());
                     // Shooting the spirit
                     if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) { // Clicked Mouse
                         spirit.setPosition(possessed.getPosition());
@@ -107,6 +106,9 @@ public class RobotController {
                         // Arrow Direction?
                         spirit.setPosition(possessed.getPosition());
                     }
+                } else {
+                    possessed.setVX(0);
+                    possessed.setVY(0);
                 }
             }
             else {
