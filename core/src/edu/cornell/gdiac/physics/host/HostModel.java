@@ -7,7 +7,7 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 3/1/2020
  */
-package edu.cornell.gdiac.physics.robot;
+package edu.cornell.gdiac.physics.host;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -25,19 +25,6 @@ import edu.cornell.gdiac.util.FilmStrip;
  * no other subclasses that we might loop through.
  */
 public class HostModel extends BoxObstacle {
-    /**
-     * Enumeration representing the states of the charge gauge
-     * Gauge should be charging when possessed
-     * Gauge should not be charging when not possessed but display the amount of charge
-     */
-    public enum HostState {
-        /** State of being possessed */
-        POSSESSED,
-        /** State of being not possessed */
-        NORMAL,
-        /** State of Being Dead */
-        DEAD
-    }
 
     // Default physics values
     /** The density of this host */
@@ -51,11 +38,8 @@ public class HostModel extends BoxObstacle {
     /** The number of frames for the gauge */
     public static final int GAUGE_FRAMES = 4;
 
-    private float currentCharge;
-    private float maxCharge;
-
-    /** The force to apply to this host */
-    private Vector2 force;
+    /** The texture for the host's gauge */
+    protected TextureRegion hostGaugeTexture;
 
     /** The texture filmstrip for charge gauge when possessed */
     FilmStrip chargeGauge;
@@ -81,18 +65,35 @@ public class HostModel extends BoxObstacle {
     // Attributes Specific to each HostModel
     /** Boolean Whether HostModel is Possessed */
     private boolean isPossessed;
-    /** Float for default possession time */
-    private float defaultPossessionTime;
-    /** Float for remaining possession time */
-    private float remainingPossessionTime;
     /** Boolean for whether host is alive */
     private boolean isAlive;
+    /** The current charge of the host */
+    private float currentCharge;
+    /** The maximum charge of the host */
+    private float maxCharge;
+    /** The force to apply to this host */
+    private Vector2 force;
 
-    protected TextureRegion hostGaugeTexture;
 
 
     /** Cache object for transforming the force according the object angle */
     public Affine2 affineCache = new Affine2();
+
+    /**
+     * Gets the max charge a host can hold before exploding
+     * @return float that represents the maximum charge that can be held
+     */
+    public float getMaxCharge() {
+        return maxCharge;
+    }
+
+    /**
+     * Sets the max charge a host can hold before exploding
+     * @param maxCharge that represents the new max charge
+     */
+    public void setMaxCharge(float maxCharge) {
+        this.maxCharge = maxCharge;
+    }
 
     /**
      * Returns the force applied to this host.
@@ -174,18 +175,6 @@ public class HostModel extends BoxObstacle {
     public void setFY(float value) {
         force.y = value;
     }
-
-    /**
-     * Returns the amount of thrust that this host has.
-     *
-     * Multiply this value times the horizontal and vertical values in the
-     * input controller to get the force.
-     *
-     * @return the amount of thrust that this host has.
-     */
-    //    public float getthrust() {
-    //        return default_thrust;
-    //    }
 
     /**
      * Creates a new host at the origin.
@@ -335,145 +324,6 @@ public class HostModel extends BoxObstacle {
         body.applyForce(force, body.getLocalCenter(), true);
     }
 
-    // Animation methods in the case we decide to change the animation method
-
-    /**
-     * Returns the animation node for the given charge gauge of the host
-     *
-     * @param gauge enumeration to identify the charge gauge of the host
-     * @return the animation node for the given charge gauge of the host
-     */
-    //    public FilmStrip getChargeGaugeStrip(ChargeGauge gauge) {
-    //        switch (gauge) {
-    //            case POSSESSED:
-    //                return chargeGauge;
-    //            case NORMAL:
-    //                return normalGauge;
-    //        }
-    //        assert false : "Invalid gauge enumeration";
-    //        return null;
-    //    }
-
-    /**
-     * Sets the animation node for the given charge gauge
-     *
-     * @param gauge enumeration to identify the specific gauge
-     * @param strip the animation node for the given gauge
-     */
-    //    public void setChargeGauge(ChargeGauge gauge, FilmStrip strip) {
-    //        switch (gauge) {
-    //            case POSSESSED:
-    //                chargeGauge = strip;
-    //                break;
-    //            case NORMAL:
-    //                normalGauge = strip;
-    //                /* If the gauge is a separate asset from the host itself */
-    //                //                if (strip != null) {
-    //                //                    leftOrigin.set(strip.getRegionWidth() / 2.0f, strip.getRegionHeight() / 2.0f);
-    //                //                }
-    //                break;
-    //            default:
-    //                assert false : "Invalid gauge enumeration";
-    //        }
-    //    }
-
-    /**
-     * Returns the key for the sound to accompany the given charge gauge
-     *
-     * The key should either refer to a valid sound loaded in the AssetManager or
-     * be empty ("").  If the key is "", then no sound will play.
-     *
-     * @param gauge enumeration to identify the state of the charge gauge
-     * @return the key for the sound to accompany the given charge gauge
-     */
-    //    public String getGaugeSound(ChargeGauge gauge) {
-    //        switch (gauge) {
-    //            case POSSESSED:
-    //                return possessedHostSound;
-    //            case NORMAL:
-    //                return normalHostSound;
-    //        }
-    //        assert false : "Invalid gauge enumeration";
-    //        return null;
-    //    }
-
-    /**
-     * Sets the key for the sound to accompany the given charge gauge
-     *
-     * The key should either refer to a valid sound loaded in the AssetManager or
-     * be empty ("").  If the key is "", then no sound will play.
-     *
-     * @param gauge enumeration to identify the state of the charge gauge
-     * @param key   the key for the sound to accompany the main charge gauge
-     */
-    //    public void setGaugeSound(ChargeGauge gauge, String key) {
-    //        switch (gauge) {
-    //            case POSSESSED:
-    //                possessedHostSound = key;
-    //                break;
-    //            case NORMAL:
-    //                normalHostSound = key;
-    //                break;
-    //            default:
-    //                assert false : "Invalid gauge enumeration";
-    //        }
-    //    }
-
-    /**
-     * Animates the given gauge.
-     *
-     * If the animation is not active, it will reset to the initial animation frame.
-     *
-     * @param gauge The reference to the host's gauge
-     * @param on    Whether the animation is active
-     */
-    //    public void animateGauge(ChargeGauge gauge, boolean on) {
-    //        FilmStrip node = null;
-    //        boolean cycle = true;
-    //
-    //        switch (gauge) {
-    //            case POSSESSED:
-    //                node = chargeGauge;
-    //                cycle = possessedCycle;
-    //                break;
-    //            case NORMAL:
-    //                node = normalGauge;
-    //                cycle = normCycle;
-    //                break;
-    //            default:
-    //                assert false : "Invalid gauge enumeration";
-    //        }
-    //
-    //        if (on) {
-    //            // Turn on the gauge charging
-    //            if (node.getFrame() == 0 || node.getFrame() == 1) {
-    //                cycle = true;
-    //            } else if (node.getFrame() == node.getSize() - 1) {
-    //                cycle = false;
-    //            }
-    //
-    //            // Increment
-    //            if (cycle) {
-    //                node.setFrame(node.getFrame() + 1);
-    //            } else {
-    //                node.setFrame(node.getFrame() - 1);
-    //            }
-    //        } else {
-    //            node.setFrame(0);
-    //        }
-    //
-    //        switch (gauge) {
-    //            case POSSESSED:
-    //                possessedCycle = cycle;
-    //                break;
-    //            case NORMAL:
-    //                normCycle = cycle;
-    //                break;
-    //            default:
-    //                assert false : "Invalid gauge enumeration";
-    //        }
-    //    }
-
     /**
      * Draws the physics object.
      *
@@ -512,3 +362,143 @@ public class HostModel extends BoxObstacle {
         }
     }
 }
+
+
+// Animation methods in the case we decide to change the animation method
+
+/**
+ * Returns the animation node for the given charge gauge of the host
+ *
+ * @param gauge enumeration to identify the charge gauge of the host
+ * @return the animation node for the given charge gauge of the host
+ */
+//    public FilmStrip getChargeGaugeStrip(ChargeGauge gauge) {
+//        switch (gauge) {
+//            case POSSESSED:
+//                return chargeGauge;
+//            case NORMAL:
+//                return normalGauge;
+//        }
+//        assert false : "Invalid gauge enumeration";
+//        return null;
+//    }
+
+/**
+ * Sets the animation node for the given charge gauge
+ *
+ * @param gauge enumeration to identify the specific gauge
+ * @param strip the animation node for the given gauge
+ */
+//    public void setChargeGauge(ChargeGauge gauge, FilmStrip strip) {
+//        switch (gauge) {
+//            case POSSESSED:
+//                chargeGauge = strip;
+//                break;
+//            case NORMAL:
+//                normalGauge = strip;
+//                /* If the gauge is a separate asset from the host itself */
+//                //                if (strip != null) {
+//                //                    leftOrigin.set(strip.getRegionWidth() / 2.0f, strip.getRegionHeight() / 2.0f);
+//                //                }
+//                break;
+//            default:
+//                assert false : "Invalid gauge enumeration";
+//        }
+//    }
+
+/**
+ * Returns the key for the sound to accompany the given charge gauge
+ *
+ * The key should either refer to a valid sound loaded in the AssetManager or
+ * be empty ("").  If the key is "", then no sound will play.
+ *
+ * @param gauge enumeration to identify the state of the charge gauge
+ * @return the key for the sound to accompany the given charge gauge
+ */
+//    public String getGaugeSound(ChargeGauge gauge) {
+//        switch (gauge) {
+//            case POSSESSED:
+//                return possessedHostSound;
+//            case NORMAL:
+//                return normalHostSound;
+//        }
+//        assert false : "Invalid gauge enumeration";
+//        return null;
+//    }
+
+/**
+ * Sets the key for the sound to accompany the given charge gauge
+ *
+ * The key should either refer to a valid sound loaded in the AssetManager or
+ * be empty ("").  If the key is "", then no sound will play.
+ *
+ * @param gauge enumeration to identify the state of the charge gauge
+ * @param key   the key for the sound to accompany the main charge gauge
+ */
+//    public void setGaugeSound(ChargeGauge gauge, String key) {
+//        switch (gauge) {
+//            case POSSESSED:
+//                possessedHostSound = key;
+//                break;
+//            case NORMAL:
+//                normalHostSound = key;
+//                break;
+//            default:
+//                assert false : "Invalid gauge enumeration";
+//        }
+//    }
+
+/**
+ * Animates the given gauge.
+ *
+ * If the animation is not active, it will reset to the initial animation frame.
+ *
+ * @param gauge The reference to the host's gauge
+ * @param on    Whether the animation is active
+ */
+//    public void animateGauge(ChargeGauge gauge, boolean on) {
+//        FilmStrip node = null;
+//        boolean cycle = true;
+//
+//        switch (gauge) {
+//            case POSSESSED:
+//                node = chargeGauge;
+//                cycle = possessedCycle;
+//                break;
+//            case NORMAL:
+//                node = normalGauge;
+//                cycle = normCycle;
+//                break;
+//            default:
+//                assert false : "Invalid gauge enumeration";
+//        }
+//
+//        if (on) {
+//            // Turn on the gauge charging
+//            if (node.getFrame() == 0 || node.getFrame() == 1) {
+//                cycle = true;
+//            } else if (node.getFrame() == node.getSize() - 1) {
+//                cycle = false;
+//            }
+//
+//            // Increment
+//            if (cycle) {
+//                node.setFrame(node.getFrame() + 1);
+//            } else {
+//                node.setFrame(node.getFrame() - 1);
+//            }
+//        } else {
+//            node.setFrame(0);
+//        }
+//
+//        switch (gauge) {
+//            case POSSESSED:
+//                possessedCycle = cycle;
+//                break;
+//            case NORMAL:
+//                normCycle = cycle;
+//                break;
+//            default:
+//                assert false : "Invalid gauge enumeration";
+//        }
+//    }

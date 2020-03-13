@@ -1,6 +1,5 @@
-package edu.cornell.gdiac.physics.robot;
+package edu.cornell.gdiac.physics.host;
 
-import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 
 
@@ -31,14 +30,14 @@ public class AIController extends InputController {
     }
 
     // Instance Attributes
-    /** The robot being controlled by this AIController */
-    private RobotModel robot;
+    /** The host being controlled by this AIController */
+    private HostModel host;
 
     /** The game board; used for pathfinding */
     // private Board board;
 
-    /** The other robots */
-    private RobotList fleet; // need to know how many are possessed, etc
+    /** The other hosts */
+    private HostList fleet; // need to know how many are possessed, etc
 
     /** The AI's current state in the FSM */
     private FSMState state;
@@ -52,15 +51,15 @@ public class AIController extends InputController {
     private int target;
 
     /**
-     * Creates an AIController for the robot with the given id.
+     * Creates an AIController for the host with the given id.
      *
-     * @param id The unique robot identifier
+     * @param id The unique host identifier
      // * @param board The game board (for pathfinding)
-     // * @param ships The list of ships (for targetting)
+     // * @param ships The list of hosts (for targetting)
      */
-    public AIController(int id, RobotList robots) {
-        this.robot = robots.get(id);
-        this.fleet = robots;
+    public AIController(int id, HostList hosts) {
+        this.host = hosts.get(id);
+        this.fleet = hosts;
 
         state = FSMState.STATIC;
         move  = Move.STOP;
