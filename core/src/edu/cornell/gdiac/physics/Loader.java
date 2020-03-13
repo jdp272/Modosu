@@ -32,6 +32,8 @@ public class Loader {
 
     /** Texture file for robot sprite */
     private static final String ROBOT_FILE = "assets/robot/robot.png";
+    /** Texture file for Host Gauge */
+    private static final String HOST_GAUGE_FILE = "assets/robot/host_gauge.png";
     /** Texture file for spirit sprite */
     private static final String SPIRIT_FILE = "assets/robot/spirit.png";
     /** File to texture for obstacles */
@@ -102,6 +104,8 @@ public class Loader {
     private TextureRegion obstacleTex;
     /** The texture for walls and platforms */
     private TextureRegion earthTile;
+    /** The texture for host gauge */
+    private TextureRegion hostGaugeTex;
     /** The font for giving messages to the player */
     private BitmapFont displayFont;
 
@@ -153,6 +157,8 @@ public class Loader {
         // Load the textures.
         manager.load(ROBOT_FILE, Texture.class);
         assets.add(ROBOT_FILE);
+        manager.load(HOST_GAUGE_FILE, Texture.class);
+        assets.add(HOST_GAUGE_FILE);
         manager.load(SPIRIT_FILE, Texture.class);
         assets.add(SPIRIT_FILE);
         manager.load(OBSTACLE_FILE, Texture.class);
@@ -181,6 +187,7 @@ public class Loader {
         spiritTex = createTexture(SPIRIT_FILE, true);
         obstacleTex = createTexture(OBSTACLE_FILE, true);
         earthTile = createTexture(EARTH_FILE, true);
+        hostGaugeTex = createTexture(HOST_GAUGE_FILE, true);
 
         // Allocate the font
         if (manager.isLoaded(FONT_FILE)) {
@@ -286,7 +293,7 @@ public class Loader {
 
              TODO: Make a robot once RobotModel constructor is ready
              */
-            robots.add(new RobotModel(rData.location.x, rData.location.y, (int)rData.chargeTime), false);
+            //robots.add(new RobotModel(rData.location.x, rData.location.y, (int)rData.chargeTime), false);
         }
 
         // Create the starting "robot" (with no charge capacity)

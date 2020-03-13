@@ -29,6 +29,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.*;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.obstacle.*;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.swing.*;
 
 /**
@@ -79,6 +80,8 @@ public abstract class WorldController implements Screen {
 	private static final String SPIRIT_FILE = "robot/spirit.png";
 	/** File to texture for obstacles */
 	private static String OBSTACLE_FILE = "robot/crate02.png";
+	/** File to texture for Hosts' Gauge */
+	private static String HOST_GAUGE_FILE = "robot/host_gauge.png";
 
 	private static int FONT_SIZE = 64;
 
@@ -96,6 +99,8 @@ public abstract class WorldController implements Screen {
 	protected TextureRegion spiritTex;
 	/** The texture for the obstacle */
 	protected TextureRegion obstacleTex;
+	/** The texture for host gauge */
+	protected TextureRegion hostGaugeTex;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -124,6 +129,8 @@ public abstract class WorldController implements Screen {
 
 		manager.load(ROBOT_FILE, Texture.class);
 		assets.add(ROBOT_FILE);
+		manager.load(HOST_GAUGE_FILE, Texture.class);
+		assets.add(HOST_GAUGE_FILE);
 		manager.load(SPIRIT_FILE, Texture.class);
 		assets.add(SPIRIT_FILE);
 		manager.load(OBSTACLE_FILE, Texture.class);
@@ -161,6 +168,7 @@ public abstract class WorldController implements Screen {
 		robotTex = createTexture(manager, ROBOT_FILE, true);
 		spiritTex = createTexture(manager, SPIRIT_FILE, true);
 		obstacleTex = createTexture(manager, OBSTACLE_FILE, true);
+		hostGaugeTex = createTexture(manager, HOST_GAUGE_FILE, true);
 		
 		// Allocate the font
 		if (manager.isLoaded(FONT_FILE)) {

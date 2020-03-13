@@ -1,7 +1,7 @@
 /*
- * RobotModel.java
+ * Host.java
  *
- * Model class for Robots.
+ * Model class for Hosts.
  *
  * Author: Grant Lee
  * Based on original PhysicsDemo Lab by Don Holden, 2007
@@ -10,6 +10,7 @@
 package edu.cornell.gdiac.physics.robot;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -23,148 +24,171 @@ import edu.cornell.gdiac.util.FilmStrip;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class RobotModel extends BoxObstacle {
+public class Host extends BoxObstacle {
     /**
      * Enumeration representing the states of the charge gauge
      * Gauge should be charging when possessed
      * Gauge should not be charging when not possessed but display the amount of charge
      */
-    public enum ChargeGauge {
-        /** State of being possessed and charging */
+    public enum HostState {
+        /** State of being possessed */
         POSSESSED,
-        /** State of being not possessed and displaying gauge */
-        NORMAL
+        /** State of being not possessed */
+        NORMAL,
+        /** State of Being Dead */
+        DEAD
     }
 
     // Default physics values
-    /** The density of this robot */
+    /** The density of this host */
     private static final float DEFAULT_DENSITY = 1.0f;
-    /** The friction of this robot */
+    /** The friction of this host */
     private static final float DEFAULT_FRICTION = 0.1f;
-    /** The restitution of this robot */
+    /** The restitution of this host */
     private static final float DEFAULT_RESTITUTION = 0.4f;
-    /** The thrust factor to convert player input into robot movement */
+    /** The thrust factor to convert player input into host movement */
     private static final float DEFAULT_THRUST = 7.0f;
     /** The number of frames for the gauge */
     public static final int GAUGE_FRAMES = 4;
 
-    private int charge;
+    private float currentCharge;
+    private float maxCharge;
 
-    /** The force to apply to this robot */
+    /** The force to apply to this host */
     private Vector2 force;
 
     /** The texture filmstrip for charge gauge when possessed */
     FilmStrip chargeGauge;
-    /** The associated sound for the bot when possessed */
-    String possessedBotSound;
-    /** The animation phase for the bot when possessed */
+    /** The associated sound for the Host when possessed */
+    String possessedHostSound;
+    /** The animation phase for the Host when possessed */
     boolean possessedCycle = true;
 
     /** The texture filmstrip for charge gauge when not possessed */
     FilmStrip normalGauge;
     /** The associated sound for charge gauge when not possessed */
-    String normalBotSound;
+    String normalHostSound;
     /** The animation phase for charge gauge when not possessed */
     boolean normCycle = true;
 
-    /** The texture filmstrip for robot's movements */
-    FilmStrip robotMovement;
-    /** The associated sound for robot's movements */
-    String robotSounds;
-    /** The animation phase for robot's movements */
-    boolean botMvtCycle = true;
+    /** The texture filmstrip for host's movements */
+    FilmStrip hostStrip;
+    /** The associated sound for host's movements */
+    String hostSound;
+    /** The animation phase for host's movements */
+    boolean hostMvtCycle = true;
 
-    // Attributes Specific to each Bot
-    /** Boolean Whether Game Object is Bot or Not */
-    private boolean isBot;
-    /** Boolean Whether Bot is Possessed */
+    // Attributes Specific to each Host
+    /** Boolean Whether Host is Possessed */
     private boolean isPossessed;
     /** Float for default possession time */
     private float defaultPossessionTime;
     /** Float for remaining possession time */
     private float remainingPossessionTime;
-    /** Boolean for whether bot is alive */
+    /** Boolean for whether host is alive */
     private boolean isAlive;
+
+    protected TextureRegion hostGaugeTexture;
 
 
     /** Cache object for transforming the force according the object angle */
     public Affine2 affineCache = new Affine2();
 
     /**
-     * Returns the force applied to this robot.
+     * Returns the force applied to this host.
      *
      * This method returns a reference to the force vector, allowing it to be modified.
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
-     * @return the force applied to this robot.
+     * @return the force applied to this host.
      */
     public Vector2 getForce() {
         return force;
     }
 
     /**
-     * Returns the x-component of the force applied to this robot.
+     * Returns the Hosts' Gauge Texture
+     *
+     * This method returns the texture for the gauge
+     *
+     * @return the texture
+     */
+    public TextureRegion getHostGaugeTexture() {
+        return this.hostGaugeTexture;
+    }
+
+    /**
+     * Sets the Hosts' Gauge Texture
+     *
+     * This method sets the texture of the gauge
+     */
+    public void setHostGaugeTexture(TextureRegion hostGaugeTexture) {
+        this.hostGaugeTexture = hostGaugeTexture;
+    }
+
+    /**
+     * Returns the x-component of the force applied to this host.
      *
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
-     * @return the x-component of the force applied to this robot.
+     * @return the x-component of the force applied to this host.
      */
     public float getFX() {
         return force.x;
     }
 
     /**
-     * Sets the x-component of the force applied to this robot.
+     * Sets the x-component of the force applied to this host.
      *
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
-     * @param value the x-component of the force applied to this robot.
+     * @param value the x-component of the force applied to this host.
      */
     public void setFX(float value) {
         force.x = value;
     }
 
     /**
-     * Returns the y-component of the force applied to this robot.
+     * Returns the y-component of the force applied to this host.
      *
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
-     * @return the y-component of the force applied to this robot.
+     * @return the y-component of the force applied to this host.
      */
     public float getFY() {
         return force.y;
     }
 
     /**
-     * Sets the x-component of the force applied to this robot.
+     * Sets the x-component of the force applied to this host.
      *
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
-     * @param value the x-component of the force applied to this robot.
+     * @param value the x-component of the force applied to this host.
      */
     public void setFY(float value) {
         force.y = value;
     }
 
     /**
-     * Returns the amount of thrust that this robot has.
+     * Returns the amount of thrust that this host has.
      *
      * Multiply this value times the horizontal and vertical values in the
      * input controller to get the force.
      *
-     * @return the amount of thrust that this robot has.
+     * @return the amount of thrust that this host has.
      */
     //    public float getthrust() {
     //        return default_thrust;
     //    }
 
     /**
-     * Creates a new robot at the origin.
+     * Creates a new host at the origin.
      *
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
@@ -173,12 +197,16 @@ public class RobotModel extends BoxObstacle {
      * @param width  The object width in physics units
      * @param height The object width in physics units
      */
-    public RobotModel(float width, float height, int c) {
-        this(0, 0, width, height, c);
+    public Host(float width, float height, float currentCharge, float maxCharge) {
+        super(0, 0, width, height);
+        this.currentCharge = currentCharge;
+        this.maxCharge = maxCharge;
+        isPossessed = false;
+        isAlive = true;
     }
 
     /**
-     * Creates a new robot at the given position.
+     * Creates a new host at the given position.
      *
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
@@ -189,21 +217,24 @@ public class RobotModel extends BoxObstacle {
      * @param width  The object width in physics units
      * @param height The object width in physics units
      */
-    public RobotModel(float x, float y, float width, float height, int c) {
+    public HostModel(float x, float y, float width, float height, float currentCharge, float maxCharge) {
         super(x, y, width, height);
         force = new Vector2();
-        charge = c;
+        this.currentCharge = currentCharge;
+        this.maxCharge = maxCharge;
         setDensity(DEFAULT_DENSITY);
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
-        setName("robot");
+        isPossessed = false;
+        isAlive = true;
+        setName("host");
     }
 
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      *
-     * This method overrides the base method to keep your robot from spinning.
+     * This method overrides the base method to keep your host from spinning.
      *
      * @param world Box2D world to store body
      * @return true if object allocation succeeded
@@ -218,61 +249,7 @@ public class RobotModel extends BoxObstacle {
     }
 
     /**
-     * Gets remaining possession time in a bot.
-     *
-     * @return float representing time left in bot
-     */
-    public float getRemainingPossessionTime() {
-        return remainingPossessionTime;
-    }
-
-    /**
-     * Sets remaining possession time in a bot.
-     *
-     * @param remainingPossessionTime the new time left in the bot for possession
-     */
-    public void setRemainingPossessionTime(float remainingPossessionTime) {
-        this.remainingPossessionTime = remainingPossessionTime;
-    }
-
-    /**
-     * Gets the starting possession time of a bot.
-     *
-     * @return float representing default starting time
-     */
-    public float getDefaultPossessionTime() {
-        return defaultPossessionTime;
-    }
-
-    /**
-     * Sets the default starting possession time of a bot.
-     *
-     * @param defaultPossessionTime representing the new default possession time
-     */
-    public void setDefaultPossessionTime(float defaultPossessionTime) {
-        this.defaultPossessionTime = defaultPossessionTime;
-    }
-
-    /**
-     * Gets the boolean value of whether something object is a bot.
-     *
-     * @return boolean representing whether object is a bot
-     */
-    public boolean isBot() {
-        return isBot;
-    }
-
-    /**
-     * Sets the boolean value of whether something is a bot or not.
-     *
-     * @param bot representing whether object is a bot
-     */
-    public void setBot(boolean bot) {
-        isBot = bot;
-    }
-
-    /**
-     * Gets whether the bot is in the state of possession or not.
+     * Gets whether the host is in the state of possession or not.
      *
      * @return boolean representing whether state of possession or not
      */
@@ -281,7 +258,7 @@ public class RobotModel extends BoxObstacle {
     }
 
     /**
-     * Sets whether the bot is in the state of possession or not.
+     * Sets whether the host is in the state of possession or not.
      *
      * @param possessed representing new state of possession
      */
@@ -290,43 +267,60 @@ public class RobotModel extends BoxObstacle {
     }
 
 
-    public void setCharge(int c){
-        charge = c;
+    /**
+     * Sets the current charge of the host.
+     *
+     * @param currentCharge representing the current charge of host.
+     */
+    public void setCurrentCharge(float currentCharge){
+        currentCharge = currentCharge;
     }
 
-    public int getCharge(){
-        return charge;
+    /**
+     * Gets the current charge of the host.
+     *
+     * @return the current charge of the host as a float.
+     */
+    public float getCurrentCharge(){
+        return this.currentCharge;
     }
 
-    public boolean decCharge(){
-        if(charge == 0){
+    /**
+     * Increments the current charge of the host.
+     *
+     * @return whether the bot has blown up or not
+     */
+    public boolean incCurrentCharge(){
+        if (this.currentCharge == this.maxCharge){
             return false;
-        }else{
-            charge--;
+        }
+        else {
+            this.currentCharge++;
+            this.isAlive = false;
             return true;
         }
     }
 
     /**
-     * Gets whether the bot is alive or not.
+     * Gets whether the host is alive or not.
      *
-     * @return boolean representing bot is alive or not
+     * @return boolean representing host is alive or not
      */
     public boolean isAlive() {
         return isAlive;
     }
 
     /**
-     * Sets whether the bot is alive or not.
+     * Sets whether the host is alive or not.
      *
-     * @param alive representing whether bot is alive or not
+     * @param alive representing whether host is alive or not
      */
     public void setAlive(boolean alive) {
         isAlive = alive;
     }
 
     /**
-     * Applies the force to the body of this robot
+     * Applies the force to the body of this host
      *
      * This method should be called after the force attribute is set.
      */
@@ -341,24 +335,24 @@ public class RobotModel extends BoxObstacle {
         body.applyForce(force, body.getLocalCenter(), true);
     }
 
-    // Animation methods
+    // Animation methods in the case we decide to change the animation method
 
     /**
-     * Returns the animation node for the given charge gauge of the robot
+     * Returns the animation node for the given charge gauge of the host
      *
-     * @param gauge enumeration to identify the charge gauge of the robot
-     * @return the animation node for the given charge gauge of the robot
+     * @param gauge enumeration to identify the charge gauge of the host
+     * @return the animation node for the given charge gauge of the host
      */
-    public FilmStrip getChargeGaugeStrip(ChargeGauge gauge) {
-        switch (gauge) {
-            case POSSESSED:
-                return chargeGauge;
-            case NORMAL:
-                return normalGauge;
-        }
-        assert false : "Invalid gauge enumeration";
-        return null;
-    }
+    //    public FilmStrip getChargeGaugeStrip(ChargeGauge gauge) {
+    //        switch (gauge) {
+    //            case POSSESSED:
+    //                return chargeGauge;
+    //            case NORMAL:
+    //                return normalGauge;
+    //        }
+    //        assert false : "Invalid gauge enumeration";
+    //        return null;
+    //    }
 
     /**
      * Sets the animation node for the given charge gauge
@@ -366,22 +360,22 @@ public class RobotModel extends BoxObstacle {
      * @param gauge enumeration to identify the specific gauge
      * @param strip the animation node for the given gauge
      */
-    public void setChargeGauge(ChargeGauge gauge, FilmStrip strip) {
-        switch (gauge) {
-            case POSSESSED:
-                chargeGauge = strip;
-                break;
-            case NORMAL:
-                normalGauge = strip;
-                /* If the gauge is a separate asset from the robot itself */
-                //                if (strip != null) {
-                //                    leftOrigin.set(strip.getRegionWidth() / 2.0f, strip.getRegionHeight() / 2.0f);
-                //                }
-                break;
-            default:
-                assert false : "Invalid gauge enumeration";
-        }
-    }
+    //    public void setChargeGauge(ChargeGauge gauge, FilmStrip strip) {
+    //        switch (gauge) {
+    //            case POSSESSED:
+    //                chargeGauge = strip;
+    //                break;
+    //            case NORMAL:
+    //                normalGauge = strip;
+    //                /* If the gauge is a separate asset from the host itself */
+    //                //                if (strip != null) {
+    //                //                    leftOrigin.set(strip.getRegionWidth() / 2.0f, strip.getRegionHeight() / 2.0f);
+    //                //                }
+    //                break;
+    //            default:
+    //                assert false : "Invalid gauge enumeration";
+    //        }
+    //    }
 
     /**
      * Returns the key for the sound to accompany the given charge gauge
@@ -392,16 +386,16 @@ public class RobotModel extends BoxObstacle {
      * @param gauge enumeration to identify the state of the charge gauge
      * @return the key for the sound to accompany the given charge gauge
      */
-    public String getGaugeSound(ChargeGauge gauge) {
-        switch (gauge) {
-            case POSSESSED:
-                return possessedBotSound;
-            case NORMAL:
-                return normalBotSound;
-        }
-        assert false : "Invalid gauge enumeration";
-        return null;
-    }
+    //    public String getGaugeSound(ChargeGauge gauge) {
+    //        switch (gauge) {
+    //            case POSSESSED:
+    //                return possessedHostSound;
+    //            case NORMAL:
+    //                return normalHostSound;
+    //        }
+    //        assert false : "Invalid gauge enumeration";
+    //        return null;
+    //    }
 
     /**
      * Sets the key for the sound to accompany the given charge gauge
@@ -412,73 +406,73 @@ public class RobotModel extends BoxObstacle {
      * @param gauge enumeration to identify the state of the charge gauge
      * @param key   the key for the sound to accompany the main charge gauge
      */
-    public void setGaugeSound(ChargeGauge gauge, String key) {
-        switch (gauge) {
-            case POSSESSED:
-                possessedBotSound = key;
-                break;
-            case NORMAL:
-                normalBotSound = key;
-                break;
-            default:
-                assert false : "Invalid gauge enumeration";
-        }
-    }
+    //    public void setGaugeSound(ChargeGauge gauge, String key) {
+    //        switch (gauge) {
+    //            case POSSESSED:
+    //                possessedHostSound = key;
+    //                break;
+    //            case NORMAL:
+    //                normalHostSound = key;
+    //                break;
+    //            default:
+    //                assert false : "Invalid gauge enumeration";
+    //        }
+    //    }
 
     /**
      * Animates the given gauge.
      *
      * If the animation is not active, it will reset to the initial animation frame.
      *
-     * @param gauge The reference to the robot's gauge
+     * @param gauge The reference to the host's gauge
      * @param on    Whether the animation is active
      */
-    public void animateGauge(ChargeGauge gauge, boolean on) {
-        FilmStrip node = null;
-        boolean cycle = true;
-
-        switch (gauge) {
-            case POSSESSED:
-                node = chargeGauge;
-                cycle = possessedCycle;
-                break;
-            case NORMAL:
-                node = normalGauge;
-                cycle = normCycle;
-                break;
-            default:
-                assert false : "Invalid gauge enumeration";
-        }
-
-        if (on) {
-            // Turn on the gauge charging
-            if (node.getFrame() == 0 || node.getFrame() == 1) {
-                cycle = true;
-            } else if (node.getFrame() == node.getSize() - 1) {
-                cycle = false;
-            }
-
-            // Increment
-            if (cycle) {
-                node.setFrame(node.getFrame() + 1);
-            } else {
-                node.setFrame(node.getFrame() - 1);
-            }
-        } else {
-            node.setFrame(0);
-        }
-
-        switch (gauge) {
-            case POSSESSED:
-                possessedCycle = cycle;
-                break;
-            case NORMAL:
-                normCycle = cycle;
-                break;
-            default:
-                assert false : "Invalid gauge enumeration";
-        }
-    }
+    //    public void animateGauge(ChargeGauge gauge, boolean on) {
+    //        FilmStrip node = null;
+    //        boolean cycle = true;
+    //
+    //        switch (gauge) {
+    //            case POSSESSED:
+    //                node = chargeGauge;
+    //                cycle = possessedCycle;
+    //                break;
+    //            case NORMAL:
+    //                node = normalGauge;
+    //                cycle = normCycle;
+    //                break;
+    //            default:
+    //                assert false : "Invalid gauge enumeration";
+    //        }
+    //
+    //        if (on) {
+    //            // Turn on the gauge charging
+    //            if (node.getFrame() == 0 || node.getFrame() == 1) {
+    //                cycle = true;
+    //            } else if (node.getFrame() == node.getSize() - 1) {
+    //                cycle = false;
+    //            }
+    //
+    //            // Increment
+    //            if (cycle) {
+    //                node.setFrame(node.getFrame() + 1);
+    //            } else {
+    //                node.setFrame(node.getFrame() - 1);
+    //            }
+    //        } else {
+    //            node.setFrame(0);
+    //        }
+    //
+    //        switch (gauge) {
+    //            case POSSESSED:
+    //                possessedCycle = cycle;
+    //                break;
+    //            case NORMAL:
+    //                normCycle = cycle;
+    //                break;
+    //            default:
+    //                assert false : "Invalid gauge enumeration";
+    //        }
+    //    }
 
     /**
      * Draws the physics object.
@@ -486,16 +480,35 @@ public class RobotModel extends BoxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        super.draw(canvas);  // Ship
-        // Gauge
-        if (chargeGauge != null) {
-            float offsety = chargeGauge.getRegionHeight() - origin.y;
-            canvas.draw(chargeGauge, Color.WHITE, origin.x, offsety, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
-        }
-        if (normalGauge != null) {
+        //Draw the host
+        float chargeProgression = currentCharge / maxCharge;
+        if (this.texture != null && this.hostGaugeTexture != null) {
 
-            /* Again the location of the animation will vary based on its relation to the actual bot */
-            //            canvas.draw(normalGauge, Color.WHITE, leftOrigin.x, leftOrigin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
+            /** Implementation of the Host with Charging Bar that Changes in Size */
+            //            if(this.currentCharge < this.maxCharge) {
+            //                canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
+            //                canvas.draw(hostGaugeTexture, Color.GOLD, origin.x, origin.y , getX() * drawScale.x, (getY() * drawScale.y) - ((hostGaugeTexture.getRegionHeight()/2 * (1-chargeProgression))), getAngle(), 1, chargeProgression);
+            //            }
+            //            else {
+            //                canvas.draw(texture,Color.RED,origin.x,origin.y,getX()*drawScale.x,getY() * drawScale.y ,getAngle(),1,1);
+            //            }
+
+            /** Implementation of the Host with Charging Bar that Changes Colors and Blinks */
+            if (this.currentCharge < this.maxCharge) {
+                canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
+                // Color changes more and more to a red or goal color here
+                Color warningColor = new Color(1, 1 - chargeProgression, 0, 1);
+                if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
+                    // Color of the 3 flashes
+                    warningColor = Color.BLACK;
+                }
+                canvas.draw(hostGaugeTexture, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+
+            } else {
+                canvas.draw(texture, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
+            }
+
+
         }
     }
 }

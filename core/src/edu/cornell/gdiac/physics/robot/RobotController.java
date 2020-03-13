@@ -75,7 +75,7 @@ public class RobotController {
         InputController input = InputController.getInstance();
 
         if (possessed != null) {
-            if (possessed.decCharge()){
+            if (possessed.incCurrentCharge()){
                 possessed.setVX(500000 * input.getHorizontal());
                 possessed.setVY(500000 * input.getVertical());
 

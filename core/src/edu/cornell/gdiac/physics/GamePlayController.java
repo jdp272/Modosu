@@ -55,6 +55,7 @@ public class GamePlayController extends WorldController {
 
 	/** Reference to the rocket texture */
 	private static final String ROCK_TEXTURE = "robot/robot.png";
+	private static final String HOST_GAUGE_TEXTURE = "robot/host_gauge.png";
 
 	private static final String SPIRIT_TEXTURE = "robot/spirit.png";
 	/** Texture file for mouse crosshairs */
@@ -166,10 +167,12 @@ public class GamePlayController extends WorldController {
 		box.setTexture(obstacleTex);
 		BoxObstacle[] obs = {box};
 		RobotList robs = new RobotList();
-		RobotModel rob = new RobotModel(30,30,10,10, 100);
+		RobotModel rob = new RobotModel(300,30,10,10, 0,1000);
 		rob.setTexture(robotTex);
-		RobotModel rob2 = new RobotModel(100,100,10,10, 10000);
+		rob.setBotGaugeTexture(hostGaugeTex);
+		RobotModel rob2 = new RobotModel(100,100,10,10, 0, 1000);
 		rob2.setTexture(robotTex);
+		rob2.setBotGaugeTexture(hostGaugeTex);
 		robs.add(rob,true);
 		robs.add(rob2,false);
 		SpiritModel spir = new SpiritModel(70,70,10,10,4);
