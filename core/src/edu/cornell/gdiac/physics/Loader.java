@@ -32,7 +32,7 @@ public class Loader {
 
     /** Texture file for robot sprite */
     private static final String ROBOT_FILE = "assets/robot/robot.png";
-    /** Texture file for Host Gauge */
+    /** Texture file for HostModel Gauge */
     private static final String HOST_GAUGE_FILE = "assets/robot/host_gauge.png";
     /** Texture file for spirit sprite */
     private static final String SPIRIT_FILE = "assets/robot/spirit.png";

@@ -2,14 +2,10 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.robot.HostModel;
 import edu.cornell.gdiac.physics.robot.RobotList;
-import edu.cornell.gdiac.physics.robot.RobotModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
-import edu.cornell.gdiac.util.SoundController;
-
-import java.util.ArrayList;
 
 public class CollisionController implements ContactListener {
 
@@ -20,7 +16,7 @@ public class CollisionController implements ContactListener {
     private boolean possessed;
 
     /** What robot was possessed this frame, null if no possession occurred */
-    private RobotModel robotPossessed;
+    private HostModel robotPossessed;
 
     // Physics objects for the game
     /** Reference to the robots */
@@ -71,7 +67,7 @@ public class CollisionController implements ContactListener {
         Body body2 = fix2.getBody();
 
         // Collision handling to determine if the spirit collides with any robots
-        for (RobotModel r: robotList){
+        for (HostModel r: robotList){
             if ((body1.getUserData() == spirit && body2.getUserData() == r) ||
                     (body1.getUserData() == r && body2.getUserData() == spirit)) {
                 possessed = true;

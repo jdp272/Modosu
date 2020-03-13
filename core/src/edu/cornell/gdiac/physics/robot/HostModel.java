@@ -1,5 +1,5 @@
 /*
- * Host.java
+ * HostModel.java
  *
  * Model class for Hosts.
  *
@@ -24,7 +24,7 @@ import edu.cornell.gdiac.util.FilmStrip;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class Host extends BoxObstacle {
+public class HostModel extends BoxObstacle {
     /**
      * Enumeration representing the states of the charge gauge
      * Gauge should be charging when possessed
@@ -59,9 +59,9 @@ public class Host extends BoxObstacle {
 
     /** The texture filmstrip for charge gauge when possessed */
     FilmStrip chargeGauge;
-    /** The associated sound for the Host when possessed */
+    /** The associated sound for the HostModel when possessed */
     String possessedHostSound;
-    /** The animation phase for the Host when possessed */
+    /** The animation phase for the HostModel when possessed */
     boolean possessedCycle = true;
 
     /** The texture filmstrip for charge gauge when not possessed */
@@ -78,8 +78,8 @@ public class Host extends BoxObstacle {
     /** The animation phase for host's movements */
     boolean hostMvtCycle = true;
 
-    // Attributes Specific to each Host
-    /** Boolean Whether Host is Possessed */
+    // Attributes Specific to each HostModel
+    /** Boolean Whether HostModel is Possessed */
     private boolean isPossessed;
     /** Float for default possession time */
     private float defaultPossessionTime;
@@ -197,7 +197,7 @@ public class Host extends BoxObstacle {
      * @param width  The object width in physics units
      * @param height The object width in physics units
      */
-    public Host(float width, float height, float currentCharge, float maxCharge) {
+    public HostModel(float width, float height, float currentCharge, float maxCharge) {
         super(0, 0, width, height);
         this.currentCharge = currentCharge;
         this.maxCharge = maxCharge;
@@ -484,7 +484,7 @@ public class Host extends BoxObstacle {
         float chargeProgression = currentCharge / maxCharge;
         if (this.texture != null && this.hostGaugeTexture != null) {
 
-            /** Implementation of the Host with Charging Bar that Changes in Size */
+            /** Implementation of the HostModel with Charging Bar that Changes in Size */
             //            if(this.currentCharge < this.maxCharge) {
             //                canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
             //                canvas.draw(hostGaugeTexture, Color.GOLD, origin.x, origin.y , getX() * drawScale.x, (getY() * drawScale.y) - ((hostGaugeTexture.getRegionHeight()/2 * (1-chargeProgression))), getAngle(), 1, chargeProgression);
@@ -493,7 +493,7 @@ public class Host extends BoxObstacle {
             //                canvas.draw(texture,Color.RED,origin.x,origin.y,getX()*drawScale.x,getY() * drawScale.y ,getAngle(),1,1);
             //            }
 
-            /** Implementation of the Host with Charging Bar that Changes Colors and Blinks */
+            /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
             if (this.currentCharge < this.maxCharge) {
                 canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
                 // Color changes more and more to a red or goal color here
