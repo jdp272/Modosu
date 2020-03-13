@@ -154,6 +154,7 @@ public class GamePlayController extends WorldController {
 		collisionController = new CollisionController();
 		lvl = 0;
 		world.setContactListener(collisionController);
+
 	}
 
 
@@ -263,6 +264,10 @@ public class GamePlayController extends WorldController {
 				spirit.decBounces();
 			}
 		}
+
+		// Handle camera panning
+		canvas.setCamTarget(spirit.getPosition());
+		canvas.updateCamera();
 
 	    // If we use sound, we must remember this.
 	    SoundController.getInstance().update();

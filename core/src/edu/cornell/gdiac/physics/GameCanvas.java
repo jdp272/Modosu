@@ -81,6 +81,12 @@ public class GameCanvas {
 	/** Value to cache window height (if we are currently full screen) */
 	int height;
 
+	// Camera Variables
+	/** Value to set the speed that the camera pans at */
+	private float panSpeed = 0.25f;
+	/** The place that the camera wants to pan to */
+	private Vector2 camTarget;
+
 	// CACHE OBJECTS
 	/** Affine cache for current sprite to draw */
 	private Affine2 local;
@@ -130,6 +136,20 @@ public class GameCanvas {
     	vertex = null;
     	holder = null;
     }
+
+	/**
+	 * Sets the target for the camera
+	 */
+	public void setCamTarget(Vector2 target) {
+		camTarget = target;
+	}
+
+	public void updateCamera() {
+		// TODO add smoothing
+	    // This line results in the camera following directly on the player, will add smoothing later
+		camera.translate(camTarget.x - camera.position.x, camTarget.y - camera.position.y);
+		camera.update();
+	}
 
 	/**
 	 * Returns the width of this canvas
