@@ -61,8 +61,6 @@ public class CollisionController implements ContactListener {
     public void beginContact(Contact contact) {
         // Reset all the fields to reflect this current frame
         bounced = false;
-        possessed = false;
-        robotPossessed = null;
 
         Fixture fix1 = contact.getFixtureA();
         Fixture fix2 = contact.getFixtureB();
@@ -72,10 +70,11 @@ public class CollisionController implements ContactListener {
 
         // Collision handling to determine if the spirit collides with any robots
         for (RobotModel r: robotList){
-            if ((body1.getUserData() == spirit && body2.getUserData() == r) ||
-                    (body1.getUserData() == r && body2.getUserData() == spirit)) {
-                possessed = true;
-                robotPossessed = r;
+            if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
+                    (body1.getUserData() == r && body2.getUserData() == spirit))) {
+                        possessed = true;
+                        robotPossessed = r;
+                        spirit.setHasLaunched(false);
             }
         }
 
@@ -89,6 +88,7 @@ public class CollisionController implements ContactListener {
             // do you check/update here the number of bounces left
             // setfailed == true if reached the max number of bounces
         }
+
     }
 
     /**
@@ -120,7 +120,21 @@ public class CollisionController implements ContactListener {
      * @param  oldManifold  	The collision manifold before contact
      */
     // Will need to modify this when we include sound effects upon wall and possession collisions
-    public void preSolve(Contact contact, Manifold oldManifold) { }
+    public void preSolve(Contact contact, Manifold oldManifold) {
+        Fixture fix1 = contact.getFixtureA();
+        Fixture fix2 = contact.getFixtureB();
+
+        Body body1 = fix1.getBody();
+        Body body2 = fix2.getBody();
+
+        // Turn off collision handling if spirit already in the golem
+        for (RobotModel r: robotList){
+            if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
+                    (body1.getUserData() == r && body2.getUserData() == spirit)) && possessed) {
+                        contact.setEnabled(false);
+            }
+        }
+    }
 
     // Getters
 
