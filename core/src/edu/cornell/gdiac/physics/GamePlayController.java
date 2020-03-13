@@ -180,6 +180,7 @@ public class GamePlayController extends WorldController {
 		Vector2 gravity = new Vector2(world.getGravity());
 		BoxObstacle[] obs = new BoxObstacle[BOXES.length/2];
 
+
 		float dwidth  = obstacleTex.getRegionWidth();
 		float dheight = obstacleTex.getRegionHeight();
 
@@ -203,12 +204,17 @@ public class GamePlayController extends WorldController {
 			robs.add(rob,false);
 		}
 
+		SPIRIT_POS.x = 500;
+		SPIRIT_POS.y = 100;
+
 		SpiritModel spark = new SpiritModel(SPIRIT_POS.x,SPIRIT_POS.y,spiritTex.getRegionWidth(),spiritTex.getRegionHeight(),10);
 		spark.setTexture(spiritTex);
 
 		level = new Level(null, obs, robs, spark);
 		possessed = robs.get(0);
 		spirit = spark;
+
+
 		//level = loader.reset(lvl);
 		//parse level
 		robotController = new RobotController(level.robots);
@@ -257,11 +263,11 @@ public class GamePlayController extends WorldController {
 	public void update(float delta) {
 		//calls update on robotcontroller
 
-		robotController.update(delta, possessed, spirit);
-
 		if (collisionController.isPossessed()) {
 			possessed = collisionController.getRobotPossessed();
 		} else { possessed = null; }
+
+		robotController.update(delta, possessed, spirit);
 
 		if (collisionController.isBounced()) {
 			if (spirit.bounces == 0) {

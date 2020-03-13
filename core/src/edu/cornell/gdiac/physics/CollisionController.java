@@ -61,8 +61,6 @@ public class CollisionController implements ContactListener {
     public void beginContact(Contact contact) {
         // Reset all the fields to reflect this current frame
         bounced = false;
-        possessed = false;
-        robotPossessed = null;
 
         Fixture fix1 = contact.getFixtureA();
         Fixture fix2 = contact.getFixtureB();
@@ -90,6 +88,7 @@ public class CollisionController implements ContactListener {
             // do you check/update here the number of bounces left
             // setfailed == true if reached the max number of bounces
         }
+
     }
 
     /**
