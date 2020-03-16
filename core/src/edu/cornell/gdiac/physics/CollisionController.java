@@ -80,9 +80,9 @@ public class CollisionController implements ContactListener {
         Obstacle bd1 = (Obstacle) body1.getUserData();
         Obstacle bd2 = (Obstacle) body2.getUserData();
 
-        if(bd1.getName() == "host" && bd2.getName() == "host"){
-            System.out.println("yup, right here");
-        }
+//        if(bd1.getName() == "host" && bd2.getName() == "host"){
+//
+//        }
 
         if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
                 bd1.getName() == "wall" && body2.getUserData() == spirit) {
