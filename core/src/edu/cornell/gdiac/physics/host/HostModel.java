@@ -73,6 +73,14 @@ public class HostModel extends BoxObstacle {
     private float maxCharge;
     /** The force to apply to this host */
     private Vector2 force;
+    /** Instructions for robot when unpossessed*/
+    private Vector2[] instructions;
+    /** Current instruction index */
+    private int instructionNumber;
+    /** Whether or not the robot has been possessed yet*/
+    private boolean hasBeenPossessed;
+    /** Whether robot is moving forward through instructions */
+    private boolean forwardI;
 
 
 
@@ -190,8 +198,16 @@ public class HostModel extends BoxObstacle {
         super(0, 0, width, height);
         this.currentCharge = currentCharge;
         this.maxCharge = maxCharge;
+        this.instructions = null;
+        this.instructionNumber = 0;
+        this.hasBeenPossessed = false;
+        setDensity(DEFAULT_DENSITY);
+        setDensity(DEFAULT_DENSITY);
+        setFriction(DEFAULT_FRICTION);
+        setRestitution(DEFAULT_RESTITUTION);
         isPossessed = false;
         isAlive = true;
+        setName("host");
     }
 
     /**
@@ -211,6 +227,26 @@ public class HostModel extends BoxObstacle {
         force = new Vector2();
         this.currentCharge = currentCharge;
         this.maxCharge = maxCharge;
+        this.instructions = null;
+        this.instructionNumber = 0;
+        this.hasBeenPossessed = false;
+        setDensity(DEFAULT_DENSITY);
+        setDensity(DEFAULT_DENSITY);
+        setFriction(DEFAULT_FRICTION);
+        setRestitution(DEFAULT_RESTITUTION);
+        isPossessed = false;
+        isAlive = true;
+        setName("host");
+    }
+
+    public HostModel(float x, float y, float width, float height, float currentCharge, float maxCharge, Vector2[] ins) {
+        super(x, y, width, height);
+        force = new Vector2();
+        this.currentCharge = currentCharge;
+        this.maxCharge = maxCharge;
+        this.instructions = ins;
+        this.instructionNumber = 0;
+        this.hasBeenPossessed = false;
         setDensity(DEFAULT_DENSITY);
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
@@ -297,6 +333,40 @@ public class HostModel extends BoxObstacle {
      */
     public boolean isAlive() {
         return isAlive;
+    }
+
+    public Vector2 getInstruction(){
+        if(instructions == null){
+            return getPosition();
+        }
+        return instructions[instructionNumber];
+    }
+
+    public boolean beenPossessed(){
+        return hasBeenPossessed;
+    }
+
+    public void setBeenPossessed(boolean b){
+        hasBeenPossessed = b;
+    }
+
+    public void nextInstruction() {
+        if(instructions == null){
+            return;
+        }
+        if(forwardI && instructionNumber + 1 >= instructions.length){
+            forwardI = false;
+            instructionNumber--;
+        }
+        else if(!forwardI && instructionNumber - 1 < 0){
+            forwardI = true;
+            instructionNumber++;
+        }
+        else if(forwardI){
+            instructionNumber++;
+        }else{
+            instructionNumber--;
+        }
     }
 
     /**

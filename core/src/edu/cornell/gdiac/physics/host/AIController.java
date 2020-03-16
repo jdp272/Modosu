@@ -58,16 +58,7 @@ public class AIController extends InputController {
      // * @param ships The list of hosts (for targetting)
      */
     public AIController(int id, HostList hosts) {
-        this.host = hosts.get(id);
-        this.fleet = hosts;
 
-        state = FSMState.STATIC;
-        move  = Move.STOP;
-        ticks = 0;
-
-        // Select an initial target
-        target = 0;
-        selectTarget();
     }
 
     public void selectTarget(){

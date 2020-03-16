@@ -111,6 +111,27 @@ public class HostController {
             }
         }
 
+        //update other robots
+        for(HostModel r: hosts){
+            Vector2 n = r.getInstruction();
+            Vector2 curr = r.getPosition();
+            if(Math.abs(curr.x - n.x) < 5 && Math.abs(curr.y - n.y) < 5 && !r.beenPossessed() && r != possessed){
+                //go to next instruction
+                r.nextInstruction();
+                n = r.getInstruction();
+                float l = (float)Math.sqrt(Math.pow(n.x-curr.x,2) + Math.pow(n.y-curr.y,2) );
+                if(l != 0){
+                    System.out.println(curr + " " + n);
+                }
+                r.setVX((n.x - curr.x) * GOLEM_MOVEMENT_SPEED);
+                r.setVY((n.y - curr.y) * GOLEM_MOVEMENT_SPEED);
+
+            }
+            else{
+                //keep going i guess, don't really have to change anything
+            }
+        }
+
         // Update Animations
 
         // If we use sound, we must remember this.

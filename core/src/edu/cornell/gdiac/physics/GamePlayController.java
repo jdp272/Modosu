@@ -192,6 +192,11 @@ public class GamePlayController extends WorldController {
 			host.setHostGaugeTexture(hostGaugeTex);
 			hosts.add(host,false);
 		}
+		Vector2[] ins = {new Vector2(800,400),new Vector2(500,400)};
+		host = new HostModel(800, 400, dwidth, dheight, 0, 1000, ins);
+		host.setTexture(hostTex);
+		host.setHostGaugeTexture(hostGaugeTex);
+		hosts.add(host,false);
 
 		SPIRIT_POS.x = 500;
 		SPIRIT_POS.y = 100;
