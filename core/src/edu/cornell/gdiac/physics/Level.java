@@ -2,8 +2,8 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.robot.RobotList;
-import edu.cornell.gdiac.physics.robot.RobotModel;
+import edu.cornell.gdiac.physics.host.HostList;
+import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
 /**
@@ -18,24 +18,25 @@ public class Level {
      *                      represents an "island" in the board. That island is
      *                      represented as an array of coordinates
      * @param obstacles An array of the obstacles in the level
-     * @param robots An array of the robots in the level
-     * @param start The "robot" where the player starts
+     * @param hosts An array of the hosts in the level
+     * @param start The "host" where the player starts
      */
     public Level(
             Vector2[][] regions,
             BoxObstacle[] obstacles,
-            RobotList robots,
+            HostList hosts,
             SpiritModel start
     ) {
        this.regions = regions;
        this.obstacles = obstacles;
-       this.robots = robots;
+       this.hosts = hosts;
        this.start = start;
     }
 
     /**
      * An array of regions on the board. Each region is an island within which
-     * robots can be located. Outside each counts as out of bounds.
+     * hosts can be located. Outside each counts as out of bounds.
+     *
      *
      * Each region is represented as a list of points being the polygon
      * borders of the region.
@@ -48,9 +49,9 @@ public class Level {
     /** An array of the obstacles in the level */
     public BoxObstacle[] obstacles;
 
-    /** An array of the robots in the level */
-    public RobotList robots;
+    /** An array of the hosts in the level */
+    public HostList hosts;
 
-    /** The "robot" where the player starts */
+    /** The "host" where the player starts */
     public SpiritModel start;
 }

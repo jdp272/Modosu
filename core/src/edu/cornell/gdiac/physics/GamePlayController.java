@@ -11,30 +11,17 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import edu.cornell.gdiac.physics.InputController;
-import edu.cornell.gdiac.physics.WorldController;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.physics.obstacle.ObstacleSelector;
-import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
-import edu.cornell.gdiac.physics.robot.RobotController;
-import edu.cornell.gdiac.physics.robot.RobotList;
-import edu.cornell.gdiac.physics.robot.RobotModel;
+import edu.cornell.gdiac.physics.host.HostList;
+import edu.cornell.gdiac.physics.host.HostController;
+import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.FilmStrip;
-import edu.cornell.gdiac.util.PooledList;
-import edu.cornell.gdiac.util.RandomController;
 import edu.cornell.gdiac.util.SoundController;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Gameplay specific controller for the rocket lander game.
@@ -47,31 +34,32 @@ import java.util.Arrays;
  */
 public class GamePlayController extends WorldController {
 
-	private RobotController robotController;
+	private HostController hostController;
 
 	private CollisionController collisionController;
 
 	private Loader loader;
 
 	/** Reference to the rocket texture */
-	private static final String ROCK_TEXTURE = "robot/robot.png";
+	private static final String ROCK_TEXTURE = "host/host.png";
+	private static final String HOST_GAUGE_TEXTURE = "host/host_gauge.png";
 
-	private static final String SPIRIT_TEXTURE = "robot/spirit.png";
+	private static final String SPIRIT_TEXTURE = "host/spirit.png";
 	/** Texture file for mouse crosshairs */
 	private static final String CROSS_FILE = "ragdoll/crosshair.png";
 	/** Reference to the crate image assets */
-	private static final String CRATE_PREF = "robot/crate0";
+	private static final String CRATE_PREF = "host/crate0";
 	/** How many crate assets we have */
 	private static final int MAX_CRATES = 2;
 
 	/** The asset for the collision sound */
-	private static final String  COLLISION_SOUND = "robot/bump.mp3";
+	private static final String  COLLISION_SOUND = "host/bump.mp3";
 	/** The asset for the main afterburner sound */
-	private static final String  MAIN_FIRE_SOUND = "robot/afterburner.mp3";
+	private static final String  MAIN_FIRE_SOUND = "host/afterburner.mp3";
 	/** The asset for the right afterburner sound */
-	private static final String  RGHT_FIRE_SOUND = "robot/sideburner-right.mp3";
+	private static final String  RGHT_FIRE_SOUND = "host/sideburner-right.mp3";
 	/** The asset for the left afterburner sound */
-	private static final String  LEFT_FIRE_SOUND = "robot/sideburner-left.mp3";
+	private static final String  LEFT_FIRE_SOUND = "host/sideburner-left.mp3";
 	
 	/** Texture assets for the rocket */
 	private TextureRegion rocketTexture;
@@ -96,10 +84,23 @@ public class GamePlayController extends WorldController {
 
 	private int lvl;
 
-	protected RobotModel possessed;
+	protected HostModel possessed;
 
 	protected SpiritModel spirit;
-	
+
+
+	// Other game objects
+	/** The initial rocket position */
+	private static Vector2 SPIRIT_POS = new Vector2(500, 100);
+
+	// The positions of the crate pyramid
+	private static final float[] HOSTS = { SPIRIT_POS.x,SPIRIT_POS.y, 200.0f, 400.0f, 800.0f, 100.0f};
+
+	// The positions of the walls
+	private static final float[] BOXES = { 350.0f, 32.0f, 350.0f, 96.0f, 350.0f, 160.f, 350.f, 224.0f, // LEFT
+											32.0f, 500.0f, 96.0f, 500.0f, 160.0f, 500.0f, 224.0f, 500.0f, 288.0f, 500.0f, 352.0f, 500.0f, // TOP
+											650.0f, 32.0f, 650.0f, 96.0f, 650.0f, 160.f, 650.f, 224.0f}; // RIGHT
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -153,37 +154,68 @@ public class GamePlayController extends WorldController {
 		collisionController = new CollisionController();
 		lvl = 0;
 		world.setContactListener(collisionController);
+
 	}
-	
+
+
+
 	/**
 	 * Resets the status of the game so that we can play again.
 	 *
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-		Vector2 gravity = new Vector2(0,0);
-		BoxObstacle box = new BoxObstacle(50,50,10,10);
-		box.setTexture(obstacleTex);
-		BoxObstacle[] obs = {box};
-		RobotList robs = new RobotList();
-		RobotModel rob = new RobotModel(30,30,10,10, 100);
-		rob.setTexture(robotTex);
-		RobotModel rob2 = new RobotModel(100,100,10,10, 10000);
-		rob2.setTexture(robotTex);
-		robs.add(rob,true);
-		robs.add(rob2,false);
-		SpiritModel spir = new SpiritModel(70,70,10,10,4);
-		spir.setTexture(spiritTex);
-		level = new Level(null, obs, robs, spir);
-		possessed = rob;
-		spirit = spir;
+		Vector2 gravity = new Vector2(world.getGravity());
+		BoxObstacle[] obs = new BoxObstacle[BOXES.length/2];
+
+
+		float dwidth  = obstacleTex.getRegionWidth();
+		float dheight = obstacleTex.getRegionHeight();
+
+		BoxObstacle box;
+		for (int i = 0; i < BOXES.length; i+=2) {
+			box = new BoxObstacle(BOXES[i],BOXES[i+1], dwidth, dheight);
+			box.setTexture(obstacleTex);
+			box.setBodyType(BodyDef.BodyType.StaticBody);
+			obs[i/2] = box;
+		}
+
+		HostList hosts = new HostList();
+
+		dwidth  = hostTex.getRegionWidth();
+		dheight = hostTex.getRegionHeight();
+
+		HostModel host;
+		for (int i = 0; i < HOSTS.length; i+=2) {
+			host = new HostModel(HOSTS[i],HOSTS[i+1], dwidth, dheight, 0, 1000);
+			host.setTexture(hostTex);
+			host.setHostGaugeTexture(hostGaugeTex);
+			hosts.add(host,false);
+		}
+		Vector2[] ins = {new Vector2(800,400),new Vector2(500,400)};
+		host = new HostModel(800, 400, dwidth, dheight, 0, 1000, ins);
+		host.setTexture(hostTex);
+		host.setHostGaugeTexture(hostGaugeTex);
+		hosts.add(host,false);
+
+		SPIRIT_POS.x = 500;
+		SPIRIT_POS.y = 100;
+
+		SpiritModel spark = new SpiritModel(SPIRIT_POS.x,SPIRIT_POS.y,spiritTex.getRegionWidth(),spiritTex.getRegionHeight(),10);
+		spark.setTexture(spiritTex);
+
+		level = new Level(null, obs, hosts, spark);
+		possessed = hosts.get(0);
+		spirit = spark;
+
 		//level = loader.reset(lvl);
 		//parse level
-		robotController = new RobotController(level.robots);
+		hostController = new HostController(level.hosts);
 
-		for(Obstacle obj : objects) {
-			obj.deactivatePhysics(world);
+		for(Obstacle o : objects) {
+			o.deactivatePhysics(world);
 		}
+
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
@@ -202,11 +234,11 @@ public class GamePlayController extends WorldController {
 		for(Obstacle obj : level.obstacles) {
 			addQueue.add(obj);
 		}
-		for(Obstacle obj : level.robots) {
+		for(Obstacle obj : level.hosts) {
 			addQueue.add(obj);
 		}
 		addQueue.add(level.start);
-		collisionController.addRobots(level.robots);
+		collisionController.addHosts(level.hosts);
 		collisionController.addSpirit(level.start);
 	}
 
@@ -222,20 +254,25 @@ public class GamePlayController extends WorldController {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void update(float delta) {
-		//calls update on robotcontroller
-		robotController.update(delta, possessed, spirit);
+		//calls update on hostcontroller
 
-		if(collisionController.isPossessed()) {
-			possessed = collisionController.getRobotPossessed();
-		}
+		if (collisionController.isPossessed()) {
+			possessed = collisionController.getHostPossessed();
+		} else { possessed = null; }
 
-		if(collisionController.isBounced()) {
-			if(spirit.bounces == 0) {
+		hostController.update(delta, possessed, spirit);
+
+		if (collisionController.isBounced()) {
+			if (spirit.bounces == 0) {
 				spirit.setPosition(-10,-10);
-			}else {
+			} else {
 				spirit.decBounces();
 			}
 		}
+
+		// Handle camera panning
+		canvas.setCamTarget(spirit.getPosition());
+		canvas.updateCamera();
 
 	    // If we use sound, we must remember this.
 	    SoundController.getInstance().update();

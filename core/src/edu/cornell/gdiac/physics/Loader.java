@@ -1,8 +1,5 @@
 package edu.cornell.gdiac.physics;
 
-import java.util.ArrayList;
-
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -17,11 +14,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.files.FileHandle;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.physics.robot.RobotList;
-import edu.cornell.gdiac.physics.robot.RobotModel;
+import edu.cornell.gdiac.physics.host.HostList;
+import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
-import edu.cornell.gdiac.util.PooledList;
 
 /**
  * A static class that can be used for loading a level from a json file
@@ -30,10 +25,12 @@ public class Loader {
 
     // Static fields
 
-    /** Texture file for robot sprite */
-    private static final String ROBOT_FILE = "assets/robot/robot.png";
+    /** Texture file for host sprite */
+    private static final String HOST_FILE = "assets/host/host.png";
+    /** Texture file for HostModel Gauge */
+    private static final String HOST_GAUGE_FILE = "assets/host/host_gauge.png";
     /** Texture file for spirit sprite */
-    private static final String SPIRIT_FILE = "assets/robot/spirit.png";
+    private static final String SPIRIT_FILE = "assets/host/spirit.png";
     /** File to texture for obstacles */
     private static String OBSTACLE_FILE = "shared/crate02.png";
     /** File to texture for walls and platforms */
@@ -51,8 +48,8 @@ public class Loader {
         // public float rotation; // TODO: add rotation
     }
 
-    /** A struct that stores data from a robot when read from the json */
-    private class RobotData {
+    /** A struct that stores data from a host when read from the json */
+    private class HostData {
         public Vector2 location;
         public float chargeTime; // Maximum amount of charge that can be stored
     }
@@ -61,7 +58,7 @@ public class Loader {
     private class LevelData {
         /**
          * An ArrayList of regions on the board. Each region is an island within
-         * which robots can be located. Outside each counts as out of bounds.
+         * which hosts can be located. Outside each counts as out of bounds.
          *
          * Each region is represented as a list of points being the polygon
          * borders of the region.
@@ -72,7 +69,7 @@ public class Loader {
         public Vector2[][] regions;
 
         public ObstacleData[] obstacleData;
-        public RobotData[] robotData;
+        public HostData[] hostData;
 
         public Vector2 startLocation;
     }
@@ -94,14 +91,16 @@ public class Loader {
     private AssetState assetState = AssetState.EMPTY; // TODO: remove this
     /** Track all loaded assets (for unloading purposes) */
     private Array<String> assets;
-    /** The texture for robots */
-    private TextureRegion robotTex;
+    /** The texture for hosts */
+    private TextureRegion hostTex;
     /** The texture for the spirit */
     private TextureRegion spiritTex;
     /** The texture for the obstacle */
     private TextureRegion obstacleTex;
     /** The texture for walls and platforms */
     private TextureRegion earthTile;
+    /** The texture for host gauge */
+    private TextureRegion hostGaugeTex;
     /** The font for giving messages to the player */
     private BitmapFont displayFont;
 
@@ -129,8 +128,8 @@ public class Loader {
 
     // Public member functions
 
-    /** @return The texture for robots */
-    public TextureRegion getRobotTex() { return robotTex; }
+    /** @return The texture for hosts */
+    public TextureRegion getHostTex() { return hostTex; }
     /** @return The texture for the spirit */
     private TextureRegion getSpiritTex() { return spiritTex; }
     /** @return The texture for the obstacle */
@@ -151,8 +150,10 @@ public class Loader {
         assetState = AssetState.LOADING;
 
         // Load the textures.
-        manager.load(ROBOT_FILE, Texture.class);
-        assets.add(ROBOT_FILE);
+        manager.load(HOST_FILE, Texture.class);
+        assets.add(HOST_FILE);
+        manager.load(HOST_GAUGE_FILE, Texture.class);
+        assets.add(HOST_GAUGE_FILE);
         manager.load(SPIRIT_FILE, Texture.class);
         assets.add(SPIRIT_FILE);
         manager.load(OBSTACLE_FILE, Texture.class);
@@ -177,10 +178,11 @@ public class Loader {
         }
 
         // Allocate the textures
-        robotTex = createTexture(ROBOT_FILE, true);
+        hostTex = createTexture(HOST_FILE, true);
         spiritTex = createTexture(SPIRIT_FILE, true);
         obstacleTex = createTexture(OBSTACLE_FILE, true);
         earthTile = createTexture(EARTH_FILE, true);
+        hostGaugeTex = createTexture(HOST_GAUGE_FILE, true);
 
         // Allocate the font
         if (manager.isLoaded(FONT_FILE)) {
@@ -230,13 +232,13 @@ public class Loader {
             levelData.obstacleData[i] = oData;
         }
 
-        // Store the robot data
-        levelData.robotData = new RobotData[level.robots.size()];
-        for(int i = 0; i < level.robots.size(); i++) {
-            RobotData rData = new RobotData();
-            rData.location = new Vector2(level.robots.get(i).getX(), level.robots.get(i).getY());
-            rData.chargeTime = level.robots.get(i).getDefaultPossessionTime();
-            levelData.robotData[i] = rData;
+        // Store the host data
+        levelData.hostData = new HostData[level.hosts.size()];
+        for(int i = 0; i < level.hosts.size(); i++) {
+            HostData rData = new HostData();
+            rData.location = new Vector2(level.hosts.get(i).getX(), level.hosts.get(i).getY());
+            rData.chargeTime = level.hosts.get(i).getMaxCharge();
+            levelData.hostData[i] = rData;
         }
 
         // Store the starting information
@@ -269,39 +271,39 @@ public class Loader {
             obstacles[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.origin.y);
         }
 
-        // Create the robots
-        RobotList robots = new RobotList();
-        RobotData rData;
+        // Create the hosts
+        HostList hosts = new HostList();
+        HostData rData;
 
-        for (int i = 0; i < robots.size(); i++) {
-            rData = levelData.robotData[i];
+        for (int i = 0; i < hosts.size(); i++) {
+            rData = levelData.hostData[i];
 
             /* NOTES: I'm assuming that eventually we'll have a simple creator
-             for robots, like a factory method or something, which we only need
+             for hosts, like a factory method or something, which we only need
              to give coordinates and the charge time. At that point, this can be
              easily updated with that.
 
              This also assumes that a zero charge time means it has no time
              limit
 
-             TODO: Make a robot once RobotModel constructor is ready
+             TODO: Make a host once HostModel constructor is ready
              */
-            robots.add(new RobotModel(rData.location.x, rData.location.y, (int)rData.chargeTime), false);
+            //hosts.add(new HostModel(rData.location.x, rData.location.y, (int)rData.chargeTime), false);
         }
 
-        // Create the starting "robot" (with no charge capacity)
+        // Create the starting "host" (with no charge capacity)
         SpiritModel start = new SpiritModel(levelData.startLocation.x, levelData.startLocation.y, 0);
         // TODO: ensure implementation of 0 charge time means no cap
 
-        return new Level(regions, obstacles, robots, start);
+        return new Level(regions, obstacles, hosts, start);
     }
 
     public Level reset(int level){
         return null;
 //        BoxObstacle[] obs = {new BoxObstacle(50,50,10,10)};
-//        RobotList robs = new RobotList();
-//        RobotModel rob = new RobotModel(30,30,10,10, 100);
-//        //rob.setTexture(robotTex);
+//        HostList robs = new HostList();
+//        HostModel rob = new HostModel(30,30,10,10, 100);
+//        //rob.setTexture(hostTex);
 //        robs.add(rob,true);
 //        SpiritModel spir = new SpiritModel(70,70,10,10,4);
 //        Level lvl = new Level(null, obs, robs, spir);
@@ -336,7 +338,7 @@ public class Loader {
         return null;
     }
 
-//    private int nRobots;
+//    private int nHosts;
 //
 //    /** reads json data, creates objects and returns them to
 //     * the gameplay controller
@@ -352,7 +354,7 @@ public class Loader {
 //
 //    public PooledList<Obstacle> loadContent(int level) {}
 //
-//    public int getnRobots(){return nRobots;}
+//    public int getnHosts(){return nHosts;}
 //
 
 }
