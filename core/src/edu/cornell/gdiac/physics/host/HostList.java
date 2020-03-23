@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 
 
 /**
- * This class provides a list of ships for the game.
+ * This class provides a list of hosts for the game.
  *
  * This object may be used in for-each loops.  However, IT IS NOT THREAD-SAFE.
  * For memory reasons, this object is backed by a single iterator object that
@@ -33,12 +33,10 @@ public class HostList implements Iterable<HostModel> {
 
 
     /**
-     * Create a new ShipList with the given number of ships.
-     *
-     * @param size The number of ships to allocate
+     * Create a new empty HostList.
      */
     public HostList() {
-        hosts = new ArrayList<HostModel>();
+        hosts = new ArrayList<>();
     }
 
     public void add(HostModel r, boolean isPossessed) {
@@ -49,29 +47,27 @@ public class HostList implements Iterable<HostModel> {
     }
 
     /**
-     * Returns the number of ships in this list
-     *
-     * @return the number of ships in this list
+     * Returns the number of hosts in this list
      */
     public int size() {
         return hosts.size();
     }
 
     /**
-     * Returns the ship for the given (unique) id
+     * Returns the host for the given (unique) id
      *
      * The value given must be between 0 and size-1.
      *
-     * @return the ship for the given id
+     * @return the host for the given id
      */
     public HostModel get(int id) {
         return hosts.get(id);
     }
 
     /**
-     * Returns the ship for the player
+     * Returns the host that is currently possessed for the player
      *
-     * @return the ship for the player
+     * @return the host the player is possessing
      */
     public HostModel getPossessed() {
         return hosts.get(possessed);
@@ -79,9 +75,9 @@ public class HostList implements Iterable<HostModel> {
 
 
     /**
-     * Returns the number of ships alive at the end of an update.
+     * Returns the number of hosts alive at the end of an update.
      *
-     * @return the number of ships alive at the end of an update.
+     * @return the number of hosts alive at the end of an update.
      */
     public int numDead() {
         int hostsDead = 0;
@@ -94,11 +90,11 @@ public class HostList implements Iterable<HostModel> {
     }
 
     /**
-     * Returns a ship iterator, satisfying the Iterable interface.
+     * Returns a host iterator, satisfying the Iterable interface.
      *
      * This method allows us to use this object in for-each loops.
      *
-     * @return a ship iterator.
+     * @return a host iterator.
      */
     public Iterator<HostModel> iterator() {
         // Take a snapshot of the current state and return iterator.
@@ -113,7 +109,7 @@ public class HostList implements Iterable<HostModel> {
      * a custom iterator to cut down on memory allocation.
      */
     private class HostIterator implements Iterator<HostModel> {
-        /** The current position in the ship list */
+        /** The current position in the host list */
         public int pos = 0;
 
         /**
@@ -126,9 +122,7 @@ public class HostList implements Iterable<HostModel> {
         }
 
         /**
-         * Returns the next ship.
-         *
-         * Dead ships are skipped, but inactive ships are not skipped.
+         * Returns the next host.
          */
         public HostModel next() {
             if (pos >= hosts.size()) {

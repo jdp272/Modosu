@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.*;
+import edu.cornell.gdiac.physics.host.ArrowModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.obstacle.*;
 
@@ -82,6 +83,8 @@ public abstract class WorldController implements Screen {
 	private static String OBSTACLE_FILE = "host/crate02.png";
 	/** File to texture for Hosts' Gauge */
 	private static String HOST_GAUGE_FILE = "host/host_gauge.png";
+	/** Texture file for arrow sprite */
+	private static final String ARROW_FILE = "shared/arrow.png";
 
 	private static int FONT_SIZE = 64;
 
@@ -101,7 +104,10 @@ public abstract class WorldController implements Screen {
 	protected TextureRegion obstacleTex;
 	/** The texture for host gauge */
 	protected TextureRegion hostGaugeTex;
+	/** The texture for the arrow */
+	protected Texture arrowTex;
 
+	public ArrowModel arrow;
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -137,6 +143,8 @@ public abstract class WorldController implements Screen {
 		assets.add(OBSTACLE_FILE);
 		manager.load(EARTH_FILE, Texture.class);
 		assets.add(EARTH_FILE);
+		manager.load(ARROW_FILE, Texture.class);
+		assets.add(ARROW_FILE);
 		
 		// Load the font
 		FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -169,6 +177,7 @@ public abstract class WorldController implements Screen {
 		spiritTex = createTexture(manager, SPIRIT_FILE, true);
 		obstacleTex = createTexture(manager, OBSTACLE_FILE, true);
 		hostGaugeTex = createTexture(manager, HOST_GAUGE_FILE, true);
+		arrowTex = new Texture(ARROW_FILE);
 		
 		// Allocate the font
 		if (manager.isLoaded(FONT_FILE)) {
@@ -645,6 +654,10 @@ public abstract class WorldController implements Screen {
 			}
 			canvas.endDebug();
 		}
+
+		if (arrow != null){
+			arrow.draw(canvas);
+		}
 		
 		// Final message
 		if (complete && !failed) {
@@ -652,7 +665,8 @@ public abstract class WorldController implements Screen {
 			canvas.begin(); // DO NOT SCALE
 			canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
 			canvas.end();
-		} else if (failed) {
+		}
+		else if (failed) {
 			displayFont.setColor(Color.RED);
 			canvas.begin(); // DO NOT SCALE
 			canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
