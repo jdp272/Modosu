@@ -64,6 +64,11 @@ public abstract class WorldController implements Screen {
 	protected AssetState worldAssetState = AssetState.EMPTY;
 	/** Track all loaded assets (for unloading purposes) */
 	protected Array<String> assets;
+
+	/** A factory class for easily creating game objects. */
+	protected Factory factory;
+	/** A loader class for loading level files. */
+	protected Loader loader;
 	
 	// Pathnames to shared assets
 	/** File to texture for walls and platforms */
@@ -178,6 +183,10 @@ public abstract class WorldController implements Screen {
 		}
 
 		worldAssetState = AssetState.COMPLETE;
+
+		// Set the proper textures in the factory
+		factory = new Factory(hostTex, hostGaugeTex);
+		loader = new Loader(factory);
 	}
 	
 	/**

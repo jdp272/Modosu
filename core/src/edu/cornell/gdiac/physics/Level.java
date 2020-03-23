@@ -11,6 +11,13 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
  */
 public class Level {
 
+    public Level() {
+        this.regions = null;
+        this.obstacles = null;
+        this.hosts = null;
+        this.start = null;
+    }
+
     /**
      * Constructs a simple object encapsulating the elements of a level
      *

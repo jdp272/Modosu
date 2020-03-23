@@ -11,6 +11,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -37,8 +38,6 @@ public class GamePlayController extends WorldController {
 	private HostController hostController;
 
 	private CollisionController collisionController;
-
-	private Loader loader;
 
 	/** Reference to the rocket texture */
 	private static final String ROCK_TEXTURE = "host/host.png";
@@ -150,7 +149,6 @@ public class GamePlayController extends WorldController {
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
-		loader = new Loader();
 		collisionController = new CollisionController();
 		lvl = 0;
 		world.setContactListener(collisionController);
@@ -205,8 +203,23 @@ public class GamePlayController extends WorldController {
 		spark.setTexture(spiritTex);
 
 		level = new Level(null, obs, hosts, spark);
-		possessed = hosts.get(0);
+
+		FileHandle f = new FileHandle("out.txt");
+		loader.saveLevel(f, level);
+
+		level = loader.loadLevel(f);
+
+		System.out.println(hosts.size());
+
+		spark = level.start;
+		hosts = level.hosts;
+		obs = level.obstacles;
+
+		System.out.println(hosts.size());
+
 		spirit = spark;
+		possessed = hosts.get(0);
+
 
 		//level = loader.reset(lvl);
 		//parse level
