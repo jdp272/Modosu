@@ -36,10 +36,27 @@ public class CollisionController implements ContactListener {
         hostPossessed = null;
     }
 
+    /**
+     * Resets the CollisionController to reflect an initial state
+     */
+    public void reset() {
+        spirit = null;
+        hostList = null;
+        bounced = false;
+        possessed = false;
+        hostPossessed = null;
+    }
+
+    /**
+     * Sets all the hosts
+     */
     public void addHosts(HostList hosts) {
         hostList = hosts;
     }
 
+    /**
+     * Sets the spirit
+     */
     public void addSpirit(SpiritModel spirit) {
         this.spirit = spirit;
     }
@@ -58,6 +75,8 @@ public class CollisionController implements ContactListener {
     public void beginContact(Contact contact) {
         // Reset all the fields to reflect this current frame
         bounced = false;
+        possessed = false;
+        hostPossessed = null;
 
         Fixture fix1 = contact.getFixtureA();
         Fixture fix2 = contact.getFixtureB();
@@ -75,17 +94,13 @@ public class CollisionController implements ContactListener {
             }
         }
 
-
         // Collision handling to determine if the spirit collides with any walls
         Obstacle bd1 = (Obstacle) body1.getUserData();
         Obstacle bd2 = (Obstacle) body2.getUserData();
 
-//        if(bd1.getName() == "host" && bd2.getName() == "host"){
-//
-//        }
 
-        if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
-                bd1.getName() == "wall" && body2.getUserData() == spirit) {
+        if (body1.getUserData() == spirit && bd2.getName().equals("wall") ||
+                bd1.getName().equals("wall") && body2.getUserData() == spirit) {
             bounced = true;
             // do you check/update here the number of bounces left
             // setfailed == true if reached the max number of bounces
@@ -142,17 +157,11 @@ public class CollisionController implements ContactListener {
     // Getters
 
     /** Getter method to return the possessed host */
-    public HostModel getHostPossessed() {
-        return hostPossessed;
-    }
+    public HostModel getHostPossessed() { return hostPossessed; }
 
     /** Getter method to return whether a possession occurred this frame */
-    public boolean isPossessed() {
-        return possessed;
-    }
+    public boolean isPossessed() { return possessed; }
 
     /** Getter method to return whether a wall bounce occurred this frame */
-    public boolean isBounced() {
-        return bounced;
-    }
+    public boolean isBounced() { return bounced; }
 }

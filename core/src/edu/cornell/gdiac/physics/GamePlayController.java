@@ -23,6 +23,8 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.SoundController;
 
+import java.util.HashMap;
+
 /**
  * Gameplay specific controller for the rocket lander game.
  *
@@ -88,9 +90,18 @@ public class GamePlayController extends WorldController {
 
 	protected SpiritModel spirit;
 
+	/** Keep track of what hosts have been possessed */
+	private HashMap<HostModel, Boolean> havePossessed;
+
+	/** How many hosts need to be possessed to win this level */
+	private int numRobots;
+
+	/** How many hosts have been possessed up to this frame */
+	private int numPosessed;
+
 
 	// Other game objects
-	/** The initial rocket position */
+	/** The initial spirit start position */
 	private static Vector2 SPIRIT_POS = new Vector2(500, 100);
 
 	// The positions of the crate pyramid
@@ -100,6 +111,7 @@ public class GamePlayController extends WorldController {
 	private static final float[] BOXES = { 350.0f, 32.0f, 350.0f, 96.0f, 350.0f, 160.f, 350.f, 224.0f, // LEFT
 											32.0f, 500.0f, 96.0f, 500.0f, 160.0f, 500.0f, 224.0f, 500.0f, 288.0f, 500.0f, 352.0f, 500.0f, // TOP
 											650.0f, 32.0f, 650.0f, 96.0f, 650.0f, 160.f, 650.f, 224.0f}; // RIGHT
+
 
 	/**
 	 * Preloads the assets for this controller.
@@ -154,7 +166,8 @@ public class GamePlayController extends WorldController {
 		collisionController = new CollisionController();
 		lvl = 0;
 		world.setContactListener(collisionController);
-
+		havePossessed = new HashMap<>();
+		numPosessed = 0;
 	}
 
 
@@ -165,9 +178,16 @@ public class GamePlayController extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		setComplete(false);
+		setFailure(false);
+
 		Vector2 gravity = new Vector2(world.getGravity());
 		BoxObstacle[] obs = new BoxObstacle[BOXES.length/2];
 
+		possessed = null;
+		numPosessed = 0;
+
+		collisionController.reset();
 
 		float dwidth  = obstacleTex.getRegionWidth();
 		float dheight = obstacleTex.getRegionHeight();
@@ -185,18 +205,23 @@ public class GamePlayController extends WorldController {
 		dwidth  = hostTex.getRegionWidth();
 		dheight = hostTex.getRegionHeight();
 
+		havePossessed.clear();
+
 		HostModel host;
 		for (int i = 0; i < HOSTS.length; i+=2) {
 			host = new HostModel(HOSTS[i],HOSTS[i+1], dwidth, dheight, 0, 1000);
 			host.setTexture(hostTex);
 			host.setHostGaugeTexture(hostGaugeTex);
 			hosts.add(host,false);
+			havePossessed.put(host, false);
 		}
+
 		Vector2[] ins = {new Vector2(800,400),new Vector2(500,400)};
-		host = new HostModel(800, 400, dwidth, dheight, 0, 1000, ins);
+		host = new HostModel(800, 400, dwidth, dheight, 0, 10000, ins);
 		host.setTexture(hostTex);
 		host.setHostGaugeTexture(hostGaugeTex);
 		hosts.add(host,false);
+		havePossessed.put(host, false);
 
 		SPIRIT_POS.x = 500;
 		SPIRIT_POS.y = 100;
@@ -210,7 +235,9 @@ public class GamePlayController extends WorldController {
 
 		//level = loader.reset(lvl);
 		//parse level
-		hostController = new HostController(level.hosts);
+		hostController = new HostController(level.hosts, arrowTex, canvas.getHeight());
+
+		numRobots = level.hosts.size();
 
 		for(Obstacle o : objects) {
 			o.deactivatePhysics(world);
@@ -222,8 +249,7 @@ public class GamePlayController extends WorldController {
 		
 		world = new World(gravity,false);
 		world.setContactListener(collisionController);
-		setComplete(false);
-		setFailure(false);
+
 		populateLevel();
 	}
 
@@ -254,20 +280,42 @@ public class GamePlayController extends WorldController {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void update(float delta) {
-		//calls update on hostcontroller
 
+		// Check win condition
+		if (numPosessed == numRobots){
+			setComplete(true);
+		}
+
+		// Determine if there is any possession
 		if (collisionController.isPossessed()) {
-			possessed = collisionController.getHostPossessed();
-		} else { possessed = null; }
 
+			possessed = collisionController.getHostPossessed();
+
+			// Record new possession
+			if (!havePossessed.get(possessed)) {
+				havePossessed.put(possessed, true);
+				numPosessed++;
+			}
+		}
+
+		// Calls update on hostcontroller
 		hostController.update(delta, possessed, spirit);
 
+		// Check lose condition
+		if (hostController.getPossessedBlownUp() && !isComplete()) {
+			setFailure(true);
+		}
+
+		// Get arrow and draw if applicable
+		arrow = hostController.getArrow();
+		if (arrow != null){ arrow.draw(canvas); }
+
+		// Update bouncing if applicable
 		if (collisionController.isBounced()) {
 			if (spirit.bounces == 0) {
 				spirit.setPosition(-10,-10);
-			} else {
-				spirit.decBounces();
 			}
+			else { spirit.decBounces(); }
 		}
 
 		// Handle camera panning
@@ -277,7 +325,4 @@ public class GamePlayController extends WorldController {
 	    // If we use sound, we must remember this.
 	    SoundController.getInstance().update();
 	}
-
-
-
 }
