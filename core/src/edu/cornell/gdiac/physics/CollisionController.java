@@ -99,8 +99,8 @@ public class CollisionController implements ContactListener {
         Obstacle bd2 = (Obstacle) body2.getUserData();
 
 
-        if (body1.getUserData() == spirit && bd2.getName().equals("wall") ||
-                bd1.getName().equals("wall") && body2.getUserData() == spirit) {
+        if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
+                bd1.getName() == "wall" && body2.getUserData() == spirit) {
             bounced = true;
             // do you check/update here the number of bounces left
             // setfailed == true if reached the max number of bounces
