@@ -280,7 +280,8 @@ public class Loader {
 
         for (int i = 0; i < levelData.obstacleData.length; i++) {
             oData = levelData.obstacleData[i];
-            obstacles[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.origin.y);
+            obstacles[i] = factory.makeObstacle(oData.origin.x, oData.origin.y);
+            // obstacles[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.dimensions.y);
         }
 
         // Create the hosts
@@ -309,10 +310,10 @@ public class Loader {
         System.out.println("hosts size: " + hosts.size());
 
         // Create the starting "host" (with no charge capacity)
-        SpiritModel start = new SpiritModel(levelData.startLocation.x, levelData.startLocation.y, 0);
+        SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         // TODO: ensure implementation of 0 charge time means no cap
 
-        return new Level(regions, obstacles, hosts, start);
+        return new Level(regions, obstacles, hosts, spirit);
     }
 
     public Level reset(int level){
