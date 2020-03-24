@@ -239,6 +239,18 @@ public class HostModel extends BoxObstacle {
         setName("host");
     }
 
+    /**
+     * Creates a new host at the given position.
+     *
+     * The size is expressed in physics units NOT pixels.  In order for
+     * drawing to work properly, you MUST set the drawScale. The drawScale
+     * converts the physics units to pixels.
+     *
+     * @param x      Initial x position of the box center
+     * @param y      Initial y position of the box center
+     * @param width  The object width in physics units
+     * @param height The object width in physics units
+     */
     public HostModel(float x, float y, float width, float height, float currentCharge, float maxCharge, Vector2[] ins) {
         super(x, y, width, height);
         force = new Vector2();
@@ -298,7 +310,7 @@ public class HostModel extends BoxObstacle {
      * @param currentCharge representing the current charge of host.
      */
     public void setCurrentCharge(float currentCharge){
-        currentCharge = currentCharge;
+        this.currentCharge = currentCharge;
     }
 
     /**
@@ -315,13 +327,16 @@ public class HostModel extends BoxObstacle {
      *
      * @return whether the bot has blown up or not
      */
-    public boolean incCurrentCharge(){
-        if (this.currentCharge == this.maxCharge){
-            return false;
-        }
-        else {
-            this.currentCharge++;
-            this.isAlive = false;
+    public boolean incCurrentCharge() {
+        if (this.isPossessed) {
+            if (this.currentCharge == this.maxCharge) {
+                return false;
+            } else {
+                this.currentCharge++;
+                this.isAlive = false;
+                return true;
+            }
+        } else {
             return true;
         }
     }
@@ -395,7 +410,7 @@ public class HostModel extends BoxObstacle {
     }
 
     /**
-     * Draws the physics object.
+     * Draws the host object.
      *
      * @param canvas Drawing context
      */

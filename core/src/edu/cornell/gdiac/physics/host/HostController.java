@@ -90,6 +90,7 @@ public class HostController {
                     if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) { // Clicked Mouse
                         spirit.setPosition(possessed.getPosition());
 
+
                         clickPosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
                         arrow = new ArrowModel(arrowText, possessed.getPosition());
 
@@ -120,6 +121,9 @@ public class HostController {
                             spirit.setHasLaunched(true);
                         }
 
+                        // Upon Release of Spirit, Possessed bot is not longer possessed
+                        possessed.setPossessed(false);
+
                     }
                     else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
                         // Arrow Direction?
@@ -138,7 +142,41 @@ public class HostController {
                 possessed.setVX(0);
                 possessed.setVY(0);
             }
+
+            // Case when Host's currentCharge exceed maxCharge
+            if(possessed.getCurrentCharge() > possessed.getMaxCharge()) {
+                possessedBlownUp = true;
+            }
         }
+
+
+        // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
+
+        // When the spirit has been launched, need to decrement life of spirit
+        if(spirit.hasLaunched) {
+            // If you can decrement life, decrement life
+            if(spirit.decCurrentLife()) {
+                // Spirit isn't dead yet
+                spirit.setAlive(true);
+            }
+            else {
+                // Because you can't decrement anymore, spirit is dead
+                spirit.setAlive(false);
+            }
+        }
+
+
+
+        // PORTION OF CODE THAT DEALS WITH JUMPING BACK TO LAST HOST AFTER DEATH
+
+        // In the case that spirit dies return to previous possessed bot
+        if(!spirit.isAlive() && !possessedBlownUp) {
+            spirit.setPosition(possessed.getPosition());
+            // TODO: Replace 100 with variable whatever amount we want the host to go up by
+            possessed.setCurrentCharge(possessed.getCurrentCharge() + 100);
+        }
+
+
 
         //update other robots
         for (HostModel r: hosts) {
