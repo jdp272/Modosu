@@ -310,7 +310,7 @@ public class HostModel extends BoxObstacle {
      * @param currentCharge representing the current charge of host.
      */
     public void setCurrentCharge(float currentCharge){
-        currentCharge = currentCharge;
+        this.currentCharge = currentCharge;
     }
 
     /**
@@ -410,7 +410,7 @@ public class HostModel extends BoxObstacle {
     }
 
     /**
-     * Draws the physics object.
+     * Draws the host object.
      *
      * @param canvas Drawing context
      */

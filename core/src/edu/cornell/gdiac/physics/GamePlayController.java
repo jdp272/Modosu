@@ -226,7 +226,7 @@ public class GamePlayController extends WorldController {
 		SPIRIT_POS.x = 500;
 		SPIRIT_POS.y = 100;
 
-		SpiritModel spark = new SpiritModel(SPIRIT_POS.x,SPIRIT_POS.y,spiritTex.getRegionWidth(),spiritTex.getRegionHeight(),10);
+		SpiritModel spark = new SpiritModel(SPIRIT_POS.x,SPIRIT_POS.y,spiritTex.getRegionWidth(),spiritTex.getRegionHeight(),10, 100);
 		spark.setTexture(spiritTex);
 
 		level = new Level(null, obs, hosts, spark);
@@ -302,7 +302,6 @@ public class GamePlayController extends WorldController {
 		hostController.update(delta, possessed, spirit);
 
 		// Check lose condition
-		System.out.println(hostController.getPossessedBlownUp());
 		if (hostController.getPossessedBlownUp() && !isComplete()) {
 			setFailure(true);
 		}
