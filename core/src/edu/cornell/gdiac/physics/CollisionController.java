@@ -90,6 +90,7 @@ public class CollisionController implements ContactListener {
                     (body1.getUserData() == r && body2.getUserData() == spirit))) {
                 possessed = true;
                 hostPossessed = r;
+                hostPossessed.setPossessed(true);
                 spirit.setHasLaunched(false);
             }
         }

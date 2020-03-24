@@ -90,6 +90,7 @@ public class HostController {
                     if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) { // Clicked Mouse
                         spirit.setPosition(possessed.getPosition());
 
+
                         clickPosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
                         arrow = new ArrowModel(arrowText, possessed.getPosition());
 
@@ -119,6 +120,9 @@ public class HostController {
                         if (Math.abs(shootVector.x) > MINIMUM_SHOT_SPEED || Math.abs(shootVector.y) > MINIMUM_SHOT_SPEED) {
                             spirit.setHasLaunched(true);
                         }
+
+                        // Upon Release of Spirit, Possessed bot is not longer possessed
+                        possessed.setPossessed(false);
 
                     }
                     else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {

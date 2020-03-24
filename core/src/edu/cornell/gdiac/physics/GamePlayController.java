@@ -302,6 +302,7 @@ public class GamePlayController extends WorldController {
 		hostController.update(delta, possessed, spirit);
 
 		// Check lose condition
+		System.out.println(hostController.getPossessedBlownUp());
 		if (hostController.getPossessedBlownUp() && !isComplete()) {
 			setFailure(true);
 		}
