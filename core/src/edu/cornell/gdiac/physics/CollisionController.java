@@ -74,7 +74,7 @@ public class CollisionController implements ContactListener {
      */
     public void beginContact(Contact contact) {
         // Reset all the fields to reflect this current frame
-        bounced = false;
+        clear();
         possessed = false;
         hostPossessed = null;
 
@@ -109,8 +109,6 @@ public class CollisionController implements ContactListener {
         if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
                 bd1.getName() == "wall" && body2.getUserData() == spirit) {
             bounced = true;
-            // do you check/update here the number of bounces left
-            // setfailed == true if reached the max number of bounces
         }
 
     }
@@ -161,6 +159,11 @@ public class CollisionController implements ContactListener {
         }
     }
 
+    /** Reset all the fields to reflect this current frame */
+    public void clear() {
+        bounced = false;
+    }
+
     // Getters
 
     /** Getter method to return the possessed host */
@@ -171,4 +174,6 @@ public class CollisionController implements ContactListener {
 
     /** Getter method to return whether a wall bounce occurred this frame */
     public boolean isBounced() { return bounced; }
+
+
 }
