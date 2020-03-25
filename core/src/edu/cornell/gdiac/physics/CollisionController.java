@@ -90,7 +90,14 @@ public class CollisionController implements ContactListener {
                     (body1.getUserData() == r && body2.getUserData() == spirit))) {
                 possessed = true;
                 hostPossessed = r;
+                // host is now possessed
+                hostPossessed.setPossessed(true);
+                // spirit is no longer in stage of being launched
                 spirit.setHasLaunched(false);
+                // Spirit's life is replenished upon possessing new host
+                spirit.setCurrentLife(spirit.getDefaultLife());
+                // Spirit is alive whenever it is inside of a host
+                spirit.setAlive(true);
             }
         }
 

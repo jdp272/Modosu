@@ -216,7 +216,7 @@ public class GamePlayController extends WorldController {
 		SPIRIT_POS.y = 100;
 
 		// Create the spirit
-		SpiritModel spark = new SpiritModel(SPIRIT_POS.x,SPIRIT_POS.y,spiritTex.getRegionWidth(),spiritTex.getRegionHeight(),10);
+		SpiritModel spark = new SpiritModel(SPIRIT_POS.x,SPIRIT_POS.y,spiritTex.getRegionWidth(),spiritTex.getRegionHeight(),10, 100);
 		spark.setTexture(spiritTex);
 
 		level = new Level(null, obs, hosts, spark);
