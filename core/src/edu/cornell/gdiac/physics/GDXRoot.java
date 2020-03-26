@@ -21,6 +21,7 @@ import com.badlogic.gdx.assets.loaders.*;
 import com.badlogic.gdx.assets.loaders.resolvers.*;
 
 import edu.cornell.gdiac.physics.GamePlayController;
+import edu.cornell.gdiac.physics.ragdoll.LevelDesignerMode;
 import edu.cornell.gdiac.util.*;
 
 
@@ -42,6 +43,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private LoadingMode loading;
 	/** List of all WorldControllers */
 	private GamePlayController controller;
+
+	private LevelDesignerMode levelDesigner;
 	
 	/**
 	 * Creates a new game from the configuration settings.
@@ -70,7 +73,11 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode(canvas,manager,1);
 
 		controller = new GamePlayController();
+		levelDesigner = new LevelDesignerMode();
+
 		controller.preLoadContent(manager);
+		levelDesigner.preLoadContent(manager);
+
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}
@@ -124,6 +131,12 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.setCanvas(canvas);
 			controller.reset();
 			setScreen(controller);
+
+//			levelDesigner.loadContent(manager);
+//			levelDesigner.setScreenListener(this);
+//			levelDesigner.setCanvas(canvas);
+//			levelDesigner.reset();
+//			setScreen(levelDesigner);
 			
 			loading.dispose();
 			loading = null;

@@ -185,7 +185,7 @@ public abstract class WorldController implements Screen {
 		worldAssetState = AssetState.COMPLETE;
 
 		// Set the proper textures in the factory
-		factory = new Factory(obstacleTex, spiritTex, hostTex, hostGaugeTex);
+		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostGaugeTex);
 		loader = new Loader(factory);
 	}
 	

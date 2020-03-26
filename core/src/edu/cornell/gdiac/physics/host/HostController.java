@@ -22,8 +22,16 @@ public class HostController {
     private InputController input;
 
     /** Constant to change the speed of golem movement */
-    private static final float GOLEM_MOVEMENT_SPEED = 500000;
-    private static final float MINIMUM_SHOT_SPEED = 50;
+    private static final float GOLEM_MOVEMENT_SPEED = 5.f;
+
+    /** Minimum speed for shot spirit */
+    private static final float MINIMUM_SHOT_SPEED = 4.f;
+
+    /** Multiplier for velocity of spirit when shot */
+    private static final float SHOOTING_MULTIPLIER = 0.05f;
+
+    /** Minimum distance to target before going to next instruction, for autonomous mode */
+    private static final float NEXT_INSTRUCTION_DIST = 0.005f;
 
     /** The number of ticks since we started this controller */
     private long ticks;
@@ -85,8 +93,8 @@ public class HostController {
                         clickPosition.x = -1;
                         clickPosition.y = -1;
 
-                        float vx = shootVector.x;
-                        float vy = shootVector.y;
+                        float vx = SHOOTING_MULTIPLIER * shootVector.x;
+                        float vy = SHOOTING_MULTIPLIER * shootVector.y;
 
                         spirit.setPosition(possessed.getPosition());
                         spirit.setVX(vx);
@@ -115,19 +123,19 @@ public class HostController {
         for(HostModel r: hosts){
             Vector2 n = r.getInstruction();
             Vector2 curr = r.getPosition();
-            if(r != possessed && Math.abs(curr.x - n.x) < 5 && Math.abs(curr.y - n.y) < 5 && !r.beenPossessed()){
+            if(r != possessed && Math.abs(curr.x - n.x) < NEXT_INSTRUCTION_DIST && Math.abs(curr.y - n.y) < NEXT_INSTRUCTION_DIST && !r.beenPossessed()){
                 //go to next instruction
                 r.nextInstruction();
                 n = r.getInstruction();
-                float l = (float)Math.sqrt(Math.pow(n.x-curr.x,2) + Math.pow(n.y-curr.y,2) );
+                // float l = (float)Math.sqrt(Math.pow(n.x-curr.x,2) + Math.pow(n.y-curr.y,2) );
 
-                r.setVX((n.x - curr.x) * GOLEM_MOVEMENT_SPEED);
-                r.setVY((n.y - curr.y) * GOLEM_MOVEMENT_SPEED);
+                r.setVX(Math.signum(n.x - curr.x) * GOLEM_MOVEMENT_SPEED);
+                r.setVY(Math.signum(n.y - curr.y) * GOLEM_MOVEMENT_SPEED);
 
             }
             else if(r != possessed && !r.beenPossessed()){
-                r.setVX((n.x - curr.x) * GOLEM_MOVEMENT_SPEED);
-                r.setVY((n.y - curr.y) * GOLEM_MOVEMENT_SPEED);
+                r.setVX(Math.signum(n.x - curr.x) * GOLEM_MOVEMENT_SPEED);
+                r.setVY(Math.signum(n.y - curr.y) * GOLEM_MOVEMENT_SPEED);
             }
             else{
                 //keep going i guess, don't really have to change anything

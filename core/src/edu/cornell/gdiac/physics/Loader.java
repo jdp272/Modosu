@@ -17,6 +17,7 @@ import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+import com.badlogic.gdx.physics.box2d.*;
 
 /**
  * A static class that can be used for loading a level from a json file

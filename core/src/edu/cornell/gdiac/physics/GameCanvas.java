@@ -83,7 +83,7 @@ public class GameCanvas {
 
 	// Camera Variables
 	/** Value to set the speed that the camera pans at */
-	private float panSpeed = 0.25f;
+	private float panSpeed = 2.5f;
 	/** The place that the camera wants to pan to */
 	private Vector2 camTarget;
 

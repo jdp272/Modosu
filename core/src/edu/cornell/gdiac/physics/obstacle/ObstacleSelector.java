@@ -300,12 +300,14 @@ public class ObstacleSelector implements QueryCallback  {
     }
     
     /**
-     * Deselects the physics body, discontinuing any mouse movement.
+     * Deselects the physics body, discontinuing any mouse movement. It also
+	 * turns the fixture's body back into a static body.
      *
      * The body may still continue to move of its own accord.  
      */
     public void deselect() {
         if (selection != null) {
+			selection.getBody().setType(BodyDef.BodyType.StaticBody);
     		world.destroyJoint(mouseJoint);
     	    selection = null;
     	    mouseJoint = null;
@@ -314,12 +316,19 @@ public class ObstacleSelector implements QueryCallback  {
     
 	//// QueryCallback
 	/**  
-	 * Called for each fixture found in the query AABB.
+	 * Called for each fixture found in the query AABB. While
+	 * the fixture is selected, it is turned into a dynamic body.
 	 *
 	 * The AABB is good enough, so we buffere the fixture and stop the query.
 	 */
 	public boolean reportFixture(Fixture fixture) {
+		if(selection != null) {
+			selection.getBody().setType(BodyDef.BodyType.StaticBody);
+		}
     	selection = fixture;
+		if(selection != null) {
+			selection.getBody().setType(BodyDef.BodyType.DynamicBody);
+		}
     	return selection == null;
 	}
 	
