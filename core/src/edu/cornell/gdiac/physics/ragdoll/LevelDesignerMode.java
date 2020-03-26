@@ -38,7 +38,7 @@ public class LevelDesignerMode extends WorldController {
 	/** Texture file for watery foreground */
 	private static final String FOREG_FILE = "ragdoll/foreground.png";
 	/** Texture file for background image */
-	private static final String BACKG_FILE = "ragdoll/background.png";
+	private static final String BACKG_FILE = "shared/background.png";
 	/** File for the bubble generator */
 	private static final String BUBBLE_FILE = "ragdoll/bubble.png";
 	/** Files for the body textures */
@@ -49,6 +49,9 @@ public class LevelDesignerMode extends WorldController {
 	/** Reference to the bubble sound assets */
 	private static final String[] BUBBLE_SOUNDS = {"ragdoll/bubble01.mp3", "ragdoll/bubble02.mp3",
 			"ragdoll/bubble03.mp3", "ragdoll/bubble04.mp3"};
+
+	/** Speed for changing camera position */
+	private static final float CAMERA_SPEED = 2.f;
 
 	/** Texture asset for mouse crosshairs */
 	private TextureRegion crosshairTexture;
@@ -65,6 +68,9 @@ public class LevelDesignerMode extends WorldController {
 	private AssetState ragdollAssetState = AssetState.EMPTY;
 
 	private Level level;
+
+	/** The camera position */
+	private Vector2 camTarget;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -113,13 +119,9 @@ public class LevelDesignerMode extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(AssetManager manager) {
-		System.out.println("--------------------------------------------------------------------------------------");
-
 		if (ragdollAssetState != AssetState.LOADING) {
 			return;
 		}
-
-		System.out.println("--------------------------------------------------------------------------------------");
 
 		crosshairTexture = createTexture(manager,CROSS_FILE,false);
 		backgroundTexture = createTexture(manager,BACKG_FILE,false);
@@ -186,6 +188,8 @@ public class LevelDesignerMode extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		soundCounter = 0;
+
+		camTarget = new Vector2();
 	}
 
 	/**
@@ -194,7 +198,9 @@ public class LevelDesignerMode extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-		Vector2 gravity = new Vector2(world.getGravity() );
+		Vector2 gravity = new Vector2(world.getGravity());
+
+		camTarget.set(canvas.getWidth() / 2.f, canvas.getHeight() / 2.f);
 
 		for(Obstacle obj : objects) {
 			obj.deactivatePhysics(world);
@@ -227,14 +233,6 @@ public class LevelDesignerMode extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-		// Make the ragdoll
-		ragdoll = new RagdollModel(DOLL_POS.x, DOLL_POS.y);
-		ragdoll.setDrawScale(scale.x,scale.y);
-		ragdoll.setPartTextures(bodyTextures);
-		ragdoll.getBubbleGenerator().setTexture(bubbleTexture);
-		addObject(ragdoll);
-
-		System.out.println(scale);
 
 		BoxObstacle box1 = new BoxObstacle(4, 4, obstacleTex.getRegionWidth() / scale.x, obstacleTex.getRegionHeight() / scale.y);
 		box1.setDrawScale(scale);
@@ -246,28 +244,6 @@ public class LevelDesignerMode extends WorldController {
 		box2.setDrawScale(scale.x, scale.y);
 		box2.setTexture(obstacleTex);
 		addObject(box2);
-
-		// Create ground pieces
-		PolygonObstacle obj;
-		obj = new PolygonObstacle(WALL1, 0, 0);
-		obj.setBodyType(BodyDef.BodyType.StaticBody);
-		obj.setDensity(BASIC_DENSITY);
-		obj.setFriction(BASIC_FRICTION);
-		obj.setRestitution(BASIC_RESTITUTION);
-		obj.setDrawScale(scale);
-		obj.setTexture(earthTile);
-		obj.setName("wall1");
-		addObject(obj);
-
-		obj = new PolygonObstacle(WALL2, 0, 0);
-		obj.setBodyType(BodyDef.BodyType.StaticBody);
-		obj.setDensity(BASIC_DENSITY);
-		obj.setFriction(BASIC_FRICTION);
-		obj.setRestitution(BASIC_RESTITUTION);
-		obj.setDrawScale(scale);
-		obj.setTexture(earthTile);
-		obj.setName("wall2");
-		addObject(obj);
 
 //		for(Obstacle ob : level.obstacles) {
 //			addObject(ob);
@@ -311,22 +287,33 @@ public class LevelDesignerMode extends WorldController {
 	public void update(float dt) {
 		// Move an object if touched
 		InputController input = InputController.getInstance();
+
+		/* Offset the mouse based on the camera translation.
+
+		   Half of the canvas is subtracted because when the board is centered,
+		   camTarget is the middle of the board, not (0, 0), but there should be
+		   no additional mouse offset.
+
+		   Additionally, note that the mouse uses box2d coordinates, not screen
+		   coordinates
+		 */
+
+		float mouseX = input.getCrossHair().x + (camTarget.x - (canvas.getWidth() / 2.f)) / scale.x;
+		float mouseY = input.getCrossHair().y + (camTarget.y - (canvas.getHeight() / 2.f)) / scale.y;
+
 		if (input.didTertiary() && !selector.isSelected()) {
-			selector.select(input.getCrossHair().x,input.getCrossHair().y);
+			selector.select(mouseX, mouseY);
 		} else if (!input.didTertiary() && selector.isSelected()) {
 			selector.deselect();
 		} else {
-			selector.moveTo(input.getCrossHair().x,input.getCrossHair().y);
+			selector.moveTo(mouseX, mouseY);
 		}
 
-		// Play a sound for each bubble
-		if (ragdoll.getBubbleGenerator().didBubble()) {
-			// Pick a sound
-			int indx =  RandomController.rollInt(0,BUBBLE_SOUNDS.length-1);
-			String key = "bubble"+soundCounter;
-			soundCounter++;
-//			SoundController.getInstance().play(key, BUBBLE_SOUNDS[indx], false);
-		}
+		// Update the camera position
+		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
+
+		canvas.setCamTarget(camTarget);
+		canvas.updateCamera();
 
 		// If we use sound, we must remember this.
 		SoundController.getInstance().update();
