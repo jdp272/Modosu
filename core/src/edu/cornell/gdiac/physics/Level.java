@@ -61,4 +61,17 @@ public class Level {
 
     /** The "host" where the player starts */
     public SpiritModel start;
+
+    public void set(
+            Vector2[][] regions,
+            BoxObstacle[] obstacles,
+            HostList hosts,
+            SpiritModel start
+    ) {
+        this.regions = regions;
+        this.obstacles = obstacles;
+        this.hosts = hosts;
+        this.start = start;
+    }
+
 }

@@ -83,6 +83,9 @@ public class InputController {
 	/** If the delete button was pressed */
 	private boolean deletePressed;
 	private boolean deletePrevious;
+	/** If the save button was pressed */
+	private boolean savePressed;
+	private boolean savePrevious;
 	
 	/** How much did we move horizontally? */
 	private float horizontal;
@@ -243,6 +246,13 @@ public class InputController {
 	 * @return true if the delete button was pressed.
 	 */
 	public boolean didDelete() { return deletePressed && !deletePrevious; }
+
+	/**
+	 * Returns true if the save button was pressed.
+	 *
+	 * @return true if the save button was pressed.
+	 */
+	public boolean didSave() { return savePressed && !savePrevious; }
 	
 	/**
 	 * Creates a new input controller
@@ -282,6 +292,7 @@ public class InputController {
 		hostPrevious = hostPressed;
 		spiritPrevious = spiritPressed;
 		deletePrevious = deletePressed;
+		savePrevious = savePressed;
 		
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
@@ -315,6 +326,7 @@ public class InputController {
 //		hostPressed = ...
 //		spiritPressed = ...
 //		deletePressed = ...
+//		savePressed = ...
 
 		// Increase animation frame, but only if trying to move
 		horizontal = xbox.getLeftX();
@@ -359,6 +371,7 @@ public class InputController {
 		hostPressed = (secondary && hostPressed)  || (Gdx.input.isKeyPressed(Input.Keys.G));
 		spiritPressed = (secondary && spiritPressed)  || (Gdx.input.isKeyPressed(Input.Keys.Z));
 		deletePressed = (secondary && deletePressed)  || (Gdx.input.isKeyPressed(Input.Keys.X));
+		savePressed = (secondary && savePressed)  || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
 
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);

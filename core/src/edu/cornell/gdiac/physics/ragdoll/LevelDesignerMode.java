@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import edu.cornell.gdiac.physics.*;
+import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
@@ -28,6 +29,7 @@ import edu.cornell.gdiac.util.SoundController;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Gameplay specific controller for the ragdoll fishtank.
@@ -108,7 +110,7 @@ public class LevelDesignerMode extends WorldController {
 		assets.add(BACKG_FILE);
 		manager.load(BUBBLE_FILE, Texture.class);
 		assets.add(BUBBLE_FILE);
-		for(int ii = 0; ii < RAGDOLL_FILES.length; ii++) {
+		for(int ii = 0; ii < RAGDOLL_FILES.length;  ii++) {
 			manager.load(RAGDOLL_FILES[ii], Texture.class);
 			assets.add(RAGDOLL_FILES[ii]);
 		}
@@ -241,18 +243,6 @@ public class LevelDesignerMode extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-
-		BoxObstacle box1 = new BoxObstacle(4, 4, obstacleTex.getRegionWidth() / scale.x, obstacleTex.getRegionHeight() / scale.y);
-		box1.setDrawScale(scale);
-		box1.setTexture(obstacleTex);
-		box1.setBodyType(BodyDef.BodyType.StaticBody);
-		addObject(box1);
-
-		BoxObstacle box2 = new BoxObstacle(8, 8, obstacleTex.getRegionWidth() / scale.x, obstacleTex.getRegionHeight() / scale.y);
-		box2.setDrawScale(scale.x, scale.y);
-		box2.setTexture(obstacleTex);
-		addObject(box2);
-
 //		for(Obstacle ob : level.obstacles) {
 //			addObject(ob);
 //			addQueue.add(ob);
@@ -364,6 +354,32 @@ public class LevelDesignerMode extends WorldController {
 				}
 				selection.markRemoved(true);
 			}
+		}
+		if(input.didSave()) {
+			Scanner scanner = new Scanner(System.in);
+//			System.out.println("Input filename. Note that if a file with this name already exists, it will be OVERRIDDEN: ");
+//			String filename = scanner.nextLine();
+			String filename = "custom.lvl";
+			FileHandle f = new FileHandle(filename);
+
+			// TODO: Make this not creating new objects by updating Level to use PooledList(?)
+
+			BoxObstacle[] obstacleArray = new BoxObstacle[obstacles.size()];
+			int i = 0;
+			for(BoxObstacle box : obstacles) {
+				obstacleArray[i++] = box;
+				if(box != null) {
+					System.out.println(box);
+				}
+			}
+
+			HostList hostList = new HostList();
+			for(HostModel host : hosts) {
+				hostList.add(host, false);
+			}
+
+			level.set(null, obstacleArray, hostList, spirit);
+			loader.saveLevel(f, level);
 		}
 
 		// Update the camera position

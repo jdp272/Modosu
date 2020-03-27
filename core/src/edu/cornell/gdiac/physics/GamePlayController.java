@@ -213,7 +213,8 @@ public class GamePlayController extends WorldController {
 
 		level = new Level(null, obs, hosts, spark);
 
-		FileHandle f = new FileHandle("out.txt");
+//		FileHandle f = new FileHandle("out.txt");
+		FileHandle f = new FileHandle("custom.lvl");
 //		loader.saveLevel(f, level);
 
 		level = loader.loadLevel(f);
