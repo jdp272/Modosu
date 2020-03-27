@@ -29,6 +29,8 @@ import edu.cornell.gdiac.util.SoundController;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Scanner;
 
 /**
@@ -79,6 +81,9 @@ public class LevelDesignerMode extends WorldController {
 	private PooledList<HostModel> hosts;
 	/** The spirit for the level */
 	private SpiritModel spirit;
+
+	/** The obstacle that, when clicked, spawns a new obstacle */
+	private BoxObstacle boxSpawn;
 
 	/** If the selector should select at the next update */
 	private boolean select;
@@ -208,6 +213,9 @@ public class LevelDesignerMode extends WorldController {
 	public void reset() {
 		Vector2 gravity = new Vector2(world.getGravity());
 
+		// The objects should be sensors
+		factory.makeSensors = true;
+
 		camTarget.set(canvas.getWidth() / 2.f, canvas.getHeight() / 2.f);
 
 		for(Obstacle obj : objects) {
@@ -258,6 +266,14 @@ public class LevelDesignerMode extends WorldController {
 //		collisionController.addHosts(level.hosts);
 //		collisionController.addSpirit(level.start);
 
+		boxSpawn = factory.makeObstacle(0.f, 0.f);
+		boxSpawn.setX((canvas.getWidth() + camTarget.x) / scale.x - boxSpawn.getWidth() / 2.f);
+		boxSpawn.setY((canvas.getHeight() + camTarget.y) / scale.y - boxSpawn.getHeight() / 2.f);
+		addObject(boxSpawn);
+
+		// Can't be selected
+		boxSpawn.selectable = false;
+
 		selector = new ObstacleSelector(world);
 		selector.setTexture(crosshairTexture);
 		selector.setDrawScale(scale);
@@ -307,8 +323,17 @@ public class LevelDesignerMode extends WorldController {
 			selector.moveTo(mouseX, mouseY);
 		}
 
+		if(boxSpawn.checkClicked()) {
+			// Create a new box at the spawn point
+			BoxObstacle box = factory.makeObstacle(boxSpawn.getX(), boxSpawn.getY());
+			addObject(box);
+			obstacles.add(box);
+
+			// Select the new object
+			selector.select(mouseX, mouseY);
+		}
+
 		// Add new objects
-//
 		if(input.newBox() && !selector.isSelected()) {
 			// Add a new obstacle
 			BoxObstacle box = factory.makeObstacle(mouseX, mouseY);
@@ -356,40 +381,51 @@ public class LevelDesignerMode extends WorldController {
 			}
 		}
 		if(input.didSave()) {
-			Scanner scanner = new Scanner(System.in);
-//			System.out.println("Input filename. Note that if a file with this name already exists, it will be OVERRIDDEN: ");
-//			String filename = scanner.nextLine();
-			String filename = "custom.lvl";
-			FileHandle f = new FileHandle(filename);
-
-			// TODO: Make this not creating new objects by updating Level to use PooledList(?)
-
-			BoxObstacle[] obstacleArray = new BoxObstacle[obstacles.size()];
-			int i = 0;
-			for(BoxObstacle box : obstacles) {
-				obstacleArray[i++] = box;
-				if(box != null) {
-					System.out.println(box);
-				}
-			}
-
-			HostList hostList = new HostList();
-			for(HostModel host : hosts) {
-				hostList.add(host, false);
-			}
-
-			level.set(null, obstacleArray, hostList, spirit);
-			loader.saveLevel(f, level);
+			save("custom.lvl");
 		}
+
+		System.out.println(camTarget);
 
 		// Update the camera position
 		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
+
+		// Update spawn positions after updating the camera
+		boxSpawn.setX((canvas.getWidth() / 2.f + camTarget.x) / scale.x - boxSpawn.getWidth() / 2.f);
+		boxSpawn.setY((canvas.getHeight() / 2.f + camTarget.y) / scale.y - boxSpawn.getHeight() / 2.f);
 
 		canvas.setCamTarget(camTarget);
 		canvas.updateCamera();
 
 		// If we use sound, we must remember this.
 		SoundController.getInstance().update();
+	}
+
+	/**
+	 * Saves the current set up as a level
+	 *
+	 * @param levelName The name for the saved level
+	 */
+	private void save(String levelName) {
+		FileHandle f = new FileHandle(levelName);
+
+		// TODO: Make this not creating new objects by updating Level to use PooledList(?)
+
+		BoxObstacle[] obstacleArray = new BoxObstacle[obstacles.size()];
+		int i = 0;
+		for(BoxObstacle box : obstacles) {
+			obstacleArray[i++] = box;
+			if(box != null) {
+				System.out.println(box);
+			}
+		}
+
+		HostList hostList = new HostList();
+		for(HostModel host : hosts) {
+			hostList.add(host, false);
+		}
+
+		level.set(null, obstacleArray, hostList, spirit);
+		loader.saveLevel(f, level);
 	}
 
 	/**
@@ -408,6 +444,7 @@ public class LevelDesignerMode extends WorldController {
 		canvas.end();
 
 		canvas.begin();
+
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}

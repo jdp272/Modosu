@@ -17,7 +17,11 @@ public class Factory {
     private TextureRegion smallHostTex;
     private TextureRegion smallHostGaugeTex;
 
+    /** The draw scale of objects */
     private Vector2 scale;
+
+    /** Can be set. If true, instantiated objects are sensors */
+    public boolean makeSensors;
 
     public Factory(
             Vector2 scale,
@@ -43,6 +47,7 @@ public class Factory {
         box.setDrawScale(scale);
         box.setTexture(obstacleTex);
         box.setBodyType(BodyDef.BodyType.StaticBody);
+        box.setSensor(makeSensors);
         return box;
     }
 
@@ -56,6 +61,7 @@ public class Factory {
         );
         spirit.setDrawScale(scale);
         spirit.setTexture(spiritTex);
+        spirit.setSensor(makeSensors);
         return spirit;
     }
 
@@ -77,6 +83,7 @@ public class Factory {
         host.setDrawScale(scale);
         host.setTexture(smallHostTex);
         host.setHostGaugeTexture(smallHostGaugeTex);
+        host.setSensor(makeSensors);
         return host;
     }
 }
