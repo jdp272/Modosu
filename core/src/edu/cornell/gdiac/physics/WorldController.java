@@ -492,7 +492,7 @@ public abstract class WorldController implements Screen {
 	/**
 	 * Immediately adds the object to the physics world
 	 *
-	 * param obj The object to add
+	 * @param obj The object to add
 	 */
 	protected void addObject(Obstacle obj) {
 		assert inBounds(obj) : "Object is not in bounds";
@@ -599,7 +599,7 @@ public abstract class WorldController implements Screen {
 		while (!addQueue.isEmpty()) {
 			addObject(addQueue.poll());
 		}
-		
+
 		// Turn the physics engine crank.
 		world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 

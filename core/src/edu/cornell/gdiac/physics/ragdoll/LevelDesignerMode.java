@@ -19,9 +19,15 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import edu.cornell.gdiac.physics.*;
+import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.physics.spirit.SpiritModel;
+import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.RandomController;
 import edu.cornell.gdiac.util.SoundController;
+
+import javax.swing.*;
+import java.util.ArrayList;
 
 /**
  * Gameplay specific controller for the ragdoll fishtank.
@@ -51,7 +57,7 @@ public class LevelDesignerMode extends WorldController {
 			"ragdoll/bubble03.mp3", "ragdoll/bubble04.mp3"};
 
 	/** Speed for changing camera position */
-	private static final float CAMERA_SPEED = 2.f;
+	private static final float CAMERA_SPEED = 5.f;
 
 	/** Texture asset for mouse crosshairs */
 	private TextureRegion crosshairTexture;
@@ -59,15 +65,21 @@ public class LevelDesignerMode extends WorldController {
 	private TextureRegion backgroundTexture;
 	/** Texture asset for watery foreground */
 	private TextureRegion foregroundTexture;
-	/** Texture asset for the bubble generator */
-	private TextureRegion bubbleTexture;
-	/** Texture assets for the body parts */
-	private TextureRegion[] bodyTextures;
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState ragdollAssetState = AssetState.EMPTY;
 
+	/** The level that is populated and used for saving */
 	private Level level;
+	/** A list of obstacles in the level */
+	private PooledList<BoxObstacle> obstacles;
+	/** A list of hosts in the level */
+	private PooledList<HostModel> hosts;
+	/** The spirit for the level */
+	private SpiritModel spirit;
+
+	/** If the selector should select at the next update */
+	private boolean select;
 
 	/** The camera position */
 	private Vector2 camTarget;
@@ -127,15 +139,6 @@ public class LevelDesignerMode extends WorldController {
 		backgroundTexture = createTexture(manager,BACKG_FILE,false);
 		foregroundTexture = createTexture(manager,FOREG_FILE,false);
 
-		bubbleTexture = createTexture(manager,BUBBLE_FILE,false);
-		bodyTextures = new TextureRegion[RAGDOLL_FILES.length];
-		for(int ii = 0; ii < RAGDOLL_FILES.length; ii++) {
-			bodyTextures[ii] =  createTexture(manager,RAGDOLL_FILES[ii],false);
-		}
-		for(int ii = 0; ii < BUBBLE_SOUNDS.length; ii++) {
-			SoundController.getInstance().allocate(manager, BUBBLE_SOUNDS[ii]);
-		}
-
 		super.loadContent(manager);
 		ragdollAssetState = AssetState.COMPLETE;
 	}
@@ -189,6 +192,9 @@ public class LevelDesignerMode extends WorldController {
 		setFailure(false);
 		soundCounter = 0;
 
+		obstacles = new PooledList<BoxObstacle>();
+		hosts = new PooledList<HostModel>();
+
 		camTarget = new Vector2();
 	}
 
@@ -208,6 +214,8 @@ public class LevelDesignerMode extends WorldController {
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
+
+		obstacles.clear();
 
 		FileHandle f = new FileHandle("out.txt");
 
@@ -301,12 +309,61 @@ public class LevelDesignerMode extends WorldController {
 		float mouseX = input.getCrossHair().x + (camTarget.x - (canvas.getWidth() / 2.f)) / scale.x;
 		float mouseY = input.getCrossHair().y + (camTarget.y - (canvas.getHeight() / 2.f)) / scale.y;
 
-		if (input.didTertiary() && !selector.isSelected()) {
+		if ((input.didTertiary() || select) && !selector.isSelected()) {
 			selector.select(mouseX, mouseY);
 		} else if (!input.didTertiary() && selector.isSelected()) {
 			selector.deselect();
 		} else {
 			selector.moveTo(mouseX, mouseY);
+		}
+
+		// Add new objects
+//
+		if(input.newBox() && !selector.isSelected()) {
+			// Add a new obstacle
+			BoxObstacle box = factory.makeObstacle(mouseX, mouseY);
+			addObject(box);
+			obstacles.add(box);
+		}
+		if(input.newHost() && !selector.isSelected()) {
+			// Add a new host
+			HostModel host = factory.makeSmallHost(mouseX, mouseY);
+			addObject(host);
+			hosts.add(host);
+		}
+		if(input.newSpirit() && !selector.isSelected()) {
+			// If the spirit already exists, move it. Otherwise, make a new one
+			if(spirit == null) {
+				spirit = factory.makeSpirit(mouseX, mouseY);
+				addObject(spirit);
+			} else {
+				spirit.setX(mouseX);
+				spirit.setY(mouseY);
+			}
+		}
+		if(input.didDelete()) {
+			// Get a selection if there currently isn't one
+			if(!selector.isSelected()) {
+				selector.select(mouseX, mouseY);
+			}
+
+			// Remove what was at the mouse location
+			if(selector.isSelected()) {
+				// Get the selection, then remove it from the selector
+				Obstacle selection = selector.getObstacle();
+				selector.deselect();
+
+				if(selection instanceof HostModel) {
+					hosts.remove(selection);
+				} else if(selection instanceof SpiritModel) {
+					// Do nothing- no list to remove spirit from
+				} else if(selection instanceof BoxObstacle) { // Should be after above if statements
+					obstacles.remove(selection);
+				} else {
+					assert false : "Invalid object type";
+				}
+				selection.markRemoved(true);
+			}
 		}
 
 		// Update the camera position

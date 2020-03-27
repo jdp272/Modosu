@@ -70,6 +70,19 @@ public class InputController {
 	/** Whether the exit button was pressed. */
 	private boolean exitPressed;
 	private boolean exitPrevious;
+
+	/** If a new obstacle button was pressed */
+	private boolean boxPressed;
+	private boolean boxPrevious;
+	/** If a new host button was pressed */
+	private boolean hostPressed;
+	private boolean hostPrevious;
+	/** If a new spirit button was pressed */
+	private boolean spiritPressed;
+	private boolean spiritPrevious;
+	/** If the delete button was pressed */
+	private boolean deletePressed;
+	private boolean deletePrevious;
 	
 	/** How much did we move horizontally? */
 	private float horizontal;
@@ -202,6 +215,34 @@ public class InputController {
 	public boolean didExit() {
 		return exitPressed && !exitPrevious;
 	}
+
+	/**
+	 * Returns true if the new box button was pressed.
+	 *
+	 * @return true if the new box button was pressed.
+	 */
+	public boolean newBox() { return boxPressed && !boxPrevious; }
+
+	/**
+	 * Returns true if the new host button was pressed.
+	 *
+	 * @return true if the new host button was pressed.
+	 */
+	public boolean newHost() { return hostPressed && !hostPrevious; }
+
+	/**
+	 * Returns true if the new spirit button was pressed.
+	 *
+	 * @return true if the new spirit button was pressed.
+	 */
+	public boolean newSpirit() { return spiritPressed && !spiritPrevious; }
+
+	/**
+	 * Returns true if the delete button was pressed.
+	 *
+	 * @return true if the delete button was pressed.
+	 */
+	public boolean didDelete() { return deletePressed && !deletePrevious; }
 	
 	/**
 	 * Creates a new input controller
@@ -236,6 +277,11 @@ public class InputController {
 		exitPrevious = exitPressed;
 		nextPrevious = nextPressed;
 		prevPrevious = prevPressed;
+
+		boxPrevious = boxPressed;
+		hostPrevious = hostPressed;
+		spiritPrevious = spiritPressed;
+		deletePrevious = deletePressed;
 		
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
@@ -263,6 +309,12 @@ public class InputController {
 		prevPressed  = xbox.getLB();
 		primePressed = xbox.getA();
 		debugPressed  = xbox.getY();
+
+		// TODO:
+		boxPressed = xbox.getX();
+//		hostPressed = ...
+//		spiritPressed = ...
+//		deletePressed = ...
 
 		// Increase animation frame, but only if trying to move
 		horizontal = xbox.getLeftX();
@@ -302,7 +354,12 @@ public class InputController {
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-		
+
+		boxPressed = (secondary && boxPressed)  || (Gdx.input.isKeyPressed(Input.Keys.B));
+		hostPressed = (secondary && hostPressed)  || (Gdx.input.isKeyPressed(Input.Keys.G));
+		spiritPressed = (secondary && spiritPressed)  || (Gdx.input.isKeyPressed(Input.Keys.Z));
+		deletePressed = (secondary && deletePressed)  || (Gdx.input.isKeyPressed(Input.Keys.X));
+
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
