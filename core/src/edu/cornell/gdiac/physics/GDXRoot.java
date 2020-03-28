@@ -137,7 +137,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelDesigner.setCanvas(canvas);
 			levelDesigner.reset();
 			setScreen(levelDesigner);
-			
+
 			loading.dispose();
 			loading = null;
 		} else if (exitCode == WorldController.EXIT_NEXT) {

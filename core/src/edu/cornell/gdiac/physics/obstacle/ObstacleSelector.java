@@ -339,7 +339,6 @@ public class ObstacleSelector implements QueryCallback  {
 		if(selection != null) {
 			// Indicate that this object has been clicked
 			selection.setClicked();
-			System.out.println(selection.clicked);
 
 			// Don't select an object that can't be selected
 			if(!selection.selectable) {

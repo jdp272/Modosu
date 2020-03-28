@@ -51,11 +51,13 @@ public abstract class Obstacle {
 	/** Drawing scale to convert physics units to pixels */
 	protected Vector2 drawScale;
 
-	/// Store data relevant for selections
+	/// Store data relevant for level design
 	/** Records when this obstacle is clicked */
 	public boolean clicked;
 	/** Whether this obstacle can be selected. By default, set to true */
 	public boolean selectable = true;
+	/** Whether this obstacle should be part of the game (versus part of HUD) */
+	public boolean inGame = true;
 
 	/// Track garbage collection status
 	/** Whether the object should be removed from the world on next pass */

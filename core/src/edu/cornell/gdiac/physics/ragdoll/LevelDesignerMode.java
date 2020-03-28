@@ -75,15 +75,18 @@ public class LevelDesignerMode extends WorldController {
 
 	/** The level that is populated and used for saving */
 	private Level level;
-	/** A list of obstacles in the level */
-	private PooledList<BoxObstacle> obstacles;
-	/** A list of hosts in the level */
-	private PooledList<HostModel> hosts;
-	/** The spirit for the level */
+	/** The spirit for the game */
 	private SpiritModel spirit;
 
-	/** The obstacle that, when clicked, spawns a new obstacle */
+	/** The collection of spawning objects, for making new game elements */
+	private SpawnerList spawnList;
+
+	/** The object that, when clicked, spawns a new obstacle */
 	private BoxObstacle boxSpawn;
+	/** The object that, when clicked, spawns a new host */
+	private HostModel hostSpawn;
+	/** The object that, when clicked, spawns or moves the spirit */
+	private SpiritModel spiritSpawn;
 
 	/** If the selector should select at the next update */
 	private boolean select;
@@ -199,9 +202,6 @@ public class LevelDesignerMode extends WorldController {
 		setFailure(false);
 		soundCounter = 0;
 
-		obstacles = new PooledList<BoxObstacle>();
-		hosts = new PooledList<HostModel>();
-
 		camTarget = new Vector2();
 	}
 
@@ -224,8 +224,6 @@ public class LevelDesignerMode extends WorldController {
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
-
-		obstacles.clear();
 
 		FileHandle f = new FileHandle("out.txt");
 
@@ -266,13 +264,48 @@ public class LevelDesignerMode extends WorldController {
 //		collisionController.addHosts(level.hosts);
 //		collisionController.addSpirit(level.start);
 
+//		boxSpawn.setX((canvas.getWidth() + camTarget.x) / scale.x - boxSpawn.getWidth() / 2.f);
+//		boxSpawn.setY((canvas.getHeight() + camTarget.y) / scale.y - boxSpawn.getHeight() / 2.f);
+
 		boxSpawn = factory.makeObstacle(0.f, 0.f);
-		boxSpawn.setX((canvas.getWidth() + camTarget.x) / scale.x - boxSpawn.getWidth() / 2.f);
-		boxSpawn.setY((canvas.getHeight() + camTarget.y) / scale.y - boxSpawn.getHeight() / 2.f);
 		addObject(boxSpawn);
 
-		// Can't be selected
-		boxSpawn.selectable = false;
+		hostSpawn = factory.makeSmallHost(0.f, 0.f);
+		addObject(hostSpawn);
+
+		spiritSpawn = factory.makeSpirit(0.f, 0.f);
+
+		addObject(spiritSpawn);
+
+		spawnList = new SpawnerList(canvas, scale);
+
+		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
+			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+				return factory.makeObstacle(x, y);
+			}
+		});
+
+		spawnList.addSpawner(hostSpawn, new SpawnerList.CallbackFunction() {
+			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+				return factory.makeSmallHost(x, y);
+			}
+		});
+
+		spawnList.addSpawner(spiritSpawn, new SpawnerList.CallbackFunction() {
+			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+				if (lastCreated == null) {
+					return factory.makeSpirit(x, y);
+				}
+				lastCreated.setX(x);
+				lastCreated.setY(y);
+
+				return null;
+			}
+		});
+
+		// Can't be selected or added to the game
+//		boxSpawn.selectable = false;
+//		boxSpawn.inGame = false;
 
 		selector = new ObstacleSelector(world);
 		selector.setTexture(crosshairTexture);
@@ -312,6 +345,9 @@ public class LevelDesignerMode extends WorldController {
 		   coordinates
 		 */
 
+		// Update the camera position
+		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
+
 		float mouseX = input.getCrossHair().x + (camTarget.x - (canvas.getWidth() / 2.f)) / scale.x;
 		float mouseY = input.getCrossHair().y + (camTarget.y - (canvas.getHeight() / 2.f)) / scale.y;
 
@@ -323,28 +359,54 @@ public class LevelDesignerMode extends WorldController {
 			selector.moveTo(mouseX, mouseY);
 		}
 
-		if(boxSpawn.checkClicked()) {
-			// Create a new box at the spawn point
-			BoxObstacle box = factory.makeObstacle(boxSpawn.getX(), boxSpawn.getY());
-			addObject(box);
-			obstacles.add(box);
-
-			// Select the new object
+		Obstacle obj = spawnList.update(camTarget);
+		if(obj != null) {
+			addObject(obj);
 			selector.select(mouseX, mouseY);
 		}
+
+//		if(boxSpawn.checkClicked()) {
+//			// Create a new box at the spawn point
+//			BoxObstacle box = factory.makeObstacle(boxSpawn.getX(), boxSpawn.getY());
+//			addObject(box);
+//
+//			// Select the new object
+//			selector.select(mouseX, mouseY);
+//		}
+//		if(hostSpawn.checkClicked()) {
+//			// Create a new host at the spawn point
+//			HostModel host = factory.makeSmallHost(hostSpawn.getX(), hostSpawn.getY());
+//			addObject(host);
+//			hosts.add(host);
+//
+//			// Select the new object
+//			selector.select(mouseX, mouseY);
+//		}
+//		if(spiritSpawn.checkClicked()) {
+//			// There can only be one spirit
+//			if(spirit == null) {
+//				// Create a new box at the spawn point
+//				spirit = factory.makeSpirit(spiritSpawn.getX(), spiritSpawn.getY());
+//				addObject(spirit);
+//			} else {
+//				// Move the spirit to the spawn location
+//				spirit.setX(spiritSpawn.getX(), spiritSpawn.getY());
+//			}
+//
+//			// Select the spirit
+//			selector.select(mouseX, mouseY);
+//		}
 
 		// Add new objects
 		if(input.newBox() && !selector.isSelected()) {
 			// Add a new obstacle
 			BoxObstacle box = factory.makeObstacle(mouseX, mouseY);
 			addObject(box);
-			obstacles.add(box);
 		}
 		if(input.newHost() && !selector.isSelected()) {
 			// Add a new host
 			HostModel host = factory.makeSmallHost(mouseX, mouseY);
 			addObject(host);
-			hosts.add(host);
 		}
 		if(input.newSpirit() && !selector.isSelected()) {
 			// If the spirit already exists, move it. Otherwise, make a new one
@@ -368,15 +430,6 @@ public class LevelDesignerMode extends WorldController {
 				Obstacle selection = selector.getObstacle();
 				selector.deselect();
 
-				if(selection instanceof HostModel) {
-					hosts.remove(selection);
-				} else if(selection instanceof SpiritModel) {
-					// Do nothing- no list to remove spirit from
-				} else if(selection instanceof BoxObstacle) { // Should be after above if statements
-					obstacles.remove(selection);
-				} else {
-					assert false : "Invalid object type";
-				}
 				selection.markRemoved(true);
 			}
 		}
@@ -384,14 +437,9 @@ public class LevelDesignerMode extends WorldController {
 			save("custom.lvl");
 		}
 
-		System.out.println(camTarget);
-
-		// Update the camera position
-		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
-
 		// Update spawn positions after updating the camera
-		boxSpawn.setX((canvas.getWidth() / 2.f + camTarget.x) / scale.x - boxSpawn.getWidth() / 2.f);
-		boxSpawn.setY((canvas.getHeight() / 2.f + camTarget.y) / scale.y - boxSpawn.getHeight() / 2.f);
+//		boxSpawn.setX((canvas.getWidth() / 2.f + camTarget.x) / scale.x - boxSpawn.getWidth() / 2.f);
+//		boxSpawn.setY((canvas.getHeight() / 2.f + camTarget.y) / scale.y - boxSpawn.getHeight() / 2.f);
 
 		canvas.setCamTarget(camTarget);
 		canvas.updateCamera();
@@ -410,19 +458,28 @@ public class LevelDesignerMode extends WorldController {
 
 		// TODO: Make this not creating new objects by updating Level to use PooledList(?)
 
-		BoxObstacle[] obstacleArray = new BoxObstacle[obstacles.size()];
-		int i = 0;
-		for(BoxObstacle box : obstacles) {
-			obstacleArray[i++] = box;
-			if(box != null) {
-				System.out.println(box);
+		HostList hostList = new HostList();
+		ArrayList<BoxObstacle> obstacleList = new ArrayList<BoxObstacle>();
+		int boxNum = 0;
+		for(Obstacle obj : objects) {
+			if(!obj.inGame) {
+				continue;
+			}
+
+			if (obj instanceof SpiritModel) {
+				// Spirit is already saved in a field
+			} else if (obj instanceof HostModel) {
+				hostList.add((HostModel)obj, false);
+			} else if (obj instanceof BoxObstacle) {
+				obstacleList.add((BoxObstacle)obj);
 			}
 		}
 
-		HostList hostList = new HostList();
-		for(HostModel host : hosts) {
-			hostList.add(host, false);
-		}
+		// For now, until the types used for levels are fixed
+		BoxObstacle[] obstacleArray = new BoxObstacle[obstacleList.size()];
+		obstacleList.toArray(obstacleArray);
+
+		// TODO: what if spirit is null
 
 		level.set(null, obstacleArray, hostList, spirit);
 		loader.saveLevel(f, level);
