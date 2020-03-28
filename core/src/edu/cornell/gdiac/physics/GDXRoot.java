@@ -20,8 +20,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.assets.loaders.*;
 import com.badlogic.gdx.assets.loaders.resolvers.*;
 
-import edu.cornell.gdiac.physics.GamePlayController;
-import edu.cornell.gdiac.physics.ragdoll.LevelDesignerMode;
 import edu.cornell.gdiac.util.*;
 
 
@@ -126,17 +124,17 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
-//			controller.loadContent(manager);
-//			controller.setScreenListener(this);
-//			controller.setCanvas(canvas);
-//			controller.reset();
-//			setScreen(controller);
+			controller.loadContent(manager);
+			controller.setScreenListener(this);
+			controller.setCanvas(canvas);
+			controller.reset();
+			setScreen(controller);
 
-			levelDesigner.loadContent(manager);
-			levelDesigner.setScreenListener(this);
-			levelDesigner.setCanvas(canvas);
-			levelDesigner.reset();
-			setScreen(levelDesigner);
+//			levelDesigner.loadContent(manager);
+//			levelDesigner.setScreenListener(this);
+//			levelDesigner.setCanvas(canvas);
+//			levelDesigner.reset();
+//			setScreen(levelDesigner);
 
 			loading.dispose();
 			loading = null;

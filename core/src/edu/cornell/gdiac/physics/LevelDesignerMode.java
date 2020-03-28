@@ -8,8 +8,10 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 2/6/2015
  */
-package edu.cornell.gdiac.physics.ragdoll;
+package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
@@ -22,16 +24,11 @@ import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.physics.ragdoll.RagdollModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
-import edu.cornell.gdiac.util.PooledList;
-import edu.cornell.gdiac.util.RandomController;
 import edu.cornell.gdiac.util.SoundController;
 
-import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Scanner;
 
 /**
  * Gameplay specific controller for the ragdoll fishtank.
@@ -75,18 +72,9 @@ public class LevelDesignerMode extends WorldController {
 
 	/** The level that is populated and used for saving */
 	private Level level;
-	/** The spirit for the game */
-	private SpiritModel spirit;
 
 	/** The collection of spawning objects, for making new game elements */
 	private SpawnerList spawnList;
-
-	/** The object that, when clicked, spawns a new obstacle */
-	private BoxObstacle boxSpawn;
-	/** The object that, when clicked, spawns a new host */
-	private HostModel hostSpawn;
-	/** The object that, when clicked, spawns or moves the spirit */
-	private SpiritModel spiritSpawn;
 
 	/** If the selector should select at the next update */
 	private boolean select;
@@ -264,16 +252,13 @@ public class LevelDesignerMode extends WorldController {
 //		collisionController.addHosts(level.hosts);
 //		collisionController.addSpirit(level.start);
 
-//		boxSpawn.setX((canvas.getWidth() + camTarget.x) / scale.x - boxSpawn.getWidth() / 2.f);
-//		boxSpawn.setY((canvas.getHeight() + camTarget.y) / scale.y - boxSpawn.getHeight() / 2.f);
-
-		boxSpawn = factory.makeObstacle(0.f, 0.f);
+		BoxObstacle boxSpawn = factory.makeObstacle(0.f, 0.f);
 		addObject(boxSpawn);
 
-		hostSpawn = factory.makeSmallHost(0.f, 0.f);
+		HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
 		addObject(hostSpawn);
 
-		spiritSpawn = factory.makeSpirit(0.f, 0.f);
+		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
 
 		addObject(spiritSpawn);
 
@@ -303,10 +288,6 @@ public class LevelDesignerMode extends WorldController {
 			}
 		});
 
-		// Can't be selected or added to the game
-//		boxSpawn.selectable = false;
-//		boxSpawn.inGame = false;
-
 		selector = new ObstacleSelector(world);
 		selector.setTexture(crosshairTexture);
 		selector.setDrawScale(scale);
@@ -329,7 +310,7 @@ public class LevelDesignerMode extends WorldController {
 	 * This method is called after input is read, but before collisions are resolved.
 	 * The very last thing that it should do is apply forces to the appropriate objects.
 	 *
-	 * @param delta Number of seconds since last animation frame
+	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
 		// Move an object if touched
@@ -365,66 +346,8 @@ public class LevelDesignerMode extends WorldController {
 			selector.select(mouseX, mouseY);
 		}
 
-//		if(boxSpawn.checkClicked()) {
-//			// Create a new box at the spawn point
-//			BoxObstacle box = factory.makeObstacle(boxSpawn.getX(), boxSpawn.getY());
-//			addObject(box);
-//
-//			// Select the new object
-//			selector.select(mouseX, mouseY);
-//		}
-//		if(hostSpawn.checkClicked()) {
-//			// Create a new host at the spawn point
-//			HostModel host = factory.makeSmallHost(hostSpawn.getX(), hostSpawn.getY());
-//			addObject(host);
-//			hosts.add(host);
-//
-//			// Select the new object
-//			selector.select(mouseX, mouseY);
-//		}
-//		if(spiritSpawn.checkClicked()) {
-//			// There can only be one spirit
-//			if(spirit == null) {
-//				// Create a new box at the spawn point
-//				spirit = factory.makeSpirit(spiritSpawn.getX(), spiritSpawn.getY());
-//				addObject(spirit);
-//			} else {
-//				// Move the spirit to the spawn location
-//				spirit.setX(spiritSpawn.getX(), spiritSpawn.getY());
-//			}
-//
-//			// Select the spirit
-//			selector.select(mouseX, mouseY);
-//		}
-
-		// Add new objects
-		if(input.newBox() && !selector.isSelected()) {
-			// Add a new obstacle
-			BoxObstacle box = factory.makeObstacle(mouseX, mouseY);
-			addObject(box);
-		}
-		if(input.newHost() && !selector.isSelected()) {
-			// Add a new host
-			HostModel host = factory.makeSmallHost(mouseX, mouseY);
-			addObject(host);
-		}
-		if(input.newSpirit() && !selector.isSelected()) {
-			// If the spirit already exists, move it. Otherwise, make a new one
-			if(spirit == null) {
-				spirit = factory.makeSpirit(mouseX, mouseY);
-				addObject(spirit);
-			} else {
-				spirit.setX(mouseX);
-				spirit.setY(mouseY);
-			}
-		}
 		if(input.didDelete()) {
-			// Get a selection if there currently isn't one
-			if(!selector.isSelected()) {
-				selector.select(mouseX, mouseY);
-			}
-
-			// Remove what was at the mouse location
+			// Remove what is currently selected at the mouse location
 			if(selector.isSelected()) {
 				// Get the selection, then remove it from the selector
 				Obstacle selection = selector.getObstacle();
@@ -434,12 +357,23 @@ public class LevelDesignerMode extends WorldController {
 			}
 		}
 		if(input.didSave()) {
-			save("custom.lvl");
-		}
 
-		// Update spawn positions after updating the camera
-//		boxSpawn.setX((canvas.getWidth() / 2.f + camTarget.x) / scale.x - boxSpawn.getWidth() / 2.f);
-//		boxSpawn.setY((canvas.getHeight() / 2.f + camTarget.y) / scale.y - boxSpawn.getHeight() / 2.f);
+			// TODO: COMBINE THIS WITH InputController SOMEHOW!
+			Gdx.input.getTextInput(new Input.TextInputListener() {
+				@Override
+				public void input (String levelName) {
+					System.out.println("Saving level as " + levelName + ".lvl");
+					save(levelName + ".lvl");
+				}
+
+				@Override
+				public void canceled () {
+					System.out.println("Cancelling save");
+				}
+			}, "Input custom level name", "custom", "");
+
+//			save("custom.lvl");
+		}
 
 		canvas.setCamTarget(camTarget);
 		canvas.updateCamera();
@@ -458,6 +392,7 @@ public class LevelDesignerMode extends WorldController {
 
 		// TODO: Make this not creating new objects by updating Level to use PooledList(?)
 
+		SpiritModel spirit = null;
 		HostList hostList = new HostList();
 		ArrayList<BoxObstacle> obstacleList = new ArrayList<BoxObstacle>();
 		int boxNum = 0;
@@ -467,6 +402,7 @@ public class LevelDesignerMode extends WorldController {
 			}
 
 			if (obj instanceof SpiritModel) {
+				spirit = (SpiritModel)obj;
 				// Spirit is already saved in a field
 			} else if (obj instanceof HostModel) {
 				hostList.add((HostModel)obj, false);

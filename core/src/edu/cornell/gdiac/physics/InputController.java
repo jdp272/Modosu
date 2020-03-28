@@ -370,7 +370,7 @@ public class InputController {
 		boxPressed = (secondary && boxPressed)  || (Gdx.input.isKeyPressed(Input.Keys.B));
 		hostPressed = (secondary && hostPressed)  || (Gdx.input.isKeyPressed(Input.Keys.G));
 		spiritPressed = (secondary && spiritPressed)  || (Gdx.input.isKeyPressed(Input.Keys.Z));
-		deletePressed = (secondary && deletePressed)  || (Gdx.input.isKeyPressed(Input.Keys.X));
+		deletePressed = (secondary && deletePressed)  || (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE));
 		savePressed = (secondary && savePressed)  || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
 
 		// Directional controls
