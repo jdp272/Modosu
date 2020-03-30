@@ -489,7 +489,7 @@ public class HostModel extends BoxObstacle {
                 canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
 
                 // Color changes more and more to a red or goal color here
-                Color warningColor = new Color(1, 1 - chargeProgression, 0, 1);
+                Color warningColor = new Color(chargeProgression * 2, 1 - chargeProgression, 1 - chargeProgression, 1);
                 if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
                     // Color of the 3 flashes
                     warningColor = Color.BLACK;
