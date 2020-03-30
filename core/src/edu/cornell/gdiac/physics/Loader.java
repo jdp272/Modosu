@@ -59,6 +59,9 @@ public class Loader {
     public static class HostData {
         public Vector2 location;
         public float chargeTime; // Maximum amount of charge that can be stored
+
+        public Vector2[] instructions;
+
         public ImageFile imageFile;
     }
 
@@ -242,16 +245,19 @@ public class Loader {
             ObstacleData oData = new ObstacleData();
             oData.dimensions = level.obstacles[i].getDimension();
             oData.origin = new Vector2(level.obstacles[i].getX(), level.obstacles[i].getY());
+
             levelData.obstacleData[i] = oData;
         }
 
         // Store the host data
         levelData.hostData = new HostData[level.hosts.size()];
         for(int i = 0; i < level.hosts.size(); i++) {
-            HostData rData = new HostData();
-            rData.location = new Vector2(level.hosts.get(i).getX(), level.hosts.get(i).getY());
-            rData.chargeTime = level.hosts.get(i).getMaxCharge();
-            levelData.hostData[i] = rData;
+            HostData hData = new HostData();
+            hData.location = new Vector2(level.hosts.get(i).getX(), level.hosts.get(i).getY());
+            hData.chargeTime = level.hosts.get(i).getMaxCharge();
+            hData.instructions = level.hosts.get(i).getInstructionList();
+
+            levelData.hostData[i] = hData;
         }
 
         // Store the starting information
@@ -287,8 +293,7 @@ public class Loader {
 
         // Create the hosts
         HostList hosts = new HostList();
-        HostData hData;
-
+        HostData hData; // A simple reference to the data being processed
         for (int i = 0; i < levelData.hostData.length; i++) {
             hData = levelData.hostData[i];
 
@@ -303,12 +308,9 @@ public class Loader {
 
              TODO: Make a host once HostModel constructor is ready
              */
-            System.out.println("iteration " + i);
-            hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y), false);
+            hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions), false);
 //            hosts.add(new HostModel(rData.location.x, rData.location.y, (int)Data.chargeTime), false);
         }
-
-        System.out.println("hosts size: " + hosts.size());
 
         // Create the starting "host" (with no charge capacity)
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);

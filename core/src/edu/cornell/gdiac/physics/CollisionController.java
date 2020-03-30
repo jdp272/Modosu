@@ -69,8 +69,7 @@ public class CollisionController implements ContactListener {
         for (HostModel r : hostList) {
             if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
                     (body1.getUserData() == r && body2.getUserData() == spirit))) {
-                possessed = true;
-                hostPossessed = r;
+                possess(r);
                 spirit.setHasLaunched(false);
             }
         }
@@ -155,5 +154,24 @@ public class CollisionController implements ContactListener {
     /** Getter method to return whether a wall bounce occurred this frame */
     public boolean isBounced() {
         return bounced;
+    }
+
+    /**
+     * Sets the given host as a possessed robot, and unpossesses the previous
+     * possessed host, if there was one
+     *
+     * @param host The host to possess
+     */
+    private void possess(HostModel host) {
+        if(hostPossessed != null) {
+            hostPossessed.setPossessed(false);
+        }
+
+        possessed = (host != null);
+        hostPossessed = host;
+
+        if(hostPossessed != null) {
+            hostPossessed.setPossessed(true);
+        }
     }
 }

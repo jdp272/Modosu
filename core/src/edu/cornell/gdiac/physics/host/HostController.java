@@ -119,11 +119,17 @@ public class HostController {
             }
         }
 
+//        System.out.println();
+
         //update other robots
         for(HostModel r: hosts){
+//            System.out.println("has instructions: " + r.getInstructionList() != null);
+
             Vector2 n = r.getInstruction();
             Vector2 curr = r.getPosition();
             if(r != possessed && Math.abs(curr.x - n.x) < NEXT_INSTRUCTION_DIST && Math.abs(curr.y - n.y) < NEXT_INSTRUCTION_DIST && !r.beenPossessed()){
+//                System.out.println("curr: " + curr + ", n: " + n);
+
                 //go to next instruction
                 r.nextInstruction();
                 n = r.getInstruction();
@@ -134,6 +140,8 @@ public class HostController {
 
             }
             else if(r != possessed && !r.beenPossessed()){
+//                System.out.println("Golem moving");
+
                 r.setVX(Math.signum(n.x - curr.x) * GOLEM_MOVEMENT_SPEED);
                 r.setVY(Math.signum(n.y - curr.y) * GOLEM_MOVEMENT_SPEED);
             }

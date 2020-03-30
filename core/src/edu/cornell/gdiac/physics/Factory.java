@@ -66,19 +66,24 @@ public class Factory {
     }
 
     public HostModel makeSmallHost(float x, float y) {
-        return makeHostInternal(x, y, SMALL_MAX_CHARGE, smallHostTex, smallHostGaugeTex);
+        return makeSmallHost(x, y, null);
+    }
+
+    public HostModel makeSmallHost(float x, float y, Vector2[] instructions) {
+        return makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, smallHostTex, smallHostGaugeTex);
     }
 
     // TODO: add medium and large host make functions
 
-    private HostModel makeHostInternal(float x, float y, int maxCharge, TextureRegion hostTex, TextureRegion gaugeTex) {
+    private HostModel makeHostInternal(float x, float y, Vector2[] instructions, int maxCharge, TextureRegion hostTex, TextureRegion gaugeTex) {
         HostModel host = new HostModel(
                 x,
                 y,
                 hostTex.getRegionWidth() / scale.x,
                 hostTex.getRegionHeight() / scale.y,
                 0,
-                maxCharge
+                maxCharge,
+                instructions
         );
         host.setDrawScale(scale);
         host.setTexture(smallHostTex);
