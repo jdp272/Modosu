@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.files.FileHandle;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
@@ -303,7 +302,7 @@ public class Loader {
     public Level reset(int level){
         return null;
 //        BoxObstacle[] obs = {new BoxObstacle(50,50,10,10)};
-//        HostList robs = new HostList();
+//        ArrayList<HostModel> robs = new ArrayList<>();
 //        HostModel rob = new HostModel(30,30,10,10, 100);
 //        //rob.setTexture(hostTex);
 //        robs.add(rob,true);

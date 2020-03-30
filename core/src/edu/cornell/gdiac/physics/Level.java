@@ -1,8 +1,8 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
+
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 

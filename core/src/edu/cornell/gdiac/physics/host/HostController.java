@@ -158,6 +158,7 @@ public class HostController {
                             spirit.setIsPossessing(false);
                             possessed.setPossessed(false);
                             launched = true;
+                            System.out.println("actually shot");
                         }
 
 
