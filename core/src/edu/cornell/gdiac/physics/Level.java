@@ -11,6 +11,13 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
  */
 public class Level {
 
+    public Level() {
+        this.regions = null;
+        this.obstacles = null;
+        this.hosts = null;
+        this.start = null;
+    }
+
     /**
      * Constructs a simple object encapsulating the elements of a level
      *
@@ -54,4 +61,17 @@ public class Level {
 
     /** The "host" where the player starts */
     public SpiritModel start;
+
+    public void set(
+            Vector2[][] regions,
+            BoxObstacle[] obstacles,
+            HostList hosts,
+            SpiritModel start
+    ) {
+        this.regions = regions;
+        this.obstacles = obstacles;
+        this.hosts = hosts;
+        this.start = start;
+    }
+
 }

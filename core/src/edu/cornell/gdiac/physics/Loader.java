@@ -17,6 +17,7 @@ import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+import com.badlogic.gdx.physics.box2d.*;
 
 /**
  * A static class that can be used for loading a level from a json file
@@ -41,21 +42,31 @@ public class Loader {
 
     // Fields
 
+    public enum ImageFile {
+        Robot,
+        Crate
+    }
+
     /** A struct that stores data from an obstacle when read from the json */
-    private class ObstacleData {
+    public static class ObstacleData {
         public Vector2 origin; // Center of the box
         public Vector2 dimensions;
+        public ImageFile imageFile;
         // public float rotation; // TODO: add rotation
     }
 
     /** A struct that stores data from a host when read from the json */
-    private class HostData {
+    public static class HostData {
         public Vector2 location;
         public float chargeTime; // Maximum amount of charge that can be stored
+
+        public Vector2[] instructions;
+
+        public ImageFile imageFile;
     }
 
     /** A struct that stores all the data of a level when read from the json */
-    private class LevelData {
+    public static class LevelData {
         /**
          * An ArrayList of regions on the board. Each region is an island within
          * which hosts can be located. Outside each counts as out of bounds.
@@ -77,7 +88,7 @@ public class Loader {
     /**
      * Tracks the asset state
      */
-    private enum AssetState {
+    public enum AssetState {
         /** No assets loaded */
         EMPTY,
         /** Still loading assets */
@@ -104,6 +115,9 @@ public class Loader {
     /** The font for giving messages to the player */
     private BitmapFont displayFont;
 
+    /** A factory that creates the game objects */
+    private Factory factory;
+
     /** A json object used for loading all json files */
     private Json json;
 
@@ -115,7 +129,9 @@ public class Loader {
     /**
      * Initializes the loader object
      */
-    public Loader() {
+    public Loader(Factory factory) {
+        this.factory = factory;
+
         json = new Json();
 
         manager = new AssetManager();
@@ -229,16 +245,19 @@ public class Loader {
             ObstacleData oData = new ObstacleData();
             oData.dimensions = level.obstacles[i].getDimension();
             oData.origin = new Vector2(level.obstacles[i].getX(), level.obstacles[i].getY());
+
             levelData.obstacleData[i] = oData;
         }
 
         // Store the host data
         levelData.hostData = new HostData[level.hosts.size()];
         for(int i = 0; i < level.hosts.size(); i++) {
-            HostData rData = new HostData();
-            rData.location = new Vector2(level.hosts.get(i).getX(), level.hosts.get(i).getY());
-            rData.chargeTime = level.hosts.get(i).getMaxCharge();
-            levelData.hostData[i] = rData;
+            HostData hData = new HostData();
+            hData.location = new Vector2(level.hosts.get(i).getX(), level.hosts.get(i).getY());
+            hData.chargeTime = level.hosts.get(i).getMaxCharge();
+            hData.instructions = level.hosts.get(i).getInstructionList();
+
+            levelData.hostData[i] = hData;
         }
 
         // Store the starting information
@@ -266,17 +285,17 @@ public class Loader {
         BoxObstacle[] obstacles = new BoxObstacle[levelData.obstacleData.length];
         ObstacleData oData; // A simple reference to the data being processed
 
-        for (int i = 0; i < obstacles.length; i++) {
+        for (int i = 0; i < levelData.obstacleData.length; i++) {
             oData = levelData.obstacleData[i];
-            obstacles[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.origin.y);
+            obstacles[i] = factory.makeObstacle(oData.origin.x, oData.origin.y);
+            // obstacles[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.dimensions.y);
         }
 
         // Create the hosts
         HostList hosts = new HostList();
-        HostData rData;
-
-        for (int i = 0; i < hosts.size(); i++) {
-            rData = levelData.hostData[i];
+        HostData hData; // A simple reference to the data being processed
+        for (int i = 0; i < levelData.hostData.length; i++) {
+            hData = levelData.hostData[i];
 
             /* NOTES: I'm assuming that eventually we'll have a simple creator
              for hosts, like a factory method or something, which we only need
@@ -286,16 +305,18 @@ public class Loader {
              This also assumes that a zero charge time means it has no time
              limit
 
+
              TODO: Make a host once HostModel constructor is ready
              */
-            //hosts.add(new HostModel(rData.location.x, rData.location.y, (int)rData.chargeTime), false);
+            hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions), false);
+//            hosts.add(new HostModel(rData.location.x, rData.location.y, (int)Data.chargeTime), false);
         }
 
         // Create the starting "host" (with no charge capacity)
-        SpiritModel start = new SpiritModel(levelData.startLocation.x, levelData.startLocation.y, 0);
+        SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         // TODO: ensure implementation of 0 charge time means no cap
 
-        return new Level(regions, obstacles, hosts, start);
+        return new Level(regions, obstacles, hosts, spirit);
     }
 
     public Level reset(int level){

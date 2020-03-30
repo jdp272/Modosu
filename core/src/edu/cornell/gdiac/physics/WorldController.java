@@ -65,6 +65,11 @@ public abstract class WorldController implements Screen {
 	protected AssetState worldAssetState = AssetState.EMPTY;
 	/** Track all loaded assets (for unloading purposes) */
 	protected Array<String> assets;
+
+	/** A factory class for easily creating game objects. */
+	protected Factory factory;
+	/** A loader class for loading level files. */
+	protected Loader loader;
 	
 	// Pathnames to shared assets
 	/** File to texture for walls and platforms */
@@ -187,6 +192,10 @@ public abstract class WorldController implements Screen {
 		}
 
 		worldAssetState = AssetState.COMPLETE;
+
+		// Set the proper textures in the factory
+		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostGaugeTex);
+		loader = new Loader(factory);
 	}
 	
 	/**
@@ -492,7 +501,7 @@ public abstract class WorldController implements Screen {
 	/**
 	 * Immediately adds the object to the physics world
 	 *
-	 * param obj The object to add
+	 * @param obj The object to add
 	 */
 	protected void addObject(Obstacle obj) {
 		assert inBounds(obj) : "Object is not in bounds";
@@ -599,7 +608,7 @@ public abstract class WorldController implements Screen {
 		while (!addQueue.isEmpty()) {
 			addObject(addQueue.poll());
 		}
-		
+
 		// Turn the physics engine crank.
 		world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 

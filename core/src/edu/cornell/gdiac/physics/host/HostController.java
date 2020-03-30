@@ -23,17 +23,35 @@ public class HostController {
     /** The current position of the mouse */
     private Vector2 currMouse;
 
+    /** The draw scale of the game */
+    private Vector2 scale;
+
     /** Whether the possessed host has blown up */
     private boolean possessedBlownUp;
+
+    // Cache variables
+    /** Arrow position cache */
+    private Vector2 arrowCache;
 
     private InputController input;
 
     /** Height of the screen used to convert mouse y-coordinates */
     private float height;
 
-    /** Constant to change the speed of host movement */
-    private static final float HOST_MOVEMENT_SPEED = 500000;
-    private static final float MINIMUM_SHOT_SPEED = 50;
+    /** Constant to change the speed of golem movement */
+    private static final float HOST_MOVEMENT_SPEED = 5.f;
+
+    /** Minimum speed for shot spirit */
+    private static final float MINIMUM_SHOT_SPEED = 10.f;
+
+    /** Minimum speed for shot spirit */
+    private static final float MAXIMUM_SHOT_SPEED = 20.f;
+
+    /** Multiplier for velocity of spirit when shot */
+    private static final float SHOOTING_MULTIPLIER = 5.f;
+
+    /** Minimum distance to target before going to next instruction, for autonomous mode */
+    private static final float NEXT_INSTRUCTION_DIST = 0.5f;
 
     /** The number of ticks since we started this controller */
     private long ticks;
@@ -41,13 +59,17 @@ public class HostController {
     /**
      * Creates and initialize a new instance of a HostController
      */
-    public HostController(HostList r, Texture arrowTexture, float heightY) {
+    public HostController(HostList r, Vector2 scale, Texture arrowTexture, float heightY) {
         input = InputController.getInstance();
         clickPosition = new Vector2(-1,-1);
         hosts = r;
         arrowText = arrowTexture;
         height = heightY;
         possessedBlownUp = false;
+
+        this.scale = scale;
+
+        arrowCache = new Vector2();
     }
 
     /**
@@ -91,7 +113,10 @@ public class HostController {
                         spirit.setPosition(possessed.getPosition());
 
                         clickPosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-                        arrow = new ArrowModel(arrowText, possessed.getPosition());
+
+                        arrowCache.set(possessed.getPosition());
+                        arrowCache.scl(scale);
+                        arrow = new ArrowModel(arrowText, arrowCache);
 
 //                  TODO (MAY) :
 //                  NEED TO ADD CONTROL TO ONLY RECOGNIZE IT WHEN ON ROBOT BODY
@@ -111,13 +136,26 @@ public class HostController {
                         clickPosition.x = -1;
                         clickPosition.y = -1;
 
-                        spirit.setPosition(possessed.getPosition());
+                        float vx = SHOOTING_MULTIPLIER * shootVector.x / scale.x;
+                        float vy = SHOOTING_MULTIPLIER * shootVector.y / scale.y;
 
-                        spirit.setVX(shootVector.x);
-                        spirit.setVY(shootVector.y);
+                        float magnitude = Math.abs(vx*vx + vy*vy);
 
-                        if (Math.abs(shootVector.x) > MINIMUM_SHOT_SPEED || Math.abs(shootVector.y) > MINIMUM_SHOT_SPEED) {
+                        // Only shoot if the shooting speed is large enough
+                        if (magnitude > MINIMUM_SHOT_SPEED) {
                             spirit.setHasLaunched(true);
+
+                            spirit.setPosition(possessed.getPosition());
+
+                            // Cap the speed of the shot
+                            if (magnitude > MAXIMUM_SHOT_SPEED) {
+                                float angle = (float)Math.atan2(vy, vx);
+                                vx = MAXIMUM_SHOT_SPEED * (float)Math.cos(angle);
+                                vy = MAXIMUM_SHOT_SPEED * (float)Math.sin(angle);
+                            }
+
+                            spirit.setVX(vx);
+                            spirit.setVY(vy);
                         }
 
                     }
@@ -140,23 +178,23 @@ public class HostController {
             }
         }
 
+//        System.out.println();
+
         //update other robots
-        for (HostModel r: hosts) {
+        for(HostModel r: hosts){
             Vector2 n = r.getInstruction();
             Vector2 curr = r.getPosition();
-            if (r != possessed && Math.abs(curr.x - n.x) < 5 && Math.abs(curr.y - n.y) < 5 && !r.beenPossessed()) {
-                //go to next instruction
-                r.nextInstruction();
-                n = r.getInstruction();
-                float l = (float)Math.sqrt(Math.pow(n.x-curr.x,2) + Math.pow(n.y-curr.y,2) );
+            if(r != possessed && !r.beenPossessed()) {
+                // If the destination was reached, move to the next instruction
+                if(Math.abs(curr.x - n.x) < NEXT_INSTRUCTION_DIST && Math.abs(curr.y - n.y) < NEXT_INSTRUCTION_DIST) {
+                    r.nextInstruction();
+                    n = r.getInstruction();
+                    // float l = (float)Math.sqrt(Math.pow(n.x-curr.x,2) + Math.pow(n.y-curr.y,2) );
+                }
 
-                r.setVX((n.x - curr.x) * HOST_MOVEMENT_SPEED);
-                r.setVY((n.y - curr.y) * HOST_MOVEMENT_SPEED);
+                r.setVX(Math.signum(n.x - curr.x) * HOST_MOVEMENT_SPEED);
+                r.setVY(Math.signum(n.y - curr.y) * HOST_MOVEMENT_SPEED);
 
-            }
-            else if (r != possessed && !r.beenPossessed()) {
-                r.setVX((n.x - curr.x) * HOST_MOVEMENT_SPEED);
-                r.setVY((n.y - curr.y) * HOST_MOVEMENT_SPEED);
             }
         }
 
