@@ -18,6 +18,8 @@ import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
+import java.util.ArrayList;
+
 /**
  * A static class that can be used for loading a level from a json file
  */
@@ -272,7 +274,7 @@ public class Loader {
         }
 
         // Create the hosts
-        HostList hosts = new HostList();
+        ArrayList<HostModel> hosts = new ArrayList<HostModel>();
         HostData rData;
 
         for (int i = 0; i < hosts.size(); i++) {

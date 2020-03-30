@@ -27,68 +27,120 @@ import edu.cornell.gdiac.util.FilmStrip;
 public class HostModel extends BoxObstacle {
 
     // Default physics values
-    /** The density of this host */
+    /**
+     * The density of this host
+     */
     private static final float DEFAULT_DENSITY = 1.0f;
-    /** The friction of this host */
+    /**
+     * The friction of this host
+     */
     private static final float DEFAULT_FRICTION = 0.1f;
-    /** The restitution of this host */
+    /**
+     * The restitution of this host
+     */
     private static final float DEFAULT_RESTITUTION = 0.4f;
-    /** The thrust factor to convert player input into host movement */
+    /**
+     * The thrust factor to convert player input into host movement
+     */
     private static final float DEFAULT_THRUST = 7.0f;
-    /** The number of frames for the gauge */
+    /**
+     * The number of frames for the gauge
+     */
     public static final int GAUGE_FRAMES = 4;
 
-    /** The texture for the host's gauge */
+    /**
+     * The texture for the host's gauge
+     */
     protected TextureRegion hostGaugeTexture;
 
-    /** The texture filmstrip for charge gauge when possessed */
+    /**
+     * The texture filmstrip for charge gauge when possessed
+     */
     FilmStrip chargeGauge;
-    /** The associated sound for the HostModel when possessed */
+    /**
+     * The associated sound for the HostModel when possessed
+     */
     String possessedHostSound;
-    /** The animation phase for the HostModel when possessed */
+    /**
+     * The animation phase for the HostModel when possessed
+     */
     boolean possessedCycle = true;
 
-    /** The texture filmstrip for charge gauge when not possessed */
+    /**
+     * The texture filmstrip for charge gauge when not possessed
+     */
     FilmStrip normalGauge;
-    /** The associated sound for charge gauge when not possessed */
+    /**
+     * The associated sound for charge gauge when not possessed
+     */
     String normalHostSound;
-    /** The animation phase for charge gauge when not possessed */
+    /**
+     * The animation phase for charge gauge when not possessed
+     */
     boolean normCycle = true;
 
-    /** The texture filmstrip for host's movements */
+    /**
+     * The texture filmstrip for host's movements
+     */
     FilmStrip hostStrip;
-    /** The associated sound for host's movements */
+    /**
+     * The associated sound for host's movements
+     */
     String hostSound;
-    /** The animation phase for host's movements */
+    /**
+     * The animation phase for host's movements
+     */
     boolean hostMvtCycle = true;
 
+    public Vector2 golemWalkOrigin = new Vector2();
+
     // Attributes Specific to each HostModel
-    /** Boolean Whether HostModel is Possessed */
+    /**
+     * Boolean Whether HostModel is Possessed
+     */
     private boolean isPossessed;
-    /** Boolean for whether host is alive */
+    /**
+     * Boolean for whether host is alive
+     */
     private boolean isAlive;
-    /** The current charge of the host */
+    /**
+     * The current charge of the host
+     */
     private float currentCharge;
-    /** The maximum charge of the host */
+    /**
+     * The maximum charge of the host
+     */
     private float maxCharge;
-    /** The force to apply to this host */
+    /**
+     * The force to apply to this host
+     */
     private Vector2 force;
-    /** Instructions for robot when unpossessed*/
+    /**
+     * Instructions for robot when unpossessed
+     */
     private Vector2[] instructions;
-    /** Current instruction index */
+    /**
+     * Current instruction index
+     */
     private int instructionNumber;
-    /** Whether or not the robot has been possessed yet*/
+    /**
+     * Whether or not the robot has been possessed yet
+     */
     private boolean hasBeenPossessed;
-    /** Whether robot is moving forward through instructions */
+    /**
+     * Whether robot is moving forward through instructions
+     */
     private boolean forwardI;
 
 
-
-    /** Cache object for transforming the force according the object angle */
+    /**
+     * Cache object for transforming the force according the object angle
+     */
     public Affine2 affineCache = new Affine2();
 
     /**
      * Gets the max charge a host can hold before exploding
+     *
      * @return float that represents the maximum charge that can be held
      */
     public float getMaxCharge() {
@@ -97,6 +149,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Sets the max charge a host can hold before exploding
+     *
      * @param maxCharge that represents the new max charge
      */
     public void setMaxCharge(float maxCharge) {
@@ -105,7 +158,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Returns the force applied to this host.
-     *
+     * <p>
      * This method returns a reference to the force vector, allowing it to be modified.
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
@@ -118,7 +171,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Returns the Hosts' Gauge Texture
-     *
+     * <p>
      * This method returns the texture for the gauge
      *
      * @return the texture
@@ -129,7 +182,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Sets the Hosts' Gauge Texture
-     *
+     * <p>
      * This method sets the texture of the gauge
      */
     public void setHostGaugeTexture(TextureRegion hostGaugeTexture) {
@@ -138,7 +191,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Returns the x-component of the force applied to this host.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -150,7 +203,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Sets the x-component of the force applied to this host.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -162,7 +215,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Returns the y-component of the force applied to this host.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -174,7 +227,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Sets the x-component of the force applied to this host.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -186,7 +239,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Creates a new host at the origin.
-     *
+     * <p>
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
@@ -212,7 +265,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Creates a new host at the given position.
-     *
+     * <p>
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
@@ -241,7 +294,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Creates a new host at the given position.
-     *
+     * <p>
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
@@ -270,7 +323,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
-     *
+     * <p>
      * This method overrides the base method to keep your host from spinning.
      *
      * @param world Box2D world to store body
@@ -309,7 +362,7 @@ public class HostModel extends BoxObstacle {
      *
      * @param currentCharge representing the current charge of host.
      */
-    public void setCurrentCharge(float currentCharge){
+    public void setCurrentCharge(float currentCharge) {
         this.currentCharge = currentCharge;
     }
 
@@ -318,14 +371,14 @@ public class HostModel extends BoxObstacle {
      *
      * @return the current charge of the host as a float.
      */
-    public float getCurrentCharge(){
+    public float getCurrentCharge() {
         return this.currentCharge;
     }
 
     /**
      * Increments the current charge of the host.
      *
-     * @return whether the bot has blown up or not
+     * @return whether the host has blown up or not
      */
     public boolean incCurrentCharge() {
         if (this.isPossessed) {
@@ -350,36 +403,34 @@ public class HostModel extends BoxObstacle {
         return isAlive;
     }
 
-    public Vector2 getInstruction(){
-        if(instructions == null){
+    public Vector2 getInstruction() {
+        if (instructions == null) {
             return getPosition();
         }
         return instructions[instructionNumber];
     }
 
-    public boolean beenPossessed(){
+    public boolean beenPossessed() {
         return hasBeenPossessed;
     }
 
-    public void setBeenPossessed(boolean b){
+    public void setBeenPossessed(boolean b) {
         hasBeenPossessed = b;
     }
 
     public void nextInstruction() {
-        if(instructions == null){
+        if (instructions == null) {
             return;
         }
-        if(forwardI && instructionNumber + 1 >= instructions.length){
+        if (forwardI && instructionNumber + 1 >= instructions.length) {
             forwardI = false;
             instructionNumber--;
-        }
-        else if(!forwardI && instructionNumber - 1 < 0){
+        } else if (!forwardI && instructionNumber - 1 < 0) {
             forwardI = true;
             instructionNumber++;
-        }
-        else if(forwardI){
+        } else if (forwardI) {
             instructionNumber++;
-        }else{
+        } else {
             instructionNumber--;
         }
     }
@@ -395,7 +446,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Applies the force to the body of this host
-     *
+     * <p>
      * This method should be called after the force attribute is set.
      */
     public void applyForce() {
@@ -430,7 +481,13 @@ public class HostModel extends BoxObstacle {
 
             /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
             if (this.currentCharge < this.maxCharge) {
+                // Animation?
+//                if (isPossessed) {
+//                    canvas.draw(hostStrip, Color.WHITE, golemWalkOrigin.x, golemWalkOrigin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(),1,1);
+//                }
+
                 canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
+
                 // Color changes more and more to a red or goal color here
                 Color warningColor = new Color(1, 1 - chargeProgression, 0, 1);
                 if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
@@ -439,7 +496,8 @@ public class HostModel extends BoxObstacle {
                 }
                 canvas.draw(hostGaugeTexture, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
 
-            } else {
+            }
+            else {
                 canvas.draw(texture, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
             }
 
@@ -448,8 +506,44 @@ public class HostModel extends BoxObstacle {
     }
 }
 
-
 // Animation methods in the case we decide to change the animation method
+
+//    public void setGolemWalkStrip(FilmStrip strip) {
+//        hostStrip = strip;
+//        if (strip != null) {
+//            golemWalkOrigin.set(strip.getRegionWidth()/2.0f, strip.getRegionHeight()/2.0f);
+//        }
+//    }
+//
+//    public void animateWalk(boolean on) {
+//        FilmStrip node = null;
+//        boolean cycle = true;
+//
+//        node = hostStrip;
+//        cycle = hostMvtCycle;
+//
+//        if (on) {
+//            // Turn on the flames and go back and forth
+//            if (node.getFrame() == 0 || node.getFrame() == 1) {
+//                cycle = true;
+//            } else if (node.getFrame() == node.getSize()-1) {
+//                cycle = false;
+//            }
+//
+//            // Increment
+//            if (cycle) {
+//                node.setFrame(node.getFrame()+1);
+//            } else {
+//                node.setFrame(node.getFrame()-1);
+//            }
+//        }
+//        else {
+//            node.setFrame(0);
+//        }
+//
+//        hostMvtCycle = cycle;
+//    }
+
 
 /**
  * Returns the animation node for the given charge gauge of the host

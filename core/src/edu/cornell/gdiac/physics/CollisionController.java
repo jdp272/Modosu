@@ -7,10 +7,16 @@ import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class CollisionController implements ContactListener {
 
     /** Whether the host was bounced against a wall this frame */
     private boolean bounced;
+
+    /** Whether the robot has touched against a wall this frame */
+    private boolean againstWall;
 
     /** Whether the host has bounced against a wall this frame */
     private boolean possessed;
@@ -20,7 +26,7 @@ public class CollisionController implements ContactListener {
 
     // Physics objects for the game
     /** Reference to the hosts */
-    private HostList hostList;
+    private ArrayList<HostModel> hostList;
 
     /** Reference to the spirit */
     private SpiritModel spirit;
@@ -34,6 +40,7 @@ public class CollisionController implements ContactListener {
         bounced = false;
         possessed = false;
         hostPossessed = null;
+        againstWall = false;
     }
 
     /**
@@ -50,7 +57,7 @@ public class CollisionController implements ContactListener {
     /**
      * Sets all the hosts
      */
-    public void addHosts(HostList hosts) {
+    public void addHosts(ArrayList<HostModel> hosts) {
         hostList = hosts;
     }
 
@@ -84,6 +91,9 @@ public class CollisionController implements ContactListener {
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
 
+        Obstacle bd1 = (Obstacle) body1.getUserData();
+        Obstacle bd2 = (Obstacle) body2.getUserData();
+
         // Collision handling to determine if the spirit collides with any hosts
         for (HostModel r : hostList) {
             if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
@@ -92,24 +102,27 @@ public class CollisionController implements ContactListener {
                 hostPossessed = r;
                 // host is now possessed
                 hostPossessed.setPossessed(true);
-                // spirit is no longer in stage of being launched
-                spirit.setHasLaunched(false);
                 // Spirit's life is replenished upon possessing new host
                 spirit.setCurrentLife(spirit.getDefaultLife());
+                // spirit is no longer in stage of being launched
+                spirit.setHasLaunched(false);
+
                 // Spirit is alive whenever it is inside of a host
                 spirit.setAlive(true);
+
+                // Spirit will start moving towards the possessed's center
+                spirit.setGoToCenter(true);
             }
+
         }
 
         // Collision handling to determine if the spirit collides with any walls
-        Obstacle bd1 = (Obstacle) body1.getUserData();
-        Obstacle bd2 = (Obstacle) body2.getUserData();
-
 
         if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
                 bd1.getName() == "wall" && body2.getUserData() == spirit) {
             bounced = true;
         }
+
 
     }
 
@@ -162,6 +175,7 @@ public class CollisionController implements ContactListener {
     /** Reset all the fields to reflect this current frame */
     public void clear() {
         bounced = false;
+        againstWall = false;
     }
 
     // Getters
@@ -176,4 +190,7 @@ public class CollisionController implements ContactListener {
     public boolean isBounced() { return bounced; }
 
 
+    public boolean isAgainstWall() {
+        return againstWall;
+    }
 }

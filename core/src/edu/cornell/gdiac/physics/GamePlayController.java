@@ -12,6 +12,7 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
@@ -20,8 +21,10 @@ import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.host.HostController;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.SoundController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -42,12 +45,18 @@ public class GamePlayController extends WorldController {
 	private Loader loader;
 
 
-	/** The asset for the collision sound */
+	/** The asset for the bounce sound */
 	private static final String  BOUNCE_SOUND = "host/bounce.mp3";
-	/** The asset for the main afterburner sound */
+	/** The asset for the possession sound */
 	private static final String  POSSESSION_SOUND = "host/possession.mp3";
-//	/** The asset for the launch sound */
+	/** The asset for the slingshot sound */
 //	private static final String  LAUNCH_SOUND = "host/launch.mp3";
+	private static final String  LAUNCH_SOUND = "host/launch2.mp3";
+	/** The asset for the failure sound */
+	private static final String  FAILURE_SOUND = "shared/failure.mp3";
+	/** The asset for the victory sound */
+	private static final String  VICTORY_SOUND = "shared/victory.mp3";
+
 //	/** The asset for the explosion sound */
 //	private static final String  EXPLODE_SOUND = "host/afterburner.mp3";
 
@@ -70,6 +79,11 @@ public class GamePlayController extends WorldController {
 
 	/** How many hosts have been possessed up to this frame */
 	private int numPosessed;
+
+	/** Animation for host walking */
+	private FilmStrip golemWalk;
+
+//	private static final String GOLEM_WALK_TEXTURE = "host/golemwalk.png";
 
 
 	// Other game objects
@@ -102,12 +116,19 @@ public class GamePlayController extends WorldController {
 		}
 		assetState = AssetState.LOADING;
 
+//		manager.load(GOLEM_WALK_TEXTURE, Texture.class);
+//		assets.add(GOLEM_WALK_TEXTURE);
+
 		manager.load(BOUNCE_SOUND, Sound.class);
 		assets.add(BOUNCE_SOUND);
 		manager.load(POSSESSION_SOUND, Sound.class);
 		assets.add(POSSESSION_SOUND);
-//		manager.load(LAUNCH_SOUND, Sound.class);
-//		assets.add(LAUNCH_SOUND);
+		manager.load(FAILURE_SOUND, Sound.class);
+		assets.add(FAILURE_SOUND);
+		manager.load(VICTORY_SOUND, Sound.class);
+		assets.add(VICTORY_SOUND);
+		manager.load(LAUNCH_SOUND, Sound.class);
+		assets.add(LAUNCH_SOUND);
 //		manager.load(EXPLOSION_SOUND, Sound.class);
 //		assets.add(EXPLOSION_SOUND);
 
@@ -129,10 +150,13 @@ public class GamePlayController extends WorldController {
 			return;
 		}
 
+//		golemWalk = createFilmStrip(manager, GOLEM_WALK_TEXTURE, 1, 4, 5);
 		SoundController sounds = SoundController.getInstance();
 		sounds.allocate(manager, BOUNCE_SOUND);
 		sounds.allocate(manager, POSSESSION_SOUND);
-//		sounds.allocate(manager, LAUNCH_SOUND);
+		sounds.allocate(manager, FAILURE_SOUND);
+		sounds.allocate(manager, VICTORY_SOUND);
+		sounds.allocate(manager, LAUNCH_SOUND);
 //		sounds.allocate(manager, EXPLOSION_SOUND);
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -190,7 +214,7 @@ public class GamePlayController extends WorldController {
 		havePossessed.clear();
 
 		// Create all the hosts and fill the list
-		HostList hosts = new HostList();
+		ArrayList<HostModel> hosts = new ArrayList<>();
 
 		dwidth  = hostTex.getRegionWidth();
 		dheight = hostTex.getRegionHeight();
@@ -200,7 +224,8 @@ public class GamePlayController extends WorldController {
 			host = new HostModel(HOSTS[i],HOSTS[i+1], dwidth, dheight, 0, 1000);
 			host.setTexture(hostTex);
 			host.setHostGaugeTexture(hostGaugeTex);
-			hosts.add(host,false);
+			host.setBodyType(BodyDef.BodyType.DynamicBody);
+			hosts.add(host);
 			havePossessed.put(host, false);
 		}
 
@@ -208,7 +233,7 @@ public class GamePlayController extends WorldController {
 		host = new HostModel(800, 400, dwidth, dheight, 0, 10000, ins);
 		host.setTexture(hostTex);
 		host.setHostGaugeTexture(hostGaugeTex);
-		hosts.add(host,false);
+		hosts.add(host);
 		havePossessed.put(host, false);
 
 		// Reset the constant spirit start
@@ -216,12 +241,17 @@ public class GamePlayController extends WorldController {
 		SPIRIT_POS.y = 100;
 
 		// Create the spirit
-		SpiritModel spark = new SpiritModel(SPIRIT_POS.x,SPIRIT_POS.y,spiritTex.getRegionWidth(),spiritTex.getRegionHeight(),10, 100);
+		SpiritModel spark = new SpiritModel(SPIRIT_POS.x,SPIRIT_POS.y,spiritTex.getRegionWidth(),spiritTex.getRegionHeight(),10, 400);
 		spark.setTexture(spiritTex);
+		spark.setBodyType(BodyDef.BodyType.DynamicBody);
+
+
 
 		level = new Level(null, obs, hosts, spark);
 		possessed = hosts.get(0);
+//		possessed.setGolemWalkStrip(golemWalk);
 		spirit = spark;
+		spirit.setName("spirit");
 
 		//level = loader.reset(lvl);
 		//parse level
@@ -273,8 +303,9 @@ public class GamePlayController extends WorldController {
 	public void update(float delta) {
 
 		// Check win condition
-		if (numPosessed == numHosts){
+		if ((numPosessed == numHosts) && !isComplete()){
 			setComplete(true);
+			SoundController.getInstance().play(VICTORY_SOUND,VICTORY_SOUND,false);
 		}
 
 		// Determine if there is any possession
@@ -295,12 +326,21 @@ public class GamePlayController extends WorldController {
 			}
 		}
 
-		// Calls update on hostcontroller
+		// Calls update on hostController
 		hostController.update(delta, possessed, spirit);
+		if (hostController.getLaunched()){
+			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
+		}
+
+		if (collisionController.isAgainstWall() && !spirit.hasLaunched) {
+			spirit.setVX(0f);
+			spirit.setVY(0f);
+		}
 
 		// Check lose condition
-		if (hostController.getPossessedBlownUp() && !isComplete()) {
+		if (hostController.getPossessedBlownUp() && !isComplete() && !isFailure()) {
 			setFailure(true);
+			SoundController.getInstance().play(FAILURE_SOUND, FAILURE_SOUND, false);
 		}
 
 		// Get arrow and draw if applicable

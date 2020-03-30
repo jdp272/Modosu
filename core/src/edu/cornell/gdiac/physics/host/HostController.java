@@ -8,10 +8,12 @@ import com.badlogic.gdx.graphics.g2d.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.physics.*;
 
+import java.util.ArrayList;
+
 public class HostController {
 
     /** List of all the hosts */
-    private HostList hosts;
+    private ArrayList<HostModel> hosts;
     /** The initial click position of the cursor */
     private Vector2 clickPosition;
     /** The vector created by the shot */
@@ -25,6 +27,8 @@ public class HostController {
 
     /** Whether the possessed host has blown up */
     private boolean possessedBlownUp;
+
+    private boolean launched;
 
     private InputController input;
 
@@ -41,13 +45,14 @@ public class HostController {
     /**
      * Creates and initialize a new instance of a HostController
      */
-    public HostController(HostList r, Texture arrowTexture, float heightY) {
+    public HostController(ArrayList<HostModel> h, Texture arrowTexture, float heightY) {
         input = InputController.getInstance();
         clickPosition = new Vector2(-1,-1);
-        hosts = r;
+        hosts = h;
         arrowText = arrowTexture;
         height = heightY;
         possessedBlownUp = false;
+        launched = false;
     }
 
     /**
@@ -74,23 +79,54 @@ public class HostController {
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit) {
 
+
         input = InputController.getInstance();
 
+        if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
+            Vector2 dirToCenter = possessed.getPosition().sub(spirit.getPosition()).setLength(200f);
+            spirit.setVX(dirToCenter.x);
+            spirit.setVY(dirToCenter.y);
+
+            float posX = possessed.getPosition().x;
+            float posY = possessed.getPosition().y;
+            float spiritX = spirit.getPosition().x;
+            float spiritY = spirit.getPosition().y;
+
+            // Close enough to be considered on the center
+            if ( ((posX-1) <= spiritX  && spiritX < (posX+1) ) && ((posY-1) <= spiritY  && (spiritY < (posY+1))) ) {
+                // Set spirit on center,
+                spirit.setPosition(possessed.getPosition());
+                // Stop going towards center
+                spirit.setGoToCenter(false);
+                // Register real possession
+                spirit.setIsPossessing(true);
+            }
+        }
+
+        // Possessing a host, either currently or a new one
         if (possessed != null) {
-            if (!spirit.getHasLaunched()) {
+            if (spirit.getIsPossessing()) {
+                spirit.setVX(0f);
+                spirit.setVY(0f);
                 spirit.setPosition(possessed.getPosition());
             }
 
             if (possessed.incCurrentCharge()) {
-                if (!spirit.getHasLaunched()) {
+
+                if (!spirit.hasLaunched || spirit.getIsPossessing()) {
+//                    possessed.animateWalk(true);
+                    // Move using player input
                     possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal());
                     possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical());
 
+                    if ((input.getVertical() != 0 || input.getHorizontal() != 0) && (!spirit.getGoToCenter())) {
+                        spirit.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal());
+                        spirit.setVY(HOST_MOVEMENT_SPEED * input.getVertical());
+                    }
+
                     // Shooting the spirit
-                    if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) { // Clicked Mouse
-                        spirit.setPosition(possessed.getPosition());
-
-
+                    if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
+                        // Clicked Mouse
                         clickPosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
                         arrow = new ArrowModel(arrowText, possessed.getPosition());
 
@@ -102,9 +138,9 @@ public class HostController {
 
                     // Released Mouse -- Shoot
                     else if (!input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
-
                         arrow = null;
 
+                        // Calculate the new velocity vector
                         shootVector = new Vector2(Gdx.input.getX(), Gdx.input.getY());
                         shootVector = shootVector.sub(clickPosition);
                         shootVector.x = -shootVector.x;
@@ -112,24 +148,24 @@ public class HostController {
                         clickPosition.x = -1;
                         clickPosition.y = -1;
 
-                        spirit.setPosition(possessed.getPosition());
-
-                        spirit.setVX(shootVector.x);
-                        spirit.setVY(shootVector.y);
-
+                        // Shoot velocity meets threshold requirements so shoot the spirit
                         if (Math.abs(shootVector.x) > MINIMUM_SHOT_SPEED || Math.abs(shootVector.y) > MINIMUM_SHOT_SPEED) {
                             spirit.setHasLaunched(true);
+                            spirit.setVX(shootVector.x);
+                            spirit.setVY(shootVector.y);
+
+                            // Upon Release of Spirit, possessed host and spirit are no longer possessed/possessing
+                            spirit.setIsPossessing(false);
+                            possessed.setPossessed(false);
+                            launched = true;
                         }
 
-                        // Upon Release of Spirit, Possessed bot is not longer possessed
-                        possessed.setPossessed(false);
 
                     }
                     else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
-                        // Arrow Direction?
+                        // Save current mouse location in arrowModel
                         currMouse = new Vector2(Gdx.input.getX(),Gdx.input.getY());
                         arrow.setCurrLoc(currMouse);
-                        spirit.setPosition(possessed.getPosition());
                     }
                 }
                 else {
@@ -137,6 +173,8 @@ public class HostController {
                     possessed.setVY(0);
                 }
             }
+
+            // Host is at max charge
             else {
                 possessedBlownUp = true;
                 possessed.setVX(0);
@@ -198,14 +236,20 @@ public class HostController {
             }
         }
 
-        // Update Animations
-
-        // If we use sound, we must remember this.
-        //SoundController.getInstance().update();
     }
 
     public ArrowModel getArrow() { return arrow; }
 
     public boolean getPossessedBlownUp() { return possessedBlownUp; }
+
+    public boolean getLaunched() {
+        if (launched) {
+            launched = false;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
 }

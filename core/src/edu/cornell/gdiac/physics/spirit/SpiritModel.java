@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.physics.spirit;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
@@ -29,12 +30,18 @@ public class SpiritModel extends BoxObstacle {
     private float currentLife;
     /** Boolean indicating whether spirit is alive or not */
     private boolean isAlive;
+    /** Boolean indicating whether spirit is in the center of a possessed host, false if not */
+    private boolean isPossessing;
+    /** Whether spirit will be moving towards the center of the possessed host, false if launched or already in the center */
+    private boolean goToCenter;
 
     public SpiritModel(float x, float y) {
         super(x, y, 10, 10);
         bounces = SPIRIT_BOUNCES;
         hasLaunched = false;
         isAlive = true;
+        goToCenter = false;
+        isPossessing = false;
     }
 
     public SpiritModel(float x, float y, int b) {
@@ -54,6 +61,7 @@ public class SpiritModel extends BoxObstacle {
         this.defaultLife = defaultLife;
         this.currentLife = this.defaultLife;
         isAlive = true;
+
     }
 
     /**
@@ -130,6 +138,12 @@ public class SpiritModel extends BoxObstacle {
         hasLaunched = launched;
     }
 
+    public boolean getGoToCenter() {
+        return goToCenter;
+    }
+
+    public  void setGoToCenter(boolean goCenter) { goToCenter = goCenter;}
+
     public boolean decBounces(){
         if (bounces == 0){
             return false;
@@ -137,6 +151,22 @@ public class SpiritModel extends BoxObstacle {
             bounces--;
             return true;
         }
+    }
+
+    /**
+     * returns the velocity vector
+     * @return velocity vector
+     */
+    public Vector2 getVelocity() {
+        return new Vector2(this.getVX(), this.getVY());
+    }
+
+    public boolean getIsPossessing() {
+        return isPossessing;
+    }
+
+    public void setIsPossessing(boolean isCurrPossessing) {
+        isPossessing = isCurrPossessing;
     }
 
     /**
@@ -172,6 +202,12 @@ public class SpiritModel extends BoxObstacle {
         // Color fades as life progression decreases
         float lifeProgression = this.currentLife / this.defaultLife;
         Color lifeColor = new Color(1, 1, 1, lifeProgression);
-        canvas.draw(texture, lifeColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+
+        // Only draw spirit when it's flying
+        if (!isPossessing && !goToCenter) {
+            canvas.draw(texture, lifeColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+        }
+
+
     }
 }
