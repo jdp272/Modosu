@@ -181,20 +181,26 @@ public class HostController {
 //        System.out.println();
 
         //update other robots
-        for(HostModel r: hosts){
-            Vector2 n = r.getInstruction();
-            Vector2 curr = r.getPosition();
-            if(r != possessed && !r.beenPossessed()) {
-                // If the destination was reached, move to the next instruction
-                if(Math.abs(curr.x - n.x) < NEXT_INSTRUCTION_DIST && Math.abs(curr.y - n.y) < NEXT_INSTRUCTION_DIST) {
-                    r.nextInstruction();
-                    n = r.getInstruction();
-                    // float l = (float)Math.sqrt(Math.pow(n.x-curr.x,2) + Math.pow(n.y-curr.y,2) );
+        for(HostModel h: hosts){
+            if(h != possessed && !h.beenPossessed()) {
+                Vector2 target = h.getInstruction();
+                Vector2 current = h.getPosition();
+
+                float x = target.x - current.x;
+                float y = target.y - current.y;
+
+                // If close enough to the destination, move to the next
+                // instruction (note: squaring both sides instead of sqrt)
+                if(x*x + y*y < NEXT_INSTRUCTION_DIST*NEXT_INSTRUCTION_DIST) {
+                    h.nextInstruction();
+
+                // Otherwise, move towards the target
+                } else {
+                    double angle = Math.atan2(y, x);
+
+                    h.setVX(HOST_MOVEMENT_SPEED * (float) Math.cos(angle));
+                    h.setVY(HOST_MOVEMENT_SPEED * (float) Math.sin(angle));
                 }
-
-                r.setVX(Math.signum(n.x - curr.x) * HOST_MOVEMENT_SPEED);
-                r.setVY(Math.signum(n.y - curr.y) * HOST_MOVEMENT_SPEED);
-
             }
         }
 
