@@ -277,6 +277,7 @@ public class GamePlayController extends WorldController {
 		possessed = level.hosts.get(0);
 //		possessed.setGolemWalkStrip(golemWalk);
 
+		spirit.setIsPossessing(true);
 
 		//level = loader.reset(lvl);
 		//parse level
