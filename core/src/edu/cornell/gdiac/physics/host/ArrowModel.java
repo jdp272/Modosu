@@ -18,6 +18,7 @@ public class ArrowModel {
     /** The texture for the arrow */
     Texture arrTexture;
 
+    /** Creates an instance of an arrow to show direction */
     public ArrowModel(Texture arrText, Vector2 robPos) {
         this.arrTexture = arrText;
         start = robPos;

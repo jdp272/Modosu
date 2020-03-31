@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Factory {
     private static int SMALL_MAX_CHARGE = 1000;
     private static int SPIRIT_BOUNCES = 10;
+    private static int DEFAULT_LIFE = 400;
 
     private TextureRegion obstacleTex;
     private TextureRegion spiritTex;
@@ -57,7 +58,8 @@ public class Factory {
                 y,
                 spiritTex.getRegionWidth() / scale.x,
                 spiritTex.getRegionHeight() / scale.y,
-                SPIRIT_BOUNCES
+                SPIRIT_BOUNCES,
+                DEFAULT_LIFE
         );
         spirit.setDrawScale(scale);
         spirit.setTexture(spiritTex);

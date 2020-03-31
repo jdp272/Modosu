@@ -72,10 +72,6 @@ public abstract class WorldController implements Screen {
 	protected Loader loader;
 	
 	// Pathnames to shared assets
-	/** File to texture for walls and platforms */
-	private static String EARTH_FILE = "shared/stonetile.png";
-	/** File to texture for the win door */
-	private static String GOAL_FILE = "shared/goaldoor.png";
 	/** Retro font for displaying messages */
 	private static String FONT_FILE = "shared/RetroGame.ttf";
 	/** Texture file for background image */
@@ -93,10 +89,6 @@ public abstract class WorldController implements Screen {
 
 	private static int FONT_SIZE = 64;
 
-	/** The texture for walls and platforms */
-	protected TextureRegion earthTile;
-	/** The texture for the exit condition */
-	protected TextureRegion goalTile;
 	/** The font for giving messages to the player */
 	protected BitmapFont displayFont;
 	/** Texture asset for background image */
@@ -130,10 +122,6 @@ public abstract class WorldController implements Screen {
 		
 		worldAssetState = AssetState.LOADING;
 		// Load the shared tiles.
-		manager.load(EARTH_FILE,Texture.class);
-		assets.add(EARTH_FILE);
-		manager.load(GOAL_FILE,Texture.class);
-		assets.add(GOAL_FILE);
 		manager.load(BACKG_FILE,Texture.class);
 		assets.add(BACKG_FILE);
 
@@ -146,8 +134,6 @@ public abstract class WorldController implements Screen {
 		assets.add(SPIRIT_FILE);
 		manager.load(OBSTACLE_FILE, Texture.class);
 		assets.add(OBSTACLE_FILE);
-		manager.load(EARTH_FILE, Texture.class);
-		assets.add(EARTH_FILE);
 		manager.load(ARROW_FILE, Texture.class);
 		assets.add(ARROW_FILE);
 		
@@ -175,8 +161,6 @@ public abstract class WorldController implements Screen {
 		}
 		
 		// Allocate the tiles
-		earthTile = createTexture(manager,EARTH_FILE,true);
-		goalTile  = createTexture(manager,GOAL_FILE,true);
 		backgroundTexture = createTexture(manager,BACKG_FILE, true);
 		hostTex = createTexture(manager, HOST_FILE, true);
 		spiritTex = createTexture(manager, SPIRIT_FILE, true);

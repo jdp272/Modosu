@@ -40,21 +40,11 @@ import java.util.ArrayList;
  */
 public class LevelDesignerMode extends WorldController {
 	/** Texture file for mouse crosshairs */
-	private static final String CROSS_FILE = "ragdoll/crosshair.png";
+	private static final String CROSS_FILE = "shared/crosshair.png";
 	/** Texture file for watery foreground */
-	private static final String FOREG_FILE = "ragdoll/foreground.png";
+	private static final String FOREG_FILE = "shared/foreground.png";
 	/** Texture file for background image */
 	private static final String BACKG_FILE = "shared/background.png";
-	/** File for the bubble generator */
-	private static final String BUBBLE_FILE = "ragdoll/bubble.png";
-	/** Files for the body textures */
-	private static final String[] RAGDOLL_FILES = { "ragdoll/tux_body.png", "ragdoll/ProfWhite.png",
-			"ragdoll/tux_arm.png",  "ragdoll/tux_forearm.png",
-			"ragdoll/tux_thigh.png", "ragdoll/tux_shin.png" };
-
-	/** Reference to the bubble sound assets */
-	private static final String[] BUBBLE_SOUNDS = {"ragdoll/bubble01.mp3", "ragdoll/bubble02.mp3",
-			"ragdoll/bubble03.mp3", "ragdoll/bubble04.mp3"};
 
 	/** Speed for changing camera position */
 	private static final float CAMERA_SPEED = 5.f;
@@ -63,20 +53,17 @@ public class LevelDesignerMode extends WorldController {
 	private TextureRegion crosshairTexture;
 	/** Texture asset for background image */
 	private TextureRegion backgroundTexture;
-	/** Texture asset for watery foreground */
+	/** Texture asset for foreground */
 	private TextureRegion foregroundTexture;
 
 	/** Track asset loading from all instances and subclasses */
-	private AssetState ragdollAssetState = AssetState.EMPTY;
+	private AssetState assetState = AssetState.EMPTY;
 
 	/** The level that is populated and used for saving */
 	private Level level;
 
 	/** The collection of spawning objects, for making new game elements */
 	private SpawnerList spawnList;
-
-	/** If the selector should select at the next update */
-	private boolean select;
 
 	/** The camera position */
 	private Vector2 camTarget;
@@ -92,27 +79,17 @@ public class LevelDesignerMode extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(AssetManager manager) {
-		if (ragdollAssetState != AssetState.EMPTY) {
+		if (assetState != AssetState.EMPTY) {
 			return;
 		}
 
-		ragdollAssetState = AssetState.LOADING;
+		assetState = AssetState.LOADING;
 		manager.load(CROSS_FILE, Texture.class);
 		assets.add(CROSS_FILE);
 		manager.load(FOREG_FILE, Texture.class);
 		assets.add(FOREG_FILE);
 		manager.load(BACKG_FILE, Texture.class);
 		assets.add(BACKG_FILE);
-		manager.load(BUBBLE_FILE, Texture.class);
-		assets.add(BUBBLE_FILE);
-		for(int ii = 0; ii < RAGDOLL_FILES.length;  ii++) {
-			manager.load(RAGDOLL_FILES[ii], Texture.class);
-			assets.add(RAGDOLL_FILES[ii]);
-		}
-		for(int ii = 0; ii < BUBBLE_SOUNDS.length; ii++) {
-			manager.load(BUBBLE_SOUNDS[ii], Sound.class);
-			assets.add(BUBBLE_SOUNDS[ii]);
-		}
 
 		super.preLoadContent(manager);
 	}
@@ -128,7 +105,7 @@ public class LevelDesignerMode extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(AssetManager manager) {
-		if (ragdollAssetState != AssetState.LOADING) {
+		if (assetState != AssetState.LOADING) {
 			return;
 		}
 
@@ -137,39 +114,14 @@ public class LevelDesignerMode extends WorldController {
 		foregroundTexture = createTexture(manager,FOREG_FILE,false);
 
 		super.loadContent(manager);
-		ragdollAssetState = AssetState.COMPLETE;
+		assetState = AssetState.COMPLETE;
 	}
 
 	/** The new lessened gravity for this world */
 	private static final float WATER_GRAVITY = -0.25f;
 
-	// Physics constants for initialization
-	/** The density for all of (external) objects */
-	private static final float BASIC_DENSITY = 0.0f;
-	/** The friction for all of (external) objects */
-	private static final float BASIC_FRICTION = 0.1f;
-	/** The restitution for all of (external) objects */
-	private static final float BASIC_RESTITUTION = 0.1f;
 	/** The transparency for foreground image */
 	private static Color FORE_COLOR = new Color(0.0f, 0.2f, 0.3f, 0.2f);
-
-	// Since these appear only once, we do not care about the magic numbers.
-	// In an actual game, this information would go in a data file.
-	// Wall vertices
-	private static final float[] WALL1 = {16.0f, 18.0f, 16.0f, 17.0f,  1.0f, 17.0f,
-			1.0f,  1.0f, 16.0f,  1.0f, 16.0f,  0.0f,
-			0.0f,  0.0f,  0.0f, 18.0f};
-
-	private static final float[] WALL2 =  {32.0f, 18.0f, 32.0f,  0.0f, 16.0f,  0.0f,
-			16.0f,  1.0f, 31.0f,  1.0f, 31.0f, 17.0f,
-			16.0f, 17.0f, 16.0f, 18.0f};
-
-	// Other game objects
-	/** The initial position of the ragdoll head */
-	private static Vector2 DOLL_POS = new Vector2( 16.0f,  10.0f);
-
-	/** Counter for sound control */
-	private long soundCounter;
 
 	/** Mouse selector to move the ragdoll */
 	private ObstacleSelector selector;
@@ -184,7 +136,6 @@ public class LevelDesignerMode extends WorldController {
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
-		soundCounter = 0;
 
 		camTarget = new Vector2();
 	}
@@ -328,7 +279,7 @@ public class LevelDesignerMode extends WorldController {
 		float mouseX = input.getCrossHair().x + (camTarget.x - (canvas.getWidth() / 2.f)) / scale.x;
 		float mouseY = input.getCrossHair().y + (camTarget.y - (canvas.getHeight() / 2.f)) / scale.y;
 
-		if ((input.didTertiary() || select) && !selector.isSelected()) {
+		if ((input.didTertiary()) && !selector.isSelected()) {
 			selector.select(mouseX, mouseY);
 		} else if (!input.didTertiary() && selector.isSelected()) {
 			selector.deselect();
@@ -389,8 +340,8 @@ public class LevelDesignerMode extends WorldController {
 		// TODO: Make this not creating new objects by updating Level to use PooledList(?)
 
 		SpiritModel spirit = null;
-		HostList hostList = new HostList();
-		ArrayList<BoxObstacle> obstacleList = new ArrayList<BoxObstacle>();
+		ArrayList<HostModel> hostList = new ArrayList<>();
+		ArrayList<BoxObstacle> obstacleList = new ArrayList<>();
 		int boxNum = 0;
 		for(Obstacle obj : objects) {
 			if(!obj.inGame) {
@@ -401,7 +352,7 @@ public class LevelDesignerMode extends WorldController {
 				spirit = (SpiritModel)obj;
 				// Spirit is already saved in a field
 			} else if (obj instanceof HostModel) {
-				hostList.add((HostModel)obj, false);
+				hostList.add((HostModel)obj);
 			} else if (obj instanceof BoxObstacle) {
 				obstacleList.add((BoxObstacle)obj);
 			}

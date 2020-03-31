@@ -19,6 +19,8 @@ import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import com.badlogic.gdx.physics.box2d.*;
 
+import java.util.ArrayList;
+
 /**
  * A static class that can be used for loading a level from a json file
  */
@@ -292,7 +294,7 @@ public class Loader {
         }
 
         // Create the hosts
-        HostList hosts = new HostList();
+        ArrayList<HostModel> hosts = new ArrayList<HostModel>();
         HostData hData; // A simple reference to the data being processed
         for (int i = 0; i < levelData.hostData.length; i++) {
             hData = levelData.hostData[i];
@@ -308,7 +310,7 @@ public class Loader {
 
              TODO: Make a host once HostModel constructor is ready
              */
-            hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions), false);
+            hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions));
 //            hosts.add(new HostModel(rData.location.x, rData.location.y, (int)Data.chargeTime), false);
         }
 
@@ -319,7 +321,7 @@ public class Loader {
         return new Level(regions, obstacles, hosts, spirit);
     }
 
-    public Level reset(int level){
+    public Level reset(int level) {
         return null;
 //        BoxObstacle[] obs = {new BoxObstacle(50,50,10,10)};
 //        HostList robs = new HostList();

@@ -4,20 +4,25 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
-import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class CollisionController implements ContactListener {
 
     /** Whether the host was bounced against a wall this frame */
     private boolean bounced;
 
+    /** Whether the robot has touched against a wall this frame */
+    private boolean againstWall;
+
     /** What host was possessed this frame, null if no possession occurred */
     private HostModel hostPossessed;
 
     // Physics objects for the game
     /** Reference to the hosts */
-    private HostList hostList;
+    private ArrayList<HostModel> hostList;
 
     /** Reference to the spirit */
     private SpiritModel spirit;
@@ -30,6 +35,7 @@ public class CollisionController implements ContactListener {
         hostList = null;
         bounced = false;
         hostPossessed = null;
+        againstWall = false;
     }
 
     /**
@@ -45,7 +51,7 @@ public class CollisionController implements ContactListener {
     /**
      * Sets all the hosts
      */
-    public void addHosts(HostList hosts) {
+    public void addHosts(ArrayList<HostModel> hosts) {
         hostList = hosts;
     }
 
@@ -69,7 +75,8 @@ public class CollisionController implements ContactListener {
      */
     public void beginContact(Contact contact) {
         // Reset all the fields to reflect this current frame
-        bounced = false;
+
+        clear();
         hostPossessed = null;
 
         Fixture fix1 = contact.getFixtureA();
@@ -78,26 +85,41 @@ public class CollisionController implements ContactListener {
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
 
+        Obstacle bd1 = (Obstacle) body1.getUserData();
+        Obstacle bd2 = (Obstacle) body2.getUserData();
+
         // Collision handling to determine if the spirit collides with any hosts
         for (HostModel r : hostList) {
             if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
                     (body1.getUserData() == r && body2.getUserData() == spirit))) {
-                possess(r);
+
+                hostPossessed = r;
+
+                // host is now possessed
+                hostPossessed.setPossessed(true);
+
+                // Spirit's life is replenished upon possessing new host
+                spirit.setCurrentLife(spirit.getDefaultLife());
+
+                // spirit is no longer in stage of being launched
                 spirit.setHasLaunched(false);
+
+                // Spirit is alive whenever it is inside of a host
+                spirit.setAlive(true);
+
+                // Spirit will start moving towards the possessed's center
+                spirit.setGoToCenter(true);
             }
+
         }
 
         // Collision handling to determine if the spirit collides with any walls
-        Obstacle bd1 = (Obstacle) body1.getUserData();
-        Obstacle bd2 = (Obstacle) body2.getUserData();
-
 
         if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
                 bd1.getName() == "wall" && body2.getUserData() == spirit) {
             bounced = true;
-            // do you check/update here the number of bounces left
-            // setfailed == true if reached the max number of bounces
         }
+
 
     }
 
@@ -147,6 +169,12 @@ public class CollisionController implements ContactListener {
         }
     }
 
+    /** Reset all the fields to reflect this current frame */
+    public void clear() {
+        bounced = false;
+        againstWall = false;
+    }
+
     // Getters
 
     /** Getter method to return the possessed host */
@@ -158,18 +186,7 @@ public class CollisionController implements ContactListener {
     /** Getter method to return whether a wall bounce occurred this frame */
     public boolean isBounced() { return bounced; }
 
-    /**
-     * Sets the given host as a possessed robot
-     *
-     * @param host The host to possess
-     */
-    private void possess(HostModel host) {
-        // TODO: unset the previous possessed robot
-
-        hostPossessed = host;
-
-        if(hostPossessed != null) {
-            hostPossessed.setPossessed(true);
-        }
+    public boolean isAgainstWall() {
+        return againstWall;
     }
 }

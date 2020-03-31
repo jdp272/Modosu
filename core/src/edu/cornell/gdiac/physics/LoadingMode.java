@@ -46,9 +46,10 @@ import edu.cornell.gdiac.util.*;
  */
 public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	// Textures necessary to support the loading screen 
-	private static final String BACKGROUND_FILE = "shared/loading.png";
+	private static final String BACKGROUND_FILE = "shared/Menu.png";
 	private static final String PROGRESS_FILE = "shared/progressbar.png";
-	private static final String PLAY_BTN_FILE = "shared/play.png";
+	private static final String PLAY_BTN_FILE = "shared/start.png";
+	private static final String LVL_DSGN_FILE = "shared/leveldesign.png";
 	
 	/** Background texture for start-up */
 	private Texture background;
@@ -56,6 +57,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture playButton;
 	/** Texture atlas to support a progress bar */
 	private Texture statusBar;
+	/** Level Design button to display when done */
+	private Texture lvlDesign;
 	
 	// statusBar is a "texture atlas." Break it up into parts.
 	/** Left cap to the status background (grey region) */
@@ -77,6 +80,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static int STANDARD_WIDTH  = 800;
 	/** Standard window height (for scaling) */
 	private static int STANDARD_HEIGHT = 700;
+	/** Standard button-x (for scaling) */
+	private static int BUTTON_X  = 125;
+	/** Start button-y (for scaling) */
+	private static int START_Y = 200;
+	/** Level Design button-y (for scaling) */
+	private static int LEVEL_Y = 150;
 	/** Ratio of the bar width to the screen */
 	private static float BAR_WIDTH_RATIO  = 0.66f;
 	/** Ration of the bar height to the screen */
@@ -191,6 +200,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 		// Load the next two images immediately.
 		playButton = null;
+		lvlDesign = null;
 		background = new Texture(BACKGROUND_FILE);
 		statusBar  = new Texture(PROGRESS_FILE);
 		
@@ -257,6 +267,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				this.progress = 1.0f;
 				playButton = new Texture(PLAY_BTN_FILE);
 				playButton.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+				lvlDesign = new Texture(LVL_DSGN_FILE);
+				lvlDesign.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			}
 		}
 	}
@@ -275,8 +287,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			drawProgress(canvas);
 		} else {
 			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
-			canvas.draw(playButton, tint, playButton.getWidth()/2, playButton.getHeight()/2, 
-						centerX, centerY, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			canvas.draw(playButton, tint, 0, 0,
+						BUTTON_X, START_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+			Color tint2 = (pressState == 3 ? Color.GRAY: Color.WHITE);
+			canvas.draw(lvlDesign, tint2, 0, 0,
+					BUTTON_X, LEVEL_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
 		canvas.end();
 	}
@@ -323,6 +339,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			if (isReady() && listener != null) {
 				listener.exitScreen(this, 0);
 			}
+
+			//go to level design mode
+			if(pressState == 4 && listener != null){
+				listener.exitScreen(this,1);
+			}
+
 		}
 	}
 
@@ -339,7 +361,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		// Compute the drawing scale
 		float sx = ((float)width)/STANDARD_WIDTH;
 		float sy = ((float)height)/STANDARD_HEIGHT;
-		scale = (sx < sy ? sx : sy);
+		scale = Math.min(sx, sy);
 		
 		this.width = (int)(BAR_WIDTH_RATIO*width);
 		centerY = (int)(BAR_HEIGHT_RATIO*height);
@@ -407,7 +429,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if (playButton == null || pressState == 2) {
+		if (playButton == null || pressState == 2 || pressState == 4) {
 			return true;
 		}
 		
@@ -416,11 +438,18 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		
 		// TODO: Fix scaling
 		// Play button is a circle.
-		float radius = BUTTON_SCALE*scale*playButton.getWidth()/2.0f;
-		float dist = (screenX-centerX)*(screenX-centerX)+(screenY-centerY)*(screenY-centerY);
-		if (dist < radius*radius) {
-			pressState = 1;
+		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
+			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {
+				pressState = 1;
+			}
 		}
+
+		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
+			if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
+				pressState = 3;
+			}
+		}
+
 		return false;
 	}
 	
@@ -438,6 +467,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) { 
 		if (pressState == 1) {
 			pressState = 2;
+			return false;
+		}
+		if (pressState == 3) {
+			pressState = 4;
 			return false;
 		}
 		return true;
@@ -459,6 +492,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			pressState = 1;
 			return false;
 		}
+
 		return true;
 	}
 	
@@ -478,6 +512,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			pressState = 2;
 			return false;
 		}
+
 		return true;
 	}
 	
@@ -496,7 +531,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** 
 	 * Called when a key is typed (UNSUPPORTED)
 	 *
-	 * @param keycode the key typed
+	 * @param character the key typed
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean keyTyped(char character) { 
