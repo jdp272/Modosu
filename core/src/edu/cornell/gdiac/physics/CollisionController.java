@@ -16,9 +16,6 @@ public class CollisionController implements ContactListener {
     /** Whether the robot has touched against a wall this frame */
     private boolean againstWall;
 
-    /** Whether the host has bounced against a wall this frame */
-    private boolean possessed;
-
     /** What host was possessed this frame, null if no possession occurred */
     private HostModel hostPossessed;
 
@@ -39,7 +36,6 @@ public class CollisionController implements ContactListener {
         this.spirit = null;
         hostList = null;
         bounced = false;
-        possessed = false;
         hostPossessed = null;
         prevHostPossessed = null;
         againstWall = false;
@@ -52,7 +48,6 @@ public class CollisionController implements ContactListener {
         spirit = null;
         hostList = null;
         bounced = false;
-        possessed = false;
         hostPossessed = null;
     }
 
@@ -85,7 +80,6 @@ public class CollisionController implements ContactListener {
         // Reset all the fields to reflect this current frame if needed
         clear();
         prevHostPossessed = hostPossessed;
-        possessed = false;
         hostPossessed = null;
 
         Fixture fix1 = contact.getFixtureA();
@@ -101,12 +95,15 @@ public class CollisionController implements ContactListener {
         for (HostModel r : hostList) {
             if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
                     (body1.getUserData() == r && body2.getUserData() == spirit))) {
-                possessed = true;
+
                 hostPossessed = r;
+
                 // host is now possessed
                 hostPossessed.setPossessed(true);
+
                 // Spirit's life is replenished upon possessing new host
                 spirit.setCurrentLife(spirit.getDefaultLife());
+
                 // spirit is no longer in stage of being launched
                 spirit.setHasLaunched(false);
 
@@ -170,7 +167,7 @@ public class CollisionController implements ContactListener {
         // Turn off collision handling if spirit already in the golem
         for (HostModel r : hostList) {
             if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
-                    (body1.getUserData() == r && body2.getUserData() == spirit)) && possessed) {
+                    (body1.getUserData() == r && body2.getUserData() == spirit)) && isPossessed()) {
                 contact.setEnabled(false);
             }
         }
@@ -188,11 +185,10 @@ public class CollisionController implements ContactListener {
     public HostModel getHostPossessed() { return hostPossessed; }
 
     /** Getter method to return whether a possession occurred this frame */
-    public boolean isPossessed() { return possessed; }
+    public boolean isPossessed() { return hostPossessed != null; }
 
     /** Getter method to return whether a wall bounce occurred this frame */
     public boolean isBounced() { return bounced; }
-
 
     public boolean isAgainstWall() {
         return againstWall;

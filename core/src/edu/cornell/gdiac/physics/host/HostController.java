@@ -25,6 +25,9 @@ public class HostController {
     /** The current position of the mouse */
     private Vector2 currMouse;
 
+    /** The draw scale of the game */
+    private Vector2 scale;
+
     /** Whether the possessed host has blown up */
     private boolean possessedBlownUp;
 
@@ -32,12 +35,27 @@ public class HostController {
 
     private InputController input;
 
+    // Cache variables
+    /** Arrow position cache */
+    private Vector2 arrowCache;
+
     /** Height of the screen used to convert mouse y-coordinates */
     private float height;
 
-    /** Constant to change the speed of host movement */
-    private static final float HOST_MOVEMENT_SPEED = 500000;
-    private static final float MINIMUM_SHOT_SPEED = 50;
+    /** Constant to change the speed of golem movement */
+    private static final float HOST_MOVEMENT_SPEED = 5.f;
+
+    /** Minimum speed for shot spirit */
+    private static final float MINIMUM_SHOT_SPEED = 10.f;
+
+    /** Minimum speed for shot spirit */
+    private static final float MAXIMUM_SHOT_SPEED = 20.f;
+
+    /** Multiplier for velocity of spirit when shot */
+    private static final float SHOOTING_MULTIPLIER = 5.f;
+
+    /** Minimum distance to target before going to next instruction, for autonomous mode */
+    private static final float NEXT_INSTRUCTION_DIST = 0.5f;
 
     /** The number of ticks since we started this controller */
     private long ticks;
@@ -45,7 +63,7 @@ public class HostController {
     /**
      * Creates and initialize a new instance of a HostController
      */
-    public HostController(ArrayList<HostModel> h, Texture arrowTexture, float heightY) {
+    public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowTexture, float heightY) {
         input = InputController.getInstance();
         clickPosition = new Vector2(-1,-1);
         hosts = h;
@@ -53,6 +71,10 @@ public class HostController {
         height = heightY;
         possessedBlownUp = false;
         launched = false;
+
+        this.scale = scale;
+
+        arrowCache = new Vector2();
     }
 
     /**
@@ -127,7 +149,10 @@ public class HostController {
                     if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
                         // Clicked Mouse
                         clickPosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-                        arrow = new ArrowModel(arrowText, possessed.getPosition());
+
+                        arrowCache.set(possessed.getPosition());
+                        arrowCache.scl(scale);
+                        arrow = new ArrowModel(arrowText, arrowCache);
 
 //                  TODO (MAY) :
 //                  NEED TO ADD CONTROL TO ONLY RECOGNIZE IT WHEN ON ROBOT BODY
@@ -147,13 +172,30 @@ public class HostController {
                         clickPosition.x = -1;
                         clickPosition.y = -1;
 
-                        // Shoot velocity meets threshold requirements so shoot the spirit
-                        if (Math.abs(shootVector.x) > MINIMUM_SHOT_SPEED || Math.abs(shootVector.y) > MINIMUM_SHOT_SPEED) {
+                        float vx = SHOOTING_MULTIPLIER * shootVector.x / scale.x;
+                        float vy = SHOOTING_MULTIPLIER * shootVector.y / scale.y;
+
+                        float magnitude = Math.abs(vx * vx + vy * vy);
+
+                        // Only shoot if the shooting speed is large enough
+                        if (magnitude > MINIMUM_SHOT_SPEED) {
                             spirit.setHasLaunched(true);
-                            spirit.setVX(shootVector.x);
-                            spirit.setVY(shootVector.y);
+
+                            spirit.setPosition(possessed.getPosition());
+
+                            // Cap the speed of the shot
+                            if (magnitude > MAXIMUM_SHOT_SPEED) {
+                                float angle = (float) Math.atan2(vy, vx);
+                                vx = MAXIMUM_SHOT_SPEED * (float) Math.cos(angle);
+                                vy = MAXIMUM_SHOT_SPEED * (float) Math.sin(angle);
+                            }
+
+
+                            spirit.setVX(vx);
+                            spirit.setVY(vy);
 
                             // Upon Release of Spirit, possessed host and spirit are no longer possessed/possessing
+                            spirit.setHasLaunched(true);
                             spirit.setIsPossessing(false);
                             possessed.setPossessed(false);
                             launched = true;
@@ -162,14 +204,12 @@ public class HostController {
                         }
 
 
-                    }
-                    else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
+                    } else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
                         // Save current mouse location in arrowModel
-                        currMouse = new Vector2(Gdx.input.getX(),Gdx.input.getY());
+                        currMouse = new Vector2(Gdx.input.getX(), Gdx.input.getY());
                         arrow.setCurrLoc(currMouse);
                     }
-                }
-                else {
+                } else {
                     possessed.setVX(0);
                     possessed.setVY(0);
                 }
@@ -183,7 +223,7 @@ public class HostController {
             }
 
             // Case when Host's currentCharge exceed maxCharge
-            if(possessed.getCurrentCharge() > possessed.getMaxCharge()) {
+            if (possessed.getCurrentCharge() > possessed.getMaxCharge()) {
                 possessedBlownUp = true;
             }
         }
@@ -192,51 +232,50 @@ public class HostController {
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
 
         // When the spirit has been launched, need to decrement life of spirit
-        if(spirit.hasLaunched) {
+        if (spirit.hasLaunched) {
             // If you can decrement life, decrement life
-            if(spirit.decCurrentLife()) {
+            if (spirit.decCurrentLife()) {
                 // Spirit isn't dead yet
                 spirit.setAlive(true);
-            }
-            else {
+            } else {
                 // Because you can't decrement anymore, spirit is dead
                 spirit.setAlive(false);
             }
         }
 
 
-
         // PORTION OF CODE THAT DEALS WITH JUMPING BACK TO LAST HOST AFTER DEATH
 
         // In the case that spirit dies return to previous possessed bot
-        if(!spirit.isAlive() && !possessedBlownUp) {
+        if (!spirit.isAlive() && !possessedBlownUp) {
             spirit.setPosition(possessed.getPosition());
             // TODO: Replace 100 with variable whatever amount we want the host to go up by
             possessed.setCurrentCharge(possessed.getCurrentCharge() + 100);
         }
 
-
-
         //update other robots
-        for (HostModel r: hosts) {
-            Vector2 n = r.getInstruction();
-            Vector2 curr = r.getPosition();
-            if (r != possessed && Math.abs(curr.x - n.x) < 5 && Math.abs(curr.y - n.y) < 5 && !r.beenPossessed()) {
-                //go to next instruction
-                r.nextInstruction();
-                n = r.getInstruction();
-                float l = (float)Math.sqrt(Math.pow(n.x-curr.x,2) + Math.pow(n.y-curr.y,2) );
+        for (HostModel h : hosts) {
+            if (h != possessed && !h.beenPossessed()) {
+                Vector2 target = h.getInstruction();
+                Vector2 current = h.getPosition();
 
-                r.setVX((n.x - curr.x) * HOST_MOVEMENT_SPEED);
-                r.setVY((n.y - curr.y) * HOST_MOVEMENT_SPEED);
+                float x = target.x - current.x;
+                float y = target.y - current.y;
 
-            }
-            else if (r != possessed && !r.beenPossessed()) {
-                r.setVX((n.x - curr.x) * HOST_MOVEMENT_SPEED);
-                r.setVY((n.y - curr.y) * HOST_MOVEMENT_SPEED);
+                // If close enough to the destination, move to the next
+                // instruction (note: squaring both sides instead of sqrt)
+                if (x * x + y * y < NEXT_INSTRUCTION_DIST * NEXT_INSTRUCTION_DIST) {
+                    h.nextInstruction();
+
+                    // Otherwise, move towards the target
+                } else {
+                    double angle = Math.atan2(y, x);
+
+                    h.setVX(HOST_MOVEMENT_SPEED * (float) Math.cos(angle));
+                    h.setVY(HOST_MOVEMENT_SPEED * (float) Math.sin(angle));
+                }
             }
         }
-
     }
 
     public ArrowModel getArrow() { return arrow; }

@@ -51,6 +51,14 @@ public abstract class Obstacle {
 	/** Drawing scale to convert physics units to pixels */
 	protected Vector2 drawScale;
 
+	/// Store data relevant for level design
+	/** Records when this obstacle is clicked */
+	public boolean clicked;
+	/** Whether this obstacle can be selected. By default, set to true */
+	public boolean selectable = true;
+	/** Whether this obstacle should be part of the game (versus part of HUD) */
+	public boolean inGame = true;
+
 	/// Track garbage collection status
 	/** Whether the object should be removed from the world on next pass */
 	private boolean toRemove;
@@ -908,6 +916,22 @@ public abstract class Obstacle {
      */
     public void setName(String value) {
      	nametag = value; 
+	}
+
+	/**
+	 * Record that this obstacle was clicked.
+	 */
+	public void setClicked() { clicked = true; }
+
+	/**
+	 * Check if this obstacle was clicked. If so, the click is reset.
+	 */
+	public boolean checkClicked() {
+		if (clicked) {
+			clicked = false;
+			return true;
+		}
+		return false;
 	}
 	
 	/**

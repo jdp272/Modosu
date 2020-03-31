@@ -337,12 +337,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			// We are are ready, notify our listener
 			if (isReady() && listener != null) {
-				listener.exitScreen(this, 0);
+				listener.exitScreen(this, WorldController.EXIT_PLAY);
 			}
 
 			//go to level design mode
 			if(pressState == 4 && listener != null){
-				listener.exitScreen(this,1);
+				listener.exitScreen(this,WorldController.EXIT_DESIGN);
 			}
 
 		}

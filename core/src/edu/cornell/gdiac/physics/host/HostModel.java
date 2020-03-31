@@ -248,19 +248,7 @@ public class HostModel extends BoxObstacle {
      * @param height The object width in physics units
      */
     public HostModel(float width, float height, float currentCharge, float maxCharge) {
-        super(0, 0, width, height);
-        this.currentCharge = currentCharge;
-        this.maxCharge = maxCharge;
-        this.instructions = null;
-        this.instructionNumber = 0;
-        this.hasBeenPossessed = false;
-        setDensity(DEFAULT_DENSITY);
-        setDensity(DEFAULT_DENSITY);
-        setFriction(DEFAULT_FRICTION);
-        setRestitution(DEFAULT_RESTITUTION);
-        isPossessed = false;
-        isAlive = true;
-        setName("host");
+        this(0, 0, width, height, currentCharge, maxCharge);
     }
 
     /**
@@ -276,20 +264,7 @@ public class HostModel extends BoxObstacle {
      * @param height The object width in physics units
      */
     public HostModel(float x, float y, float width, float height, float currentCharge, float maxCharge) {
-        super(x, y, width, height);
-        force = new Vector2();
-        this.currentCharge = currentCharge;
-        this.maxCharge = maxCharge;
-        this.instructions = null;
-        this.instructionNumber = 0;
-        this.hasBeenPossessed = false;
-        setDensity(DEFAULT_DENSITY);
-        setDensity(DEFAULT_DENSITY);
-        setFriction(DEFAULT_FRICTION);
-        setRestitution(DEFAULT_RESTITUTION);
-        isPossessed = false;
-        isAlive = true;
-        setName("host");
+        this(x, y, width, height, currentCharge, maxCharge, null);
     }
 
     /**
@@ -312,7 +287,6 @@ public class HostModel extends BoxObstacle {
         this.instructions = ins;
         this.instructionNumber = 0;
         this.hasBeenPossessed = false;
-        setDensity(DEFAULT_DENSITY);
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
@@ -353,6 +327,7 @@ public class HostModel extends BoxObstacle {
      * @param possessed representing new state of possession
      */
     public void setPossessed(boolean possessed) {
+        hasBeenPossessed = hasBeenPossessed || possessed;
         isPossessed = possessed;
     }
 
@@ -410,12 +385,22 @@ public class HostModel extends BoxObstacle {
         return instructions[instructionNumber];
     }
 
-    public boolean beenPossessed() {
+    public boolean beenPossessed(){
         return hasBeenPossessed;
     }
 
-    public void setBeenPossessed(boolean b) {
-        hasBeenPossessed = b;
+//    public void setBeenPossessed(boolean b){
+//        hasBeenPossessed = b;
+//    }
+
+    /**
+     * Gets the full list of instructions
+     *
+     * @return An array of Vector2 objects containing the instructions, or null
+     *         if there are none.
+     */
+    public Vector2[] getInstructionList(){
+        return instructions;
     }
 
     public void nextInstruction() {

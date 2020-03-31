@@ -20,7 +20,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.assets.loaders.*;
 import com.badlogic.gdx.assets.loaders.resolvers.*;
 
-import edu.cornell.gdiac.physics.GamePlayController;
 import edu.cornell.gdiac.util.*;
 
 
@@ -42,6 +41,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private LoadingMode loading;
 	/** List of all WorldControllers */
 	private GamePlayController controller;
+
+	private LevelDesignerMode levelDesigner;
 	
 	/**
 	 * Creates a new game from the configuration settings.
@@ -70,7 +71,11 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode(canvas,manager,1);
 
 		controller = new GamePlayController();
+		levelDesigner = new LevelDesignerMode();
+
 		controller.preLoadContent(manager);
+		levelDesigner.preLoadContent(manager);
+
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}
@@ -118,8 +123,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-
-		if (screen == loading && exitCode == 0) {
+		if (screen == loading && exitCode == WorldController.EXIT_PLAY) {
 			controller.loadContent(manager);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
@@ -128,9 +132,15 @@ public class GDXRoot extends Game implements ScreenListener {
 
 			loading.dispose();
 			loading = null;
-		} else if (screen == loading && exitCode == 1){
-			//change screen to level design
+		} else if (screen == loading && exitCode == WorldController.EXIT_DESIGN) {
+			levelDesigner.loadContent(manager);
+			levelDesigner.setScreenListener(this);
+			levelDesigner.setCanvas(canvas);
+			levelDesigner.reset();
+			setScreen(levelDesigner);
 
+			loading.dispose();
+			loading = null;
 		} else if (exitCode == WorldController.EXIT_NEXT) {
 			controller.reset();
 			setScreen(controller);
