@@ -26,15 +26,20 @@ public class Loader {
     // Static fields
 
     /** Texture file for host sprite */
-    private static final String HOST_FILE = "assets/host/host.png";
+//    private static final String HOST_FILE = "assets/host/host.png";
     /** Texture file for HostModel Gauge */
-    private static final String HOST_GAUGE_FILE = "assets/host/host_gauge.png";
+//    private static final String HOST_GAUGE_FILE = "assets/host/host_gauge.png";
     /** Texture file for spirit sprite */
     private static final String SPIRIT_FILE = "assets/host/spirit.png";
     /** File to texture for obstacles */
     private static String OBSTACLE_FILE = "shared/crate02.png";
     /** File to texture for walls and platforms */
     private static String EARTH_FILE = "assets/shared/earthtile.png";
+    /** File to texture for host in all directions + animations : Host Sprite Sheet */
+    private static String HOST_FILE = "assets/host/hostSpriteSheet.png";
+    /** File to texture for host gauge in all directions + animations : Host Gauge Sprite Sheet */
+    private static String HOST_GAUGE_FILE = "assets/host/hostGaugeSpriteSheet.png";
+
     /** Retro font for displaying messages */
     private static String FONT_FILE = "shared/RetroGame.ttf";
     private static int FONT_SIZE = 64;
