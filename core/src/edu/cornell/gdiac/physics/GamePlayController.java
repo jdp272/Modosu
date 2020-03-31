@@ -260,9 +260,9 @@ public class GamePlayController extends WorldController {
 
 		// TODO: Somehow do this with input controller!
 		if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
-			levelName = "custom.lvl";
+			levelName = "levels/custom.lvl";
 		} else {
-			levelName = "out.txt";
+			levelName = "levels/out.lvl";
 		}
 
 		FileHandle f = new FileHandle(levelName);
@@ -276,6 +276,8 @@ public class GamePlayController extends WorldController {
 
 		possessed = level.hosts.get(0);
 //		possessed.setGolemWalkStrip(golemWalk);
+
+		System.out.println(System.getProperty("user.dir"));
 
 		spirit.setIsPossessing(true);
 

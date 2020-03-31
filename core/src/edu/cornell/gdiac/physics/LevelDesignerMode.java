@@ -274,8 +274,8 @@ public class LevelDesignerMode extends WorldController {
 			Gdx.input.getTextInput(new Input.TextInputListener() {
 				@Override
 				public void input (String levelName) {
-					System.out.println("Saving level as " + levelName + ".lvl");
-					save(levelName + ".lvl");
+					System.out.println("Saving level as levels/" + levelName + ".lvl");
+					save("levels/" + levelName + ".lvl");
 				}
 
 				@Override
