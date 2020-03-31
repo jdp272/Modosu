@@ -79,7 +79,6 @@ public class HostController {
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit) {
 
-
         input = InputController.getInstance();
 
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
@@ -158,7 +157,8 @@ public class HostController {
                             spirit.setIsPossessing(false);
                             possessed.setPossessed(false);
                             launched = true;
-                            System.out.println("actually shot");
+                            spirit.setHasLaunched(true);
+                            spirit.setGoToCenter(false);
                         }
 
 

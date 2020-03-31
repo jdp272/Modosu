@@ -251,6 +251,7 @@ public class GamePlayController extends WorldController {
 //		possessed.setGolemWalkStrip(golemWalk);
 		spirit = spark;
 		spirit.setName("spirit");
+		spirit.setIsPossessing(true);
 
 		//level = loader.reset(lvl);
 		//parse level

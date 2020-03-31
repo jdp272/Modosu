@@ -22,6 +22,9 @@ public class CollisionController implements ContactListener {
     /** What host was possessed this frame, null if no possession occurred */
     private HostModel hostPossessed;
 
+    /** What host was possessed last frame, null if no possession occurred */
+    private HostModel prevHostPossessed;
+
     // Physics objects for the game
     /** Reference to the hosts */
     private ArrayList<HostModel> hostList;
@@ -38,6 +41,7 @@ public class CollisionController implements ContactListener {
         bounced = false;
         possessed = false;
         hostPossessed = null;
+        prevHostPossessed = null;
         againstWall = false;
     }
 
@@ -78,8 +82,9 @@ public class CollisionController implements ContactListener {
      * @param contact The two bodies that collided
      */
     public void beginContact(Contact contact) {
-        // Reset all the fields to reflect this current frame
+        // Reset all the fields to reflect this current frame if needed
         clear();
+        prevHostPossessed = hostPossessed;
         possessed = false;
         hostPossessed = null;
 
@@ -108,14 +113,15 @@ public class CollisionController implements ContactListener {
                 // Spirit is alive whenever it is inside of a host
                 spirit.setAlive(true);
 
-                // Spirit will start moving towards the possessed's center
-                spirit.setGoToCenter(true);
+                // Spirit moves towards the possessed's center if wasn't already colliding with it last frame
+                if (hostPossessed != prevHostPossessed) {
+                    spirit.setGoToCenter(true);
+                }
             }
-
         }
 
-        // Collision handling to determine if the spirit collides with any walls
 
+        // Collision handling to determine if the spirit collides with any walls
         if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
                 bd1.getName() == "wall" && body2.getUserData() == spirit) {
             bounced = true;

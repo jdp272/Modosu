@@ -207,7 +207,5 @@ public class SpiritModel extends BoxObstacle {
         if (!isPossessing && !goToCenter) {
             canvas.draw(texture, lifeColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
         }
-
-
     }
 }
