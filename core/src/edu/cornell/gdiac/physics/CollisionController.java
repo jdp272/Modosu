@@ -80,7 +80,7 @@ public class CollisionController implements ContactListener {
         // Reset all the fields to reflect this current frame if needed
         clear();
         prevHostPossessed = hostPossessed;
-        possessed = false;
+
         hostPossessed = null;
 
         Fixture fix1 = contact.getFixtureA();
