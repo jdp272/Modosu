@@ -15,13 +15,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
-import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
-import edu.cornell.gdiac.physics.*;
-import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
@@ -123,11 +120,11 @@ public class LevelDesignerMode extends WorldController {
 	/** The transparency for foreground image */
 	private static Color FORE_COLOR = new Color(0.0f, 0.2f, 0.3f, 0.2f);
 
-	/** Mouse selector to move the ragdoll */
+	/** Mouse selector to move game objects */
 	private ObstacleSelector selector;
 
 	/**
-	 * Creates and initialize a new instance of the ragdoll fishtank
+	 * Creates and initialize a new instance of the level designer
 	 *
 	 * The world has lower gravity to simulate being underwater.
 	 */
@@ -171,33 +168,10 @@ public class LevelDesignerMode extends WorldController {
 		populateLevel();
 	}
 
-	public void updateShader() {
-		InputController input = InputController.getInstance();
-
-		// Set mouse pos first so default shader gets it
-//		canvas.setMousePos(input.getMousePos(bounds));
-//		canvas.setMousePos(input.getCrossHair().scl(scale));
-//		canvas.setDefaultShader(false);
-	}
-
 	/**
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-//		for(Obstacle ob : level.obstacles) {
-//			addObject(ob);
-//			addQueue.add(ob);
-//			obj.activatePhysics(world);
-//		}
-//		for(Obstacle ob : level.hosts) {
-//
-//			addQueue.add(ob);
-//			obj.activatePhysics(world);
-//		}
-//		addQueue.add(level.start);
-//		level.start.activatePhysics(world);
-//		collisionController.addHosts(level.hosts);
-//		collisionController.addSpirit(level.start);
 
 		BoxObstacle boxSpawn = factory.makeObstacle(0.f, 0.f);
 		addObject(boxSpawn);
@@ -238,15 +212,6 @@ public class LevelDesignerMode extends WorldController {
 		selector = new ObstacleSelector(world);
 		selector.setTexture(crosshairTexture);
 		selector.setDrawScale(scale);
-
-		/*
-		BodyDef groundDef = new BodyDef();
-		groundDef.type = BodyDef.BodyType.StaticBody;
-		EdgeShape groundShape = new EdgeShape();
-		groundShape.set(-500.0f, 0.0f, 500.0f, 0.0f);
-		ground = world.createBody(groundDef);
-		ground.createFixture(groundShape,0);
-		*/
 	}
 
 	/**
@@ -342,7 +307,6 @@ public class LevelDesignerMode extends WorldController {
 		SpiritModel spirit = null;
 		ArrayList<HostModel> hostList = new ArrayList<>();
 		ArrayList<BoxObstacle> obstacleList = new ArrayList<>();
-		int boxNum = 0;
 		for(Obstacle obj : objects) {
 			if(!obj.inGame) {
 				continue;

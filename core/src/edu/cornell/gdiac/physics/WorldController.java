@@ -251,6 +251,11 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_NEXT = 1;
 	/** Exit code for jumping back to previous level */
 	public static final int EXIT_PREV = 2;
+	/** Exit code for going to the play screen */
+	public static final int EXIT_PLAY = 3;
+	/** Exit code for going to the level design screen */
+	public static final int EXIT_DESIGN = 4;
+
     /** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
 
@@ -559,6 +564,7 @@ public abstract class WorldController implements Screen {
 			if (failed) {
 				reset();
 			} else if (complete) {
+				// TODO: go to the next level
 				listener.exitScreen(this, EXIT_NEXT);
 				return false;
 			}

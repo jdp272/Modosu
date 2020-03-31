@@ -10,6 +10,8 @@
  */
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -80,7 +82,7 @@ public class GamePlayController extends WorldController {
 	private int numHosts;
 
 	/** How many hosts have been possessed up to this frame */
-	private int numPosessed;
+	private int numPossessed;
 
 	/** Animation for host walking */
 	private FilmStrip golemWalk;
@@ -176,7 +178,7 @@ public class GamePlayController extends WorldController {
 		world.setContactListener(collisionController);
 
 		havePossessed = new HashMap<>();
-		numPosessed = 0;
+		numPossessed = 0;
 
 		cache = new Vector2();
 	}
@@ -192,85 +194,87 @@ public class GamePlayController extends WorldController {
 		setFailure(false);
 
 		Vector2 gravity = new Vector2(world.getGravity());
-		BoxObstacle[] obs = new BoxObstacle[BOXES.length/2];
+//		BoxObstacle[] obs = new BoxObstacle[BOXES.length/2];
+//
+//		// Reset fields of this controller
+//		possessed = null;
+//		numPossessed = 0;
+//
+//		// Reset the collision controller
+//		collisionController.reset();
+//
+//		float dwidth  = obstacleTex.getRegionWidth() / scale.x;
+//		float dheight = obstacleTex.getRegionHeight() / scale.y;
+//
+//		// Create all the obstacles (walls) on the level
+//		BoxObstacle box;
+//		for (int i = 0; i < BOXES.length; i+=2) {
+//			box = new BoxObstacle(BOXES[i],BOXES[i+1], dwidth, dheight);
+//			box.setDrawScale(scale);
+//			box.setTexture(obstacleTex);
+//			box.setBodyType(BodyDef.BodyType.StaticBody);
+//			box.setName("wall");
+//			obs[i/2] = box;
+//		}
+//
+//		// Reset the possession tracker
+//		havePossessed.clear();
+//
+//		// Create all the hosts and fill the list
+//		ArrayList<HostModel> hosts = new ArrayList<>();
+//
+//		dwidth  = hostTex.getRegionWidth() / scale.x;
+//		dheight = hostTex.getRegionHeight() / scale.y;
+//
+//		HostModel host;
+//		for (int i = 0; i < HOSTS.length; i+=2) {
+//			host = new HostModel(HOSTS[i],HOSTS[i+1], dwidth, dheight, 0, 1000);
+//			host.setDrawScale(scale);
+//			host.setTexture(hostTex);
+//			host.setHostGaugeTexture(hostGaugeTex);
+//			host.setBodyType(BodyDef.BodyType.DynamicBody);
+//			hosts.add(host);
+//			havePossessed.put(host, false);
+//		}
+//
+//		Vector2[] ins = {new Vector2(24,12),new Vector2(15,12)};
+//		host = new HostModel(24, 12, dwidth, dheight, 0, 1000, ins);
+//		host.setDrawScale(scale);
+//		host.setTexture(hostTex);
+//		host.setHostGaugeTexture(hostGaugeTex);
+//		hosts.add(host);
+//		havePossessed.put(host, false);
+//
+////		SPIRIT_POS.x = 15;
+////		SPIRIT_POS.y = 3;
+//
+//		dwidth  = spiritTex.getRegionWidth() / scale.x;
+//		dheight = spiritTex.getRegionHeight() / scale.y;
+//
+//		SpiritModel spark = factory.makeSpirit(SPIRIT_POS.x, SPIRIT_POS.y);
+//		spark.setDrawScale(scale);
+//
+//		level = new Level(null, obs, hosts, spark);
 
-		// Reset fields of this controller
-		possessed = null;
-		numPosessed = 0;
+		String levelName;
 
-		// Reset the collision controller
-		collisionController.reset();
-
-		float dwidth  = obstacleTex.getRegionWidth() / scale.x;
-		float dheight = obstacleTex.getRegionHeight() / scale.y;
-
-		// Create all the obstacles (walls) on the level
-		BoxObstacle box;
-		for (int i = 0; i < BOXES.length; i+=2) {
-			box = new BoxObstacle(BOXES[i],BOXES[i+1], dwidth, dheight);
-			box.setDrawScale(scale);
-			box.setTexture(obstacleTex);
-			box.setBodyType(BodyDef.BodyType.StaticBody);
-			box.setName("wall");
-			obs[i/2] = box;
+		// TODO: Somehow do this with input controller!
+		if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
+			levelName = "custom.lvl";
+		} else {
+			levelName = "out.txt";
 		}
 
-		// Reset the possession tracker
-		havePossessed.clear();
-
-		// Create all the hosts and fill the list
-		ArrayList<HostModel> hosts = new ArrayList<>();
-
-		dwidth  = hostTex.getRegionWidth() / scale.x;
-		dheight = hostTex.getRegionHeight() / scale.y;
-
-		HostModel host;
-		for (int i = 0; i < HOSTS.length; i+=2) {
-			host = new HostModel(HOSTS[i],HOSTS[i+1], dwidth, dheight, 0, 1000);
-			host.setDrawScale(scale);
-			host.setTexture(hostTex);
-			host.setHostGaugeTexture(hostGaugeTex);
-			host.setBodyType(BodyDef.BodyType.DynamicBody);
-			hosts.add(host);
-			havePossessed.put(host, false);
-		}
-
-		Vector2[] ins = {new Vector2(24,12),new Vector2(15,12)};
-		host = new HostModel(24, 12, dwidth, dheight, 0, 1000, ins);
-		host.setDrawScale(scale);
-		host.setTexture(hostTex);
-		host.setHostGaugeTexture(hostGaugeTex);
-		hosts.add(host);
-		havePossessed.put(host, false);
-
-//		SPIRIT_POS.x = 15;
-//		SPIRIT_POS.y = 3;
-
-		dwidth  = spiritTex.getRegionWidth() / scale.x;
-		dheight = spiritTex.getRegionHeight() / scale.y;
-
-		SpiritModel spark = factory.makeSpirit(SPIRIT_POS.x, SPIRIT_POS.y);
-		spark.setDrawScale(scale);
-
-		level = new Level(null, obs, hosts, spark);
-
-//		String levelName = "out.txt";
-		String levelName = "custom.lvl";
 		FileHandle f = new FileHandle(levelName);
-
-		loader.saveLevel(f, level);
+//		loader.saveLevel(f, level);
 
 		System.out.println("loading level: " + levelName);
 		level = loader.loadLevel(f);
 
-		spark = level.start;
-		hosts = level.hosts;
-		obs = level.obstacles;
-
-		spirit = spark;
+		spirit = level.start;
 		spirit.setName("spirit");
 
-		possessed = hosts.get(0);
+		possessed = level.hosts.get(0);
 //		possessed.setGolemWalkStrip(golemWalk);
 
 
@@ -280,6 +284,7 @@ public class GamePlayController extends WorldController {
 
 		// How many hosts need to be possessed to win
 		numHosts = level.hosts.size();
+		numPossessed = 0;
 
 		for(Obstacle o : objects) {
 			o.deactivatePhysics(world);
@@ -325,7 +330,7 @@ public class GamePlayController extends WorldController {
 	public void update(float delta) {
 
 		// Check win condition
-		if ((numPosessed == numHosts) && !isComplete()){
+		if ((numPossessed == numHosts) && !isComplete()){
 			setComplete(true);
 			SoundController.getInstance().play(VICTORY_SOUND,VICTORY_SOUND,false);
 		}
@@ -344,7 +349,7 @@ public class GamePlayController extends WorldController {
 			if (!havePossessed.get(possessed)) {
 
 				havePossessed.put(possessed, true);
-				numPosessed++;
+				numPossessed++;
 			}
 		}
 

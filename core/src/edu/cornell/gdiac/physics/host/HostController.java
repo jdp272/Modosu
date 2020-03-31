@@ -173,7 +173,6 @@ public class HostController {
                         clickPosition.x = -1;
                         clickPosition.y = -1;
 
-//<<<<<<<HEAD
                         float vx = SHOOTING_MULTIPLIER * shootVector.x / scale.x;
                         float vy = SHOOTING_MULTIPLIER * shootVector.y / scale.y;
 
@@ -201,18 +200,6 @@ public class HostController {
                             spirit.setIsPossessing(false);
                             possessed.setPossessed(false);
                             launched = true;
-//=======
-//                            // Shoot velocity meets threshold requirements so shoot the spirit
-//                            if (Math.abs(shootVector.x) > MINIMUM_SHOT_SPEED || Math.abs(shootVector.y) > MINIMUM_SHOT_SPEED) {
-//                                spirit.setHasLaunched(true);
-//                                spirit.setVX(shootVector.x);
-//                                spirit.setVY(shootVector.y);
-//
-//                                // Upon Release of Spirit, possessed host and spirit are no longer possessed/possessing
-//                                spirit.setIsPossessing(false);
-//                                possessed.setPossessed(false);
-//                                launched = true;
-//>>>>>>>6992 b9a08de81fd84634297ed9a187ee875a2eb7
                         }
 
 

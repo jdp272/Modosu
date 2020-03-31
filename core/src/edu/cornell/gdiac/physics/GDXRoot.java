@@ -123,25 +123,24 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-
-		if (screen == loading && exitCode == 0) {
+		if (screen == loading && exitCode == WorldController.EXIT_PLAY) {
 			controller.loadContent(manager);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.reset();
 			setScreen(controller);
 
-//			levelDesigner.loadContent(manager);
-//			levelDesigner.setScreenListener(this);
-//			levelDesigner.setCanvas(canvas);
-//			levelDesigner.reset();
-//			setScreen(levelDesigner);
+			loading.dispose();
+			loading = null;
+		} else if (screen == loading && exitCode == WorldController.EXIT_DESIGN) {
+			levelDesigner.loadContent(manager);
+			levelDesigner.setScreenListener(this);
+			levelDesigner.setCanvas(canvas);
+			levelDesigner.reset();
+			setScreen(levelDesigner);
 
 			loading.dispose();
 			loading = null;
-		} else if (screen == loading && exitCode == 1){
-			//change screen to level design
-
 		} else if (exitCode == WorldController.EXIT_NEXT) {
 			controller.reset();
 			setScreen(controller);
