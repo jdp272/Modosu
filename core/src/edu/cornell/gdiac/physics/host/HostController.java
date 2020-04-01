@@ -149,7 +149,6 @@ public class HostController {
                     if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
                         // Clicked Mouse
                         clickPosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-
                         arrowCache.set(possessed.getPosition());
                         arrowCache.scl(scale);
                         arrow = new ArrowModel(arrowText, arrowCache);

@@ -31,7 +31,6 @@ public class ArrowModel {
     }
 
     public void draw (GameCanvas canvas) {
-
         // Get coordinates from screen to game coordinates
         Vector3 currPos = new Vector3(currLoc, 0);
         canvas.getCamera().unproject(currPos);
