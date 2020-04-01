@@ -25,10 +25,12 @@ public class ArrowModel {
         currLoc = new Vector2(start);
     }
 
-    public void setCurrLoc(Vector2 pos) { currLoc = pos; }
+    public void setCurrLoc(Vector2 mousePos, Vector2 hostPos) {
+        currLoc = mousePos;
+        start = hostPos;
+    }
 
     public void draw (GameCanvas canvas) {
-
         // Get coordinates from screen to game coordinates
         Vector3 currPos = new Vector3(currLoc, 0);
         canvas.getCamera().unproject(currPos);
