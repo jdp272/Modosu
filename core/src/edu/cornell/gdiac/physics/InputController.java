@@ -70,7 +70,9 @@ public class InputController {
 	/** Whether the exit button was pressed. */
 	private boolean exitPressed;
 	private boolean exitPrevious;
-	
+	/** Whether the zoom button was pressed. */
+	private boolean zoomPressed;
+
 	/** How much did we move horizontally? */
 	private float horizontal;
 	/** How much did we move vertically? */
@@ -202,6 +204,13 @@ public class InputController {
 	public boolean didExit() {
 		return exitPressed && !exitPrevious;
 	}
+
+	/**
+	 * Returns true if the zoom button was pressed.
+	 *
+	 * @return true if the zoom button was pressed.
+	 */
+	public boolean didZoom() { return zoomPressed; }
 	
 	/**
 	 * Creates a new input controller
@@ -302,6 +311,7 @@ public class InputController {
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
 		
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);

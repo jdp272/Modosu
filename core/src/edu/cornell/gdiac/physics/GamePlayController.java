@@ -10,6 +10,7 @@
  */
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
@@ -315,6 +316,11 @@ public class GamePlayController extends WorldController {
 		// Handle camera panning
 		canvas.setCamTarget(spirit.getPosition());
 		canvas.updateCamera();
+
+		// Handle camera zooming
+		if (InputController.getInstance().didZoom()) {
+			canvas.toggleZoom();
+		}
 
 		// Update sounds
 		SoundController.getInstance().update();

@@ -81,6 +81,11 @@ public class HostController {
                 spirit.setPosition(possessed.getPosition());
             }
 
+            // Zoom the camera out on z, or back in if it is out
+            if (input.didZoom()) {
+
+            }
+
             if (possessed.incCurrentCharge()) {
                 if (!spirit.getHasLaunched()) {
                     possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal());
@@ -106,7 +111,10 @@ public class HostController {
                         arrow = null;
 
                         shootVector = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-                        shootVector = shootVector.sub(clickPosition);
+                        // Change: To make this more in line with the arrow (the way I think it should be, different
+                        // from the prototype but more intuitive), subtract from the player position, not the click
+                        // position.
+                        shootVector = shootVector.sub(possessed.getPosition());
                         shootVector.x = -shootVector.x;
 
                         clickPosition.x = -1;
@@ -114,8 +122,12 @@ public class HostController {
 
                         spirit.setPosition(possessed.getPosition());
 
+
                         spirit.setVX(shootVector.x);
                         spirit.setVY(shootVector.y);
+                        System.out.println(spirit.getVX());
+
+
 
                         if (Math.abs(shootVector.x) > MINIMUM_SHOT_SPEED || Math.abs(shootVector.y) > MINIMUM_SHOT_SPEED) {
                             spirit.setHasLaunched(true);

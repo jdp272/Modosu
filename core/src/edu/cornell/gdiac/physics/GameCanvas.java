@@ -87,6 +87,14 @@ public class GameCanvas {
 	/** The place that the camera wants to pan to */
 	private Vector2 camTarget;
 
+	// Zoom Variables
+	private float currentZoom;
+	private float targetZoom;
+	private float zoomThreshold = 0.005f;
+	private boolean zooming = false;
+	private boolean zoomingIn = false;
+	private boolean zoomingOut = false;
+
 	// CACHE OBJECTS
 	/** Affine cache for current sprite to draw */
 	private Affine2 local;
@@ -95,6 +103,7 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
+
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -148,8 +157,48 @@ public class GameCanvas {
 		// TODO add smoothing
 	    // This line results in the camera following directly on the player, will add smoothing later
 		camera.translate(camTarget.x - camera.position.x, camTarget.y - camera.position.y);
+		if (zooming) {
+			camera.zoom = MathUtils.lerp(camera.zoom, targetZoom, 0.1f);
+			if (Math.abs(targetZoom - camera.zoom) <= zoomThreshold) {
+				camera.zoom = targetZoom;
+				zooming = false;
+			}
+
+		}
+
 		camera.update();
 	}
+
+	public void toggleZoom() {
+		if (zoomingOut) {
+			zoomIn();
+		}
+		else {
+			zoomOut();
+		}
+
+	}
+
+	/**
+	 * Begins the process of zooming the camera out
+	 */
+	private void zoomOut() {
+		targetZoom = 2.0f;
+		zoomingOut = true;
+		zoomingIn = false;
+		zooming = true;
+	}
+
+	/**
+	 * Begins the process of zooming the camera out
+	 */
+	private void zoomIn() {
+	    targetZoom = 1;
+		zoomingIn = true;
+		zoomingOut = false;
+		zooming = true;
+	}
+
 
 	/**
 	 * Returns the width of this canvas
