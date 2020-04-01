@@ -275,7 +275,6 @@ public class GamePlayController extends WorldController {
 		spirit.setName("spirit");
 
 		possessed = level.hosts.get(0);
-//		possessed.setGolemWalkStrip(golemWalk);
 
 		System.out.println(System.getProperty("user.dir"));
 
@@ -288,6 +287,9 @@ public class GamePlayController extends WorldController {
 		// How many hosts need to be possessed to win
 		numHosts = level.hosts.size();
 		numPossessed = 0;
+
+		// Reset the collision controller
+		collisionController.reset();
 
 		for(Obstacle o : objects) {
 			o.deactivatePhysics(world);
