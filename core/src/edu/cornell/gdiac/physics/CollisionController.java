@@ -116,6 +116,18 @@ public class CollisionController implements ContactListener {
                     spirit.setGoToCenter(true);
                 }
             }
+
+            if ((( body2.getUserData() == r) || (body1.getUserData() == r )) && !r.isPossessed() ) {
+                Vector2 c = contact.getWorldManifold().getPoints()[0].sub(r.getPosition());
+                Vector2 v = r.getLinearVelocity();
+                if(Math.signum(c.x) == Math.signum(v.x) && Math.signum(c.y) == Math.signum(v.y)){
+                    r.invertForwardI();
+                    r.nextInstruction();
+                }
+
+            }
+
+
         }
 
 

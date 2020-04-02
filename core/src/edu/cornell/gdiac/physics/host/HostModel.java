@@ -139,6 +139,13 @@ public class HostModel extends BoxObstacle {
     public Affine2 affineCache = new Affine2();
 
     /**
+     *
+     */
+    public void invertForwardI(){
+        forwardI = !forwardI;
+    }
+
+    /**
      * Gets the max charge a host can hold before exploding
      *
      * @return float that represents the maximum charge that can be held
