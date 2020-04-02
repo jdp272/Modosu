@@ -171,10 +171,7 @@ public class HostController {
 
                         // Calculate the new velocity vector
                         shootVector = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-                        // Change: To make this more in line with the arrow (the way I think it should be, different
-                        // from the prototype but more intuitive), subtract from the player position, not the click
-                        // position.
-                        shootVector = shootVector.sub(possessed.getPosition());
+                        shootVector = shootVector.sub(clickPosition);
                         shootVector.x = -shootVector.x;
 
                         clickPosition.x = -1;
