@@ -1,15 +1,24 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
+
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+
+import java.util.ArrayList;
 
 /**
  * A simple struct-like class that holds the elements of a level.
  */
 public class Level {
+
+    public Level() {
+        this.regions = null;
+        this.obstacles = null;
+        this.hosts = null;
+        this.start = null;
+    }
 
     /**
      * Constructs a simple object encapsulating the elements of a level
@@ -24,7 +33,7 @@ public class Level {
     public Level(
             Vector2[][] regions,
             BoxObstacle[] obstacles,
-            HostList hosts,
+            ArrayList<HostModel> hosts,
             SpiritModel start
     ) {
        this.regions = regions;
@@ -50,8 +59,21 @@ public class Level {
     public BoxObstacle[] obstacles;
 
     /** An array of the hosts in the level */
-    public HostList hosts;
+    public ArrayList<HostModel> hosts;
 
     /** The "host" where the player starts */
     public SpiritModel start;
+
+    public void set(
+            Vector2[][] regions,
+            BoxObstacle[] obstacles,
+            ArrayList<HostModel> hosts,
+            SpiritModel start
+    ) {
+        this.regions = regions;
+        this.obstacles = obstacles;
+        this.hosts = hosts;
+        this.start = start;
+    }
+
 }

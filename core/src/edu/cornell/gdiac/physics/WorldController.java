@@ -65,12 +65,13 @@ public abstract class WorldController implements Screen {
 	protected AssetState worldAssetState = AssetState.EMPTY;
 	/** Track all loaded assets (for unloading purposes) */
 	protected Array<String> assets;
+
+	/** A factory class for easily creating game objects. */
+	protected Factory factory;
+	/** A loader class for loading level files. */
+	protected Loader loader;
 	
 	// Pathnames to shared assets
-	/** File to texture for walls and platforms */
-	private static String EARTH_FILE = "shared/stonetile.png";
-	/** File to texture for the win door */
-	private static String GOAL_FILE = "shared/goaldoor.png";
 	/** Retro font for displaying messages */
 	private static String FONT_FILE = "shared/RetroGame.ttf";
 	/** Texture file for background image */
@@ -88,10 +89,6 @@ public abstract class WorldController implements Screen {
 
 	private static int FONT_SIZE = 64;
 
-	/** The texture for walls and platforms */
-	protected TextureRegion earthTile;
-	/** The texture for the exit condition */
-	protected TextureRegion goalTile;
 	/** The font for giving messages to the player */
 	protected BitmapFont displayFont;
 	/** Texture asset for background image */
@@ -125,10 +122,6 @@ public abstract class WorldController implements Screen {
 		
 		worldAssetState = AssetState.LOADING;
 		// Load the shared tiles.
-		manager.load(EARTH_FILE,Texture.class);
-		assets.add(EARTH_FILE);
-		manager.load(GOAL_FILE,Texture.class);
-		assets.add(GOAL_FILE);
 		manager.load(BACKG_FILE,Texture.class);
 		assets.add(BACKG_FILE);
 
@@ -141,8 +134,6 @@ public abstract class WorldController implements Screen {
 		assets.add(SPIRIT_FILE);
 		manager.load(OBSTACLE_FILE, Texture.class);
 		assets.add(OBSTACLE_FILE);
-		manager.load(EARTH_FILE, Texture.class);
-		assets.add(EARTH_FILE);
 		manager.load(ARROW_FILE, Texture.class);
 		assets.add(ARROW_FILE);
 		
@@ -170,8 +161,6 @@ public abstract class WorldController implements Screen {
 		}
 		
 		// Allocate the tiles
-		earthTile = createTexture(manager,EARTH_FILE,true);
-		goalTile  = createTexture(manager,GOAL_FILE,true);
 		backgroundTexture = createTexture(manager,BACKG_FILE, true);
 		hostTex = createTexture(manager, HOST_FILE, true);
 		spiritTex = createTexture(manager, SPIRIT_FILE, true);
@@ -187,6 +176,10 @@ public abstract class WorldController implements Screen {
 		}
 
 		worldAssetState = AssetState.COMPLETE;
+
+		// Set the proper textures in the factory
+		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostGaugeTex);
+		loader = new Loader(factory);
 	}
 	
 	/**
@@ -258,6 +251,11 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_NEXT = 1;
 	/** Exit code for jumping back to previous level */
 	public static final int EXIT_PREV = 2;
+	/** Exit code for going to the play screen */
+	public static final int EXIT_PLAY = 3;
+	/** Exit code for going to the level design screen */
+	public static final int EXIT_DESIGN = 4;
+
     /** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
 
@@ -492,7 +490,7 @@ public abstract class WorldController implements Screen {
 	/**
 	 * Immediately adds the object to the physics world
 	 *
-	 * param obj The object to add
+	 * @param obj The object to add
 	 */
 	protected void addObject(Obstacle obj) {
 		assert inBounds(obj) : "Object is not in bounds";
@@ -566,6 +564,7 @@ public abstract class WorldController implements Screen {
 			if (failed) {
 				reset();
 			} else if (complete) {
+				// TODO: go to the next level
 				listener.exitScreen(this, EXIT_NEXT);
 				return false;
 			}
@@ -599,7 +598,7 @@ public abstract class WorldController implements Screen {
 		while (!addQueue.isEmpty()) {
 			addObject(addQueue.poll());
 		}
-		
+
 		// Turn the physics engine crank.
 		world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
