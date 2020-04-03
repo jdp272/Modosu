@@ -393,6 +393,11 @@ public class GamePlayController extends WorldController {
 		canvas.setCamTarget(cache);
 		canvas.updateCamera();
 
+		// Handle camera zooming
+		if (InputController.getInstance().didZoom()) {
+			canvas.toggleZoom();
+		}
+
 		// Update sounds
 		SoundController.getInstance().update();
 

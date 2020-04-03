@@ -132,6 +132,11 @@ public class HostController {
                 spirit.setPosition(possessed.getPosition());
             }
 
+            // Zoom the camera out on z, or back in if it is out
+            if (input.didZoom()) {
+
+            }
+
             if (possessed.incCurrentCharge()) {
 
                 if (!spirit.hasLaunched || spirit.getIsPossessing()) {
@@ -174,7 +179,9 @@ public class HostController {
                         float vx = SHOOTING_MULTIPLIER * shootVector.x / scale.x;
                         float vy = SHOOTING_MULTIPLIER * shootVector.y / scale.y;
 
+
                         float magnitude = Math.abs(vx * vx + vy * vy);
+
 
                         // Only shoot if the shooting speed is large enough
                         if (magnitude > MINIMUM_SHOT_SPEED) {

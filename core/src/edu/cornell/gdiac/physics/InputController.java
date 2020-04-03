@@ -71,6 +71,9 @@ public class InputController {
 	private boolean exitPressed;
 	private boolean exitPrevious;
 
+	/** Whether the zoom button was pressed. */
+	private boolean zoomPressed;
+
 	/** If a new obstacle button was pressed */
 	private boolean boxPressed;
 	private boolean boxPrevious;
@@ -220,6 +223,12 @@ public class InputController {
 	}
 
 	/**
+	 * Returns true if the zoom button was pressed.
+	 *
+	 * @return true if the zoom button was pressed.
+	 */
+	public boolean didZoom() { return zoomPressed; }
+    /**
 	 * Returns true if the new box button was pressed.
 	 *
 	 * @return true if the new box button was pressed.
@@ -253,7 +262,7 @@ public class InputController {
 	 * @return true if the save button was pressed.
 	 */
 	public boolean didSave() { return savePressed && !savePrevious; }
-	
+
 	/**
 	 * Creates a new input controller
 	 * 
@@ -366,6 +375,8 @@ public class InputController {
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
+		
 
 		boxPressed = (secondary && boxPressed)  || (Gdx.input.isKeyPressed(Input.Keys.B));
 		hostPressed = (secondary && hostPressed)  || (Gdx.input.isKeyPressed(Input.Keys.G));
