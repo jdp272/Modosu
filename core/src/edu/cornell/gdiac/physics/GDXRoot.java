@@ -43,6 +43,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private GamePlayController controller;
 
 	private LevelDesignerMode levelDesigner;
+
+	private LevelSelectMode levelSelect;
 	
 	/**
 	 * Creates a new game from the configuration settings.
@@ -69,6 +71,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1);
+
+		levelSelect = new LevelSelectMode(canvas, manager, 1);
 
 		controller = new GamePlayController();
 		levelDesigner = new LevelDesignerMode();
