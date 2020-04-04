@@ -28,16 +28,26 @@ public class ArrowModel {
         velocityRepresented = new Vector2(0,0);
     }
 
-    public void setCurrLoc(Vector2 mousePos, Vector2 hostPos) {
+    public void setCurrLoc(Vector2 mousePos) {
         currLoc = mousePos;
     }
 
     public void draw (GameCanvas canvas) {
-        if (velocityRepresented.len()/100 > .2) {
-            canvas.begin();
-            canvas.draw(arrTexture, Color.PURPLE, arrTexture.getWidth()/2, arrTexture.getHeight()/2, start.x + velocityRepresented.setLength(75f).x, start.y + velocityRepresented.setLength(75f).y,  velocityRepresented.angleRad(), sx, 1);
-            canvas.end();
+        Color c;
+
+        // Determine the color based on whether the velocity passes threshold
+        if (sx > .21) {
+            c = new Color(Color.PURPLE);
         }
+        else {
+            c = new Color(Color.RED);
+        }
+
+        // Draw the arrow
+        canvas.begin();
+        canvas.draw(arrTexture, c, arrTexture.getWidth()/2, arrTexture.getHeight()/2, start.x + velocityRepresented.setLength(75f).x,
+                start.y + velocityRepresented.setLength(75f).y,  velocityRepresented.angleRad(), sx, 1);
+        canvas.end();
     }
 
     public void setVelocityRepresented(Vector2 velocity) {
@@ -45,12 +55,11 @@ public class ArrowModel {
         velocityRepresented = velocity;
 
         // Change scaling
-        if (velocityRepresented.len()/100 > 1 && velocityRepresented.len()/100 < 4.4) {
+        if (velocityRepresented.len()/100 < 4.4) {
             sx = velocityRepresented.len()/100;
         }
-        else if (velocityRepresented.len()/100 < 1) {
-            sx = 1;
+        else {
+            sx = 5;
         }
-
     }
 }

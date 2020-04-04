@@ -381,7 +381,6 @@ public class GamePlayController extends WorldController {
 
 		// Update bouncing if applicable
 		if (collisionController.isBounced()) {
-			System.out.println("should play bouncing noise");
 			SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false);
 		}
 

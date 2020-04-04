@@ -124,10 +124,7 @@ public class CollisionController implements ContactListener {
                     r.invertForwardI();
                     r.nextInstruction();
                 }
-
             }
-
-
         }
 
 

@@ -49,6 +49,7 @@ public class Factory {
         box.setTexture(obstacleTex);
         box.setBodyType(BodyDef.BodyType.StaticBody);
         box.setSensor(makeSensors);
+        box.setName("wall");
         return box;
     }
 

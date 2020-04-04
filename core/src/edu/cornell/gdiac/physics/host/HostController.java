@@ -49,7 +49,7 @@ public class HostController {
     /** Minimum speed for shot spirit */
     private static final float MINIMUM_SHOT_SPEED = 10.f;
 
-    /** Minimum speed for shot spirit */
+    /** Maximum speed for shot spirit */
     private static final float MAXIMUM_SHOT_SPEED = 20.f;
 
     /** Multiplier for velocity of spirit when shot */
@@ -100,7 +100,7 @@ public class HostController {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit) {
-//        System.out.println(possessed.getVelocity());
+
         input = InputController.getInstance();
 
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
@@ -145,11 +145,10 @@ public class HostController {
             if (possessed.incCurrentCharge()) {
 
                 if (!spirit.hasLaunched || spirit.getIsPossessing()) {
-//                    possessed.animateWalk(true);
+
                     // Move using player input
                     possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal());
                     possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical());
-//                    System.out.println(possessed.getVelocity());
 
 
                     if ((input.getVertical() != 0 || input.getHorizontal() != 0) && (!spirit.getGoToCenter())) {
@@ -163,11 +162,6 @@ public class HostController {
                         arrowCache.set(possessed.getPosition());
                         arrowCache.scl(scale);
                         arrow = new ArrowModel(arrowText, arrowCache);
-
-//                  TODO (MAY) :
-//                  NEED TO ADD CONTROL TO ONLY RECOGNIZE IT WHEN ON ROBOT BODY
-//                  NEED TO DRAW ONLY WHEN MEETS VELOCITY THRESHOLD
-
                     }
 
                     // Released Mouse -- Shoot
@@ -216,9 +210,7 @@ public class HostController {
                         // Save current mouse location in arrowModel
                         // Save possessed current position as the starting drawing point
                         currMouse = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-                        arrowCache.set(possessed.getPosition());
-                        arrowCache.scl(scale);
-                        arrow.setCurrLoc(currMouse, arrowCache);
+                        arrow.setCurrLoc(currMouse);
 
 
                         //would be velocity
