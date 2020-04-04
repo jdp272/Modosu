@@ -20,6 +20,7 @@ import edu.cornell.gdiac.physics.host.HostList;
 import edu.cornell.gdiac.physics.host.HostController;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.util.HashMap;
@@ -51,7 +52,17 @@ public class GamePlayController extends WorldController {
 //	/** The asset for the explosion sound */
 //	private static final String  EXPLODE_SOUND = "host/afterburner.mp3";
 
+	/** Static Variables for Sprite Sheet */
+
+	/** Number of rows in the host image filmstrip */
+	private static final int HOST_ROWS = 8;
+	/** Number of columns in this host image filmstrip */
+	private static final int HOST_COLUMNS = 16;
+	/** Number of total hosts in the host image filmstrip */
+	private static final int HOST_SIZE = 128;
 	/** Track asset loading from all instances and subclasses */
+
+
 	private AssetState assetState = AssetState.EMPTY;
 
 	private Level level;
@@ -199,6 +210,7 @@ public class GamePlayController extends WorldController {
 		for (int i = 0; i < HOSTS.length; i+=2) {
 			host = new HostModel(HOSTS[i],HOSTS[i+1], dwidth, dheight, 0, 1000);
 			host.setTexture(hostTex);
+			host.setHostStateSprite(host.beenPossessed(), new FilmStrip(hostTex, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
 			host.setHostGaugeTexture(hostGaugeTex);
 			hosts.add(host,false);
 			havePossessed.put(host, false);

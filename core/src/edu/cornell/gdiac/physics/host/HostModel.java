@@ -16,7 +16,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.util.FilmStrip;
 
 /**
  * Avatar representing the possessable golems that roam the map
@@ -26,7 +25,59 @@ import edu.cornell.gdiac.util.FilmStrip;
  */
 public class HostModel extends BoxObstacle {
 
+    /**
+     * Enumeration to identify the animation for the Host
+     */
+    public enum HostState {
+        /**
+         * Host that has been possessed
+         */
+        CHARGED,
+        /**
+         * Host that has yet to be possessed
+         */
+        NOTCHARGED,
+    }
+
+    // Sound Related
+
+    /** The associated sound when possessed */
+    String possessSound;
+
+    // Animation Related Variables
+
+    /** The texture filmstrip for host that has yet to be possessed */
+    FilmStrip notChargedHost;
+    /** The animation phase for host that has yet to be possessed */
+    boolean notChargedHostCycle = true;
+
+    /** The texture filmstrip for host that has been possessed */
+    FilmStrip chargedHost;
+    /** The animation phase for host that has been possessed */
+    boolean chargedHostCycle = true;
+
+
+    /** Cache object for North Direction Origin */
+    public Vector2 northOrigin = new Vector2();
+    /** Cache object for NorthEast Direction Origin */
+    public Vector2 northEastOrigin = new Vector2();
+    /** Cache object for East Direction Origin */
+    public Vector2 eastOrigin = new Vector2();
+    /** Cache object for SouthEast Direction Origin */
+    public Vector2 southEastOrigin = new Vector2();
+    /** Cache object for South Direction Origin */
+    public Vector2 southOrigin = new Vector2();
+    /** Cache object for SouthWest Direction Origin */
+    public Vector2 southWestOrigin = new Vector2();
+    /** Cache object for West Direction Origin */
+    public Vector2 westOrigin = new Vector2();
+    /** Cache object for NorthWest Direction Origin */
+    public Vector2 northWestOrigin = new Vector2();
+
+
+
     // Default physics values
+
     /** The density of this host */
     private static final float DEFAULT_DENSITY = 1.0f;
     /** The friction of this host */
@@ -35,32 +86,41 @@ public class HostModel extends BoxObstacle {
     private static final float DEFAULT_RESTITUTION = 0.4f;
     /** The thrust factor to convert player input into host movement */
     private static final float DEFAULT_THRUST = 7.0f;
-    /** The number of frames for the gauge */
-    public static final int GAUGE_FRAMES = 4;
+    /** The frame number for a host that just begins facing South */
+    public static final int HOST_SOUTH_START = 0;
+    /** The frame number for a host that just ends facing South */
+    public static final int HOST_SOUTH_END = 15;
+    /** The frame number for a host that just begins facing SouthEast */
+    public static final int HOST_SOUTHEAST_START = 16;
+    /** The frame number for a host that just ends facing SouthEast */
+    public static final int HOST_SOUTHEAST_END = 31;
+    /** The frame number for a host that just begins facing East */
+    public static final int HOST_EAST_START = 32;
+    /** The frame number for a host that just ends facing East */
+    public static final int HOST_EAST_END = 47;
+    /** The frame number for a host that just begins facing NorthEast */
+    public static final int HOST_NORTHEAST_START = 48;
+    /** The frame number for a host that just ends facing NorthEast */
+    public static final int HOST_NORTHEAST_END = 63;
+    /** The frame number for a host that just begins facing North */
+    public static final int HOST_NORTH_START = 64;
+    /** The frame number for a host that just ends facing North */
+    public static final int HOST_NORTH_END = 79;
+    /** The frame number for a host that just begins facing NorthWest */
+    public static final int HOST_NORTHWEST_START = 80;
+    /** The frame number for a host that just ends facing NorthWest */
+    public static final int HOST_NORTHWEST_END = 95;
+    /** The frame number for a host that just begins facing West */
+    public static final int HOST_WEST_START = 96;
+    /** The frame number for a host that just ends facing West */
+    public static final int HOST_WEST_END = 111;
+    /** The frame number for a host that just begins facing SouthWest */
+    public static final int HOST_SOUTHWEST_START = 112;
+    /** The frame number for a host that just ends facing SouthWest */
+    public static final int HOST_SOUTHWEST_END = 127;
 
     /** The texture for the host's gauge */
     protected TextureRegion hostGaugeTexture;
-
-    /** The texture filmstrip for charge gauge when possessed */
-    FilmStrip chargeGauge;
-    /** The associated sound for the HostModel when possessed */
-    String possessedHostSound;
-    /** The animation phase for the HostModel when possessed */
-    boolean possessedCycle = true;
-
-    /** The texture filmstrip for charge gauge when not possessed */
-    FilmStrip normalGauge;
-    /** The associated sound for charge gauge when not possessed */
-    String normalHostSound;
-    /** The animation phase for charge gauge when not possessed */
-    boolean normCycle = true;
-
-    /** The texture filmstrip for host's movements */
-    FilmStrip hostStrip;
-    /** The associated sound for host's movements */
-    String hostSound;
-    /** The animation phase for host's movements */
-    boolean hostMvtCycle = true;
 
     // Attributes Specific to each HostModel
     /** Boolean Whether HostModel is Possessed */
@@ -410,6 +470,266 @@ public class HostModel extends BoxObstacle {
     }
 
     /**
+     * Returns the animation node for the given state
+     *
+     * @param  state enumeration to identify the state of the host
+     *
+     * @return the animation node for the given state of the host
+     */
+    public FilmStrip getHostStateSprite (HostState state) {
+        switch (state) {
+            case CHARGED:
+                return chargedHost;
+            case NOTCHARGED:
+                return notChargedHost;
+        }
+        assert false : "Invalid state enumeration";
+        return null;
+    }
+
+    /**
+     * Sets the animation node for the given state of the host
+     *
+     * @param  state enumeration to identify the state of the host
+     *
+     * @param  strip the animation node for the given state of the host
+     */
+    public void setHostStateSprite (HostState state, FilmStrip strip, Vector2 direction) {
+        switch(state) {
+            case CHARGED:
+                chargedHost = strip;
+                if(direction.x > 0) {
+                    // NORTH EAST
+                    if(direction.y > 0) {
+                        chargedHost.setFrame(HOST_NORTHEAST_START);
+                    }
+                    // SOUTH EAST
+                    else if(direction.y < 0) {
+                        chargedHost.setFrame(HOST_SOUTHEAST_START);
+                    }
+                    // EAST
+                    else if(direction.y == 0) {
+                        chargedHost.setFrame(HOST_EAST_START);
+                    }
+                }
+                else if(direction.x < 0) {
+                    // NORTH WEST
+                    if(direction.y > 0) {
+                        chargedHost.setFrame(HOST_NORTHWEST_START);
+                    }
+                    // SOUTH WEST
+                    else if(direction.y < 0) {
+                       chargedHost.setFrame(HOST_SOUTHWEST_START);
+                    }
+                    // WEST
+                    else if(direction.y == 0) {
+                        chargedHost.setFrame(HOST_WEST_START);
+                    }
+                }
+                else {
+                    // NORTH
+                    if(direction.y > 0) {
+                        chargedHost.setFrame(HOST_NORTH_START);
+                    }
+                    // SOUTH
+                    else if(direction.y > 0) {
+                        chargedHost.setFrame(HOST_SOUTH_START);
+                    }
+                }
+                break;
+            case NOTCHARGED:
+                notChargedHost = strip;
+                if(direction.x > 0) {
+                    // NORTH EAST
+                    if(direction.y > 0) {
+                        chargedHost.setFrame(HOST_NORTHEAST_START);
+                    }
+                    // SOUTH EAST
+                    else if(direction.y < 0) {
+                        chargedHost.setFrame(HOST_SOUTHEAST_START);
+                    }
+                    // EAST
+                    else if(direction.y == 0) {
+                        chargedHost.setFrame(HOST_EAST_START);
+                    }
+                }
+                else if(direction.x < 0) {
+                    // NORTH WEST
+                    if(direction.y > 0) {
+                        chargedHost.setFrame(HOST_NORTHWEST_START);
+                    }
+                    // SOUTH WEST
+                    else if(direction.y < 0) {
+                        chargedHost.setFrame(HOST_SOUTHWEST_START);
+                    }
+                    // WEST
+                    else if(direction.y == 0) {
+                        chargedHost.setFrame(HOST_WEST_START);
+                    }
+                }
+                else {
+                    // NORTH
+                    if(direction.y > 0) {
+                        chargedHost.setFrame(HOST_NORTH_START);
+                    }
+                    // SOUTH
+                    else if(direction.y > 0) {
+                        chargedHost.setFrame(HOST_SOUTH_START);
+                    }
+                }
+                break;
+        }
+    }
+
+    /**
+     * Animates Host Movement
+     *
+     * Changes the animation based on the last pressed button.
+     * This function should be called in host controller
+     *
+     * @param direction     the direction the host is travelling
+     * @param state         the state of the host
+     */
+    private void updateAnimation(HostState state, Vector2 direction) {
+        FilmStrip node = null;
+        int frame = 0;
+
+        switch (state) {
+            case CHARGED:
+                node = chargedHost;
+                break;
+            case NOTCHARGED:
+                node = notChargedHost;
+                break;
+            default:
+                assert false : "Invalid state enumeration";
+        }
+
+        if (node != null) {
+            frame = node.getFrame();
+        }
+
+        if (direction.x > 0) {
+            // NORTH EAST
+            if (direction.y > 0) {
+                if (frame < HOST_NORTHEAST_END && frame >= HOST_NORTHEAST_START) {
+                    frame++;
+                } else {
+                    node.setFrame(HOST_NORTHEAST_START);
+                }
+            }
+            // SOUTH EAST
+            else if (direction.y < 0) {
+                if (frame < HOST_SOUTHEAST_END && frame >= HOST_SOUTHEAST_START) {
+                    frame++;
+                } else {
+                    node.setFrame(HOST_SOUTHEAST_START);
+                }
+            }
+            // EAST
+            if (direction.y == 0) {
+                if (frame < HOST_EAST_END && frame >= HOST_EAST_START) {
+                    frame++;
+                } else {
+                    node.setFrame(HOST_EAST_START);
+                }
+            }
+        } else if (direction.x < 0) {
+            // NORTH WEST
+            if (direction.y > 0) {
+                if (frame < HOST_NORTHWEST_END && frame >= HOST_NORTHWEST_START) {
+                    frame++;
+                } else {
+                    node.setFrame(HOST_NORTHWEST_START);
+                }
+            }
+            // SOUTH WEST
+            else if (direction.y < 0) {
+                if (frame < HOST_SOUTHWEST_END && frame >= HOST_SOUTHWEST_START) {
+                    frame++;
+                } else {
+                    node.setFrame(HOST_SOUTHWEST_START);
+                }
+            }
+            // WEST
+            if (direction.y == 0) {
+                if (frame < HOST_WEST_END && frame >= HOST_WEST_START) {
+                    frame++;
+                } else {
+                    node.setFrame(HOST_WEST_START);
+                }
+            }
+        } else {
+            // NORTH
+            if (direction.y < 0) {
+                if (frame < HOST_NORTH_END && frame >= HOST_NORTH_START) {
+                    frame++;
+                } else {
+                    node.setFrame(HOST_NORTH_START);
+                }
+            }
+            // SOUTH
+            else if (direction.y < 0) {
+                if (frame < HOST_SOUTH_END && frame >= HOST_SOUTH_START) {
+                    frame++;
+                } else {
+                    node.setFrame(HOST_SOUTH_START);
+                }
+            }
+        }
+        if(node != null) {
+            node.setFrame(frame);
+        }
+
+        switch(state) {
+            case CHARGED:
+                node = chargedHost;
+                break;
+            case NOTCHARGED:
+                node = notChargedHost;
+                break;
+            default:
+                assert false: "Invalid host state enumeration";
+        }
+    }
+
+    /**
+     * Returns the key for the sound to accompany the given direction
+     *
+     * The key should either refer to a valid sound loaded in the AssetManager or
+     * be empty ("").  If the key is "", then no sound will play.
+     *
+     * @param direction enumeration to identify the WalkingDirection
+     *
+     * @return the key for the sound to accompany the WalkingDirection
+     */
+//    public String getWalkingSound(WalkingDirection direction) {
+//        switch (direction) {
+//        }
+//        assert false : "Invalid WalkingDirection enumeration";
+//        return null;
+//    }
+
+    /**
+     * Sets the key for the sound to accompany the given WalkingDirection
+     *
+     * The key should either refer to a valid sound loaded in the AssetManager or
+     * be empty ("").  If the key is "", then no sound will play.
+     *
+     * @param  direction   enumeration to identify the WalkingDirection
+     * @param  key      the key for the sound to accompany the main WalkingDirection
+     */
+//    public void setWalkingSound(WalkingDirection direction, String key) {
+//        switch (direction) {
+//            default:
+//                assert false : "Invalid WalkingDirection enumeration";
+//        }
+//    }
+
+
+
+
+    /**
      * Draws the host object.
      *
      * @param canvas Drawing context
@@ -449,141 +769,4 @@ public class HostModel extends BoxObstacle {
 }
 
 
-// Animation methods in the case we decide to change the animation method
 
-/**
- * Returns the animation node for the given charge gauge of the host
- *
- * @param gauge enumeration to identify the charge gauge of the host
- * @return the animation node for the given charge gauge of the host
- */
-//    public FilmStrip getChargeGaugeStrip(ChargeGauge gauge) {
-//        switch (gauge) {
-//            case POSSESSED:
-//                return chargeGauge;
-//            case NORMAL:
-//                return normalGauge;
-//        }
-//        assert false : "Invalid gauge enumeration";
-//        return null;
-//    }
-
-/**
- * Sets the animation node for the given charge gauge
- *
- * @param gauge enumeration to identify the specific gauge
- * @param strip the animation node for the given gauge
- */
-//    public void setChargeGauge(ChargeGauge gauge, FilmStrip strip) {
-//        switch (gauge) {
-//            case POSSESSED:
-//                chargeGauge = strip;
-//                break;
-//            case NORMAL:
-//                normalGauge = strip;
-//                /* If the gauge is a separate asset from the host itself */
-//                //                if (strip != null) {
-//                //                    leftOrigin.set(strip.getRegionWidth() / 2.0f, strip.getRegionHeight() / 2.0f);
-//                //                }
-//                break;
-//            default:
-//                assert false : "Invalid gauge enumeration";
-//        }
-//    }
-
-/**
- * Returns the key for the sound to accompany the given charge gauge
- *
- * The key should either refer to a valid sound loaded in the AssetManager or
- * be empty ("").  If the key is "", then no sound will play.
- *
- * @param gauge enumeration to identify the state of the charge gauge
- * @return the key for the sound to accompany the given charge gauge
- */
-//    public String getGaugeSound(ChargeGauge gauge) {
-//        switch (gauge) {
-//            case POSSESSED:
-//                return possessedHostSound;
-//            case NORMAL:
-//                return normalHostSound;
-//        }
-//        assert false : "Invalid gauge enumeration";
-//        return null;
-//    }
-
-/**
- * Sets the key for the sound to accompany the given charge gauge
- *
- * The key should either refer to a valid sound loaded in the AssetManager or
- * be empty ("").  If the key is "", then no sound will play.
- *
- * @param gauge enumeration to identify the state of the charge gauge
- * @param key   the key for the sound to accompany the main charge gauge
- */
-//    public void setGaugeSound(ChargeGauge gauge, String key) {
-//        switch (gauge) {
-//            case POSSESSED:
-//                possessedHostSound = key;
-//                break;
-//            case NORMAL:
-//                normalHostSound = key;
-//                break;
-//            default:
-//                assert false : "Invalid gauge enumeration";
-//        }
-//    }
-
-/**
- * Animates the given gauge.
- *
- * If the animation is not active, it will reset to the initial animation frame.
- *
- * @param gauge The reference to the host's gauge
- * @param on    Whether the animation is active
- */
-//    public void animateGauge(ChargeGauge gauge, boolean on) {
-//        FilmStrip node = null;
-//        boolean cycle = true;
-//
-//        switch (gauge) {
-//            case POSSESSED:
-//                node = chargeGauge;
-//                cycle = possessedCycle;
-//                break;
-//            case NORMAL:
-//                node = normalGauge;
-//                cycle = normCycle;
-//                break;
-//            default:
-//                assert false : "Invalid gauge enumeration";
-//        }
-//
-//        if (on) {
-//            // Turn on the gauge charging
-//            if (node.getFrame() == 0 || node.getFrame() == 1) {
-//                cycle = true;
-//            } else if (node.getFrame() == node.getSize() - 1) {
-//                cycle = false;
-//            }
-//
-//            // Increment
-//            if (cycle) {
-//                node.setFrame(node.getFrame() + 1);
-//            } else {
-//                node.setFrame(node.getFrame() - 1);
-//            }
-//        } else {
-//            node.setFrame(0);
-//        }
-//
-//        switch (gauge) {
-//            case POSSESSED:
-//                possessedCycle = cycle;
-//                break;
-//            case NORMAL:
-//                normCycle = cycle;
-//                break;
-//            default:
-//                assert false : "Invalid gauge enumeration";
-//        }
-//    }

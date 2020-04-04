@@ -76,15 +76,17 @@ public abstract class WorldController implements Screen {
 	/** Texture file for background image */
 	private static final String BACKG_FILE = "shared/background.png";
 	/** Texture file for host sprite */
-	private static final String HOST_FILE = "host/host.png";
+	private static final String HOST_FILE = "host/hostSpriteSheet.png";
 	/** Texture file for spirit sprite */
 	private static final String SPIRIT_FILE = "host/spirit.png";
 	/** File to texture for obstacles */
 	private static String OBSTACLE_FILE = "host/crate02.png";
 	/** File to texture for Hosts' Gauge */
-	private static String HOST_GAUGE_FILE = "host/host_gauge.png";
+	private static String HOST_GAUGE_FILE = "host/hostGaugeSpriteSheet.png";
 	/** Texture file for arrow sprite */
 	private static final String ARROW_FILE = "shared/arrow.png";
+
+
 
 	private static int FONT_SIZE = 64;
 
