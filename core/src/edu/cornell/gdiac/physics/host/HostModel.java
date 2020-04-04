@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.util.FilmStrip;
 
 /**
  * Avatar representing the possessable golems that roam the map
@@ -77,15 +78,22 @@ public class HostModel extends BoxObstacle {
 
 
     // Default physics values
-
     /** The density of this host */
     private static final float DEFAULT_DENSITY = 1.0f;
-    /** The friction of this host */
+    /**
+     * The friction of this host
+     */
     private static final float DEFAULT_FRICTION = 0.1f;
-    /** The restitution of this host */
+    /**
+     * The restitution of this host
+     */
     private static final float DEFAULT_RESTITUTION = 0.4f;
-    /** The thrust factor to convert player input into host movement */
+    /**
+     * The thrust factor to convert player input into host movement
+     */
     private static final float DEFAULT_THRUST = 7.0f;
+
+
     /** The frame number for a host that just begins facing South */
     public static final int HOST_SOUTH_START = 0;
     /** The frame number for a host that just ends facing South */
@@ -119,36 +127,65 @@ public class HostModel extends BoxObstacle {
     /** The frame number for a host that just ends facing SouthWest */
     public static final int HOST_SOUTHWEST_END = 127;
 
-    /** The texture for the host's gauge */
+    /**
+     * The texture for the host's gauge
+     */
     protected TextureRegion hostGaugeTexture;
 
     // Attributes Specific to each HostModel
-    /** Boolean Whether HostModel is Possessed */
+    /**
+     * Boolean Whether HostModel is Possessed
+     */
     private boolean isPossessed;
-    /** Boolean for whether host is alive */
+    /**
+     * Boolean for whether host is alive
+     */
     private boolean isAlive;
-    /** The current charge of the host */
+    /**
+     * The current charge of the host
+     */
     private float currentCharge;
-    /** The maximum charge of the host */
+    /**
+     * The maximum charge of the host
+     */
     private float maxCharge;
-    /** The force to apply to this host */
+    /**
+     * The force to apply to this host
+     */
     private Vector2 force;
-    /** Instructions for robot when unpossessed*/
+    /**
+     * Instructions for robot when unpossessed
+     */
     private Vector2[] instructions;
-    /** Current instruction index */
+    /**
+     * Current instruction index
+     */
     private int instructionNumber;
-    /** Whether or not the robot has been possessed yet*/
+    /**
+     * Whether or not the robot has been possessed yet
+     */
     private boolean hasBeenPossessed;
-    /** Whether robot is moving forward through instructions */
+    /**
+     * Whether robot is moving forward through instructions
+     */
     private boolean forwardI;
 
 
-
-    /** Cache object for transforming the force according the object angle */
+    /**
+     * Cache object for transforming the force according the object angle
+     */
     public Affine2 affineCache = new Affine2();
 
     /**
+     *
+     */
+    public void invertForwardI(){
+        forwardI = !forwardI;
+    }
+
+    /**
      * Gets the max charge a host can hold before exploding
+     *
      * @return float that represents the maximum charge that can be held
      */
     public float getMaxCharge() {
@@ -157,6 +194,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Sets the max charge a host can hold before exploding
+     *
      * @param maxCharge that represents the new max charge
      */
     public void setMaxCharge(float maxCharge) {
@@ -165,7 +203,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Returns the force applied to this host.
-     *
+     * <p>
      * This method returns a reference to the force vector, allowing it to be modified.
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
@@ -178,7 +216,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Returns the Hosts' Gauge Texture
-     *
+     * <p>
      * This method returns the texture for the gauge
      *
      * @return the texture
@@ -189,7 +227,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Sets the Hosts' Gauge Texture
-     *
+     * <p>
      * This method sets the texture of the gauge
      */
     public void setHostGaugeTexture(TextureRegion hostGaugeTexture) {
@@ -198,7 +236,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Returns the x-component of the force applied to this host.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -210,7 +248,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Sets the x-component of the force applied to this host.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -222,7 +260,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Returns the y-component of the force applied to this host.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -234,7 +272,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Sets the x-component of the force applied to this host.
-     *
+     * <p>
      * Remember to modify the input values by the thrust amount before assigning
      * the value to force.
      *
@@ -246,7 +284,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Creates a new host at the origin.
-     *
+     * <p>
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
@@ -255,24 +293,12 @@ public class HostModel extends BoxObstacle {
      * @param height The object width in physics units
      */
     public HostModel(float width, float height, float currentCharge, float maxCharge) {
-        super(0, 0, width, height);
-        this.currentCharge = currentCharge;
-        this.maxCharge = maxCharge;
-        this.instructions = null;
-        this.instructionNumber = 0;
-        this.hasBeenPossessed = false;
-        setDensity(DEFAULT_DENSITY);
-        setDensity(DEFAULT_DENSITY);
-        setFriction(DEFAULT_FRICTION);
-        setRestitution(DEFAULT_RESTITUTION);
-        isPossessed = false;
-        isAlive = true;
-        setName("host");
+        this(0, 0, width, height, currentCharge, maxCharge);
     }
 
     /**
      * Creates a new host at the given position.
-     *
+     * <p>
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
@@ -283,25 +309,12 @@ public class HostModel extends BoxObstacle {
      * @param height The object width in physics units
      */
     public HostModel(float x, float y, float width, float height, float currentCharge, float maxCharge) {
-        super(x, y, width, height);
-        force = new Vector2();
-        this.currentCharge = currentCharge;
-        this.maxCharge = maxCharge;
-        this.instructions = null;
-        this.instructionNumber = 0;
-        this.hasBeenPossessed = false;
-        setDensity(DEFAULT_DENSITY);
-        setDensity(DEFAULT_DENSITY);
-        setFriction(DEFAULT_FRICTION);
-        setRestitution(DEFAULT_RESTITUTION);
-        isPossessed = false;
-        isAlive = true;
-        setName("host");
+        this(x, y, width, height, currentCharge, maxCharge, null);
     }
 
     /**
      * Creates a new host at the given position.
-     *
+     * <p>
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
@@ -320,7 +333,6 @@ public class HostModel extends BoxObstacle {
         this.instructionNumber = 0;
         this.hasBeenPossessed = false;
         setDensity(DEFAULT_DENSITY);
-        setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
         isPossessed = false;
@@ -330,7 +342,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
-     *
+     * <p>
      * This method overrides the base method to keep your host from spinning.
      *
      * @param world Box2D world to store body
@@ -360,6 +372,7 @@ public class HostModel extends BoxObstacle {
      * @param possessed representing new state of possession
      */
     public void setPossessed(boolean possessed) {
+        hasBeenPossessed = hasBeenPossessed || possessed;
         isPossessed = possessed;
     }
 
@@ -369,7 +382,7 @@ public class HostModel extends BoxObstacle {
      *
      * @param currentCharge representing the current charge of host.
      */
-    public void setCurrentCharge(float currentCharge){
+    public void setCurrentCharge(float currentCharge) {
         this.currentCharge = currentCharge;
     }
 
@@ -378,14 +391,14 @@ public class HostModel extends BoxObstacle {
      *
      * @return the current charge of the host as a float.
      */
-    public float getCurrentCharge(){
+    public float getCurrentCharge() {
         return this.currentCharge;
     }
 
     /**
      * Increments the current charge of the host.
      *
-     * @return whether the bot has blown up or not
+     * @return whether the host has blown up or not
      */
     public boolean incCurrentCharge() {
         if (this.isPossessed) {
@@ -410,8 +423,8 @@ public class HostModel extends BoxObstacle {
         return isAlive;
     }
 
-    public Vector2 getInstruction(){
-        if(instructions == null){
+    public Vector2 getInstruction() {
+        if (instructions == null) {
             return getPosition();
         }
         return instructions[instructionNumber];
@@ -421,25 +434,33 @@ public class HostModel extends BoxObstacle {
         return hasBeenPossessed;
     }
 
-    public void setBeenPossessed(boolean b){
-        hasBeenPossessed = b;
+//    public void setBeenPossessed(boolean b){
+//        hasBeenPossessed = b;
+//    }
+
+    /**
+     * Gets the full list of instructions
+     *
+     * @return An array of Vector2 objects containing the instructions, or null
+     *         if there are none.
+     */
+    public Vector2[] getInstructionList(){
+        return instructions;
     }
 
     public void nextInstruction() {
-        if(instructions == null){
+        if (instructions == null) {
             return;
         }
-        if(forwardI && instructionNumber + 1 >= instructions.length){
+        if (forwardI && instructionNumber + 1 >= instructions.length) {
             forwardI = false;
             instructionNumber--;
-        }
-        else if(!forwardI && instructionNumber - 1 < 0){
+        } else if (!forwardI && instructionNumber - 1 < 0) {
             forwardI = true;
             instructionNumber++;
-        }
-        else if(forwardI){
+        } else if (forwardI) {
             instructionNumber++;
-        }else{
+        } else {
             instructionNumber--;
         }
     }
@@ -455,7 +476,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Applies the force to the body of this host
-     *
+     * <p>
      * This method should be called after the force attribute is set.
      */
     public void applyForce() {
@@ -750,16 +771,23 @@ public class HostModel extends BoxObstacle {
 
             /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
             if (this.currentCharge < this.maxCharge) {
+                // Animation?
+//                if (isPossessed) {
+//                    canvas.draw(hostStrip, Color.WHITE, golemWalkOrigin.x, golemWalkOrigin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(),1,1);
+//                }
+
                 canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
+
                 // Color changes more and more to a red or goal color here
-                Color warningColor = new Color(1, 1 - chargeProgression, 0, 1);
+                Color warningColor = new Color(chargeProgression * 2, 1 - chargeProgression, 1 - chargeProgression, 1);
                 if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
                     // Color of the 3 flashes
                     warningColor = Color.BLACK;
                 }
                 canvas.draw(hostGaugeTexture, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
 
-            } else {
+            }
+            else {
                 canvas.draw(texture, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
             }
 
@@ -767,6 +795,4 @@ public class HostModel extends BoxObstacle {
         }
     }
 }
-
-
 

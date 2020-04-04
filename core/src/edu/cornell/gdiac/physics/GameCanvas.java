@@ -83,9 +83,17 @@ public class GameCanvas {
 
 	// Camera Variables
 	/** Value to set the speed that the camera pans at */
-	private float panSpeed = 0.25f;
+	private float panSpeed = 2.5f;
 	/** The place that the camera wants to pan to */
 	private Vector2 camTarget;
+
+	// Zoom Variables
+	private float currentZoom;
+	private float targetZoom;
+	private float zoomThreshold = 0.005f;
+	private boolean zooming = false;
+	private boolean zoomingIn = false;
+	private boolean zoomingOut = false;
 
 	// CACHE OBJECTS
 	/** Affine cache for current sprite to draw */
@@ -95,6 +103,7 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
+
 
 	/**
 	 * Creates a new GameCanvas determined by the application configuration.
@@ -148,8 +157,48 @@ public class GameCanvas {
 		// TODO add smoothing
 	    // This line results in the camera following directly on the player, will add smoothing later
 		camera.translate(camTarget.x - camera.position.x, camTarget.y - camera.position.y);
+		if (zooming) {
+			camera.zoom = MathUtils.lerp(camera.zoom, targetZoom, 0.1f);
+			if (Math.abs(targetZoom - camera.zoom) <= zoomThreshold) {
+				camera.zoom = targetZoom;
+				zooming = false;
+			}
+
+		}
+
 		camera.update();
 	}
+
+	public void toggleZoom() {
+		if (zoomingOut) {
+			zoomIn();
+		}
+		else {
+			zoomOut();
+		}
+
+	}
+
+	/**
+	 * Begins the process of zooming the camera out
+	 */
+	private void zoomOut() {
+		targetZoom = 2.0f;
+		zoomingOut = true;
+		zoomingIn = false;
+		zooming = true;
+	}
+
+	/**
+	 * Begins the process of zooming the camera out
+	 */
+	private void zoomIn() {
+	    targetZoom = 1;
+		zoomingIn = true;
+		zoomingOut = false;
+		zooming = true;
+	}
+
 
 	/**
 	 * Returns the width of this canvas
@@ -516,46 +565,6 @@ public class GameCanvas {
 		draw(holder,tint,ox,oy,x,y,angle,sx,sy);
 	}
 
-	/**
-	 * Draws the tinted texture with the given transformations
-	 *
-	 * The texture colors will be multiplied by the given color.  This will turn
-	 * any white into the given color.  Other colors will be similarly affected.
-	 *
-	 * The transformations are BEFORE after the global transform (@see begin(Affine2)).
-	 * As a result, the specified texture origin will be applied to all transforms
-	 * (both the local and global).
-	 *
-	 * The local transformations in this method are applied in the following order:
-	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
-	 *
-	 * @param image The texture to draw
-	 * @param tint  The color tint
-	 * @param ox 	The x-coordinate of texture origin (in pixels)
-	 * @param oy 	The y-coordinate of texture origin (in pixels)
-	 * @param x 	The x-coordinate of the texture origin (on screen)
-	 * @param y 	The y-coordinate of the texture origin (on screen)
-	 * @param angle The rotation angle (in degrees) about the origin.
-	 * @param sx 	The x-axis scaling factor
-	 * @param sy 	The y-axis scaling factor
-	 */
-	public void drawUnproject(Texture image, Color tint, float ox, float oy,
-					 float x, float y, float angle, float sx, float sy) {
-		if (active != DrawPass.STANDARD) {
-			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
-			return;
-		}
-
-		Vector3 screenCoord = new Vector3(x,y,0f);
-		Vector3 screenOrigin = new Vector3(ox, oy, 0f);
-		camera.unproject(screenCoord);
-
-		System.out.println("drawing arrow at: " + screenCoord.x + ", " + screenCoord.y);
-		System.out.println("OG coordinate to draw at was: " + x + ", " + y);
-		// Call the master drawing method (more efficient that base method)
-		holder.setRegion(image);
-		draw(holder,tint,ox,oy,screenCoord.x,screenCoord.y,angle,sx,sy);
-	}
 	
 	/**
 	 * Draws the tinted texture with the given transformations
@@ -673,38 +682,6 @@ public class GameCanvas {
 		spriteBatch.draw(region, x-ox, y-oy, width, height);
 	}
 
-	/**
-	 * Draws the tinted texture at the given position.
-	 *
-	 * The texture colors will be multiplied by the given color.  This will turn
-	 * any white into the given color.  Other colors will be similarly affected.
-	 *
-	 * Unless otherwise transformed by the global transform (@see begin(Affine2)),
-	 * the texture will be unscaled.  The bottom left of the texture will be positioned
-	 * at the given coordinates.
-	 *
-	 * @param region The texture to draw
-	 * @param tint  The color tint
-	 * @param ox 	The x-coordinate of texture origin (in pixels)
-	 * @param oy 	The y-coordinate of texture origin (in pixels)
-	 * @param x 	The x-coordinate of the texture origin (on screen)
-	 * @param y 	The y-coordinate of the texture origin (on screen)
-	 * @param width	The texture width
-	 * @param height The texture height
-	 */
-	public void drawUnproject(TextureRegion region, Color tint, float ox, float oy, float x, float y, float width, float height) {
-		if (active != DrawPass.STANDARD) {
-			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
-			return;
-		}
-		Vector3 screenCoord = new Vector3(400,200,0f);
-		Vector3 screenOrigin = new Vector3(ox, oy, 0f);
-		camera.unproject(screenCoord);
-
-		// Unlike Lab 1, we can shortcut without a master drawing method
-		spriteBatch.setColor(tint);
-		spriteBatch.draw(region, screenCoord.x-ox, screenCoord.y-oy, width, height);
-	}
 
 	/**
 	 * Draws the tinted texture region (filmstrip) with the given transformations

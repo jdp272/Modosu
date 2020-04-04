@@ -2,6 +2,8 @@ package edu.cornell.gdiac.physics.host;
 
 import edu.cornell.gdiac.physics.*;
 
+import java.util.ArrayList;
+
 
 public class AIController extends InputController {
 
@@ -37,7 +39,7 @@ public class AIController extends InputController {
     // private Board board;
 
     /** The other hosts */
-    private HostList fleet; // need to know how many are possessed, etc
+    private ArrayList<HostModel> fleet; // need to know how many are possessed, etc
 
     /** The AI's current state in the FSM */
     private FSMState state;
@@ -57,7 +59,7 @@ public class AIController extends InputController {
      // * @param board The game board (for pathfinding)
      // * @param ships The list of hosts (for targetting)
      */
-    public AIController(int id, HostList hosts) {
+    public AIController(int id, ArrayList<HostModel> hosts) {
 
     }
 
