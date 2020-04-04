@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.g2d.*;
 
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.physics.*;
 
@@ -69,11 +70,10 @@ public class HostController {
         hosts = h;
         arrowText = arrowTexture;
         height = heightY;
+        shootVector = new Vector2(0,0);
         possessedBlownUp = false;
         launched = false;
-
         this.scale = scale;
-
         arrowCache = new Vector2();
     }
 
@@ -100,7 +100,7 @@ public class HostController {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit) {
-
+//        System.out.println(possessed.getVelocity());
         input = InputController.getInstance();
 
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
@@ -124,12 +124,17 @@ public class HostController {
             }
         }
 
+        //tentative fix for the start of the game where the spirit is going to center
+        else if (spirit.getGoToCenter() && spirit.getIsPossessing()){
+            spirit.setGoToCenter(false);
+            spirit.setIsPossessing(true);
+        }
+
         // Possessing a host, either currently or a new one
         if (possessed != null) {
             if (spirit.getIsPossessing()) {
                 spirit.setVX(0f);
                 spirit.setVY(0f);
-                spirit.setPosition(possessed.getPosition());
             }
 
             // Zoom the camera out on z, or back in if it is out
@@ -144,16 +149,17 @@ public class HostController {
                     // Move using player input
                     possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal());
                     possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical());
+//                    System.out.println(possessed.getVelocity());
+
 
                     if ((input.getVertical() != 0 || input.getHorizontal() != 0) && (!spirit.getGoToCenter())) {
-                        spirit.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal());
-                        spirit.setVY(HOST_MOVEMENT_SPEED * input.getVertical());
+                        spirit.setPosition(possessed.getPosition());
                     }
 
                     // Shooting the spirit
                     if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
                         // Clicked Mouse
-                        clickPosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+                        clickPosition = clickPosition.set(Gdx.input.getX(), Gdx.input.getY());
                         arrowCache.set(possessed.getPosition());
                         arrowCache.scl(scale);
                         arrow = new ArrowModel(arrowText, arrowCache);
@@ -169,7 +175,7 @@ public class HostController {
                         arrow = null;
 
                         // Calculate the new velocity vector
-                        shootVector = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+                        shootVector = shootVector.set(Gdx.input.getX(), Gdx.input.getY());
                         shootVector = shootVector.sub(clickPosition);
                         shootVector.x = -shootVector.x;
 
@@ -179,9 +185,7 @@ public class HostController {
                         float vx = SHOOTING_MULTIPLIER * shootVector.x / scale.x;
                         float vy = SHOOTING_MULTIPLIER * shootVector.y / scale.y;
 
-
                         float magnitude = Math.abs(vx * vx + vy * vy);
-
 
                         // Only shoot if the shooting speed is large enough
                         if (magnitude > MINIMUM_SHOT_SPEED) {
@@ -196,7 +200,6 @@ public class HostController {
                                 vy = MAXIMUM_SHOT_SPEED * (float) Math.sin(angle);
                             }
 
-
                             spirit.setVX(vx);
                             spirit.setVY(vy);
 
@@ -208,15 +211,21 @@ public class HostController {
                             spirit.setHasLaunched(true);
                             spirit.setGoToCenter(false);
                         }
-
-
-                    } else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
+                    }
+                    else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
                         // Save current mouse location in arrowModel
                         // Save possessed current position as the starting drawing point
                         currMouse = new Vector2(Gdx.input.getX(), Gdx.input.getY());
                         arrowCache.set(possessed.getPosition());
                         arrowCache.scl(scale);
                         arrow.setCurrLoc(currMouse, arrowCache);
+
+
+                        //would be velocity
+                        shootVector = shootVector.set(Gdx.input.getX(), Gdx.input.getY());
+                        shootVector = shootVector.sub(clickPosition);
+                        shootVector.x = -shootVector.x;
+                        arrow.setVelocityRepresented(shootVector);
                     }
                 } else {
                     possessed.setVX(0);

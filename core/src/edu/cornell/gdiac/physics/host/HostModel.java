@@ -496,6 +496,10 @@ public class HostModel extends BoxObstacle {
 
         }
     }
+
+    public Vector2 getVelocity() {
+        return new Vector2(this.getVX(), this.getVY());
+    }
 }
 
 // Animation methods in the case we decide to change the animation method

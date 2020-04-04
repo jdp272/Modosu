@@ -72,7 +72,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1);
 
-		levelSelect = new LevelSelectMode(canvas, manager, 1);
+		//levelSelect = new LevelSelectMode(canvas, manager, 1);
 
 		controller = new GamePlayController();
 		levelDesigner = new LevelDesignerMode();

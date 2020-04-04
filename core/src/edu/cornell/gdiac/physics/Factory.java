@@ -64,15 +64,20 @@ public class Factory {
         spirit.setDrawScale(scale);
         spirit.setTexture(spiritTex);
         spirit.setSensor(makeSensors);
+        spirit.setName("spirit");
         return spirit;
     }
 
     public HostModel makeSmallHost(float x, float y) {
-        return makeSmallHost(x, y, null);
+        HostModel host = makeSmallHost(x, y, null);
+        host.setBodyType(BodyDef.BodyType.StaticBody);
+        return host;
     }
 
     public HostModel makeSmallHost(float x, float y, Vector2[] instructions) {
-        return makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, smallHostTex, smallHostGaugeTex);
+        HostModel host = makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, smallHostTex, smallHostGaugeTex);
+        host.setBodyType(BodyDef.BodyType.DynamicBody);
+        return host;
     }
 
     // TODO: add medium and large host make functions
