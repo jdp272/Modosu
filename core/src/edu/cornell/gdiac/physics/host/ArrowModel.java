@@ -1,10 +1,9 @@
-
 package edu.cornell.gdiac.physics.host;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+
 import edu.cornell.gdiac.physics.GameCanvas;
 
 
@@ -13,6 +12,8 @@ public class ArrowModel {
     private Vector2 start;
     /** The current position of the mouse in screen coordinates */
     private Vector2 currLoc;
+    /** The true velocity if the spirit was shot */
+    private Vector2 velocityRepresented;
     /** The horizontal scaling of this arrow */
     private float sx;
     /** The texture for the arrow */
@@ -22,38 +23,43 @@ public class ArrowModel {
     public ArrowModel(Texture arrText, Vector2 robPos) {
         this.arrTexture = arrText;
         start = robPos;
-        currLoc = new Vector2(start);
+        currLoc = robPos;
+        velocityRepresented = new Vector2(0,0);
     }
 
-    public void setCurrLoc(Vector2 mousePos, Vector2 hostPos) {
+    public void setCurrLoc(Vector2 mousePos, Vector2 robPos) {
         currLoc = mousePos;
-        start = hostPos;
+        start = robPos;
     }
 
     public void draw (GameCanvas canvas) {
+        Color c;
 
-        // Get coordinates from screen to game coordinates
-        Vector3 currPos = new Vector3(currLoc, 0);
-        canvas.getCamera().unproject(currPos);
-
-        // Calculate the direction vector
-        Vector2 diffCurr =  new Vector2(currPos.x, currPos.y).sub(new Vector2((start)));
-
-        // Determine the angle
-        float ang = -6.28f + diffCurr.angleRad();
-
-        // Change the scaling if necessary
-        if (diffCurr.len()/100 > 1 && diffCurr.len()/100 < 4) {
-            sx = diffCurr.len()/100;
+        // Determine the color based on whether the velocity passes threshold
+        if (sx > .21) {
+            c = new Color(Color.PURPLE);
         }
-        else if (diffCurr.len()/100 < 1) {
-            sx = 1;
+        else {
+            c = new Color(Color.RED);
         }
 
-        if (!currLoc.equals(start)) {
-            canvas.begin();
-            canvas.draw(arrTexture, Color.PURPLE, arrTexture.getWidth()/2, arrTexture.getHeight()/2, start.x - diffCurr.setLength(75f).x, start.y - diffCurr.setLength(75f).y,  ang, sx, 1);
-            canvas.end();
+        // Draw the arrow
+        canvas.begin();
+        canvas.draw(arrTexture, c, arrTexture.getWidth()/2, arrTexture.getHeight()/2, start.x + velocityRepresented.setLength(75f).x,
+                start.y + velocityRepresented.setLength(75f).y,  velocityRepresented.angleRad(), sx, 1);
+        canvas.end();
+    }
+
+    public void setVelocityRepresented(Vector2 velocity) {
+        // Set velocityRepresented to the actual velocity if the shot was fired
+        velocityRepresented = velocity;
+
+        // Change scaling
+        if (velocityRepresented.len()/100 < 4.4) {
+            sx = velocityRepresented.len()/100;
+        }
+        else {
+            sx = 5;
         }
     }
 }

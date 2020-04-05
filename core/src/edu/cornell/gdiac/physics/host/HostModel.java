@@ -738,5 +738,9 @@ public class HostModel extends BoxObstacle {
 
         }
     }
+
+    public Vector2 getVelocity() {
+        return new Vector2(this.getVX(), this.getVY());
+    }
 }
 

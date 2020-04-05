@@ -77,7 +77,6 @@ public class CollisionController implements ContactListener {
      * @param contact The two bodies that collided
      */
     public void beginContact(Contact contact) {
-
         // Reset all the fields to reflect this current frame if needed
         clear();
         prevHostPossessed = hostPossessed;
@@ -118,33 +117,17 @@ public class CollisionController implements ContactListener {
                 }
             }
 
-
-
             if ((( body2.getUserData() == r) || (body1.getUserData() == r )) && !r.isPossessed() ) {
-
                 Vector2 c = contact.getWorldManifold().getPoints()[0].sub(r.getPosition());
                 Vector2 v = r.getLinearVelocity();
+
                 if((Math.signum(c.x) == Math.signum(v.x) || Math.abs(v.x) < 0.1)
                         && (Math.signum(c.y) == Math.signum(v.y) || Math.abs(v.y) < 0.1)){
                     r.invertForwardI();
                     r.nextInstruction();
                 }
-
             }
-
-
-
-
         }
-
-
-        // Collision handling to determine if the spirit collides with any walls
-        if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
-                bd1.getName() == "wall" && body2.getUserData() == spirit) {
-            bounced = true;
-        }
-
-
     }
 
     /**
@@ -202,13 +185,16 @@ public class CollisionController implements ContactListener {
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
 
+        Obstacle bd1 = (Obstacle) body1.getUserData();
+        Obstacle bd2 = (Obstacle) body2.getUserData();
+
         // Turn off collision handling if spirit already in the golem
-//        if((body1.getUserData() == spirit || body2.getUserData() == spirit) ){
+        //        if((body1.getUserData() == spirit || body2.getUserData() == spirit) ){
 //            contact.setEnabled(false);
 //        }
         for (HostModel r : hostList) {
             if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
-                    (body1.getUserData() == r && body2.getUserData() == spirit)) ) {
+                    (body1.getUserData() == r && body2.getUserData() == spirit))) {
                 contact.setEnabled(false);
             }
 
@@ -220,6 +206,11 @@ public class CollisionController implements ContactListener {
 //            }
         }
 
+        // Recognize spirit against a wall to play sound
+        if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
+                bd1.getName() == "wall" && body2.getUserData() == spirit) {
+            bounced = true;
+        }
     }
 
     /** Reset all the fields to reflect this current frame */
