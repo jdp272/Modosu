@@ -14,6 +14,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
@@ -63,7 +64,8 @@ public class GamePlayController extends WorldController {
 //	/** The asset for the explosion sound */
 //	private static final String  EXPLODE_SOUND = "host/afterburner.mp3";
 
-	/** Track asset loading from all instances and subclasses */
+
+
 	private AssetState assetState = AssetState.EMPTY;
 
 	private Level level;

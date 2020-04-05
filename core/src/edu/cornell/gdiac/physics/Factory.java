@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
@@ -7,6 +8,7 @@ import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
 
 import com.badlogic.gdx.math.Vector2;
+import edu.cornell.gdiac.util.FilmStrip;
 
 public class Factory {
     private static int SMALL_MAX_CHARGE = 1000;
@@ -16,7 +18,18 @@ public class Factory {
     private TextureRegion obstacleTex;
     private TextureRegion spiritTex;
     private TextureRegion smallHostTex;
-    private TextureRegion smallHostGaugeTex;
+    private Texture smallHostGaugeTexture;
+    private Texture smallHostTexture;
+
+    /** Static Variables for Sprite Sheet */
+
+    /** Number of rows in the host image filmstrip */
+    private static final int HOST_ROWS = 8;
+    /** Number of columns in this host image filmstrip */
+    private static final int HOST_COLUMNS = 16;
+    /** Number of total hosts in the host image filmstrip */
+    private static final int HOST_SIZE = 128;
+    /** Track asset loading from all instances and subclasses */
 
     /** The draw scale of objects */
     private Vector2 scale;
@@ -29,13 +42,15 @@ public class Factory {
             TextureRegion obstacleTex,
             TextureRegion spiritTex,
             TextureRegion smallHostTex,
-            TextureRegion smallHostGaugeTex
+            Texture smallHostTexture,
+            Texture smallHostGaugeTexture
     ) {
         this.scale = scale;
         this.obstacleTex = obstacleTex;
         this.spiritTex = spiritTex;
         this.smallHostTex = smallHostTex;
-        this.smallHostGaugeTex = smallHostGaugeTex;
+        this.smallHostTexture = smallHostTexture;
+        this.smallHostGaugeTexture = smallHostGaugeTexture;
     }
 
     public BoxObstacle makeObstacle(float x, float y) {
@@ -72,24 +87,28 @@ public class Factory {
     }
 
     public HostModel makeSmallHost(float x, float y, Vector2[] instructions) {
-        return makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, smallHostTex, smallHostGaugeTex);
+        return makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, smallHostTex, smallHostGaugeTexture, smallHostTexture);
     }
 
     // TODO: add medium and large host make functions
 
-    private HostModel makeHostInternal(float x, float y, Vector2[] instructions, int maxCharge, TextureRegion hostTex, TextureRegion gaugeTex) {
+    private HostModel makeHostInternal(float x, float y, Vector2[] instructions, int maxCharge, TextureRegion hostTex, Texture smallHostGaugeTexture, Texture hostTexture) {
         HostModel host = new HostModel(
                 x,
                 y,
-                hostTex.getRegionWidth() / scale.x,
-                hostTex.getRegionHeight() / scale.y,
+                // TODO Check that this is right
+                (hostTex.getRegionWidth()*(1f / 32f)) / scale.x,
+                // TODO Check that this is right
+                (hostTex.getRegionHeight() * (1f / 16f)) / scale.y,
                 0,
                 maxCharge,
                 instructions
         );
         host.setDrawScale(scale);
-        host.setTexture(smallHostTex);
-        host.setHostGaugeTexture(smallHostGaugeTex);
+        host.setHostGaugeTexture(new FilmStrip(smallHostGaugeTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
+        host.setChargedHostStrip(new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
+        host.setNotChargedHostStrip(new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
+        host.setHostStateSprite(host.beenPossessed(), new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new Vector2(1, 1));
         host.setSensor(makeSensors);
         return host;
     }

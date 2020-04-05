@@ -77,15 +77,17 @@ public abstract class WorldController implements Screen {
 	/** Texture file for background image */
 	private static final String BACKG_FILE = "shared/background.png";
 	/** Texture file for host sprite */
-	private static final String HOST_FILE = "host/host.png";
+	private static final String HOST_FILE = "host/hostSpriteSheet.png";
 	/** Texture file for spirit sprite */
 	private static final String SPIRIT_FILE = "host/spirit.png";
 	/** File to texture for obstacles */
 	private static String OBSTACLE_FILE = "host/crate02.png";
 	/** File to texture for Hosts' Gauge */
-	private static String HOST_GAUGE_FILE = "host/host_gauge.png";
+	private static String HOST_GAUGE_FILE = "host/hostGaugeSpriteSheet.png";
 	/** Texture file for arrow sprite */
 	private static final String ARROW_FILE = "shared/arrow.png";
+
+
 
 	private static int FONT_SIZE = 64;
 
@@ -103,6 +105,10 @@ public abstract class WorldController implements Screen {
 	protected TextureRegion hostGaugeTex;
 	/** The texture for the arrow */
 	protected Texture arrowTex;
+	/** Texture for Host SpriteSheet */
+	private static Texture hostTexture;
+	/** Texture for Host Gauge SpriteSheet */
+	private static Texture hostGaugeTexture;
 
 	public ArrowModel arrow;
 	/**
@@ -177,8 +183,11 @@ public abstract class WorldController implements Screen {
 
 		worldAssetState = AssetState.COMPLETE;
 
+		hostTexture = manager.get(HOST_FILE, Texture.class);
+		hostGaugeTexture = manager.get(HOST_GAUGE_FILE, Texture.class);
+
 		// Set the proper textures in the factory
-		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostGaugeTex);
+		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostTexture, hostGaugeTexture);
 		loader = new Loader(factory);
 	}
 	
@@ -206,29 +215,7 @@ public abstract class WorldController implements Screen {
 		return null;
 	}
 	
-	/**
-	 * Returns a newly loaded filmstrip for the given file.
-	 *
-	 * This helper methods is used to set texture settings (such as scaling, and
-	 * the number of animation frames) after loading.
-	 *
-	 * @param manager 	Reference to global asset manager.
-	 * @param file		The texture (region) file
-	 * @param rows 		The number of rows in the filmstrip
-	 * @param cols 		The number of columns in the filmstrip
-	 * @param size 		The number of frames in the filmstrip
-	 *
-	 * @return a newly loaded texture region for the given file.
-	 */
-	protected FilmStrip createFilmStrip(AssetManager manager, String file, int rows, int cols, int size) {
-		if (manager.isLoaded(file)) {
-			FilmStrip strip = new FilmStrip(manager.get(file, Texture.class),rows,cols,size);
-			strip.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-			return strip;
-		}
-		return null;
-	}
-	
+
 	/** 
 	 * Unloads the assets for this game.
 	 * 
