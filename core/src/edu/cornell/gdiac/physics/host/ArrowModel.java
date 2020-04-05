@@ -28,8 +28,9 @@ public class ArrowModel {
         velocityRepresented = new Vector2(0,0);
     }
 
-    public void setCurrLoc(Vector2 mousePos) {
+    public void setCurrLoc(Vector2 mousePos, Vector2 robPos) {
         currLoc = mousePos;
+        start = robPos;
     }
 
     public void draw (GameCanvas canvas) {

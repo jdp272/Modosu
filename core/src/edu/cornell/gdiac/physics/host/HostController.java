@@ -211,7 +211,9 @@ public class HostController {
                         // Save current mouse location in arrowModel
                         // Save possessed current position as the starting drawing point
                         currMouse = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-                        arrow.setCurrLoc(currMouse);
+                        arrowCache.set(possessed.getPosition());
+                        arrowCache.scl(scale);
+                        arrow.setCurrLoc(currMouse, arrowCache);
 
 
                         //would be velocity
