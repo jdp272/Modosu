@@ -190,9 +190,12 @@ public class CollisionController implements ContactListener {
         Obstacle bd2 = (Obstacle) body2.getUserData();
 
         // Turn off collision handling if spirit already in the golem
+        //        if((body1.getUserData() == spirit || body2.getUserData() == spirit) ){
+//            contact.setEnabled(false);
+//        }
         for (HostModel r : hostList) {
             if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
-                    (body1.getUserData() == r && body2.getUserData() == spirit)) && isPossessed()) {
+                    (body1.getUserData() == r && body2.getUserData() == spirit))) {
                 contact.setEnabled(false);
             }
 

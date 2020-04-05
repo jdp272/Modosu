@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.g2d.*;
 
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.physics.*;
@@ -40,9 +41,6 @@ public class HostController {
     /** Arrow position cache */
     private Vector2 arrowCache;
 
-    /** Height of the screen used to convert mouse y-coordinates */
-    private float height;
-
     /** Constant to change the speed of golem movement */
     private static final float HOST_MOVEMENT_SPEED = 5.f;
 
@@ -64,12 +62,11 @@ public class HostController {
     /**
      * Creates and initialize a new instance of a HostController
      */
-    public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowTexture, float heightY) {
+    public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowTexture) {
         input = InputController.getInstance();
         clickPosition = new Vector2(-1,-1);
         hosts = h;
         arrowText = arrowTexture;
-        height = heightY;
         shootVector = new Vector2(0,0);
         possessedBlownUp = false;
         launched = false;
@@ -121,6 +118,7 @@ public class HostController {
                 spirit.setGoToCenter(false);
                 // Register real possession
                 spirit.setIsPossessing(true);
+                //spirit.setBodyType(BodyDef.BodyType.KinematicBody);
             }
         }
 
@@ -149,7 +147,6 @@ public class HostController {
                     // Move using player input
                     possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal());
                     possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical());
-
 
                     if ((input.getVertical() != 0 || input.getHorizontal() != 0) && (!spirit.getGoToCenter())) {
                         spirit.setPosition(possessed.getPosition());
@@ -240,6 +237,8 @@ public class HostController {
             }
         }
 
+        // Update the Animation of the possessed host
+        possessed.updateAnimation(possessed.beenPossessed(), possessed.getLinearVelocity());
 
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
 
@@ -267,6 +266,8 @@ public class HostController {
 
         //update other robots
         for (HostModel h : hosts) {
+            // Updated Animation of Each Host
+            h.updateAnimation(true, h.getLinearVelocity());
             if (h != possessed && !h.beenPossessed()) {
                 Vector2 target = h.getInstruction();
                 Vector2 current = h.getPosition();

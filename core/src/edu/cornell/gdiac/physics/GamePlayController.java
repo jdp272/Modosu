@@ -284,7 +284,7 @@ public class GamePlayController extends WorldController {
 
 		//level = loader.reset(lvl);
 		//parse level
-		hostController = new HostController(level.hosts, scale, arrowTex, canvas.getHeight());
+		hostController = new HostController(level.hosts, scale, arrowTex);
 
 		// How many hosts need to be possessed to win
 		numHosts = level.hosts.size();
