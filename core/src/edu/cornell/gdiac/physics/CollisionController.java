@@ -118,15 +118,14 @@ public class CollisionController implements ContactListener {
             }
 
             if ((( body2.getUserData() == r) || (body1.getUserData() == r )) && !r.isPossessed() ) {
-
                 Vector2 c = contact.getWorldManifold().getPoints()[0].sub(r.getPosition());
                 Vector2 v = r.getLinearVelocity();
+
                 if((Math.signum(c.x) == Math.signum(v.x) || Math.abs(v.x) < 0.1)
                         && (Math.signum(c.y) == Math.signum(v.y) || Math.abs(v.y) < 0.1)){
                     r.invertForwardI();
                     r.nextInstruction();
                 }
-
             }
         }
     }
