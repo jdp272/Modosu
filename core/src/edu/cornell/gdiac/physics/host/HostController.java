@@ -239,6 +239,8 @@ public class HostController {
             }
         }
 
+        // Update the Animation of the possessed host
+        possessed.updateAnimation(possessed.beenPossessed(), possessed.getLinearVelocity());
 
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
 
