@@ -117,14 +117,23 @@ public class CollisionController implements ContactListener {
                 }
             }
 
+
+
             if ((( body2.getUserData() == r) || (body1.getUserData() == r )) && !r.isPossessed() ) {
+
                 Vector2 c = contact.getWorldManifold().getPoints()[0].sub(r.getPosition());
                 Vector2 v = r.getLinearVelocity();
-                if(Math.signum(c.x) == Math.signum(v.x) && Math.signum(c.y) == Math.signum(v.y)){
+                if((Math.signum(c.x) == Math.signum(v.x) || Math.abs(v.x) < 0.1)
+                        && (Math.signum(c.y) == Math.signum(v.y) || Math.abs(v.y) < 0.1)){
                     r.invertForwardI();
                     r.nextInstruction();
                 }
+
             }
+
+
+
+
         }
 
 
@@ -132,7 +141,6 @@ public class CollisionController implements ContactListener {
         if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
                 bd1.getName() == "wall" && body2.getUserData() == spirit) {
             bounced = true;
-            System.out.println("is this ever going here");
         }
 
 
@@ -140,9 +148,27 @@ public class CollisionController implements ContactListener {
 
     /**
      * Callback method for the start of a collision
-     * This method is called when two objects cease to touch.  We do not use it.
+     * This method is called when two objects cease to touch.
      */
     public void endContact(Contact contact) {
+        Fixture fix1 = contact.getFixtureA();
+        Fixture fix2 = contact.getFixtureB();
+
+        Body body1 = fix1.getBody();
+        Body body2 = fix2.getBody();
+
+        if(hostList != null) {
+            for (HostModel r : hostList) {
+                if (((body2.getUserData() == r) || (body1.getUserData() == r)) && !r.isPossessed()) {
+                    r.setLinearVelocity(new Vector2(0, 0));
+                }
+
+                if(r == prevHostPossessed){
+                    System.out.println(r.getLinearVelocity());
+                }
+
+            }
+        }
     }
 
     private Vector2 cache = new Vector2();
@@ -181,6 +207,13 @@ public class CollisionController implements ContactListener {
                     (body1.getUserData() == r && body2.getUserData() == spirit)) && isPossessed()) {
                 contact.setEnabled(false);
             }
+
+//            if ((( body2.getUserData() == r) || (body1.getUserData() == r )) && !r.isPossessed() ) {
+//                if (!r.isMoving()) {
+//                    //contact.setEnabled(false);
+//                    //r.setLinearVelocity(new Vector2(0, 0));
+//                }
+//            }
         }
     }
 

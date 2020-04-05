@@ -10,9 +10,11 @@
 package edu.cornell.gdiac.physics.host;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
@@ -26,10 +28,17 @@ import edu.cornell.gdiac.util.FilmStrip;
  */
 public class HostModel extends BoxObstacle {
 
+
+    // Animation Related Variables
+
+    /** The texture filmstrip for host that has yet to be possessed */
+    FilmStrip notChargedHost;
+
+    /** The texture filmstrip for host that has been possessed */
+    FilmStrip chargedHost;
+
     // Default physics values
-    /**
-     * The density of this host
-     */
+    /** The density of this host */
     private static final float DEFAULT_DENSITY = 1.0f;
     /**
      * The friction of this host
@@ -43,56 +52,48 @@ public class HostModel extends BoxObstacle {
      * The thrust factor to convert player input into host movement
      */
     private static final float DEFAULT_THRUST = 7.0f;
-    /**
-     * The number of frames for the gauge
-     */
-    public static final int GAUGE_FRAMES = 4;
+
+
+    // FRAMES FOR SPRITE SHEET
+
+    /** The frame number for a host that just begins facing South */
+    public static final int HOST_SOUTH_START = 0;
+    /** The frame number for a host that just ends facing South */
+    public static final int HOST_SOUTH_END = 15;
+    /** The frame number for a host that just begins facing SouthEast */
+    public static final int HOST_SOUTHEAST_START = 16;
+    /** The frame number for a host that just ends facing SouthEast */
+    public static final int HOST_SOUTHEAST_END = 31;
+    /** The frame number for a host that just begins facing East */
+    public static final int HOST_EAST_START = 32;
+    /** The frame number for a host that just ends facing East */
+    public static final int HOST_EAST_END = 47;
+    /** The frame number for a host that just begins facing NorthEast */
+    public static final int HOST_NORTHEAST_START = 48;
+    /** The frame number for a host that just ends facing NorthEast */
+    public static final int HOST_NORTHEAST_END = 63;
+    /** The frame number for a host that just begins facing North */
+    public static final int HOST_NORTH_START = 64;
+    /** The frame number for a host that just ends facing North */
+    public static final int HOST_NORTH_END = 79;
+    /** The frame number for a host that just begins facing NorthWest */
+    public static final int HOST_NORTHWEST_START = 80;
+    /** The frame number for a host that just ends facing NorthWest */
+    public static final int HOST_NORTHWEST_END = 95;
+    /** The frame number for a host that just begins facing West */
+    public static final int HOST_WEST_START = 96;
+    /** The frame number for a host that just ends facing West */
+    public static final int HOST_WEST_END = 111;
+    /** The frame number for a host that just begins facing SouthWest */
+    public static final int HOST_SOUTHWEST_START = 112;
+    /** The frame number for a host that just ends facing SouthWest */
+    public static final int HOST_SOUTHWEST_END = 127;
 
     /**
      * The texture for the host's gauge
      */
-    protected TextureRegion hostGaugeTexture;
+    protected FilmStrip hostGaugeStrip;
 
-    /**
-     * The texture filmstrip for charge gauge when possessed
-     */
-    FilmStrip chargeGauge;
-    /**
-     * The associated sound for the HostModel when possessed
-     */
-    String possessedHostSound;
-    /**
-     * The animation phase for the HostModel when possessed
-     */
-    boolean possessedCycle = true;
-
-    /**
-     * The texture filmstrip for charge gauge when not possessed
-     */
-    FilmStrip normalGauge;
-    /**
-     * The associated sound for charge gauge when not possessed
-     */
-    String normalHostSound;
-    /**
-     * The animation phase for charge gauge when not possessed
-     */
-    boolean normCycle = true;
-
-    /**
-     * The texture filmstrip for host's movements
-     */
-    FilmStrip hostStrip;
-    /**
-     * The associated sound for host's movements
-     */
-    String hostSound;
-    /**
-     * The animation phase for host's movements
-     */
-    boolean hostMvtCycle = true;
-
-    public Vector2 golemWalkOrigin = new Vector2();
 
     // Attributes Specific to each HostModel
     /**
@@ -131,6 +132,16 @@ public class HostModel extends BoxObstacle {
      * Whether robot is moving forward through instructions
      */
     private boolean forwardI;
+    /**
+     * Whether the robot is supposed to move or not
+     */
+    private boolean moving;
+
+    /**
+     * drawing scales to resize the host (doesn't affect hit box)
+     */
+    private float sx = 0.3f;
+    private float sy = 0.3f;
 
 
     /**
@@ -139,11 +150,29 @@ public class HostModel extends BoxObstacle {
     public Affine2 affineCache = new Affine2();
 
     /**
-     *
+     * Changes the direction the robot should be moved
+     * used on contacts
      */
     public void invertForwardI(){
         forwardI = !forwardI;
     }
+
+    /**
+     * returns the instruction number the robot is on
+     * @return instructionNumber
+     */
+    public int getInstructionNumber(){
+        return instructionNumber;
+    }
+
+    /**
+     * returns if the robot is moving
+     * @return moving
+     */
+    public boolean isMoving(){
+        return moving;
+    }
+
 
     /**
      * Gets the max charge a host can hold before exploding
@@ -177,23 +206,12 @@ public class HostModel extends BoxObstacle {
     }
 
     /**
-     * Returns the Hosts' Gauge Texture
-     * <p>
-     * This method returns the texture for the gauge
-     *
-     * @return the texture
-     */
-    public TextureRegion getHostGaugeTexture() {
-        return this.hostGaugeTexture;
-    }
-
-    /**
      * Sets the Hosts' Gauge Texture
      * <p>
      * This method sets the texture of the gauge
      */
-    public void setHostGaugeTexture(TextureRegion hostGaugeTexture) {
-        this.hostGaugeTexture = hostGaugeTexture;
+    public void setHostGaugeTexture(FilmStrip hostGaugeStrip) {
+        this.hostGaugeStrip = hostGaugeStrip;
     }
 
     /**
@@ -287,13 +305,14 @@ public class HostModel extends BoxObstacle {
      * @param height The object width in physics units
      */
     public HostModel(float x, float y, float width, float height, float currentCharge, float maxCharge, Vector2[] ins) {
-        super(x, y, width, height);
+        super(x, y, width*0.3f, height*0.5f);
         force = new Vector2();
         this.currentCharge = currentCharge;
         this.maxCharge = maxCharge;
         this.instructions = ins;
         this.instructionNumber = 0;
         this.hasBeenPossessed = false;
+        this.moving = (ins != null);
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
@@ -452,6 +471,238 @@ public class HostModel extends BoxObstacle {
         body.applyForce(force, body.getLocalCenter(), true);
     }
 
+
+    /**
+     * sets the FilmStrip for the charged host and the corresponding gauge
+     * @param strip for the charged host
+     */
+    public void setChargedHostStrip (FilmStrip strip) {
+        chargedHost = strip;
+        chargedHost.setFrame(HOST_SOUTH_START);
+        hostGaugeStrip.setFrame(HOST_SOUTH_START);
+        this.setTexture(strip);
+    }
+
+    /**
+     * sets the FilmStrip for the uncharged host and the corresponding gauge
+     * @param strip for the charged host
+     */
+    public void setNotChargedHostStrip (FilmStrip strip) {
+        notChargedHost = strip;
+        notChargedHost.setFrame(HOST_SOUTH_START);
+        hostGaugeStrip.setFrame(HOST_SOUTH_START);
+        this.setTexture(strip);
+    }
+
+    /**
+     * Sets the animation node for the given state of the host
+     *
+     * @param  beenPossesed enumeration to identify the state of the host
+     *
+     * @param  strip the animation node for the given state of the host
+     */
+    public void setHostStateSprite (boolean beenPossesed, FilmStrip strip, Vector2 direction) {
+        if (beenPossesed) {
+            chargedHost = strip;
+            if (direction.x > 0) {
+                // NORTH EAST
+                if (direction.y > 0) {
+                    chargedHost.setFrame(HOST_NORTHEAST_START);
+                    hostGaugeStrip.setFrame(HOST_NORTHEAST_START);
+                }
+                // SOUTH EAST
+                else if (direction.y < 0) {
+                    chargedHost.setFrame(HOST_SOUTHEAST_START);
+                    hostGaugeStrip.setFrame(HOST_SOUTHEAST_START);
+                }
+                // EAST
+                else if (direction.y == 0) {
+                    chargedHost.setFrame(HOST_EAST_START);
+                    hostGaugeStrip.setFrame(HOST_EAST_START);
+                }
+            } else if (direction.x < 0) {
+                // NORTH WEST
+                if (direction.y > 0) {
+                    chargedHost.setFrame(HOST_NORTHWEST_START);
+                    hostGaugeStrip.setFrame(HOST_NORTHWEST_START);
+                }
+                // SOUTH WEST
+                else if (direction.y < 0) {
+                    chargedHost.setFrame(HOST_SOUTHWEST_START);
+                    hostGaugeStrip.setFrame(HOST_SOUTHWEST_START);
+                }
+                // WEST
+                else if (direction.y == 0) {
+                    chargedHost.setFrame(HOST_WEST_START);
+                    hostGaugeStrip.setFrame(HOST_WEST_START);
+                }
+            } else {
+                // NORTH
+                if (direction.y > 0) {
+                    chargedHost.setFrame(HOST_NORTH_START);
+                    hostGaugeStrip.setFrame(HOST_NORTH_START);
+                }
+                // SOUTH
+                else if (direction.y > 0) {
+                    chargedHost.setFrame(HOST_SOUTH_START);
+                    hostGaugeStrip.setFrame(HOST_SOUTH_START);
+                }
+            }
+        } else {
+            notChargedHost = strip;
+            if (direction.x > 0) {
+                // NORTH EAST
+                if (direction.y > 0) {
+                    chargedHost.setFrame(HOST_NORTHEAST_START);
+                    hostGaugeStrip.setFrame(HOST_NORTHEAST_START);
+                }
+                // SOUTH EAST
+                else if (direction.y < 0) {
+                    chargedHost.setFrame(HOST_SOUTHEAST_START);
+                    hostGaugeStrip.setFrame(HOST_SOUTHEAST_START);
+                }
+                // EAST
+                else if (direction.y == 0) {
+                    chargedHost.setFrame(HOST_EAST_START);
+                    hostGaugeStrip.setFrame(HOST_EAST_START);
+                }
+            } else if (direction.x < 0) {
+                // NORTH WEST
+                if (direction.y > 0) {
+                    chargedHost.setFrame(HOST_NORTHWEST_START);
+                    hostGaugeStrip.setFrame(HOST_NORTHWEST_START);
+                }
+                // SOUTH WEST
+                else if (direction.y < 0) {
+                    chargedHost.setFrame(HOST_SOUTHWEST_START);
+                    hostGaugeStrip.setFrame(HOST_SOUTHWEST_START);
+                }
+                // WEST
+                else if (direction.y == 0) {
+                    chargedHost.setFrame(HOST_WEST_START);
+                    hostGaugeStrip.setFrame(HOST_WEST_START);
+                }
+            } else {
+                // NORTH
+                if (direction.y > 0) {
+                    chargedHost.setFrame(HOST_NORTH_START);
+                    hostGaugeStrip.setFrame(HOST_NORTH_START);
+                }
+                // SOUTH
+                else if (direction.y > 0) {
+                    chargedHost.setFrame(HOST_SOUTH_START);
+                    hostGaugeStrip.setFrame(HOST_SOUTH_START);
+                }
+            }
+        }
+    }
+
+    /**
+     * Animates Host Movement
+     *
+     * Changes the animation based on the last pressed button.
+     * This function should be called in host controller
+     *
+     * @param state         the state of the host
+     * @param direction     the direction the host is travelling
+     */
+    public void updateAnimation(boolean state, Vector2 direction) {
+        FilmStrip node = null;
+        int frame = 0;
+
+        if(state) {
+            node = chargedHost;
+        }
+        else {
+            node = notChargedHost;
+        }
+
+        if (node != null) {
+            frame = node.getFrame();
+        }
+
+        if (direction.x > 0) {
+            // NORTH EAST
+            if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                if (frame < HOST_NORTHEAST_END && frame >= HOST_NORTHEAST_START) {
+                    frame++;
+                } else {
+                    frame = HOST_NORTHEAST_START;
+                }
+            }
+            // SOUTH EAST
+            else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                if (frame < HOST_SOUTHEAST_END && frame >= HOST_SOUTHEAST_START) {
+                    frame++;
+                } else {
+                    frame = HOST_SOUTHEAST_START;
+                }
+            }
+            // EAST
+            if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
+                if (frame < HOST_EAST_END && frame >= HOST_EAST_START) {
+                    frame++;
+                } else {
+                    frame = HOST_EAST_START;
+                }
+            }
+        } else if (direction.x < 0) {
+            // NORTH WEST
+            if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                if (frame < HOST_NORTHWEST_END && frame >= HOST_NORTHWEST_START) {
+                    frame++;
+                } else {
+                    frame=HOST_NORTHWEST_START;
+                }
+            }
+            // SOUTH WEST
+            else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                if (frame < HOST_SOUTHWEST_END && frame >= HOST_SOUTHWEST_START) {
+                    frame++;
+                } else {
+                    frame=HOST_SOUTHWEST_START;
+                }
+            }
+            // WEST
+            if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
+                if (frame < HOST_WEST_END && frame >= HOST_WEST_START) {
+                    frame++;
+                } else {
+                    frame=HOST_WEST_START;
+                }
+            }
+        } else if(direction.x == 0 || Math.abs(direction.x) < 0.1) {
+            // NORTH
+            if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                if (frame < HOST_NORTH_END && frame >= HOST_NORTH_START) {
+                    frame++;
+                } else {
+                    frame=HOST_NORTH_START;
+                }
+            }
+            // SOUTH
+            else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                if (frame < HOST_SOUTH_END && frame >= HOST_SOUTH_START) {
+                    frame++;
+                } else {
+                    frame=HOST_SOUTH_START;
+                }
+            }
+        }
+        if(node != null) {
+            node.setFrame(frame);
+            hostGaugeStrip.setFrame(frame);
+        }
+
+        if(state) {
+            node = chargedHost;
+        }
+        else {
+            node = notChargedHost;
+        }
+    }
+
+
     /**
      * Draws the host object.
      *
@@ -460,16 +711,7 @@ public class HostModel extends BoxObstacle {
     public void draw(GameCanvas canvas) {
         //Draw the host
         float chargeProgression = currentCharge / maxCharge;
-        if (this.texture != null && this.hostGaugeTexture != null) {
-
-            /** Implementation of the HostModel with Charging Bar that Changes in Size */
-            //            if(this.currentCharge < this.maxCharge) {
-            //                canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-            //                canvas.draw(hostGaugeTexture, Color.GOLD, origin.x, origin.y , getX() * drawScale.x, (getY() * drawScale.y) - ((hostGaugeTexture.getRegionHeight()/2 * (1-chargeProgression))), getAngle(), 1, chargeProgression);
-            //            }
-            //            else {
-            //                canvas.draw(texture,Color.RED,origin.x,origin.y,getX()*drawScale.x,getY() * drawScale.y ,getAngle(),1,1);
-            //            }
+        if (this.chargedHost != null && this.hostGaugeStrip != null) {
 
             /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
             if (this.currentCharge < this.maxCharge) {
@@ -478,19 +720,19 @@ public class HostModel extends BoxObstacle {
 //                    canvas.draw(hostStrip, Color.WHITE, golemWalkOrigin.x, golemWalkOrigin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(),1,1);
 //                }
 
-                canvas.draw(texture, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
+                canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
 
                 // Color changes more and more to a red or goal color here
-                Color warningColor = new Color(chargeProgression * 2, 1 - chargeProgression, 1 - chargeProgression, 1);
+                Color warningColor = new Color(chargeProgression * 5, 4 - (4.5f * chargeProgression), 4 - (9 * chargeProgression), 1);
                 if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
                     // Color of the 3 flashes
                     warningColor = Color.BLACK;
                 }
-                canvas.draw(hostGaugeTexture, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+                canvas.draw(hostGaugeStrip, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
 
             }
             else {
-                canvas.draw(texture, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
+                canvas.draw(chargedHost, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
             }
 
 
@@ -502,178 +744,3 @@ public class HostModel extends BoxObstacle {
     }
 }
 
-// Animation methods in the case we decide to change the animation method
-
-//    public void setGolemWalkStrip(FilmStrip strip) {
-//        hostStrip = strip;
-//        if (strip != null) {
-//            golemWalkOrigin.set(strip.getRegionWidth()/2.0f, strip.getRegionHeight()/2.0f);
-//        }
-//    }
-//
-//    public void animateWalk(boolean on) {
-//        FilmStrip node = null;
-//        boolean cycle = true;
-//
-//        node = hostStrip;
-//        cycle = hostMvtCycle;
-//
-//        if (on) {
-//            // Turn on the flames and go back and forth
-//            if (node.getFrame() == 0 || node.getFrame() == 1) {
-//                cycle = true;
-//            } else if (node.getFrame() == node.getSize()-1) {
-//                cycle = false;
-//            }
-//
-//            // Increment
-//            if (cycle) {
-//                node.setFrame(node.getFrame()+1);
-//            } else {
-//                node.setFrame(node.getFrame()-1);
-//            }
-//        }
-//        else {
-//            node.setFrame(0);
-//        }
-//
-//        hostMvtCycle = cycle;
-//    }
-
-
-/**
- * Returns the animation node for the given charge gauge of the host
- *
- * @param gauge enumeration to identify the charge gauge of the host
- * @return the animation node for the given charge gauge of the host
- */
-//    public FilmStrip getChargeGaugeStrip(ChargeGauge gauge) {
-//        switch (gauge) {
-//            case POSSESSED:
-//                return chargeGauge;
-//            case NORMAL:
-//                return normalGauge;
-//        }
-//        assert false : "Invalid gauge enumeration";
-//        return null;
-//    }
-
-/**
- * Sets the animation node for the given charge gauge
- *
- * @param gauge enumeration to identify the specific gauge
- * @param strip the animation node for the given gauge
- */
-//    public void setChargeGauge(ChargeGauge gauge, FilmStrip strip) {
-//        switch (gauge) {
-//            case POSSESSED:
-//                chargeGauge = strip;
-//                break;
-//            case NORMAL:
-//                normalGauge = strip;
-//                /* If the gauge is a separate asset from the host itself */
-//                //                if (strip != null) {
-//                //                    leftOrigin.set(strip.getRegionWidth() / 2.0f, strip.getRegionHeight() / 2.0f);
-//                //                }
-//                break;
-//            default:
-//                assert false : "Invalid gauge enumeration";
-//        }
-//    }
-
-/**
- * Returns the key for the sound to accompany the given charge gauge
- *
- * The key should either refer to a valid sound loaded in the AssetManager or
- * be empty ("").  If the key is "", then no sound will play.
- *
- * @param gauge enumeration to identify the state of the charge gauge
- * @return the key for the sound to accompany the given charge gauge
- */
-//    public String getGaugeSound(ChargeGauge gauge) {
-//        switch (gauge) {
-//            case POSSESSED:
-//                return possessedHostSound;
-//            case NORMAL:
-//                return normalHostSound;
-//        }
-//        assert false : "Invalid gauge enumeration";
-//        return null;
-//    }
-
-/**
- * Sets the key for the sound to accompany the given charge gauge
- *
- * The key should either refer to a valid sound loaded in the AssetManager or
- * be empty ("").  If the key is "", then no sound will play.
- *
- * @param gauge enumeration to identify the state of the charge gauge
- * @param key   the key for the sound to accompany the main charge gauge
- */
-//    public void setGaugeSound(ChargeGauge gauge, String key) {
-//        switch (gauge) {
-//            case POSSESSED:
-//                possessedHostSound = key;
-//                break;
-//            case NORMAL:
-//                normalHostSound = key;
-//                break;
-//            default:
-//                assert false : "Invalid gauge enumeration";
-//        }
-//    }
-
-/**
- * Animates the given gauge.
- *
- * If the animation is not active, it will reset to the initial animation frame.
- *
- * @param gauge The reference to the host's gauge
- * @param on    Whether the animation is active
- */
-//    public void animateGauge(ChargeGauge gauge, boolean on) {
-//        FilmStrip node = null;
-//        boolean cycle = true;
-//
-//        switch (gauge) {
-//            case POSSESSED:
-//                node = chargeGauge;
-//                cycle = possessedCycle;
-//                break;
-//            case NORMAL:
-//                node = normalGauge;
-//                cycle = normCycle;
-//                break;
-//            default:
-//                assert false : "Invalid gauge enumeration";
-//        }
-//
-//        if (on) {
-//            // Turn on the gauge charging
-//            if (node.getFrame() == 0 || node.getFrame() == 1) {
-//                cycle = true;
-//            } else if (node.getFrame() == node.getSize() - 1) {
-//                cycle = false;
-//            }
-//
-//            // Increment
-//            if (cycle) {
-//                node.setFrame(node.getFrame() + 1);
-//            } else {
-//                node.setFrame(node.getFrame() - 1);
-//            }
-//        } else {
-//            node.setFrame(0);
-//        }
-//
-//        switch (gauge) {
-//            case POSSESSED:
-//                possessedCycle = cycle;
-//                break;
-//            case NORMAL:
-//                normCycle = cycle;
-//                break;
-//            default:
-//                assert false : "Invalid gauge enumeration";
-//        }
-//    }

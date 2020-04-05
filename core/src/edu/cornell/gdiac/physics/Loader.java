@@ -25,22 +25,6 @@ import java.util.ArrayList;
  */
 public class Loader {
 
-    // Static fields
-
-    /** Texture file for host sprite */
-    private static final String HOST_FILE = "assets/host/host.png";
-    /** Texture file for HostModel Gauge */
-    private static final String HOST_GAUGE_FILE = "assets/host/host_gauge.png";
-    /** Texture file for spirit sprite */
-    private static final String SPIRIT_FILE = "assets/host/spirit.png";
-    /** File to texture for obstacles */
-    private static String OBSTACLE_FILE = "shared/crate02.png";
-    /** File to texture for walls and platforms */
-    private static String EARTH_FILE = "assets/shared/earthtile.png";
-    /** Retro font for displaying messages */
-    private static String FONT_FILE = "shared/RetroGame.ttf";
-    private static int FONT_SIZE = 64;
-
     // Fields
 
     public enum ImageFile {
@@ -99,22 +83,8 @@ public class Loader {
     }
 
     // Assets
-    /** Track asset loading */
-    private AssetState assetState = AssetState.EMPTY; // TODO: remove this
     /** Track all loaded assets (for unloading purposes) */
     private Array<String> assets;
-    /** The texture for hosts */
-    private TextureRegion hostTex;
-    /** The texture for the spirit */
-    private TextureRegion spiritTex;
-    /** The texture for the obstacle */
-    private TextureRegion obstacleTex;
-    /** The texture for walls and platforms */
-    private TextureRegion earthTile;
-    /** The texture for host gauge */
-    private TextureRegion hostGaugeTex;
-    /** The font for giving messages to the player */
-    private BitmapFont displayFont;
 
     /** A factory that creates the game objects */
     private Factory factory;
@@ -141,90 +111,6 @@ public class Loader {
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
-    }
-
-    // Public member functions
-
-    /** @return The texture for hosts */
-    public TextureRegion getHostTex() { return hostTex; }
-    /** @return The texture for the spirit */
-    private TextureRegion getSpiritTex() { return spiritTex; }
-    /** @return The texture for the obstacle */
-    private TextureRegion getObstacleTex() { return obstacleTex; }
-    /** @return The texture for walls and platforms */
-    private TextureRegion getEarthTile() { return earthTile; }
-    /** @return The font for giving messages to the player */
-    private BitmapFont getDisplayFont() { return displayFont; }
-
-    /**
-     * Preloads the assets for the game
-     */
-    public void preLoadContent() {
-        if (assetState != AssetState.EMPTY) {
-            return;
-        }
-
-        assetState = AssetState.LOADING;
-
-        // Load the textures.
-        manager.load(HOST_FILE, Texture.class);
-        assets.add(HOST_FILE);
-        manager.load(HOST_GAUGE_FILE, Texture.class);
-        assets.add(HOST_GAUGE_FILE);
-        manager.load(SPIRIT_FILE, Texture.class);
-        assets.add(SPIRIT_FILE);
-        manager.load(OBSTACLE_FILE, Texture.class);
-        assets.add(OBSTACLE_FILE);
-        manager.load(EARTH_FILE, Texture.class);
-        assets.add(EARTH_FILE);
-
-        // Load the font
-        FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
-        size2Params.fontFileName = FONT_FILE;
-        size2Params.fontParameters.size = FONT_SIZE;
-        manager.load(FONT_FILE, BitmapFont.class, size2Params);
-        assets.add(FONT_FILE);
-    }
-
-    /**
-     * Loads the assets for this controller.
-     */
-    public void loadContent() {
-        if (assetState != AssetState.LOADING) {
-            return;
-        }
-
-        // Allocate the textures
-        hostTex = createTexture(HOST_FILE, true);
-        spiritTex = createTexture(SPIRIT_FILE, true);
-        obstacleTex = createTexture(OBSTACLE_FILE, true);
-        earthTile = createTexture(EARTH_FILE, true);
-        hostGaugeTex = createTexture(HOST_GAUGE_FILE, true);
-
-        // Allocate the font
-        if (manager.isLoaded(FONT_FILE)) {
-            displayFont = manager.get(FONT_FILE,BitmapFont.class);
-        } else {
-            displayFont = null;
-        }
-
-        assetState = AssetState.COMPLETE;
-    }
-
-    /**
-     * Unloads the resources of the this object. Should be called when the
-     * application is closed
-     */
-    public void dispose() {
-        for(String s : assets) {
-            if (manager.isLoaded(s)) {
-                manager.unload(s);
-            }
-        }
-
-        // Unload all of the resources
-        manager.clear();
-        manager.dispose();
     }
 
     /**
@@ -331,9 +217,7 @@ public class Loader {
 //        Level lvl = new Level(null, obs, robs, spir);
 //        return lvl; //loadLevel();
     }
-
     // Private member functions
-
     /**
      * Returns a newly loaded texture region for the given file.
      *
