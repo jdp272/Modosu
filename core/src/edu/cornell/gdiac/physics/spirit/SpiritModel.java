@@ -143,7 +143,6 @@ public class SpiritModel extends BoxObstacle {
     }
 
     public  void setGoToCenter(boolean goCenter) {
-        System.out.println("set to: " + goCenter);
         goToCenter = goCenter;
     }
 
