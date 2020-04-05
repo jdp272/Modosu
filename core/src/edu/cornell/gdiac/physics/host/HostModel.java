@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
@@ -131,6 +132,16 @@ public class HostModel extends BoxObstacle {
      * Whether robot is moving forward through instructions
      */
     private boolean forwardI;
+    /**
+     * Whether the robot is supposed to move or not
+     */
+    private boolean moving;
+
+    /**
+     * drawing scales to resize the host (doesn't affect hit box)
+     */
+    private float sx = 0.3f;
+    private float sy = 0.3f;
 
 
     /**
@@ -139,11 +150,29 @@ public class HostModel extends BoxObstacle {
     public Affine2 affineCache = new Affine2();
 
     /**
-     *
+     * Changes the direction the robot should be moved
+     * used on contacts
      */
     public void invertForwardI(){
         forwardI = !forwardI;
     }
+
+    /**
+     * returns the instruction number the robot is on
+     * @return instructionNumber
+     */
+    public int getInstructionNumber(){
+        return instructionNumber;
+    }
+
+    /**
+     * returns if the robot is moving
+     * @return moving
+     */
+    public boolean isMoving(){
+        return moving;
+    }
+
 
     /**
      * Gets the max charge a host can hold before exploding
@@ -276,13 +305,14 @@ public class HostModel extends BoxObstacle {
      * @param height The object width in physics units
      */
     public HostModel(float x, float y, float width, float height, float currentCharge, float maxCharge, Vector2[] ins) {
-        super(x, y, width, height);
+        super(x, y, width*0.3f, height*0.5f);
         force = new Vector2();
         this.currentCharge = currentCharge;
         this.maxCharge = maxCharge;
         this.instructions = ins;
         this.instructionNumber = 0;
         this.hasBeenPossessed = false;
+        this.moving = (ins != null);
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
@@ -593,7 +623,7 @@ public class HostModel extends BoxObstacle {
 
         if (direction.x > 0) {
             // NORTH EAST
-            if (direction.y > 0) {
+            if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
                 if (frame < HOST_NORTHEAST_END && frame >= HOST_NORTHEAST_START) {
                     frame++;
                 } else {
@@ -601,7 +631,7 @@ public class HostModel extends BoxObstacle {
                 }
             }
             // SOUTH EAST
-            else if (direction.y < 0) {
+            else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
                 if (frame < HOST_SOUTHEAST_END && frame >= HOST_SOUTHEAST_START) {
                     frame++;
                 } else {
@@ -609,7 +639,7 @@ public class HostModel extends BoxObstacle {
                 }
             }
             // EAST
-            if (direction.y == 0) {
+            if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
                 if (frame < HOST_EAST_END && frame >= HOST_EAST_START) {
                     frame++;
                 } else {
@@ -618,7 +648,7 @@ public class HostModel extends BoxObstacle {
             }
         } else if (direction.x < 0) {
             // NORTH WEST
-            if (direction.y > 0) {
+            if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
                 if (frame < HOST_NORTHWEST_END && frame >= HOST_NORTHWEST_START) {
                     frame++;
                 } else {
@@ -626,7 +656,7 @@ public class HostModel extends BoxObstacle {
                 }
             }
             // SOUTH WEST
-            else if (direction.y < 0) {
+            else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
                 if (frame < HOST_SOUTHWEST_END && frame >= HOST_SOUTHWEST_START) {
                     frame++;
                 } else {
@@ -634,16 +664,16 @@ public class HostModel extends BoxObstacle {
                 }
             }
             // WEST
-            if (direction.y == 0) {
+            if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
                 if (frame < HOST_WEST_END && frame >= HOST_WEST_START) {
                     frame++;
                 } else {
                     frame=HOST_WEST_START;
                 }
             }
-        } else if(direction.x == 0) {
+        } else if(direction.x == 0 || Math.abs(direction.x) < 0.1) {
             // NORTH
-            if (direction.y > 0) {
+            if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
                 if (frame < HOST_NORTH_END && frame >= HOST_NORTH_START) {
                     frame++;
                 } else {
@@ -651,7 +681,7 @@ public class HostModel extends BoxObstacle {
                 }
             }
             // SOUTH
-            else if (direction.y < 0) {
+            else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
                 if (frame < HOST_SOUTH_END && frame >= HOST_SOUTH_START) {
                     frame++;
                 } else {
@@ -672,6 +702,7 @@ public class HostModel extends BoxObstacle {
         }
     }
 
+
     /**
      * Draws the host object.
      *
@@ -689,7 +720,7 @@ public class HostModel extends BoxObstacle {
 //                    canvas.draw(hostStrip, Color.WHITE, golemWalkOrigin.x, golemWalkOrigin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(),1,1);
 //                }
 
-                canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 0.5f, 0.5f);
+                canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
 
                 // Color changes more and more to a red or goal color here
                 Color warningColor = new Color(chargeProgression * 5, 4 - (4.5f * chargeProgression), 4 - (9 * chargeProgression), 1);
@@ -697,11 +728,11 @@ public class HostModel extends BoxObstacle {
                     // Color of the 3 flashes
                     warningColor = Color.BLACK;
                 }
-                canvas.draw(hostGaugeStrip, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.5f, 0.5f);
+                canvas.draw(hostGaugeStrip, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
 
             }
             else {
-                canvas.draw(chargedHost, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 0.5f, 0.5f);
+                canvas.draw(chargedHost, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
             }
 
 
