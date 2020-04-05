@@ -14,6 +14,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
@@ -63,15 +64,6 @@ public class GamePlayController extends WorldController {
 //	/** The asset for the explosion sound */
 //	private static final String  EXPLODE_SOUND = "host/afterburner.mp3";
 
-	/** Static Variables for Sprite Sheet */
-
-	/** Number of rows in the host image filmstrip */
-	private static final int HOST_ROWS = 8;
-	/** Number of columns in this host image filmstrip */
-	private static final int HOST_COLUMNS = 16;
-	/** Number of total hosts in the host image filmstrip */
-	private static final int HOST_SIZE = 128;
-	/** Track asset loading from all instances and subclasses */
 
 
 	private AssetState assetState = AssetState.EMPTY;
