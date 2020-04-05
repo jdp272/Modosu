@@ -113,7 +113,6 @@ public class HostController {
             float spiritX = spirit.getPosition().x;
             float spiritY = spirit.getPosition().y;
 
-
             // Close enough to be considered on the center
             if ( ((posX-1) <= spiritX  && spiritX < (posX+1) ) && ((posY-1) <= spiritY  && (spiritY < (posY+1))) ) {
                 // Set spirit on center,
@@ -210,9 +209,11 @@ public class HostController {
                     else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
                         // Save current mouse location in arrowModel
                         // Save possessed current position as the starting drawing point
-                        currMouse = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-                        arrow.setCurrLoc(currMouse);
 
+                        currMouse = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+                        arrowCache.set(possessed.getPosition());
+                        arrowCache.scl(scale);
+                        arrow.setCurrLoc(currMouse, arrowCache);
 
                         //would be velocity
                         shootVector = shootVector.set(Gdx.input.getX(), Gdx.input.getY());
@@ -239,8 +240,6 @@ public class HostController {
             }
         }
 
-        // Update the Animation of the possessed host
-        possessed.updateAnimation(possessed.beenPossessed(), possessed.getLinearVelocity());
 
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
 
@@ -268,8 +267,6 @@ public class HostController {
 
         //update other robots
         for (HostModel h : hosts) {
-            // Updated Animation of Each Host
-            h.updateAnimation(true, h.getLinearVelocity());
             if (h != possessed && !h.beenPossessed()) {
                 Vector2 target = h.getInstruction();
                 Vector2 current = h.getPosition();
