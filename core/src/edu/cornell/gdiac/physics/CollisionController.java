@@ -117,8 +117,6 @@ public class CollisionController implements ContactListener {
                 }
             }
 
-
-
             if ((( body2.getUserData() == r) || (body1.getUserData() == r )) && !r.isPossessed() ) {
 
                 Vector2 c = contact.getWorldManifold().getPoints()[0].sub(r.getPosition());
@@ -130,20 +128,7 @@ public class CollisionController implements ContactListener {
                 }
 
             }
-
-
-
-
         }
-
-
-        // Collision handling to determine if the spirit collides with any walls
-        if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
-                bd1.getName() == "wall" && body2.getUserData() == spirit) {
-            bounced = true;
-        }
-
-
     }
 
     /**
@@ -201,6 +186,9 @@ public class CollisionController implements ContactListener {
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
 
+        Obstacle bd1 = (Obstacle) body1.getUserData();
+        Obstacle bd2 = (Obstacle) body2.getUserData();
+
         // Turn off collision handling if spirit already in the golem
         for (HostModel r : hostList) {
             if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
@@ -214,6 +202,12 @@ public class CollisionController implements ContactListener {
 //                    //r.setLinearVelocity(new Vector2(0, 0));
 //                }
 //            }
+        }
+
+        // Recognize spirit against a wall to play sound
+        if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
+                bd1.getName() == "wall" && body2.getUserData() == spirit) {
+            bounced = true;
         }
     }
 

@@ -113,7 +113,6 @@ public class HostController {
             float spiritX = spirit.getPosition().x;
             float spiritY = spirit.getPosition().y;
 
-
             // Close enough to be considered on the center
             if ( ((posX-1) <= spiritX  && spiritX < (posX+1) ) && ((posY-1) <= spiritY  && (spiritY < (posY+1))) ) {
                 // Set spirit on center,
@@ -215,7 +214,6 @@ public class HostController {
                         arrowCache.scl(scale);
                         arrow.setCurrLoc(currMouse, arrowCache);
 
-
                         //would be velocity
                         shootVector = shootVector.set(Gdx.input.getX(), Gdx.input.getY());
                         shootVector = shootVector.sub(clickPosition);
@@ -241,8 +239,6 @@ public class HostController {
             }
         }
 
-        // Update the Animation of the possessed host
-        possessed.updateAnimation(possessed.beenPossessed(), possessed.getLinearVelocity());
 
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
 
@@ -270,8 +266,6 @@ public class HostController {
 
         //update other robots
         for (HostModel h : hosts) {
-            // Updated Animation of Each Host
-            h.updateAnimation(true, h.getLinearVelocity());
             if (h != possessed && !h.beenPossessed()) {
                 Vector2 target = h.getInstruction();
                 Vector2 current = h.getPosition();

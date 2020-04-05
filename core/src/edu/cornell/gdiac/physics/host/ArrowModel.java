@@ -1,4 +1,3 @@
-
 package edu.cornell.gdiac.physics.host;
 
 import com.badlogic.gdx.graphics.Color;
