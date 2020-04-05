@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.g2d.*;
 
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.physics.*;
 
@@ -122,6 +124,7 @@ public class HostController {
                 spirit.setGoToCenter(false);
                 // Register real possession
                 spirit.setIsPossessing(true);
+                //spirit.setBodyType(BodyDef.BodyType.KinematicBody);
             }
         }
 
@@ -246,6 +249,7 @@ public class HostController {
 
         // When the spirit has been launched, need to decrement life of spirit
         if (spirit.hasLaunched) {
+            //spirit.setBodyType(BodyDef.BodyType.DynamicBody);
             // If you can decrement life, decrement life
             if (spirit.decCurrentLife()) {
                 // Spirit isn't dead yet
