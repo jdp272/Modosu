@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import edu.cornell.gdiac.physics.*;  // For GameCanvas
+import edu.cornell.gdiac.util.FilmStrip;
 
 /**
  * Box-shaped model to support collisions.
@@ -35,7 +36,52 @@ public class BoxObstacle extends SimpleObstacle {
 	private float[] vertices;
 
 	public int alive;
-	
+
+	private float sx;
+	private float sy;
+
+	public int wall;
+
+	/**
+	 * The texture for the host's gauge
+	 */
+	protected FilmStrip wallStrip;
+
+
+	public void setWall(int n){
+		if(n>23){
+			wall = 0;
+		}else if(n < 0){
+			wall = 23;
+		}else {
+			wall = n;
+		}
+		if(wall > 17 && wall < 24){
+			PolygonShape s = new PolygonShape();
+			s.setAsBox(getWidth()/2,getHeight()/4,new Vector2(0, getHeight()/4),0);
+			shape = s;
+		}
+		else if(wall < 4){
+			PolygonShape s = new PolygonShape();
+			s.setAsBox(0,0,new Vector2(0, 0),0);
+			shape = s;
+		}
+		else{
+			PolygonShape s = new PolygonShape();
+			s.setAsBox(getWidth()/2,getHeight()/2,new Vector2(0, 0),0);
+			shape = s;
+		}
+		wallStrip.setFrame(wall);
+	}
+
+	public void setSX(float s){
+		this.sx = s;
+	}
+
+	public void setSY(float s){
+		this.sy = s;
+	}
+
 	/** 
 	 * Returns the dimensions of this box
 	 *
@@ -144,11 +190,24 @@ public class BoxObstacle extends SimpleObstacle {
 		vertices = new float[8];
 		geometry = null;
 		alive = -1;
+		sx = 1;
+		sx = 1;
 
 		// Initialize
 		resize(width, height);	
 	}
-	
+
+
+	/**
+	 * sets the FilmStrip for the charged host and the corresponding gauge
+	 * @param strip for the charged host
+	 */
+	public void setWallStrip (FilmStrip strip) {
+		wallStrip = strip;
+		wallStrip.setFrame(20);
+		this.setTexture(strip);
+	}
+
 	/**
 	 * Reset the polygon vertices in the shape to match the dimension.
 	 */
@@ -193,6 +252,18 @@ public class BoxObstacle extends SimpleObstacle {
 	        body.destroyFixture(geometry);
 	        geometry = null;
 	    }
+	}
+
+
+	/**
+	 * Draws the physics object.
+	 *
+	 * @param canvas Drawing context
+	 */
+	public void draw(GameCanvas canvas) {
+		if (texture != null) {
+			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+		}
 	}
 
 	

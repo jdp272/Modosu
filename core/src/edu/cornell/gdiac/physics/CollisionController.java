@@ -77,6 +77,7 @@ public class CollisionController implements ContactListener {
      * @param contact The two bodies that collided
      */
     public void beginContact(Contact contact) {
+
         // Reset all the fields to reflect this current frame if needed
         clear();
         prevHostPossessed = hostPossessed;

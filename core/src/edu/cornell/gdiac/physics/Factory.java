@@ -20,6 +20,7 @@ public class Factory {
     private TextureRegion smallHostTex;
     private Texture smallHostGaugeTexture;
     private Texture smallHostTexture;
+    private Texture wallTexture;
 
     /** Static Variables for Sprite Sheet */
 
@@ -30,6 +31,14 @@ public class Factory {
     /** Number of total hosts in the host image filmstrip */
     private static final int HOST_SIZE = 128;
     /** Track asset loading from all instances and subclasses */
+
+    /** Number of rows in the wall image filmstrip */
+    private static final int WALL_ROWS = 4;
+    /** Number of columns in this host image filmstrip */
+    private static final int WALL_COLUMNS = 6;
+    /** Number of total hosts in the host image filmstrip */
+    private static final int WALL_SIZE = 24;
+
 
     /** The draw scale of objects */
     private Vector2 scale;
@@ -43,7 +52,8 @@ public class Factory {
             TextureRegion spiritTex,
             TextureRegion smallHostTex,
             Texture smallHostTexture,
-            Texture smallHostGaugeTexture
+            Texture smallHostGaugeTexture,
+            Texture wallTexture
     ) {
         this.scale = scale;
         this.obstacleTex = obstacleTex;
@@ -51,6 +61,7 @@ public class Factory {
         this.smallHostTex = smallHostTex;
         this.smallHostTexture = smallHostTexture;
         this.smallHostGaugeTexture = smallHostGaugeTexture;
+        this.wallTexture = wallTexture;
     }
 
     public BoxObstacle makeObstacle(float x, float y) {
@@ -60,10 +71,14 @@ public class Factory {
                 obstacleTex.getRegionWidth() / scale.x,
                 obstacleTex.getRegionWidth() / scale.y
         );
+        box.setWallStrip(new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE));
         box.setDrawScale(scale);
-        box.setTexture(obstacleTex);
+        box.setSX(0.25f);
+        box.setSY(0.25f);
+        //box.setTexture(obstacleTex);
         box.setBodyType(BodyDef.BodyType.StaticBody);
         box.setSensor(makeSensors);
+        box.setWall(20);
         box.setName("wall");
         return box;
     }
