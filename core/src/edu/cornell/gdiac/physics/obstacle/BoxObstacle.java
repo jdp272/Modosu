@@ -40,12 +40,24 @@ public class BoxObstacle extends SimpleObstacle {
 	private float sx;
 	private float sy;
 
+	public int wall;
+
 	/**
 	 * The texture for the host's gauge
 	 */
 	protected FilmStrip wallStrip;
 
 
+	public void setWall(int n){
+		if(n>23){
+			wall = 0;
+		}else if(n < 0){
+			wall = 23;
+		}else {
+			wall = n;
+		}
+		wallStrip.setFrame(wall);
+	}
 
 	public void setSX(float s){
 		this.sx = s;
@@ -165,6 +177,7 @@ public class BoxObstacle extends SimpleObstacle {
 		alive = -1;
 		sx = 1;
 		sx = 1;
+		wall = 20;
 
 		// Initialize
 		resize(width, height);	

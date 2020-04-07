@@ -258,6 +258,27 @@ public class LevelDesignerMode extends WorldController {
 			selector.select(mouseX, mouseY);
 		}
 
+		if(input.didPrimary()){
+			//change wall texture that is currently selected at mouse location
+			if(selector.isSelected()) {
+				// Get the selection, then remove it from the selector
+				Obstacle selection = selector.getObstacle();
+				if(selection.getName() == "wall"){
+					((BoxObstacle)selection).setWall(((BoxObstacle)selection).wall+1);
+				}
+			}
+		}
+		if(input.didSecondary()){
+			//change wall texture that is currently selected at mouse location
+			if(selector.isSelected()) {
+				// Get the selection, then remove it from the selector
+				Obstacle selection = selector.getObstacle();
+				if(selection.getName() == "wall"){
+					((BoxObstacle)selection).setWall(((BoxObstacle)selection).wall-1);
+				}
+			}
+		}
+
 		if(input.didDelete()) {
 			// Remove what is currently selected at the mouse location
 			if(selector.isSelected()) {
