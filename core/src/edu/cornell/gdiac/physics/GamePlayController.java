@@ -324,6 +324,52 @@ public class GamePlayController extends WorldController {
 		collisionController.addSpirit(level.start);
 	}
 
+	/**
+	 * Keeps all hosts and spirits in bounds.
+	 */
+	public void keepInBounds(){
+
+		Vector2 pos = spirit.getPosition();
+		if(pos.x > bounds.x + bounds.width){
+			spirit.setPosition(bounds.x + bounds.width, pos.y);
+			pos.x = bounds.x + bounds.width;
+			spirit.setVX(-spirit.getVX());
+		}
+		else if(pos.x < bounds.x){
+			spirit.setPosition(bounds.x, pos.y);
+			pos.x = bounds.x;
+			spirit.setVX(-spirit.getVX());
+		}
+
+		if(pos.y > bounds.y + bounds.height){
+			spirit.setPosition(pos.x, bounds.y + bounds.height);
+			spirit.setVY(-spirit.getVY());
+		}
+		else if(pos.y < bounds.y){
+			spirit.setPosition(pos.x, bounds.y);
+			spirit.setVY(-spirit.getVY());
+		}
+
+		for(HostModel h : level.hosts){
+			pos = h.getPosition();
+			if(pos.x > bounds.x + bounds.width){
+				h.setPosition(bounds.x + bounds.width, pos.y);
+				pos.x = bounds.x + bounds.width;
+			}
+			else if(pos.x < bounds.x){
+				pos.x = bounds.x;
+				h.setPosition(bounds.x, pos.y);
+			}
+
+			if(pos.y > bounds.y + bounds.height){
+				h.setPosition(pos.x, bounds.y + bounds.height);
+			}
+			else if(pos.y < bounds.y){
+				h.setPosition(pos.x, bounds.y);
+			}
+
+		}
+	}
 
 	/**
 	 * The core gameplay loop of this world.
@@ -336,6 +382,8 @@ public class GamePlayController extends WorldController {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void update(float delta) {
+		//keep everything in bounds
+		keepInBounds();
 
 		// Check win condition
 		if ((numPossessed == numHosts) && !isComplete()){
