@@ -86,6 +86,8 @@ public abstract class WorldController implements Screen {
 	private static String HOST_GAUGE_FILE = "host/hostGaugeSpriteSheet.png";
 	/** Texture file for arrow sprite */
 	private static final String ARROW_FILE = "shared/arrow.png";
+	/** File to texture for Walls */
+	private static String WALL_FILE = "shared/wallSpriteSheet.png";
 
 
 
@@ -103,12 +105,16 @@ public abstract class WorldController implements Screen {
 	protected TextureRegion obstacleTex;
 	/** The texture for host gauge */
 	protected TextureRegion hostGaugeTex;
+	/** The texture for walls */
+	protected TextureRegion wallTex;
 	/** The texture for the arrow */
 	protected Texture arrowTex;
 	/** Texture for Host SpriteSheet */
 	private static Texture hostTexture;
 	/** Texture for Host Gauge SpriteSheet */
 	private static Texture hostGaugeTexture;
+	/** Texture for Wall SpriteSheet */
+	private static Texture wallTexture;
 
 	public ArrowModel arrow;
 	/**
@@ -136,6 +142,8 @@ public abstract class WorldController implements Screen {
 		assets.add(HOST_FILE);
 		manager.load(HOST_GAUGE_FILE, Texture.class);
 		assets.add(HOST_GAUGE_FILE);
+		manager.load(WALL_FILE, Texture.class);
+		assets.add(WALL_FILE);
 		manager.load(SPIRIT_FILE, Texture.class);
 		assets.add(SPIRIT_FILE);
 		manager.load(OBSTACLE_FILE, Texture.class);
@@ -172,6 +180,7 @@ public abstract class WorldController implements Screen {
 		spiritTex = createTexture(manager, SPIRIT_FILE, true);
 		obstacleTex = createTexture(manager, OBSTACLE_FILE, true);
 		hostGaugeTex = createTexture(manager, HOST_GAUGE_FILE, true);
+		wallTex = createTexture(manager, WALL_FILE, true);
 		arrowTex = new Texture(ARROW_FILE);
 		
 		// Allocate the font
@@ -185,9 +194,10 @@ public abstract class WorldController implements Screen {
 
 		hostTexture = manager.get(HOST_FILE, Texture.class);
 		hostGaugeTexture = manager.get(HOST_GAUGE_FILE, Texture.class);
+		wallTexture = manager.get(WALL_FILE, Texture.class);
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostTexture, hostGaugeTexture);
+		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostTexture, hostGaugeTexture, wallTexture);
 		loader = new Loader(factory);
 	}
 	
