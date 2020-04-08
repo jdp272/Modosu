@@ -98,6 +98,19 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static int LEVEL_SELECT_Y = 150;
 	/** Level Design button-y (for scaling) */
 	private static int CREDITS_Y = 100;
+	/** Color of buttons when hovered */
+	private static Color colorHovered;
+	/** Color of buttons when not hovered */
+	private static Color colorUnhovered;
+
+	/** Color of start button */
+	private Color colorStart;
+	/** Color of level design button */
+	private Color colorLvlDesign;
+	/** Color of level select button */
+	private Color colorLvlSelect;
+	/** Color of credits button */
+	private Color colorCredits;
 
 	/** Ratio of the bar width to the screen */
 	private static float BAR_WIDTH_RATIO  = 0.66f;
@@ -211,6 +224,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		// Compute the dimensions from the canvas
 		resize(canvas.getWidth(),canvas.getHeight());
 
+		colorHovered = new Color(Color.DARK_GRAY);
+		colorUnhovered = new Color(Color.WHITE);
+		colorStart = colorUnhovered;
+		colorLvlDesign = colorUnhovered;
+		colorLvlSelect = colorUnhovered;
+		colorCredits = colorUnhovered;
+
 		// Load the next two images immediately.
 		playButton = null;
 		lvlDesign = null;
@@ -304,19 +324,19 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		canvas.draw(background, 0, 0);
 		if (playButton == null) {
 			drawProgress(canvas);
-		} else {
+		}
+		else {
 			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
 			canvas.draw(playButton, tint, 0, 0,
 						BUTTON_X, START_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-			Color tint2 = (pressState == 3 ? Color.GRAY: Color.WHITE);
-			canvas.draw(lvlDesign, tint2, 0, 0,
+			canvas.draw(lvlDesign, colorLvlDesign, 0, 0,
 					BUTTON_X, LEVEL_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-			canvas.draw(lvlSelect, tint2, 0, 0,
+			canvas.draw(lvlSelect, colorLvlSelect, 0, 0,
 					BUTTON_X, LEVEL_SELECT_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-			canvas.draw(credits, tint2, 0, 0,
+			canvas.draw(credits, colorCredits, 0, 0,
 					BUTTON_X, CREDITS_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
 		canvas.end();
@@ -461,16 +481,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		System.out.println("touchdown in loading was presesd");
 		if (playButton == null || pressState == 2 || pressState == 4) {
 			return true;
 		}
 		
 		// Flip to match graphics coordinates
 		screenY = heightY-screenY;
-		
-		// TODO: Fix scaling
-		// Play button is a circle.
+
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 1;
@@ -512,6 +529,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			pressState = 4;
 			return false;
 		}
+
 		return true;
 	}
 	
@@ -600,8 +618,54 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param screenY the y-coordinate of the mouse on the screen
 	 * @return whether to hand the event to other listeners. 
 	 */	
-	public boolean mouseMoved(int screenX, int screenY) { 
-		return true; 
+	public boolean mouseMoved(int screenX, int screenY) {
+		screenY = canvas.getHeight()-screenY;
+
+		if (active && playButton != null){
+			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE)) {
+				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE)) {
+					colorStart = colorHovered;
+				}
+				else {
+					colorStart = colorUnhovered;
+				}
+			}
+
+			else if(screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE)) {
+				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE)) {
+					colorLvlDesign = colorHovered;
+				}
+				else {
+					colorLvlDesign = colorUnhovered;
+				}
+			}
+
+			else if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE)) {
+				if (screenX >= BUTTON_X && screenX <= BUTTON_X+(lvlSelect.getWidth()*scale*BUTTON_SCALE)) {
+					colorLvlSelect = colorHovered;
+				}
+				else {
+					colorLvlSelect = colorUnhovered;
+				}
+			}
+
+			else if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
+				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth()*scale*BUTTON_SCALE)) {
+					colorCredits = colorHovered;
+				}
+				else {
+					colorCredits = colorUnhovered;
+				}
+			}
+			else {
+				colorStart = colorUnhovered;
+				colorLvlDesign = colorUnhovered;
+				colorLvlSelect = colorUnhovered;
+				colorCredits = colorUnhovered;
+			}
+		}
+
+		return true;
 	}
 
 	/** 

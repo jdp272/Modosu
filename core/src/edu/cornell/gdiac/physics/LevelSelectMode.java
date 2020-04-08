@@ -15,22 +15,14 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.PovDirection;
-import com.badlogic.gdx.files.FileHandle;
+
+
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.physics.box2d.*;
-
-import edu.cornell.gdiac.physics.host.HostModel;
-import edu.cornell.gdiac.physics.obstacle.*;
-import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.ScreenListener;
-import edu.cornell.gdiac.util.SoundController;
 
-import java.util.ArrayList;
 
 /**
  * Manages the level selection of Modosu
@@ -42,10 +34,12 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     private static final String ONE_FILE = "shared/1.png";
     private static final String TWO_FILE = "shared/2.png";
     private static final String THREE_FILE = "shared/3.png";
+    private static final String FOUR_FILE = "shared/4.png";
 
-    private static int LEVEL_X_START = 100;
+
+    private static int LEVEL_X_START = 180;
     private static int LEVEL_Y = 20;
-    private static int LEVEL_BUTTON_SPACING = 100;
+    private static int LEVEL_BUTTON_SPACING = 200;
 
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
@@ -55,14 +49,31 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     private TextureRegion oneTexture;
     private TextureRegion twoTexture;
     private TextureRegion threeTexture;
+    private TextureRegion fourTexture;
 
+    /** Vectors that maintain the positions of the level buttons */
     private Vector2 oneStart;
     private Vector2 oneEnd;
     private Vector2 twoStart;
     private Vector2 twoEnd;
     private Vector2 threeStart;
     private Vector2 threeEnd;
+    private Vector2 fourStart;
+    private Vector2 fourEnd;
 
+    /** Color of buttons when hovered */
+    private static Color colorHovered;
+    /** Color of buttons when not hovered */
+    private static Color colorUnhovered;
+
+    /** Color of level one button */
+    private Color colorOne;
+    /** Color of level two button */
+    private Color colorTwo;
+    /** Color of level three button */
+    private Color colorThree;
+    /** Color of level four button */
+    private Color colorFour;
 
     /** Track asset loading from all instances and subclasses */
     private AssetState assetState = AssetState.EMPTY;
@@ -92,6 +103,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         assets.add(TWO_FILE);
         manager.load(THREE_FILE, Texture.class);
         assets.add(THREE_FILE);
+        manager.load(FOUR_FILE, Texture.class);
+        assets.add(FOUR_FILE);
 
         super.preLoadContent(manager);
     }
@@ -114,6 +127,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         oneTexture = createTexture(manager,ONE_FILE,false);
         twoTexture = createTexture(manager,TWO_FILE,false);
         threeTexture = createTexture(manager,THREE_FILE,false);
+        fourTexture = createTexture(manager,FOUR_FILE,false);
 
         oneStart = new Vector2(LEVEL_X_START, LEVEL_Y);
         oneEnd = new Vector2(LEVEL_X_START + oneTexture.getRegionWidth(), LEVEL_Y+oneTexture.getRegionHeight());
@@ -121,6 +135,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         twoEnd = new Vector2(twoStart.x+twoTexture.getRegionWidth(), LEVEL_Y+twoTexture.getRegionHeight());
         threeStart = new Vector2(twoEnd.x + LEVEL_BUTTON_SPACING, LEVEL_Y);
         threeEnd = new Vector2(threeStart.x+threeTexture.getRegionWidth(), LEVEL_Y+threeTexture.getRegionHeight());
+        fourStart = new Vector2(threeEnd.x + LEVEL_BUTTON_SPACING, LEVEL_Y);
+        fourEnd = new Vector2(fourStart.x+fourTexture.getRegionWidth(), LEVEL_Y+fourTexture.getRegionHeight());
 
         super.loadContent(manager);
         assetState = AssetState.COMPLETE;
@@ -140,6 +156,13 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         setDebug(false);
         setComplete(false);
         setFailure(false);
+
+        colorHovered = new Color(Color.GRAY);
+        colorUnhovered = new Color(Color.WHITE);
+        colorOne = colorUnhovered;
+        colorTwo = colorUnhovered;
+        colorThree = colorUnhovered;
+        colorFour = colorUnhovered;
     }
 
     /**
@@ -163,6 +186,9 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt) {
+        if (Gdx.input.isKeyPressed(Input.Keys.M)) {
+            listener.exitScreen(this,WorldController.EXIT_MENU);
+        }
     }
 
 
@@ -176,9 +202,10 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     public void draw(float dt) {
         canvas.begin();
         canvas.draw(backgroundTexture, 0, 0);
-        canvas.draw(oneTexture, oneStart.x,oneStart.y);
-        canvas.draw(twoTexture, twoStart.x, twoStart.y);
-        canvas.draw(threeTexture, threeStart.x, threeStart.y);
+        canvas.draw(oneTexture, colorOne,0f, 0f, oneStart.x, oneStart.y,0,1,1);
+        canvas.draw(twoTexture, colorTwo, 0f, 0f, twoStart.x, twoStart.y,0,1,1);
+        canvas.draw(threeTexture, colorThree,0f,0f,threeStart.x, threeStart.y,0,1,1);
+        canvas.draw(fourTexture, colorFour,0f,0f,fourStart.x, fourStart.y,0,1,1);
         canvas.end();
     }
 
@@ -212,27 +239,80 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
         if(screenX >=  oneStart.x && screenX <= oneEnd.x) {
             if (screenY >= oneStart.y && screenY <= oneEnd.y) {
-                System.out.println("opening level 1, custom.lvl");
                 listener.exitScreenLevel(0);
             }
         }
 
-        if(screenX >= twoStart.x && screenX <= twoEnd.x ) {
+        else if(screenX >= twoStart.x && screenX <= twoEnd.x ) {
             if (screenY >= twoStart.y && screenY <= twoEnd.y) {
-                System.out.println("opening level 2, out.lvl");
                 listener.exitScreenLevel(1);
             }
         }
 
-        if(screenX >= threeStart.x && screenX <= threeEnd.x) {
+        else if(screenX >= threeStart.x && screenX <= threeEnd.x) {
             if (screenY >= threeStart.y && screenY <= threeEnd.y)  {
-                System.out.println("opening level 3, mays.lvl");
             }
             listener.exitScreenLevel(2);
         }
 
+        else if(screenX >= fourStart.x && screenX <= fourEnd.x) {
+            if (screenY >= fourEnd.y && screenY <= fourEnd.y)  {
+            }
+            listener.exitScreenLevel(3);
+        }
+
         return false;
     }
+
+    /**
+     * Called when the mouse was moved without any buttons being pressed.
+     *
+     * This method checks to see if the player mouse is hovering over any level buttons.
+     * If so, the color of the button should change when drawn.
+     *
+     * @param screenX the x-coordinate of the mouse on the screen
+     * @param screenY the y-coordinate of the mouse on the screen
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean mouseMoved(int screenX, int screenY) {
+        if (canvas != null) {
+            screenY = canvas.getHeight() - screenY;
+
+            if (screenX >= oneStart.x && screenX <= oneEnd.x) {
+                if (screenY >= oneStart.y && screenY <= oneEnd.y) {
+                    colorOne = colorHovered;
+                } else {
+                    colorOne = colorUnhovered;
+                }
+            } else if (screenX >= twoStart.x && screenX <= twoEnd.x) {
+                if (screenY >= twoStart.y && screenY <= twoEnd.y) {
+                    colorTwo = colorHovered;
+                } else {
+                    colorTwo = colorUnhovered;
+                }
+            } else if (screenX >= threeStart.x && screenX <= threeEnd.x) {
+                if (screenY >= threeStart.y && screenY <= threeEnd.y) {
+                    colorThree = colorHovered;
+                } else {
+                    colorThree = colorUnhovered;
+                }
+            } else if (screenX >= fourStart.x && screenX <= fourEnd.x) {
+                if (screenY >= fourStart.y && screenY <= fourEnd.y) {
+                    colorFour = colorHovered;
+                } else {
+                    colorFour = colorUnhovered;
+                }
+            } else {
+                colorOne = colorUnhovered;
+                colorTwo = colorUnhovered;
+                colorThree = colorUnhovered;
+                colorFour = colorUnhovered;
+            }
+        }
+        return true;
+    }
+
+    // UNSUPPORTED METHODS FROM InputProcessor
 
 
     /**
@@ -247,14 +327,6 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      * @return whether to hand the event to other listeners.
      */
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-//        if (pressState == 1) {
-//            pressState = 2;
-//            return false;
-//        }
-//        if (pressState == 3) {
-//            pressState = 4;
-//            return false;
-//        }
         return true;
     }
 
@@ -269,14 +341,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      * @param buttonCode The button pressed
      * @return whether to hand the event to other listeners.
      */
-    public boolean buttonDown (Controller controller, int buttonCode) {
-//        if (buttonCode == startButton && pressState == 0) {
-//            pressState = 1;
-//            return false;
-//        }
-
-        return true;
-    }
+    public boolean buttonDown (Controller controller, int buttonCode) { return true; }
 
     /**
      * Called when a button on the Controller was released.
@@ -289,16 +354,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      * @param buttonCode The button pressed
      * @return whether to hand the event to other listeners.
      */
-    public boolean buttonUp (Controller controller, int buttonCode) {
-//        if (pressState == 1 && buttonCode == startButton) {
-//            pressState = 2;
-//            return false;
-//        }
-
-        return true;
-    }
-
-    // UNSUPPORTED METHODS FROM InputProcessor
+    public boolean buttonUp (Controller controller, int buttonCode) { return true; }
 
     /**
      * Called when a key is pressed (UNSUPPORTED)
@@ -330,39 +386,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      */
     public boolean keyUp(int keycode) {
         if (keycode == Input.Keys.N || keycode == Input.Keys.P) {
-//            pressState = 2;
             System.out.println("pressed N or P");
             return false;
-        }
-        return true;
-    }
-
-    /**
-     * Called when the mouse was moved without any buttons being pressed. (UNSUPPORTED)
-     *
-     * @param screenX the x-coordinate of the mouse on the screen
-     * @param screenY the y-coordinate of the mouse on the screen
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean mouseMoved(int screenX, int screenY) {
-        screenY = 576-screenY;
-
-        if(screenX >=  oneStart.x && screenX <= oneEnd.x) {
-            if (screenY >= oneStart.y && screenY <= oneEnd.y) {
-                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
-            }
-        }
-
-        if(screenX >= twoStart.x && screenX <= twoEnd.x ) {
-            if (screenY >= twoStart.y && screenY <= twoEnd.y) {
-                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
-            }
-        }
-
-        if(screenX >= threeStart.x && screenX <= threeEnd.x) {
-            if (screenY >= threeStart.y && screenY <= threeEnd.y)  {
-                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
-            }
         }
         return true;
     }
