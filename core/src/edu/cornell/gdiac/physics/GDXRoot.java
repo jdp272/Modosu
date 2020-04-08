@@ -72,13 +72,14 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1);
 
-		//levelSelect = new LevelSelectMode(canvas, manager, 1);
 
 		controller = new GamePlayController();
 		levelDesigner = new LevelDesignerMode();
+		levelSelect = new LevelSelectMode();
 
 		controller.preLoadContent(manager);
 		levelDesigner.preLoadContent(manager);
+		levelSelect.preLoadContent(manager);
 
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -117,7 +118,44 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas.resize();
 		super.resize(width,height);
 	}
-	
+
+	/**
+	 * The given screen has made a request to exit its player mode
+	 * and enter the game mode on a specific level.
+	 *
+	 * @param level The level to start the game at
+	 */
+	public void exitScreenLevel(int level) {
+		if (screen == levelSelect){
+			levelSelect.dispose();
+			levelSelect = null;
+
+			controller.loadContent(manager);
+			controller.setScreenListener(this);
+			controller.setCanvas(canvas);
+			controller.setCurrentLevel(level);
+			controller.reset();
+
+			setScreen(controller);
+		}
+	}
+
+	private void reset() {
+		canvas  = new GameCanvas();
+		loading = new LoadingMode(canvas,manager,1);
+
+		controller = new GamePlayController();
+		levelDesigner = new LevelDesignerMode();
+		levelSelect = new LevelSelectMode();
+
+		controller.preLoadContent(manager);
+		levelDesigner.preLoadContent(manager);
+		levelSelect.preLoadContent(manager);
+
+		loading.setScreenListener(this);
+		setScreen(loading);
+	}
+
 	/**
 	 * The given screen has made a request to exit its player mode.
 	 *
@@ -133,28 +171,37 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.setCanvas(canvas);
 			controller.reset();
 			setScreen(controller);
-
-			loading.dispose();
-			loading = null;
-		} else if (screen == loading && exitCode == WorldController.EXIT_DESIGN) {
+		}
+		else if (screen == loading && exitCode == WorldController.EXIT_DESIGN) {
 			levelDesigner.loadContent(manager);
 			levelDesigner.setScreenListener(this);
 			levelDesigner.setCanvas(canvas);
 			levelDesigner.reset();
 			setScreen(levelDesigner);
-
-			loading.dispose();
-			loading = null;
-		} else if (exitCode == WorldController.EXIT_NEXT) {
+		}
+		else if (screen == loading && exitCode == WorldController.EXIT_SELECT) {
+			levelSelect.loadContent(manager);
+			levelSelect.setScreenListener(this);
+			levelSelect.setCanvas(canvas);
+			levelSelect.reset();
+			setScreen(levelSelect);
+		}
+		else if (exitCode == WorldController.EXIT_NEXT) {
 			controller.reset();
 			setScreen(controller);
-		} else if (exitCode == WorldController.EXIT_PREV) {
+		}
+		else if (exitCode == WorldController.EXIT_PREV) {
 			controller.reset();
 			setScreen(controller);
-		} else if (exitCode == WorldController.EXIT_QUIT) {
+		}
+		else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
 			Gdx.app.exit();
 		}
+		else if (exitCode == WorldController.EXIT_MENU) {
+			reset();
+		}
 	}
+
 
 }

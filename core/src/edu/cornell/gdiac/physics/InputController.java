@@ -70,6 +70,9 @@ public class InputController {
 	/** Whether the exit button was pressed. */
 	private boolean exitPressed;
 	private boolean exitPrevious;
+	/** Whether the button to return to menu was pressed. */
+	private boolean menuPressed;
+	private boolean menuPrevious;
 
 	/** Whether the zoom button was pressed. */
 	private boolean zoomPressed;
@@ -264,6 +267,13 @@ public class InputController {
 	public boolean didSave() { return savePressed && !savePrevious; }
 
 	/**
+	 * Returns true if the main menu button was pressed.
+	 *
+	 * @return true if the main menu button was pressed.
+	 */
+	public boolean didMenu() { return menuPressed && !menuPrevious;
+	}
+	/**
 	 * Creates a new input controller
 	 * 
 	 * The input controller attempts to connect to the X-Box controller at device 0,
@@ -302,6 +312,7 @@ public class InputController {
 		spiritPrevious = spiritPressed;
 		deletePrevious = deletePressed;
 		savePrevious = savePressed;
+		menuPrevious = menuPressed;
 		
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
@@ -336,6 +347,7 @@ public class InputController {
 //		spiritPressed = ...
 //		deletePressed = ...
 //		savePressed = ...
+//		menuPressed = ...
 
 		// Increase animation frame, but only if trying to move
 		horizontal = xbox.getLeftX();
@@ -376,6 +388,7 @@ public class InputController {
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
+
 		
 
 		boxPressed = (secondary && boxPressed)  || (Gdx.input.isKeyPressed(Input.Keys.B));
@@ -383,6 +396,7 @@ public class InputController {
 		spiritPressed = (secondary && spiritPressed)  || (Gdx.input.isKeyPressed(Input.Keys.Z));
 		deletePressed = (secondary && deletePressed)  || (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE));
 		savePressed = (secondary && savePressed)  || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
+		menuPressed = (secondary && menuPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
 
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);
@@ -419,4 +433,6 @@ public class InputController {
 		crosshair.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, crosshair.x));
 		crosshair.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, crosshair.y));
 	}
+
+
 }

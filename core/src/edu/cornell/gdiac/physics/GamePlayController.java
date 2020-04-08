@@ -28,6 +28,7 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.SoundController;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -46,9 +47,6 @@ public class GamePlayController extends WorldController {
 
 	private CollisionController collisionController;
 
-	/** How many crate assets we have */
-	private static final int MAX_CRATES = 2;
-
 	/** The asset for the bounce sound */
 	private static final String  BOUNCE_SOUND = "host/bounce.mp3";
 	/** The asset for the possession sound */
@@ -63,7 +61,6 @@ public class GamePlayController extends WorldController {
 
 //	/** The asset for the explosion sound */
 //	private static final String  EXPLODE_SOUND = "host/afterburner.mp3";
-
 
 
 	private AssetState assetState = AssetState.EMPTY;
@@ -88,23 +85,9 @@ public class GamePlayController extends WorldController {
 	private int numPossessed;
 
 	/** Animation for host walking */
-	private FilmStrip golemWalk;
+	private int currentLevel = 0;
 
-//	private static final String GOLEM_WALK_TEXTURE = "host/golemwalk.png";
-
-
-	// Other game objects
-	/** The initial spirit start position */
-	private static Vector2 SPIRIT_POS = new Vector2(15.f, 3.f);
-
-	// The positions of the hosts
-	private static final float[] HOSTS = { SPIRIT_POS.x,SPIRIT_POS.y, 6.0f, 12.0f, 24.0f, 3.0f};
-
-	// The positions of the obstacles
-	private static final float[] BOXES = { 11.0f, 1.0f, 11.0f, 3.0f, 11.0f, 5.f, 11.f, 7.0f, // LEFT
-											1.0f, 16.0f, 3.0f, 16.0f, 5.0f, 16.0f, 7.0f, 16.0f, 9.0f, 16.0f, 11.0f, 16.0f, // TOP
-											20.0f, 1.0f, 20.0f, 3.0f, 20.0f, 5.f, 20.f, 7.0f}; // RIGHT
-
+	private String[] levels;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -122,9 +105,6 @@ public class GamePlayController extends WorldController {
 			return;
 		}
 		assetState = AssetState.LOADING;
-
-//		manager.load(GOLEM_WALK_TEXTURE, Texture.class);
-//		assets.add(GOLEM_WALK_TEXTURE);
 
 		manager.load(BOUNCE_SOUND, Sound.class);
 		assets.add(BOUNCE_SOUND);
@@ -157,7 +137,6 @@ public class GamePlayController extends WorldController {
 			return;
 		}
 
-//		golemWalk = createFilmStrip(manager, GOLEM_WALK_TEXTURE, 1, 4, 5);
 		SoundController sounds = SoundController.getInstance();
 		sounds.allocate(manager, BOUNCE_SOUND);
 		sounds.allocate(manager, POSSESSION_SOUND);
@@ -184,6 +163,14 @@ public class GamePlayController extends WorldController {
 		numPossessed = 0;
 
 		cache = new Vector2();
+
+		File f = new File("levels");
+		levels = f.list();
+		currentLevel = 0;
+	}
+
+	public void setCurrentLevel(int l) {
+		currentLevel = l;
 	}
 
 	/**
@@ -195,79 +182,11 @@ public class GamePlayController extends WorldController {
 		// Reset game conditions to represent a new game
 		setComplete(false);
 		setFailure(false);
+		setMenu(false);
 
 		Vector2 gravity = new Vector2(world.getGravity());
-//		BoxObstacle[] obs = new BoxObstacle[BOXES.length/2];
-//
-//		// Reset fields of this controller
-//		possessed = null;
-//		numPossessed = 0;
-//
-//		// Reset the collision controller
-//		collisionController.reset();
-//
-//		float dwidth  = obstacleTex.getRegionWidth() / scale.x;
-//		float dheight = obstacleTex.getRegionHeight() / scale.y;
-//
-//		// Create all the obstacles (walls) on the level
-//		BoxObstacle box;
-//		for (int i = 0; i < BOXES.length; i+=2) {
-//			box = new BoxObstacle(BOXES[i],BOXES[i+1], dwidth, dheight);
-//			box.setDrawScale(scale);
-//			box.setTexture(obstacleTex);
-//			box.setBodyType(BodyDef.BodyType.StaticBody);
-//			box.setName("wall");
-//			obs[i/2] = box;
-//		}
-//
-//		// Reset the possession tracker
-//		havePossessed.clear();
-//
-//		// Create all the hosts and fill the list
-//		ArrayList<HostModel> hosts = new ArrayList<>();
-//
-//		dwidth  = hostTex.getRegionWidth() / scale.x;
-//		dheight = hostTex.getRegionHeight() / scale.y;
-//
-//		HostModel host;
-//		for (int i = 0; i < HOSTS.length; i+=2) {
-//			host = new HostModel(HOSTS[i],HOSTS[i+1], dwidth, dheight, 0, 1000);
-//			host.setDrawScale(scale);
-//			host.setTexture(hostTex);
-//			host.setHostGaugeTexture(hostGaugeTex);
-//			host.setBodyType(BodyDef.BodyType.DynamicBody);
-//			hosts.add(host);
-//			havePossessed.put(host, false);
-//		}
-//
-//		Vector2[] ins = {new Vector2(24,12),new Vector2(15,12)};
-//		host = new HostModel(24, 12, dwidth, dheight, 0, 1000, ins);
-//		host.setDrawScale(scale);
-//		host.setTexture(hostTex);
-//		host.setHostGaugeTexture(hostGaugeTex);
-//		hosts.add(host);
-//		havePossessed.put(host, false);
-//
-////		SPIRIT_POS.x = 15;
-////		SPIRIT_POS.y = 3;
-//
-//		dwidth  = spiritTex.getRegionWidth() / scale.x;
-//		dheight = spiritTex.getRegionHeight() / scale.y;
-//
-//		SpiritModel spark = factory.makeSpirit(SPIRIT_POS.x, SPIRIT_POS.y);
-//		spark.setDrawScale(scale);
-//
-//		level = new Level(null, obs, hosts, spark);
 
-		String levelName;
-
-		// TODO: Somehow do this with input controller!
-		if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)) {
-			levelName = "levels/custom.lvl";
-		} else {
-			levelName = "levels/out.lvl";
-		}
-
+		String levelName = "levels/"+levels[currentLevel];
 		FileHandle f = new FileHandle(levelName);
 //		loader.saveLevel(f, level);
 
@@ -382,6 +301,11 @@ public class GamePlayController extends WorldController {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void update(float delta) {
+
+		if (menu) {
+			canvas.setCamTarget(new Vector2(canvas.getCamera().viewportWidth/2f, canvas.getCamera().viewportHeight/2f));
+			canvas.updateCamera();
+		}
 		//keep everything in bounds
 		keepInBounds();
 

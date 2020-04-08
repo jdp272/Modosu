@@ -252,6 +252,10 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_PLAY = 3;
 	/** Exit code for going to the level design screen */
 	public static final int EXIT_DESIGN = 4;
+	/** Exit code for going to the level select screen */
+	public static final int EXIT_SELECT = 5;
+	/** Exit code for going to the main menu screen */
+	public static final int EXIT_MENU = 6;
 
     /** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
@@ -296,6 +300,7 @@ public abstract class WorldController implements Screen {
 	private boolean debug;
 	/** Countdown active for winning or losing */
 	private int countdown;
+	public boolean menu;
 
 	/**
 	 * Returns true if debug mode is active.
@@ -367,6 +372,10 @@ public abstract class WorldController implements Screen {
 			countdown = EXIT_COUNT;
 		}
 		failed = value;
+	}
+
+	public void setMenu(boolean value) {
+		menu = value;
 	}
 	
 	/**
@@ -555,7 +564,12 @@ public abstract class WorldController implements Screen {
 		} else if (input.didRetreat()) {
 			listener.exitScreen(this, EXIT_PREV);
 			return false;
-		} else if (countdown > 0) {
+		}
+		else if (input.didMenu()) {
+			setMenu(true);
+			listener.exitScreen(this, EXIT_MENU);
+		}
+		else if (countdown > 0) {
 			countdown--;
 		} else if (countdown == 0) {
 			if (failed) {

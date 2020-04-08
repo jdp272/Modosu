@@ -50,6 +50,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String PROGRESS_FILE = "shared/progressbar.png";
 	private static final String PLAY_BTN_FILE = "shared/start.png";
 	private static final String LVL_DSGN_FILE = "shared/leveldesign.png";
+	private static final String LVL_SLCT_FILE = "shared/levelselect.png";
+	private static final String CREDITS_FILE = "shared/credits.png";
+
 	
 	/** Background texture for start-up */
 	private Texture background;
@@ -59,6 +62,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture statusBar;
 	/** Level Design button to display when done */
 	private Texture lvlDesign;
+	/** Level Select button to display when done */
+	private Texture lvlSelect;
+	/** Credits button to display when done */
+	private Texture credits;
+
 	
 	// statusBar is a "texture atlas." Break it up into parts.
 	/** Left cap to the status background (grey region) */
@@ -81,11 +89,16 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Standard window height (for scaling) */
 	private static int STANDARD_HEIGHT = 700;
 	/** Standard button-x (for scaling) */
-	private static int BUTTON_X  = 125;
+	private static int BUTTON_X  = 175;
 	/** Start button-y (for scaling) */
-	private static int START_Y = 200;
+	private static int START_Y = 250;
 	/** Level Design button-y (for scaling) */
-	private static int LEVEL_Y = 150;
+	private static int LEVEL_Y = 200;
+	/** Level Design button-y (for scaling) */
+	private static int LEVEL_SELECT_Y = 150;
+	/** Level Design button-y (for scaling) */
+	private static int CREDITS_Y = 100;
+
 	/** Ratio of the bar width to the screen */
 	private static float BAR_WIDTH_RATIO  = 0.66f;
 	/** Ration of the bar height to the screen */
@@ -201,6 +214,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		// Load the next two images immediately.
 		playButton = null;
 		lvlDesign = null;
+		lvlSelect = null;
+		credits = null;
 		background = new Texture(BACKGROUND_FILE);
 		statusBar  = new Texture(PROGRESS_FILE);
 		
@@ -269,6 +284,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				playButton.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 				lvlDesign = new Texture(LVL_DSGN_FILE);
 				lvlDesign.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+				lvlSelect = new Texture(LVL_SLCT_FILE);
+				lvlSelect.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+				credits = new Texture(CREDITS_FILE);
+				credits.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			}
 		}
 	}
@@ -293,6 +312,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			Color tint2 = (pressState == 3 ? Color.GRAY: Color.WHITE);
 			canvas.draw(lvlDesign, tint2, 0, 0,
 					BUTTON_X, LEVEL_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+			canvas.draw(lvlSelect, tint2, 0, 0,
+					BUTTON_X, LEVEL_SELECT_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+			canvas.draw(credits, tint2, 0, 0,
+					BUTTON_X, CREDITS_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
 		canvas.end();
 	}
@@ -306,7 +331,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 *
 	 * @param canvas The drawing context
 	 */	
-	private void drawProgress(GameCanvas canvas) {	
+	private void drawProgress(GameCanvas canvas) {
+
+		centerY = 75;
+
 		canvas.draw(statusBkgLeft,   Color.WHITE, centerX-width/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
 		canvas.draw(statusBkgRight,  Color.WHITE, centerX+width/2-scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
 		canvas.draw(statusBkgMiddle, Color.WHITE, centerX-width/2+scale*PROGRESS_CAP, centerY, width-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
@@ -345,6 +373,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				listener.exitScreen(this,WorldController.EXIT_DESIGN);
 			}
 
+			//go to level design mode
+			if(pressState == 5 && listener != null){
+				listener.exitScreen(this,WorldController.EXIT_SELECT);
+			}
 		}
 	}
 
@@ -429,6 +461,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		System.out.println("touchdown in loading was presesd");
 		if (playButton == null || pressState == 2 || pressState == 4) {
 			return true;
 		}
@@ -447,6 +480,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 3;
+			}
+		}
+
+		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlSelect.getWidth()*scale*BUTTON_SCALE) ) {
+			if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE) ) {
+				pressState = 5;
 			}
 		}
 
