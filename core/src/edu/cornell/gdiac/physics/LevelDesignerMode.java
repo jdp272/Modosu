@@ -364,10 +364,10 @@ public class LevelDesignerMode extends WorldController {
 			   spawns, for example), don't remove it
 			 */
 			if(x >= 0 && y >= 0 && x < board.length && y < board[x].length) {
-//				if(board[x][y] == selector.getObstacle()) { // Note: Purposefully comparing references
-				board[x][y] = null;
+				if(board[x][y] == selector.getObstacle()) { // Note: Purposefully comparing references
+					board[x][y] = null;
+				}
 				updateWaterAroundRegion(x, y); // Update the surroundings after removing the water
-//				}
 			}
 
 		} else if (!input.didTertiary() && selector.isSelected()) {
@@ -385,15 +385,13 @@ public class LevelDesignerMode extends WorldController {
 				if (x < 0 || y < 0 || x >= board.length || y >= board[0].length) {
 					deselected.markRemoved(true);
 
-					// Add the body to the board array and set the position
+				// Add the body to the board array and set the position
 				} else {
 					// Remove the replaced body if necessary
 					if (board[x][y] != null) {
-						System.out.println("Obj removed at (" + x + "," + y + ")");
 						board[x][y].markRemoved(true);
 					}
 
-					System.out.println("Obj placed at (" + x + "," + y + ")");
 					deselected.setPosition(tileToCoord(x), tileToCoord(y));
 					board[x][y] = deselected;
 
@@ -408,7 +406,6 @@ public class LevelDesignerMode extends WorldController {
 		// Spawn a new object if a spawner was clicked
 		Obstacle obj = spawnList.update(camTarget);
 		if(obj != null) {
-			System.out.println("New object added");
 			addObject(obj);
 			selector.select(mouseX, mouseY);
 			selecting = true;
@@ -467,21 +464,19 @@ public class LevelDesignerMode extends WorldController {
 		}
 		if(input.didSave()) {
 
-			System.out.println();
+			// TODO: COMBINE THIS WITH InputController SOMEHOW!
+			Gdx.input.getTextInput(new Input.TextInputListener() {
+				@Override
+				public void input (String levelName) {
+					System.out.println("Saving level as levels/" + levelName + ".lvl");
+					save("levels/" + levelName + ".lvl");
+				}
 
-//			// TODO: COMBINE THIS WITH InputController SOMEHOW!
-//			Gdx.input.getTextInput(new Input.TextInputListener() {
-//				@Override
-//				public void input (String levelName) {
-//					System.out.println("Saving level as levels/" + levelName + ".lvl");
-//					save("levels/" + levelName + ".lvl");
-//				}
-//
-//				@Override
-//				public void canceled () {
-//					System.out.println("Cancelling save");
-//				}
-//			}, "Input custom level name", "custom", "");
+				@Override
+				public void canceled () {
+					System.out.println("Cancelling save");
+				}
+			}, "Input custom level name", "custom", "");
 
 //			save("custom.lvl");
 		}
