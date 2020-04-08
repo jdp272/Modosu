@@ -21,6 +21,7 @@ public class Factory {
     private Texture smallHostGaugeTexture;
     private Texture smallHostTexture;
     private Texture wallTexture;
+    private Texture waterTexture;
 
     /** Static Variables for Sprite Sheet */
 
@@ -30,14 +31,20 @@ public class Factory {
     private static final int HOST_COLUMNS = 16;
     /** Number of total hosts in the host image filmstrip */
     private static final int HOST_SIZE = 128;
-    /** Track asset loading from all instances and subclasses */
 
     /** Number of rows in the wall image filmstrip */
     private static final int WALL_ROWS = 4;
-    /** Number of columns in this host image filmstrip */
+    /** Number of columns in this wall image filmstrip */
     private static final int WALL_COLUMNS = 6;
-    /** Number of total hosts in the host image filmstrip */
+    /** Number of total hosts in the wall image filmstrip */
     private static final int WALL_SIZE = 24;
+
+    /** Number of rows in the water image filmstrip */
+    private static final int WATER_ROWS = 4;
+    /** Number of columns in this water image filmstrip */
+    private static final int WATER_COLUMNS = 4;
+    /** Number of total hosts in the water image filmstrip */
+    private static final int WATER_SIZE = 16;
 
 
     /** The draw scale of objects */
@@ -53,7 +60,8 @@ public class Factory {
             TextureRegion smallHostTex,
             Texture smallHostTexture,
             Texture smallHostGaugeTexture,
-            Texture wallTexture
+            Texture wallTexture,
+            Texture waterTexture
     ) {
         this.scale = scale;
         this.obstacleTex = obstacleTex;
@@ -62,14 +70,19 @@ public class Factory {
         this.smallHostTexture = smallHostTexture;
         this.smallHostGaugeTexture = smallHostGaugeTexture;
         this.wallTexture = wallTexture;
+        this.waterTexture = waterTexture;
     }
 
     public BoxObstacle makeObstacle(float x, float y) {
+        return makeObstacle(x, y, 20);
+    }
+
+    public BoxObstacle makeObstacle(float x, float y, int frame) {
         BoxObstacle box = new BoxObstacle(
                 x,
                 y,
                 obstacleTex.getRegionWidth() / scale.x,
-                obstacleTex.getRegionWidth() / scale.y
+                obstacleTex.getRegionHeight() / scale.y
         );
         box.setWallStrip(new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE));
         box.setDrawScale(scale);
@@ -78,9 +91,30 @@ public class Factory {
         //box.setTexture(obstacleTex);
         box.setBodyType(BodyDef.BodyType.StaticBody);
         box.setSensor(makeSensors);
-        box.setWall(20);
+        box.setWall(frame);
         box.setName("wall");
         return box;
+    }
+
+    public WaterTile makeWater(float x, float y) {
+        return makeWater(x, y, 0);
+    }
+
+    public WaterTile makeWater(float x, float y, int frame) {
+        WaterTile water = new WaterTile(
+                x,
+                y,
+                obstacleTex.getRegionWidth() / scale.x,
+                obstacleTex.getRegionHeight() / scale.y
+        );
+        water.setWaterStrip(new FilmStrip(waterTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
+        water.setDrawScale(scale);
+        water.setSX(0.25f);
+        water.setSY(0.25f);
+        water.setFrame(frame);
+        water.setBodyType(BodyDef.BodyType.StaticBody);
+        water.setSensor(makeSensors);
+        return water;
     }
 
     public SpiritModel makeSpirit(float x, float y) {

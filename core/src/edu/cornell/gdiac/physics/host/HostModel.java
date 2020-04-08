@@ -713,26 +713,33 @@ public class HostModel extends BoxObstacle {
         float chargeProgression = currentCharge / maxCharge;
         if (this.chargedHost != null && this.hostGaugeStrip != null) {
 
-            /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
-            if (this.currentCharge < this.maxCharge) {
-                // Animation?
+            // If bot has already been possessed colors should change
+            if(this.hasBeenPossessed) {
+                /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
+                if (this.currentCharge < this.maxCharge) {
+                    // Animation?
 //                if (isPossessed) {
 //                    canvas.draw(hostStrip, Color.WHITE, golemWalkOrigin.x, golemWalkOrigin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(),1,1);
 //                }
 
-                canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
+                    canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
 
-                // Color changes more and more to a red or goal color here
-                Color warningColor = new Color(chargeProgression * 5, 4 - (4.5f * chargeProgression), 4 - (9 * chargeProgression), 1);
-                if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
-                    // Color of the 3 flashes
-                    warningColor = Color.BLACK;
+                    // Color changes more and more to a red or goal color here
+                    Color warningColor = new Color(chargeProgression * 5, 4 - (4.5f * chargeProgression), 4 - (9 * chargeProgression), 1);
+                    if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
+                        // Color of the 3 flashes
+                        warningColor = Color.BLACK;
+                    }
+                    canvas.draw(hostGaugeStrip, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+
+                } else {
+                    canvas.draw(chargedHost, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
                 }
-                canvas.draw(hostGaugeStrip, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-
             }
+            // When the bot hasn't been possessed the indicator color should be black
             else {
-                canvas.draw(chargedHost, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
+                canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
+                canvas.draw(hostGaugeStrip, Color.BLACK, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
             }
 
 

@@ -25,6 +25,8 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
+import java.util.Scanner;
 
 /**
  * Gameplay specific controller for the ragdoll fishtank.
@@ -46,6 +48,9 @@ public class LevelDesignerMode extends WorldController {
 	/** Speed for changing camera position */
 	private static final float CAMERA_SPEED = 5.f;
 
+	/** Width of each tile, in box2D coordinates */
+	private static final float TILE_WIDTH = 2.f;
+
 	/** Texture asset for mouse crosshairs */
 	private TextureRegion crosshairTexture;
 	/** Texture asset for background image */
@@ -64,6 +69,14 @@ public class LevelDesignerMode extends WorldController {
 
 	/** The camera position */
 	private Vector2 camTarget;
+
+	/** The 2D array that is the board */
+	private Obstacle[][] board;
+
+	/** If a selection is currently happening. Even if nothing is selected by
+	 * the object selector, this will be true until the mouse is released, and
+	 * it prevent another object from being picked up */
+	private boolean selecting;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -135,6 +148,10 @@ public class LevelDesignerMode extends WorldController {
 		setFailure(false);
 
 		camTarget = new Vector2();
+
+		board = new Obstacle[16][9];
+
+		level = new Level();
 	}
 
 	/**
@@ -157,11 +174,11 @@ public class LevelDesignerMode extends WorldController {
 		addQueue.clear();
 		world.dispose();
 
-		FileHandle f = new FileHandle("out.txt");
+		FileHandle f = new FileHandle("out.lvl");
 
 		world = new World(gravity,false);
 
-		level = loader.loadLevel(f);
+//		level = loader.loadLevel(f);
 
 		setComplete(false);
 		setFailure(false);
@@ -176,6 +193,9 @@ public class LevelDesignerMode extends WorldController {
 		BoxObstacle boxSpawn = factory.makeObstacle(0.f, 0.f);
 		addObject(boxSpawn);
 
+		WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
+		addObject(waterSpawn);
+
 		HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
 		addObject(hostSpawn);
 
@@ -188,6 +208,12 @@ public class LevelDesignerMode extends WorldController {
 		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
 			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
 				return factory.makeObstacle(x, y);
+			}
+		});
+
+		spawnList.addSpawner(waterSpawn, new SpawnerList.CallbackFunction() {
+			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+				return factory.makeWater(x, y);
 			}
 		});
 
@@ -215,17 +241,97 @@ public class LevelDesignerMode extends WorldController {
 	}
 
 	/**
-	 * The core gameplay loop of this world.
+	 * Gets the tile index that a coordinate is in. Can be used for either x or
+	 * y coordinates
 	 *
-	 * This method contains the specific update code for this mini-game. It does
-	 * not handle collisions, as those are managed by the parent class WorldController.
-	 * This method is called after input is read, but before collisions are resolved.
-	 * The very last thing that it should do is apply forces to the appropriate objects.
+	 * @param coord The box2D coordinate
 	 *
-	 * @param dt Number of seconds since last animation frame
+	 * @return The index of the tile
 	 */
-	public void update(float dt) {
-		// Move an object if touched
+	private int coordToTile(float coord) {
+		return Math.round((coord - (TILE_WIDTH / 2.f)) / TILE_WIDTH);
+	}
+
+	/**
+	 * Gets the coordinate of the center of a tile. Can be used for either x or
+	 * y coordinates
+	 *
+	 * @param index The tile index
+	 *
+	 * @return The box2D coordinate of the tile center
+	 */
+	private float tileToCoord(int index) {
+		return (index + 0.5f) * TILE_WIDTH;
+	}
+
+	/**
+	 * Updates the texture for water tile at index x, y in the board based on
+	 * its surroundings (if they are water or ground)
+	 *
+	 * If the tile is not a water tile, or if the tile is out of bounds, nothing
+	 * happens.
+	 *
+	 * @param x The x index in the board of the tile to update
+	 * @param y The y index in the board of the tile to update
+	 *
+	 * @return True if a water tile was updated, false otherwise
+	 */
+	private boolean updateWaterTile(int x, int y) {
+		if(x < 0 || y < 0 || x >= board.length || y >= board[x].length || !(board[x][y] instanceof WaterTile)) {
+			return false;
+		}
+
+		boolean above = false;
+		if(y + 1 < board[x].length && !(board[x][y + 1] instanceof WaterTile)) {
+			above = true;
+		}
+
+		boolean below = false;
+		if(y - 1 >= 0 && !(board[x][y - 1] instanceof WaterTile)) {
+			below = true;
+		}
+
+		boolean left = false;
+		if(x - 1 >= 0 && !(board[x - 1][y] instanceof WaterTile)) {
+			left = true;
+		}
+
+		boolean right = false;
+		if(x + 1 < board.length && !(board[x + 1][y] instanceof WaterTile)) {
+			right = true;
+		}
+
+		((WaterTile)board[x][y]).setFrame(above, below, left, right);
+		return true;
+	}
+
+	/**
+	 * Updates the texture for water tile at and around (x, y) in the board.
+	 * this function calls updateWaterTile
+	 *
+	 * If the tile is not a water tile, or if the tile is out of bounds, nothing
+	 * happens.
+	 *
+	 * @param x The x index in the board of the tile center to update
+	 * @param y The y index in the board of the tile center to update
+	 */
+	private void updateWaterAroundRegion(int x, int y) {
+		updateWaterTile(x, y);
+		updateWaterTile(x - 1, y);
+		updateWaterTile(x + 1, y);
+		updateWaterTile(x, y - 1);
+		updateWaterTile(x, y + 1);
+	}
+
+	/**
+	 * Does the updating for the selector.
+	 *
+	 * This method sets picks up, moves, and drops off objects from the selector
+	 * based on the mouse. It updates the board 2D array of tiles. It also
+	 * handles updating the spawner and creating new objects from the spawner,
+	 * which would be immediately picked up by the selector.
+	 */
+	private void updateSelector() {
 		InputController input = InputController.getInstance();
 
 		/* Offset the mouse based on the camera translation.
@@ -237,43 +343,112 @@ public class LevelDesignerMode extends WorldController {
 		   Additionally, note that the mouse uses box2d coordinates, not screen
 		   coordinates
 		 */
-
-		// Update the camera position
-		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
-
 		float mouseX = input.getCrossHair().x + (camTarget.x - (canvas.getWidth() / 2.f)) / scale.x;
 		float mouseY = input.getCrossHair().y + (camTarget.y - (canvas.getHeight() / 2.f)) / scale.y;
 
-		if ((input.didTertiary()) && !selector.isSelected()) {
+		/* Only reset selecting if the mouse is released. Prevents selecting a
+		   new object without releasing and clicking the mouse.
+		 */
+		if(!input.didTertiary()) {
+			selecting = false;
+		}
+
+		if (!selecting && (input.didTertiary()) && !selector.isSelected()) {
 			selector.select(mouseX, mouseY);
+			selecting = true;
+
+			// The tile indices
+			int x = coordToTile(mouseX);
+			int y = coordToTile(mouseY);
+
+			/* Remove the object from its previous location in the board. If a
+			   different object is located there (when the selected object just
+			   spawns, for example), don't remove it
+			 */
+			if(x >= 0 && y >= 0 && x < board.length && y < board[x].length) {
+				if(board[x][y] == selector.getObstacle()) { // Note: Purposefully comparing references
+					board[x][y] = null;
+				}
+				updateWaterAroundRegion(x, y); // Update the surroundings after removing the water
+			}
+
 		} else if (!input.didTertiary() && selector.isSelected()) {
-			selector.deselect();
+			Obstacle deselected = selector.deselect();
+
+			if(deselected != null) {
+
+				// The tile indices
+				int x = coordToTile(deselected.getX());
+				int y = coordToTile(deselected.getY());
+
+				// TODO: remove destroyed bodies from the pooled list, if we do that
+
+				// Remove this body if it's out of bounds
+				if (x < 0 || y < 0 || x >= board.length || y >= board[0].length) {
+					deselected.markRemoved(true);
+
+				// Add the body to the board array and set the position
+				} else {
+					// Remove the replaced body if necessary
+					if (board[x][y] != null) {
+						board[x][y].markRemoved(true);
+					}
+
+					deselected.setPosition(tileToCoord(x), tileToCoord(y));
+					board[x][y] = deselected;
+
+					// Update water tile images
+					updateWaterAroundRegion(x, y);
+				}
+			}
 		} else {
 			selector.moveTo(mouseX, mouseY);
 		}
 
+		// Spawn a new object if a spawner was clicked
 		Obstacle obj = spawnList.update(camTarget);
 		if(obj != null) {
 			addObject(obj);
 			selector.select(mouseX, mouseY);
+			selecting = true;
 		}
+	}
 
-		if(input.didPrimary()){
+	/**
+	 * The core gameplay loop of this world.
+	 *
+	 * This method contains the specific update code for the level designer. It does
+	 * not handle collisions, as those are managed by the parent class WorldController.
+	 * This method is called after input is read, but before collisions are resolved.
+	 * The very last thing that it should do is apply forces to the appropriate objects.
+	 *
+	 * @param dt Number of seconds since last animation frame
+	 */
+	public void update(float dt) {
+		// Move an object if touched
+		InputController input = InputController.getInstance();
+
+		// Update the camera position
+		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
+
+		updateSelector();
+
+		if(input.didPrimary()) {
 			//change wall texture that is currently selected at mouse location
 			if(selector.isSelected()) {
 				// Get the selection, then remove it from the selector
 				Obstacle selection = selector.getObstacle();
-				if(selection.getName() == "wall"){
+				if(selection.getName() == "wall") {
 					((BoxObstacle)selection).setWall(((BoxObstacle)selection).wall+1);
 				}
 			}
 		}
-		if(input.didSecondary()){
+		if(input.didSecondary()) {
 			//change wall texture that is currently selected at mouse location
 			if(selector.isSelected()) {
 				// Get the selection, then remove it from the selector
 				Obstacle selection = selector.getObstacle();
-				if(selection.getName() == "wall"){
+				if(selection.getName() == "wall") {
 					((BoxObstacle)selection).setWall(((BoxObstacle)selection).wall-1);
 				}
 			}
@@ -326,8 +501,9 @@ public class LevelDesignerMode extends WorldController {
 		// TODO: Make this not creating new objects by updating Level to use PooledList(?)
 
 		SpiritModel spirit = null;
-		ArrayList<HostModel> hostList = new ArrayList<>();
 		ArrayList<BoxObstacle> obstacleList = new ArrayList<>();
+		ArrayList<BoxObstacle> waterList = new ArrayList<>();
+		ArrayList<HostModel> hostList = new ArrayList<>();
 		for(Obstacle obj : objects) {
 			if(!obj.inGame) {
 				continue;
@@ -338,6 +514,8 @@ public class LevelDesignerMode extends WorldController {
 				// Spirit is already saved in a field
 			} else if (obj instanceof HostModel) {
 				hostList.add((HostModel)obj);
+			} else if (obj instanceof WaterTile) {
+				waterList.add((WaterTile)obj);
 			} else if (obj instanceof BoxObstacle) {
 				obstacleList.add((BoxObstacle)obj);
 			}
@@ -346,10 +524,12 @@ public class LevelDesignerMode extends WorldController {
 		// For now, until the types used for levels are fixed
 		BoxObstacle[] obstacleArray = new BoxObstacle[obstacleList.size()];
 		obstacleList.toArray(obstacleArray);
+		WaterTile[] waterArray = new WaterTile[waterList.size()];
+		waterList.toArray(waterArray);
 
 		// TODO: what if spirit is null
 
-		level.set(null, obstacleArray, hostList, spirit);
+		level.set(null, obstacleArray, waterArray, hostList, spirit);
 		loader.saveLevel(f, level);
 	}
 

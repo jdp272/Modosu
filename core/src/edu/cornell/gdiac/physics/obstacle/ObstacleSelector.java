@@ -313,11 +313,13 @@ public class ObstacleSelector implements QueryCallback  {
 	}
 
 	/**
-	 * Deselects the physics body, discontinuing any mouse movement.
+	 * Deselects the physics body, discontinuing any mouse movement. The body is
+	 * set to be a static body and will stop moving
 	 *
-	 * The body may still continue to move of its own accord.
+	 * @return The previously selected obstacle, or null if there was none
 	 */
-	public void deselect() {
+	public Obstacle deselect() {
+		Obstacle toReturn = selection;
 		if (selection != null) {
 			selection.setBodyType(BodyDef.BodyType.StaticBody);
 
@@ -325,6 +327,7 @@ public class ObstacleSelector implements QueryCallback  {
 			selection = null;
 			mouseJoint = null;
 		}
+		return toReturn;
 	}
 
 	//// QueryCallback
@@ -334,6 +337,10 @@ public class ObstacleSelector implements QueryCallback  {
 	 * The AABB is good enough, so we buffer the fixture and stop the query.
 	 */
 	public boolean reportFixture(Fixture fixture) {
+		if(selection != null) {
+			System.out.println("ObstacleSelector already has a selection");
+		}
+
 		selection = getObstacle(fixture);
 
 		if(selection != null) {
@@ -346,6 +353,7 @@ public class ObstacleSelector implements QueryCallback  {
 			} else {
 				selection.getBody().setType(BodyDef.BodyType.DynamicBody);
 			}
+			return false; // An object has been clicked, even if it's not been selected
 		}
 
 		return selection == null;

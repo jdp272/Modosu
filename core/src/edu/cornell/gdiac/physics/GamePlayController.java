@@ -234,6 +234,9 @@ public class GamePlayController extends WorldController {
 		for(Obstacle obj : level.obstacles) {
 			addQueue.add(obj);
 		}
+		for(Obstacle obj : level.water) {
+			addQueue.add(obj);
+		}
 		for(HostModel host : level.hosts) {
 			addQueue.add(host);
 			havePossessed.put(host, false);

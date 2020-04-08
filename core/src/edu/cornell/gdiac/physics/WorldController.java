@@ -88,8 +88,8 @@ public abstract class WorldController implements Screen {
 	private static final String ARROW_FILE = "shared/arrow.png";
 	/** File to texture for Walls */
 	private static String WALL_FILE = "shared/wallSpriteSheet.png";
-
-
+	/** File to texture for Water */
+	private static String WATER_FILE = "shared/waterSpriteSheet.png";
 
 	private static int FONT_SIZE = 64;
 
@@ -115,6 +115,8 @@ public abstract class WorldController implements Screen {
 	private static Texture hostGaugeTexture;
 	/** Texture for Wall SpriteSheet */
 	private static Texture wallTexture;
+	/** Texture for Water SpriteSheet */
+	private static Texture waterTexture;
 
 	public ArrowModel arrow;
 	/**
@@ -144,6 +146,8 @@ public abstract class WorldController implements Screen {
 		assets.add(HOST_GAUGE_FILE);
 		manager.load(WALL_FILE, Texture.class);
 		assets.add(WALL_FILE);
+		manager.load(WATER_FILE, Texture.class);
+		assets.add(WATER_FILE);
 		manager.load(SPIRIT_FILE, Texture.class);
 		assets.add(SPIRIT_FILE);
 		manager.load(OBSTACLE_FILE, Texture.class);
@@ -195,9 +199,10 @@ public abstract class WorldController implements Screen {
 		hostTexture = manager.get(HOST_FILE, Texture.class);
 		hostGaugeTexture = manager.get(HOST_GAUGE_FILE, Texture.class);
 		wallTexture = manager.get(WALL_FILE, Texture.class);
+		waterTexture = manager.get(WATER_FILE, Texture.class);
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostTexture, hostGaugeTexture, wallTexture);
+		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture);
 		loader = new Loader(factory);
 	}
 	

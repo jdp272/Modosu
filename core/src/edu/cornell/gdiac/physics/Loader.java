@@ -36,8 +36,14 @@ public class Loader {
     public static class ObstacleData {
         public Vector2 origin; // Center of the box
         public Vector2 dimensions;
-        public ImageFile imageFile;
-        // public float rotation; // TODO: add rotation
+        public int frame;
+    }
+
+    /** A struct that stores data from water when read from the json */
+    public static class WaterData {
+        public Vector2 origin; // Center of the box
+        public Vector2 dimensions;
+        public int frame;
     }
 
     /** A struct that stores data from a host when read from the json */
@@ -65,6 +71,7 @@ public class Loader {
         public Vector2[][] regions;
 
         public ObstacleData[] obstacleData;
+        public WaterData[] waterData;
         public HostData[] hostData;
 
         public Vector2 startLocation;
@@ -132,8 +139,20 @@ public class Loader {
             ObstacleData oData = new ObstacleData();
             oData.dimensions = level.obstacles[i].getDimension();
             oData.origin = new Vector2(level.obstacles[i].getX(), level.obstacles[i].getY());
+            oData.frame = level.obstacles[i].wall;
 
             levelData.obstacleData[i] = oData;
+        }
+
+        // Store the water data
+        levelData.waterData = new WaterData[level.water.length];
+        for(int i = 0; i < level.water.length; i++) {
+            WaterData wData = new WaterData();
+            wData.dimensions = level.water[i].getDimension();
+            wData.origin = new Vector2(level.water[i].getX(), level.water[i].getY());
+            wData.frame = level.water[i].getFrame();
+
+            levelData.waterData[i] = wData;
         }
 
         // Store the host data
@@ -174,8 +193,16 @@ public class Loader {
 
         for (int i = 0; i < levelData.obstacleData.length; i++) {
             oData = levelData.obstacleData[i];
-            obstacles[i] = factory.makeObstacle(oData.origin.x, oData.origin.y);
+            obstacles[i] = factory.makeObstacle(oData.origin.x, oData.origin.y, oData.frame);
             // obstacles[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.dimensions.y);
+        }
+
+        WaterTile[] water = new WaterTile[levelData.waterData.length];
+        WaterData wData; // A simple reference to the data being processed
+
+        for (int i = 0; i < levelData.waterData.length; i++) {
+            wData = levelData.waterData[i];
+            water[i] = factory.makeWater(wData.origin.x, wData.origin.y, wData.frame);
         }
 
         // Create the hosts
@@ -203,7 +230,7 @@ public class Loader {
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         // TODO: ensure implementation of 0 charge time means no cap
 
-        return new Level(regions, obstacles, hosts, spirit);
+        return new Level(regions, obstacles, water, hosts, spirit);
     }
 
     public Level reset(int level) {
