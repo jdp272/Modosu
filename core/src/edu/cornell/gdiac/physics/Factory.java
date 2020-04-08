@@ -3,10 +3,9 @@ package edu.cornell.gdiac.physics;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
-import edu.cornell.gdiac.physics.obstacle.Pedestal;
 import edu.cornell.gdiac.physics.obstacle.Wall;
-import edu.cornell.gdiac.physics.obstacle.WaterTile;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
 
 import com.badlogic.gdx.math.Vector2;
@@ -24,7 +23,6 @@ public class Factory {
     private Texture smallHostTexture;
     private Texture wallTexture;
     private Texture waterTexture;
-    private Texture pedestalTexture;
 
     /** Static Variables for Sprite Sheet */
 
@@ -39,22 +37,15 @@ public class Factory {
     private static final int WALL_ROWS = 4;
     /** Number of columns in this wall image filmstrip */
     private static final int WALL_COLUMNS = 6;
-    /** Number of total walls in the wall image filmstrip */
+    /** Number of total hosts in the wall image filmstrip */
     private static final int WALL_SIZE = 24;
 
     /** Number of rows in the water image filmstrip */
     private static final int WATER_ROWS = 4;
     /** Number of columns in this water image filmstrip */
     private static final int WATER_COLUMNS = 4;
-    /** Number of total water tiles in the water image filmstrip */
+    /** Number of total hosts in the water image filmstrip */
     private static final int WATER_SIZE = 16;
-
-    /** Number of rows in the pedestal image filmstrip */
-    private static final int PEDESTAL_ROWS = 1;
-    /** Number of columns in the pedestal image filmstrip */
-    private static final int PEDESTAL_COLUMNS = 8;
-    /** Number of total pedestals in the image filmstrip */
-    private static final int PEDESTAL_SIZE = 8;
 
 
     /** The draw scale of objects */
@@ -71,8 +62,7 @@ public class Factory {
             Texture smallHostTexture,
             Texture smallHostGaugeTexture,
             Texture wallTexture,
-            Texture waterTexture,
-            Texture pedestalTexture
+            Texture waterTexture
     ) {
         this.scale = scale;
         this.obstacleTex = obstacleTex;
@@ -82,24 +72,6 @@ public class Factory {
         this.smallHostGaugeTexture = smallHostGaugeTexture;
         this.wallTexture = wallTexture;
         this.waterTexture = waterTexture;
-        this.pedestalTexture = pedestalTexture;
-    }
-
-    public Pedestal makePedestal(float x, float y) {return makePedestal(x,y, 4);}
-
-    public Pedestal makePedestal(float x, float y, int frame) {
-        Pedestal ped = new Pedestal(
-                x,
-                y,
-                obstacleTex.getRegionWidth() / scale.x,
-                obstacleTex.getRegionHeight() / scale.y
-        );
-        ped.setPedestalStrip(new FilmStrip(pedestalTexture, PEDESTAL_ROWS, PEDESTAL_COLUMNS, PEDESTAL_SIZE));
-        ped.setDrawScale(scale);
-        ped.setBodyType(BodyDef.BodyType.StaticBody);
-        ped.setSensor(makeSensors);
-        ped.setName("pedestal");
-        return ped;
     }
 
     public Wall makeWall(float x, float y) {
@@ -143,7 +115,6 @@ public class Factory {
         water.setFrame(frame);
         water.setBodyType(BodyDef.BodyType.StaticBody);
         water.setSensor(makeSensors);
-        water.setName("water");
         return water;
     }
 

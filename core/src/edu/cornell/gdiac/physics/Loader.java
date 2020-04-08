@@ -15,10 +15,9 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.files.FileHandle;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
-import edu.cornell.gdiac.physics.obstacle.Pedestal;
 import edu.cornell.gdiac.physics.obstacle.Wall;
-import edu.cornell.gdiac.physics.obstacle.WaterTile;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.ArrayList;
 
@@ -234,10 +233,9 @@ public class Loader {
 
         // Create the starting "host" (with no charge capacity)
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
-        Pedestal ped = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
         // TODO: ensure implementation of 0 charge time means no cap
 
-        return new Level(regions, obstacles, water, hosts, spirit, ped);
+        return new Level(regions, obstacles, water, hosts, spirit);
     }
 
     public Level reset(int level) {

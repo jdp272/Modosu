@@ -25,6 +25,8 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
+import java.util.Scanner;
 
 /**
  * Gameplay specific controller for the ragdoll fishtank.
@@ -199,10 +201,8 @@ public class LevelDesignerMode extends WorldController {
 		addObject(hostSpawn);
 
 		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
-		addObject(spiritSpawn);
 
-		Pedestal pedSpawn = factory.makePedestal(0.f, 0.f);
-		addObject(pedSpawn);
+		addObject(spiritSpawn);
 
 		spawnList = new SpawnerList(canvas, scale);
 
@@ -211,14 +211,6 @@ public class LevelDesignerMode extends WorldController {
 				Wall boxSpawn = factory.makeWall(x, y);
 				boxSpawn.setWallLvlDsgn(20);
 				return boxSpawn;
-			}
-		});
-
-		spawnList.addSpawner(pedSpawn, new SpawnerList.CallbackFunction() {
-			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-				Pedestal pedSpawn = factory.makePedestal(x,y);
-				pedSpawn.setFrame(4);
-				return pedSpawn;
 			}
 		});
 
@@ -512,7 +504,6 @@ public class LevelDesignerMode extends WorldController {
 		// TODO: Make this not creating new objects by updating Level to use PooledList(?)
 
 		SpiritModel spirit = null;
-		Pedestal ped = null;
 		ArrayList<BoxObstacle> obstacleList = new ArrayList<>();
 		ArrayList<BoxObstacle> waterList = new ArrayList<>();
 		ArrayList<HostModel> hostList = new ArrayList<>();
@@ -530,8 +521,6 @@ public class LevelDesignerMode extends WorldController {
 				waterList.add((WaterTile)obj);
 			} else if (obj instanceof BoxObstacle) {
 				obstacleList.add((BoxObstacle)obj);
-			} else if(obj instanceof Pedestal) {
-				obstacleList.add((Pedestal)obj);
 			}
 		}
 
@@ -543,7 +532,7 @@ public class LevelDesignerMode extends WorldController {
 
 		// TODO: what if spirit is null
 
-		level.set(null, obstacleArray, waterArray, hostList, spirit, ped);
+		level.set(null, obstacleArray, waterArray, hostList, spirit);
 		loader.saveLevel(f, level);
 	}
 

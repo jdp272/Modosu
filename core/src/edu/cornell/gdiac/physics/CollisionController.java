@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
-import edu.cornell.gdiac.physics.obstacle.WaterTile;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
 import java.util.ArrayList;
@@ -94,9 +93,9 @@ public class CollisionController implements ContactListener {
         Obstacle bd1 = (Obstacle) body1.getUserData();
         Obstacle bd2 = (Obstacle) body2.getUserData();
 
-
         // Collision handling to determine if the spirit collides with any hosts
         for (HostModel r : hostList) {
+            System.out.println("ASKDJASHDKASJDHSA");
             if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
                     (body1.getUserData() == r && body2.getUserData() == spirit))) {
 
@@ -115,7 +114,7 @@ public class CollisionController implements ContactListener {
                 spirit.setAlive(true);
 
                 // Spirit Is Now Possessing a Host
-                spirit.setGoToCenter(true);
+                spirit.setIsPossessing(true);
 
                 // Spirit moves towards the possessed's center if wasn't already colliding with it last frame
                 if (hostPossessed != prevHostPossessed) {
@@ -134,7 +133,6 @@ public class CollisionController implements ContactListener {
                 }
             }
         }
-
     }
 
     /**
@@ -194,12 +192,6 @@ public class CollisionController implements ContactListener {
 
         Obstacle bd1 = (Obstacle) body1.getUserData();
         Obstacle bd2 = (Obstacle) body2.getUserData();
-
-        // Collision Handling to determine if the spirit collides with water tiles
-        if(body1.getUserData() == spirit && bd2.getName() == "water" || bd1.getName() == "water" && body2.getUserData() == spirit) {
-            contact.setEnabled(false);
-            System.out.println(contact.isEnabled());
-        }
 
         // Turn off collision handling if spirit already in the golem
         //        if((body1.getUserData() == spirit || body2.getUserData() == spirit) ){

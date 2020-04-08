@@ -90,8 +90,6 @@ public abstract class WorldController implements Screen {
 	private static String WALL_FILE = "shared/wallSpriteSheet.png";
 	/** File to texture for Water */
 	private static String WATER_FILE = "shared/waterSpriteSheet.png";
-	/** File to texture for Pedestal */
-	private static String PEDESTAL_FILE = "shared/coin_gold.png";
 
 	private static int FONT_SIZE = 64;
 
@@ -119,8 +117,6 @@ public abstract class WorldController implements Screen {
 	private static Texture wallTexture;
 	/** Texture for Water SpriteSheet */
 	private static Texture waterTexture;
-	/** Texture for Pedestal SpriteSheet */
-	private static Texture pedestalTexture;
 
 	public ArrowModel arrow;
 	/**
@@ -158,10 +154,6 @@ public abstract class WorldController implements Screen {
 		assets.add(OBSTACLE_FILE);
 		manager.load(ARROW_FILE, Texture.class);
 		assets.add(ARROW_FILE);
-		manager.load(PEDESTAL_FILE, Texture.class);
-		assets.add(PEDESTAL_FILE);
-
-
 		
 		// Load the font
 		FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -194,7 +186,7 @@ public abstract class WorldController implements Screen {
 		hostGaugeTex = createTexture(manager, HOST_GAUGE_FILE, true);
 		wallTex = createTexture(manager, WALL_FILE, true);
 		arrowTex = new Texture(ARROW_FILE);
-
+		
 		// Allocate the font
 		if (manager.isLoaded(FONT_FILE)) {
 			displayFont = manager.get(FONT_FILE,BitmapFont.class);
@@ -208,10 +200,9 @@ public abstract class WorldController implements Screen {
 		hostGaugeTexture = manager.get(HOST_GAUGE_FILE, Texture.class);
 		wallTexture = manager.get(WALL_FILE, Texture.class);
 		waterTexture = manager.get(WATER_FILE, Texture.class);
-		pedestalTexture = manager.get(PEDESTAL_FILE, Texture.class);
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture, pedestalTexture);
+		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture);
 		loader = new Loader(factory);
 	}
 	

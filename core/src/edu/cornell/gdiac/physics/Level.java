@@ -4,8 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
-import edu.cornell.gdiac.physics.obstacle.Pedestal;
-import edu.cornell.gdiac.physics.obstacle.WaterTile;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ public class Level {
      * An empty constructor for a level. Everything is null.
      */
     public Level() {
-        set(null, null, null, null, null, null);
+        set(null, null, null, null, null);
     }
 
     /**
@@ -37,11 +35,9 @@ public class Level {
             BoxObstacle[] obstacles,
             WaterTile[] water,
             ArrayList<HostModel> hosts,
-            //TODO REMOVE THIS
-            SpiritModel start,
-            Pedestal ped
+            SpiritModel start
     ) {
-        set(regions, obstacles, water, hosts, start, ped);
+        set(regions, obstacles, water, hosts, start);
     }
 
     /**
@@ -69,24 +65,18 @@ public class Level {
     /** The "host" where the player starts */
     public SpiritModel start;
 
-    /** The pedestal where the player starts */
-    public Pedestal ped;
-
-
     public void set(
             Vector2[][] regions,
             BoxObstacle[] obstacles,
             WaterTile[] water,
             ArrayList<HostModel> hosts,
-            SpiritModel start,
-            Pedestal ped
+            SpiritModel start
     ) {
         this.regions = regions;
         this.obstacles = obstacles;
         this.water = water;
         this.hosts = hosts;
         this.start = start;
-        this.ped = ped;
     }
 
 }
