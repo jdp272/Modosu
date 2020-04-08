@@ -326,8 +326,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			drawProgress(canvas);
 		}
 		else {
-			Color tint = (pressState == 1 ? Color.GRAY: Color.WHITE);
-			canvas.draw(playButton, tint, 0, 0,
+			canvas.draw(playButton, colorStart, 0, 0,
 						BUTTON_X, START_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
 			canvas.draw(lvlDesign, colorLvlDesign, 0, 0,

@@ -305,10 +305,6 @@ public class GamePlayController extends WorldController {
 	 */
 	public void update(float delta) {
 
-		if (menu) {
-			canvas.setCamTarget(new Vector2(canvas.getCamera().viewportWidth/2f, canvas.getCamera().viewportHeight/2f));
-			canvas.updateCamera();
-		}
 		//keep everything in bounds
 		keepInBounds();
 
