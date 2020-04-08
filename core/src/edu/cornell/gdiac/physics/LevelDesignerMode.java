@@ -150,6 +150,8 @@ public class LevelDesignerMode extends WorldController {
 		camTarget = new Vector2();
 
 		board = new Obstacle[16][9];
+
+		level = new Level();
 	}
 
 	/**
@@ -172,11 +174,11 @@ public class LevelDesignerMode extends WorldController {
 		addQueue.clear();
 		world.dispose();
 
-		FileHandle f = new FileHandle("out.txt");
+		FileHandle f = new FileHandle("out.lvl");
 
 		world = new World(gravity,false);
 
-		level = loader.loadLevel(f);
+//		level = loader.loadLevel(f);
 
 		setComplete(false);
 		setFailure(false);
@@ -499,8 +501,9 @@ public class LevelDesignerMode extends WorldController {
 		// TODO: Make this not creating new objects by updating Level to use PooledList(?)
 
 		SpiritModel spirit = null;
-		ArrayList<HostModel> hostList = new ArrayList<>();
 		ArrayList<BoxObstacle> obstacleList = new ArrayList<>();
+		ArrayList<BoxObstacle> waterList = new ArrayList<>();
+		ArrayList<HostModel> hostList = new ArrayList<>();
 		for(Obstacle obj : objects) {
 			if(!obj.inGame) {
 				continue;
@@ -511,6 +514,8 @@ public class LevelDesignerMode extends WorldController {
 				// Spirit is already saved in a field
 			} else if (obj instanceof HostModel) {
 				hostList.add((HostModel)obj);
+			} else if (obj instanceof WaterTile) {
+				waterList.add((WaterTile)obj);
 			} else if (obj instanceof BoxObstacle) {
 				obstacleList.add((BoxObstacle)obj);
 			}
@@ -519,10 +524,12 @@ public class LevelDesignerMode extends WorldController {
 		// For now, until the types used for levels are fixed
 		BoxObstacle[] obstacleArray = new BoxObstacle[obstacleList.size()];
 		obstacleList.toArray(obstacleArray);
+		WaterTile[] waterArray = new WaterTile[waterList.size()];
+		waterList.toArray(waterArray);
 
 		// TODO: what if spirit is null
 
-		level.set(null, obstacleArray, hostList, spirit);
+		level.set(null, obstacleArray, waterArray, hostList, spirit);
 		loader.saveLevel(f, level);
 	}
 

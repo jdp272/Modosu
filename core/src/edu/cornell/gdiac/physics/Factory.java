@@ -74,6 +74,10 @@ public class Factory {
     }
 
     public BoxObstacle makeObstacle(float x, float y) {
+        return makeObstacle(x, y, 20);
+    }
+
+    public BoxObstacle makeObstacle(float x, float y, int frame) {
         BoxObstacle box = new BoxObstacle(
                 x,
                 y,
@@ -87,12 +91,16 @@ public class Factory {
         //box.setTexture(obstacleTex);
         box.setBodyType(BodyDef.BodyType.StaticBody);
         box.setSensor(makeSensors);
-        box.setWall(20);
+        box.setWall(frame);
         box.setName("wall");
         return box;
     }
 
     public WaterTile makeWater(float x, float y) {
+        return makeWater(x, y, 0);
+    }
+
+    public WaterTile makeWater(float x, float y, int frame) {
         WaterTile water = new WaterTile(
                 x,
                 y,
@@ -103,6 +111,7 @@ public class Factory {
         water.setDrawScale(scale);
         water.setSX(0.25f);
         water.setSY(0.25f);
+        water.setFrame(frame);
         water.setBodyType(BodyDef.BodyType.StaticBody);
         water.setSensor(makeSensors);
         return water;

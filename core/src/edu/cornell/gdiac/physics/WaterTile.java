@@ -11,6 +11,9 @@ public class WaterTile extends BoxObstacle {
      */
     private FilmStrip waterStrip;
 
+    /** The frame in the film strip for this tile */
+    private int frame;
+
 
     /**
      * Creates a new water tile at the origin.
@@ -49,6 +52,23 @@ public class WaterTile extends BoxObstacle {
         waterStrip = strip;
         waterStrip.setFrame(0);
         this.setTexture(strip);
+    }
+
+    /**
+     * Gets the frame for this water tile, for the filmstrip
+     */
+    public int getFrame() {
+        return frame;
+    }
+
+    /**
+     * Sets the frame for this water tile to be the given frame in the filmstrip
+     *
+     * @param frame The frame to set for this water tile, between 0 and 15, incl
+     */
+    public void setFrame(int frame) {
+        waterStrip.setFrame(frame);
+        this.frame = frame;
     }
 
     /**
@@ -123,6 +143,6 @@ public class WaterTile extends BoxObstacle {
                 }
             }
         }
-        waterStrip.setFrame(index);
+        setFrame(index);
     }
 }

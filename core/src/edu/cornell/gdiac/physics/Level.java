@@ -13,11 +13,11 @@ import java.util.ArrayList;
  */
 public class Level {
 
+    /**
+     * An empty constructor for a level. Everything is null.
+     */
     public Level() {
-        this.regions = null;
-        this.obstacles = null;
-        this.hosts = null;
-        this.start = null;
+        set(null, null, null, null, null);
     }
 
     /**
@@ -33,13 +33,11 @@ public class Level {
     public Level(
             Vector2[][] regions,
             BoxObstacle[] obstacles,
+            WaterTile[] water,
             ArrayList<HostModel> hosts,
             SpiritModel start
     ) {
-       this.regions = regions;
-       this.obstacles = obstacles;
-       this.hosts = hosts;
-       this.start = start;
+        set(regions, obstacles, water, hosts, start);
     }
 
     /**
@@ -58,6 +56,9 @@ public class Level {
     /** An array of the obstacles in the level */
     public BoxObstacle[] obstacles;
 
+    /** An array of the water tiles in the level */
+    public WaterTile[] water;
+
     /** An array of the hosts in the level */
     public ArrayList<HostModel> hosts;
 
@@ -67,11 +68,13 @@ public class Level {
     public void set(
             Vector2[][] regions,
             BoxObstacle[] obstacles,
+            WaterTile[] water,
             ArrayList<HostModel> hosts,
             SpiritModel start
     ) {
         this.regions = regions;
         this.obstacles = obstacles;
+        this.water = water;
         this.hosts = hosts;
         this.start = start;
     }
