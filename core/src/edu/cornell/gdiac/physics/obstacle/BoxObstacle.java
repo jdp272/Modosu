@@ -37,42 +37,9 @@ public class BoxObstacle extends SimpleObstacle {
 
 	public int alive;
 
-	private float sx;
-	private float sy;
+	protected float sx;
+	protected float sy;
 
-	public int wall;
-
-	/**
-	 * The texture strip for the wall
-	 */
-	protected FilmStrip wallStrip;
-
-
-	public void setWall(int n){
-		if(n>23){
-			wall = 0;
-		}else if(n < 0){
-			wall = 23;
-		}else {
-			wall = n;
-		}
-		if(wall > 17 && wall < 24){
-			PolygonShape s = new PolygonShape();
-			s.setAsBox(getWidth()/2,getHeight()/4,new Vector2(0, getHeight()/4),0);
-			shape = s;
-		}
-		else if(wall < 4){
-			PolygonShape s = new PolygonShape();
-			s.setAsBox(0,0,new Vector2(0, 0),0);
-			shape = s;
-		}
-		else{
-			PolygonShape s = new PolygonShape();
-			s.setAsBox(getWidth()/2,getHeight()/2,new Vector2(0, 0),0);
-			shape = s;
-		}
-		wallStrip.setFrame(wall);
-	}
 
 	public void setSX(float s){
 		this.sx = s;
@@ -198,15 +165,7 @@ public class BoxObstacle extends SimpleObstacle {
 	}
 
 
-	/**
-	 * sets the FilmStrip for the charged host and the corresponding gauge
-	 * @param strip for the charged host
-	 */
-	public void setWallStrip (FilmStrip strip) {
-		wallStrip = strip;
-		wallStrip.setFrame(20);
-		this.setTexture(strip);
-	}
+
 
 	/**
 	 * Reset the polygon vertices in the shape to match the dimension.

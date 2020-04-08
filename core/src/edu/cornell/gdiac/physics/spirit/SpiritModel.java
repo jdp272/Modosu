@@ -2,6 +2,7 @@ package edu.cornell.gdiac.physics.spirit;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
@@ -35,6 +36,7 @@ public class SpiritModel extends BoxObstacle {
     /** Whether spirit will be moving towards the center of the possessed host, false if launched or already in the center */
     private boolean goToCenter;
 
+
     public SpiritModel(float x, float y) {
         super(x, y, 10, 10);
         bounces = SPIRIT_BOUNCES;
@@ -56,6 +58,16 @@ public class SpiritModel extends BoxObstacle {
         setDensity(SPIRIT_DENSITY);
         setFriction(SPIRIT_FRICTION);
         setRestitution(SPIRIT_RESTITUTION);
+        setFixedRotation(true);
+        float[] verts = {-0.25f,0,
+                -0.2f,-0.2f,
+                0,-0.25f,
+                0.2f,-0.2f,
+                0.25f,0,
+                0.2f,0.2f,
+                0,0.25f,
+                -0.2f,0.2f};
+        shape.set(verts);
 
         bounces = b;
         this.defaultLife = defaultLife;

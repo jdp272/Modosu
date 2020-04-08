@@ -190,7 +190,8 @@ public class LevelDesignerMode extends WorldController {
 	 */
 	private void populateLevel() {
 
-		BoxObstacle boxSpawn = factory.makeObstacle(0.f, 0.f);
+		Wall boxSpawn = factory.makeWall(0.f, 0.f);
+		boxSpawn.setWallLvlDsgn(20);
 		addObject(boxSpawn);
 
 		WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
@@ -207,7 +208,9 @@ public class LevelDesignerMode extends WorldController {
 
 		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
 			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-				return factory.makeObstacle(x, y);
+				Wall boxSpawn = factory.makeWall(x, y);
+				boxSpawn.setWallLvlDsgn(20);
+				return boxSpawn;
 			}
 		});
 
@@ -439,7 +442,7 @@ public class LevelDesignerMode extends WorldController {
 				// Get the selection, then remove it from the selector
 				Obstacle selection = selector.getObstacle();
 				if(selection.getName() == "wall") {
-					((BoxObstacle)selection).setWall(((BoxObstacle)selection).wall+1);
+					((Wall)selection).setWallLvlDsgn(((Wall)selection).wall+1);
 				}
 			}
 		}
@@ -449,7 +452,7 @@ public class LevelDesignerMode extends WorldController {
 				// Get the selection, then remove it from the selector
 				Obstacle selection = selector.getObstacle();
 				if(selection.getName() == "wall") {
-					((BoxObstacle)selection).setWall(((BoxObstacle)selection).wall-1);
+					((Wall)selection).setWallLvlDsgn(((Wall)selection).wall-1);
 				}
 			}
 		}
