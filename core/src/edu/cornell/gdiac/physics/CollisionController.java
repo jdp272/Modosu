@@ -95,6 +95,7 @@ public class CollisionController implements ContactListener {
 
         // Collision handling to determine if the spirit collides with any hosts
         for (HostModel r : hostList) {
+            System.out.println("ASKDJASHDKASJDHSA");
             if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
                     (body1.getUserData() == r && body2.getUserData() == spirit))) {
 
@@ -111,6 +112,9 @@ public class CollisionController implements ContactListener {
 
                 // Spirit is alive whenever it is inside of a host
                 spirit.setAlive(true);
+
+                // Spirit Is Now Possessing a Host
+                spirit.setIsPossessing(true);
 
                 // Spirit moves towards the possessed's center if wasn't already colliding with it last frame
                 if (hostPossessed != prevHostPossessed) {
