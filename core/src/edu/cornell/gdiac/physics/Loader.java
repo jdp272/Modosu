@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.files.FileHandle;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
+import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -139,7 +140,11 @@ public class Loader {
             ObstacleData oData = new ObstacleData();
             oData.dimensions = level.obstacles[i].getDimension();
             oData.origin = new Vector2(level.obstacles[i].getX(), level.obstacles[i].getY());
-            oData.frame = level.obstacles[i].wall;
+            if(level.obstacles[i] instanceof Wall){
+                oData.frame = ((Wall)level.obstacles[i]).wall;
+            }else{
+                oData.frame = -1;
+            }
 
             levelData.obstacleData[i] = oData;
         }
@@ -193,7 +198,7 @@ public class Loader {
 
         for (int i = 0; i < levelData.obstacleData.length; i++) {
             oData = levelData.obstacleData[i];
-            obstacles[i] = factory.makeObstacle(oData.origin.x, oData.origin.y, oData.frame);
+            obstacles[i] = factory.makeWall(oData.origin.x, oData.origin.y, oData.frame);
             // obstacles[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.dimensions.y);
         }
 

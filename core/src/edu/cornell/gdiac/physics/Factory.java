@@ -3,6 +3,7 @@ package edu.cornell.gdiac.physics;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
+import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
@@ -73,16 +74,16 @@ public class Factory {
         this.waterTexture = waterTexture;
     }
 
-    public BoxObstacle makeObstacle(float x, float y) {
-        return makeObstacle(x, y, 20);
+    public Wall makeWall(float x, float y) {
+        return makeWall(x, y, 20);
     }
 
-    public BoxObstacle makeObstacle(float x, float y, int frame) {
-        BoxObstacle box = new BoxObstacle(
+    public Wall makeWall(float x, float y, int frame) {
+        Wall box = new Wall(
                 x,
                 y,
-                obstacleTex.getRegionWidth() / scale.x,
-                obstacleTex.getRegionHeight() / scale.y
+                64 / scale.x,
+                64 / scale.y
         );
         box.setWallStrip(new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE));
         box.setDrawScale(scale);
