@@ -338,7 +338,7 @@ public class ObstacleSelector implements QueryCallback  {
 	 */
 	public boolean reportFixture(Fixture fixture) {
 		if(selection != null) {
-			System.out.println("ObstacleSelector already has a selection! Tell Jake");
+			System.out.println("ObstacleSelector already has a selection");
 		}
 
 		selection = getObstacle(fixture);
@@ -353,6 +353,7 @@ public class ObstacleSelector implements QueryCallback  {
 			} else {
 				selection.getBody().setType(BodyDef.BodyType.DynamicBody);
 			}
+			return false; // An object has been clicked, even if it's not been selected
 		}
 
 		return selection == null;

@@ -56,6 +56,21 @@ public class BoxObstacle extends SimpleObstacle {
 		}else {
 			wall = n;
 		}
+		if(wall > 17 && wall < 24){
+			PolygonShape s = new PolygonShape();
+			s.setAsBox(getWidth()/2,getHeight()/4,new Vector2(0, getHeight()/4),0);
+			shape = s;
+		}
+		else if(wall < 4){
+			PolygonShape s = new PolygonShape();
+			s.setAsBox(0,0,new Vector2(0, 0),0);
+			shape = s;
+		}
+		else{
+			PolygonShape s = new PolygonShape();
+			s.setAsBox(getWidth()/2,getHeight()/2,new Vector2(0, 0),0);
+			shape = s;
+		}
 		wallStrip.setFrame(wall);
 	}
 
@@ -177,7 +192,6 @@ public class BoxObstacle extends SimpleObstacle {
 		alive = -1;
 		sx = 1;
 		sx = 1;
-		wall = 20;
 
 		// Initialize
 		resize(width, height);	

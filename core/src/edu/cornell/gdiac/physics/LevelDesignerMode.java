@@ -73,6 +73,11 @@ public class LevelDesignerMode extends WorldController {
 	/** The 2D array that is the board */
 	private Obstacle[][] board;
 
+	/** If a selection is currently happening. Even if nothing is selected by
+	 * the object selector, this will be true until the mouse is released, and
+	 * it prevent another object from being picked up */
+	private boolean selecting;
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -266,10 +271,12 @@ public class LevelDesignerMode extends WorldController {
 	 *
 	 * @param x The x index in the board of the tile to update
 	 * @param y The y index in the board of the tile to update
+	 *
+	 * @return True if a water tile was updated, false otherwise
 	 */
-	private void updateWaterTile(int x, int y) {
+	private boolean updateWaterTile(int x, int y) {
 		if(x < 0 || y < 0 || x >= board.length || y >= board[x].length || !(board[x][y] instanceof WaterTile)) {
-			return;
+			return false;
 		}
 
 		boolean above = false;
@@ -293,6 +300,25 @@ public class LevelDesignerMode extends WorldController {
 		}
 
 		((WaterTile)board[x][y]).setFrame(above, below, left, right);
+		return true;
+	}
+
+	/**
+	 * Updates the texture for water tile at and around (x, y) in the board.
+	 * this function calls updateWaterTile
+	 *
+	 * If the tile is not a water tile, or if the tile is out of bounds, nothing
+	 * happens.
+	 *
+	 * @param x The x index in the board of the tile center to update
+	 * @param y The y index in the board of the tile center to update
+	 */
+	private void updateWaterAroundRegion(int x, int y) {
+		updateWaterTile(x, y);
+		updateWaterTile(x - 1, y);
+		updateWaterTile(x + 1, y);
+		updateWaterTile(x, y - 1);
+		updateWaterTile(x, y + 1);
 	}
 
 	/**
@@ -318,8 +344,16 @@ public class LevelDesignerMode extends WorldController {
 		float mouseX = input.getCrossHair().x + (camTarget.x - (canvas.getWidth() / 2.f)) / scale.x;
 		float mouseY = input.getCrossHair().y + (camTarget.y - (canvas.getHeight() / 2.f)) / scale.y;
 
-		if ((input.didTertiary()) && !selector.isSelected()) {
+		/* Only reset selecting if the mouse is released. Prevents selecting a
+		   new object without releasing and clicking the mouse.
+		 */
+		if(!input.didTertiary()) {
+			selecting = false;
+		}
+
+		if (!selecting && (input.didTertiary()) && !selector.isSelected()) {
 			selector.select(mouseX, mouseY);
+			selecting = true;
 
 			// The tile indices
 			int x = coordToTile(mouseX);
@@ -329,12 +363,11 @@ public class LevelDesignerMode extends WorldController {
 			   different object is located there (when the selected object just
 			   spawns, for example), don't remove it
 			 */
-			if((x >= 0 && y >= 0 && x < board.length && y < board[x].length)
-					&& board[x][y] == selector.getObstacle()) { // Note: Purposefully comparing references
-
-				if(board[x][y] != null)
-					System.out.println("Obj removed from (" + x + "," + y + ")");
+			if(x >= 0 && y >= 0 && x < board.length && y < board[x].length) {
+//				if(board[x][y] == selector.getObstacle()) { // Note: Purposefully comparing references
 				board[x][y] = null;
+				updateWaterAroundRegion(x, y); // Update the surroundings after removing the water
+//				}
 			}
 
 		} else if (!input.didTertiary() && selector.isSelected()) {
@@ -365,11 +398,7 @@ public class LevelDesignerMode extends WorldController {
 					board[x][y] = deselected;
 
 					// Update water tile images
-					updateWaterTile(x, y);
-					updateWaterTile(x - 1, y);
-					updateWaterTile(x + 1, y);
-					updateWaterTile(x, y - 1);
-					updateWaterTile(x, y + 1);
+					updateWaterAroundRegion(x, y);
 				}
 			}
 		} else {
@@ -379,8 +408,10 @@ public class LevelDesignerMode extends WorldController {
 		// Spawn a new object if a spawner was clicked
 		Obstacle obj = spawnList.update(camTarget);
 		if(obj != null) {
+			System.out.println("New object added");
 			addObject(obj);
 			selector.select(mouseX, mouseY);
+			selecting = true;
 		}
 	}
 
