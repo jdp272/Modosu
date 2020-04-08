@@ -43,7 +43,7 @@ public class BoxObstacle extends SimpleObstacle {
 	public int wall;
 
 	/**
-	 * The texture for the host's gauge
+	 * The texture strip for the wall
 	 */
 	protected FilmStrip wallStrip;
 
