@@ -61,6 +61,7 @@ public class HostController {
     /** The number of ticks since we started this controller */
     private long ticks;
 
+    private int numHosts;
     /**
      * Creates and initialize a new instance of a HostController
      */
@@ -75,6 +76,7 @@ public class HostController {
         this.scale = scale;
         arrowCache = new Vector2();
         this.pedestal = pedestal;
+        numHosts = h.size();
     }
 
     /**
@@ -100,6 +102,7 @@ public class HostController {
      * @param dt Number of seconds since last animation frame
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal) {
+
 
         input = InputController.getInstance();
 
@@ -214,9 +217,11 @@ public class HostController {
                             // Upon Release of Spirit, possessed host and spirit are no longer possessed/possessing
                             spirit.setHasLaunched(true);
                             spirit.setIsPossessing(false);
+                            spirit.setGoToCenter(false);
+
                             possessed.setPossessed(false);
                             launched = true;
-                            spirit.setGoToCenter(false);
+
                         }
                     } else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
                         // Save current mouse location in arrowModel
@@ -266,7 +271,8 @@ public class HostController {
             if (spirit.decCurrentLife()) {
                 // Spirit isn't dead yet
                 spirit.setAlive(true);
-            } else {
+            }
+            else {
                 // Because you can't decrement anymore, spirit is dead
                 spirit.setAlive(false);
             }
@@ -286,12 +292,14 @@ public class HostController {
         for (HostModel h : hosts) {
 
             // Update the body type of each host
-            if (h != possessed && !h.isMoving() && h.getBodyType() != BodyDef.BodyType.StaticBody) {
+            if ((h != possessed && !h.isMoving() && h.getBodyType() != BodyDef.BodyType.StaticBody) ||
+                    (h.isMoving() && h.beenPossessed() && h != possessed)) {
                 h.setBodyType(BodyDef.BodyType.StaticBody);
-                System.out.println("should print 2 times");
             }
+
             // Updated Animation of Each Host
             h.updateAnimation(true, h.getLinearVelocity());
+
             if (h != possessed && !h.beenPossessed()) {
                 Vector2 target = h.getInstruction();
                 Vector2 current = h.getPosition();
@@ -305,7 +313,8 @@ public class HostController {
                     h.nextInstruction();
 
                     // Otherwise, move towards the target
-                } else {
+                }
+                else {
                     double angle = Math.atan2(y, x);
 
                     h.setVX(HOST_MOVEMENT_SPEED * (float) Math.cos(angle));
@@ -318,6 +327,16 @@ public class HostController {
     public ArrowModel getArrow() { return arrow; }
 
     public boolean getPossessedBlownUp() { return possessedBlownUp; }
+
+    public boolean checkAllPossessed() {
+        int counter = 0;
+        for (HostModel h : hosts) {
+            if (h.beenPossessed()) {
+                counter++;
+            }
+        }
+        return counter == numHosts;
+    }
 
     public boolean getLaunched() {
         if (launched) {
