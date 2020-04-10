@@ -23,12 +23,14 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.controllers.*;
+import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.util.*;
 
 /**
@@ -44,7 +46,7 @@ import edu.cornell.gdiac.util.*;
  * the application.  That is why we try to have as few resources as possible for this
  * loading screen.
  */
-public class LoadingMode implements Screen, InputProcessor, ControllerListener {
+public class LoadingMode extends WorldController implements Screen, InputProcessor, ControllerListener {
 	// Textures necessary to support the loading screen 
 	private static final String BACKGROUND_FILE = "shared/Menu.png";
 	private static final String PROGRESS_FILE = "shared/progressbar.png";
@@ -52,6 +54,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String LVL_DSGN_FILE = "shared/leveldesign.png";
 	private static final String LVL_SLCT_FILE = "shared/levelselect.png";
 	private static final String CREDITS_FILE = "shared/credits.png";
+
+	private static final String CLICK_SOUND = "shared/click.mp3";
+	private static final String HOVER_SOUND = "shared/hover.mp3";
+
+	/** Track all loaded assets (for unloading purposes) */
+	protected Array<String> assets;
 
 	
 	/** Background texture for start-up */
@@ -220,6 +228,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		this.manager = manager;
 		this.canvas  = canvas;
 		budget = millis;
+		assets = new Array<String>();
 		
 		// Compute the dimensions from the canvas
 		resize(canvas.getWidth(),canvas.getHeight());
@@ -230,6 +239,16 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		colorLvlDesign = colorUnhovered;
 		colorLvlSelect = colorUnhovered;
 		colorCredits = colorUnhovered;
+
+		manager.load(CLICK_SOUND, Sound.class);
+		assets.add(CLICK_SOUND);
+		manager.load(HOVER_SOUND, Sound.class);
+		assets.add(HOVER_SOUND);
+
+		SoundController sounds = SoundController.getInstance();
+		sounds.allocate(manager, CLICK_SOUND);
+		sounds.allocate(manager, HOVER_SOUND);
+		super.loadContent(manager);
 
 		// Load the next two images immediately.
 		playButton = null;
@@ -284,7 +303,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			 playButton = null;
 		 }
 	}
-	
+
+	@Override
+	public void reset() {
+
+	}
+
 	/**
 	 * Update the status of this player mode.
 	 *
@@ -294,7 +318,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 *
 	 * @param delta Number of seconds since last animation frame
 	 */
-	private void update(float delta) {
+	public void update(float delta) {
 		if (playButton == null) {
 			manager.update(budget);
 			this.progress = manager.getProgress();
@@ -310,6 +334,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				credits.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			}
 		}
+		// Update sounds
+		SoundController.getInstance().update();
 	}
 
 	/**
@@ -490,18 +516,21 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 1;
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 			}
 		}
 
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 3;
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 			}
 		}
 
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlSelect.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 5;
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 			}
 		}
 
@@ -624,6 +653,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE)) {
 					colorStart = colorHovered;
+					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
 				}
 				else {
 					colorStart = colorUnhovered;
@@ -633,6 +663,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			else if(screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlDesign = colorHovered;
+					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
 				}
 				else {
 					colorLvlDesign = colorUnhovered;
@@ -642,6 +673,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			else if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X+(lvlSelect.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlSelect = colorHovered;
+					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
 				}
 				else {
 					colorLvlSelect = colorUnhovered;
@@ -651,6 +683,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			else if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth()*scale*BUTTON_SCALE)) {
 					colorCredits = colorHovered;
+					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
 				}
 				else {
 					colorCredits = colorUnhovered;
