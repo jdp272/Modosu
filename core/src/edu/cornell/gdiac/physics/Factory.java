@@ -23,6 +23,7 @@ public class Factory {
     private Texture smallHostTexture;
     private Texture wallTexture;
     private Texture waterTexture;
+    private Texture pedestalTexture;
 
     /** Static Variables for Sprite Sheet */
 
@@ -42,10 +43,17 @@ public class Factory {
 
     /** Number of rows in the water image filmstrip */
     private static final int WATER_ROWS = 4;
-    /** Number of columns in this water image filmstrip */
+    /** Number of columns in the water image filmstrip */
     private static final int WATER_COLUMNS = 4;
     /** Number of total hosts in the water image filmstrip */
     private static final int WATER_SIZE = 16;
+
+    /** Number of rows in the pedestal image filmstrip */
+    private static final int PEDESTAL_ROWS = 1;
+    /** Number of columns in the pedestal image filmstrip */
+    private static final int PEDESTAL_COLS = 8;
+    /** Number of total pedestals in the pedestal image filmstrip */
+    private static final int PEDESTAL_SIZE = 8;
 
 
     /** The draw scale of objects */
@@ -62,7 +70,8 @@ public class Factory {
             Texture smallHostTexture,
             Texture smallHostGaugeTexture,
             Texture wallTexture,
-            Texture waterTexture
+            Texture waterTexture,
+            Texture pedestalTexture
     ) {
         this.scale = scale;
         this.obstacleTex = obstacleTex;
@@ -72,6 +81,7 @@ public class Factory {
         this.smallHostGaugeTexture = smallHostGaugeTexture;
         this.wallTexture = wallTexture;
         this.waterTexture = waterTexture;
+        this.pedestalTexture = pedestalTexture;
     }
 
     public Wall makeWall(float x, float y) {
@@ -115,6 +125,7 @@ public class Factory {
         water.setFrame(frame);
         water.setBodyType(BodyDef.BodyType.StaticBody);
         water.setSensor(makeSensors);
+        water.setName("water");
         return water;
     }
 
@@ -141,7 +152,25 @@ public class Factory {
         return makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, smallHostTex, smallHostGaugeTexture, smallHostTexture);
     }
 
+    public HostModel makePedestal(float x, float y) {
+        return makePedestalInternal(x, y, pedestalTexture);
+    }
+
     // TODO: add medium and large host make functions
+
+    private HostModel makePedestalInternal(float x, float y, Texture pedestalTexture) {
+        HostModel ped = new HostModel(
+                x,
+                y,
+                                ((pedestalTexture.getWidth() / 4) / scale.x),
+                (pedestalTexture.getHeight()  * 2/ scale.y),
+                true
+        );
+        ped.setDrawScale(scale);
+        ped.setPedestalStrip(new FilmStrip(pedestalTexture, PEDESTAL_ROWS, PEDESTAL_COLS, PEDESTAL_SIZE));
+        ped.setSensor(makeSensors);
+        return ped;
+    }
 
     private HostModel makeHostInternal(float x, float y, Vector2[] instructions, int maxCharge, TextureRegion hostTex, Texture smallHostGaugeTexture, Texture hostTexture) {
         HostModel host = new HostModel(
@@ -159,7 +188,7 @@ public class Factory {
         host.setHostGaugeTexture(new FilmStrip(smallHostGaugeTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
         host.setChargedHostStrip(new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
         host.setNotChargedHostStrip(new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
-        host.setHostStateSprite(host.beenPossessed(), new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new Vector2(1, 1));
+        host.setHostStateSprite(host.beenPossessed(), new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new Vector2(0, -1));
         host.setSensor(makeSensors);
         return host;
     }

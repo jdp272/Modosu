@@ -233,9 +233,11 @@ public class Loader {
 
         // Create the starting "host" (with no charge capacity)
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
+        HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
+        hosts.add(pedestal);
         // TODO: ensure implementation of 0 charge time means no cap
 
-        return new Level(regions, obstacles, water, hosts, spirit);
+        return new Level(regions, obstacles, water, hosts, spirit, pedestal);
     }
 
     public Level reset(int level) {

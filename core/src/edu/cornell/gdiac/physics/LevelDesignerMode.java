@@ -201,10 +201,18 @@ public class LevelDesignerMode extends WorldController {
 		addObject(hostSpawn);
 
 		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
-
 		addObject(spiritSpawn);
 
+		HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
+		addObject(pedestalSpawn);
+
 		spawnList = new SpawnerList(canvas, scale);
+
+		spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
+			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+			    return factory.makePedestal(x,y);
+			}
+		});
 
 		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
 			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
@@ -507,20 +515,24 @@ public class LevelDesignerMode extends WorldController {
 		ArrayList<BoxObstacle> obstacleList = new ArrayList<>();
 		ArrayList<BoxObstacle> waterList = new ArrayList<>();
 		ArrayList<HostModel> hostList = new ArrayList<>();
+		HostModel pedestal = null;
 		for(Obstacle obj : objects) {
-			if(!obj.inGame) {
+			if (!obj.inGame) {
 				continue;
 			}
 
 			if (obj instanceof SpiritModel) {
-				spirit = (SpiritModel)obj;
+				spirit = (SpiritModel) obj;
 				// Spirit is already saved in a field
 			} else if (obj instanceof HostModel) {
-				hostList.add((HostModel)obj);
+				hostList.add((HostModel) obj);
+				if ((obj.getName()) == "pedestal") {
+					pedestal = (HostModel) obj;
+				}
 			} else if (obj instanceof WaterTile) {
-				waterList.add((WaterTile)obj);
+				waterList.add((WaterTile) obj);
 			} else if (obj instanceof BoxObstacle) {
-				obstacleList.add((BoxObstacle)obj);
+				obstacleList.add((BoxObstacle) obj);
 			}
 		}
 
@@ -532,7 +544,7 @@ public class LevelDesignerMode extends WorldController {
 
 		// TODO: what if spirit is null
 
-		level.set(null, obstacleArray, waterArray, hostList, spirit);
+		level.set(null, obstacleArray, waterArray, hostList, spirit, pedestal);
 		loader.saveLevel(f, level);
 	}
 

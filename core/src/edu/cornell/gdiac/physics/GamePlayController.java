@@ -71,6 +71,8 @@ public class GamePlayController extends WorldController {
 
 	protected HostModel possessed;
 
+	protected HostModel pedestal;
+
 	protected SpiritModel spirit;
 
 	private Vector2 cache;
@@ -193,6 +195,7 @@ public class GamePlayController extends WorldController {
 		System.out.println("loading level: " + levelName);
 		level = loader.loadLevel(f);
 
+		pedestal = level.pedestal;
 		spirit = level.start;
 		spirit.setName("spirit");
 
@@ -328,12 +331,15 @@ public class GamePlayController extends WorldController {
 			if (!havePossessed.get(possessed)) {
 
 				havePossessed.put(possessed, true);
+				if(!possessed.isPedestal()) {
+					pedestal.markRemoved(true);
+				}
 				numPossessed++;
 			}
 		}
 
 		// Calls update on hostController
-		hostController.update(delta, possessed, spirit);
+		hostController.update(delta, possessed, spirit, level.pedestal);
 		if (hostController.getLaunched()){
 			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
 		}

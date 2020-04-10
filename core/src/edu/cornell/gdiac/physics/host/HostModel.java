@@ -37,6 +37,9 @@ public class HostModel extends BoxObstacle {
     /** The texture filmstrip for host that has been possessed */
     FilmStrip chargedHost;
 
+    /** The texture filmstrip for the host that is the pedestal */
+    FilmStrip pedestalHost;
+
     // Default physics values
     /** The density of this host */
     private static final float DEFAULT_DENSITY = 1.0f;
@@ -52,6 +55,14 @@ public class HostModel extends BoxObstacle {
      * The thrust factor to convert player input into host movement
      */
     private static final float DEFAULT_THRUST = 7.0f;
+    /**
+     * The max charge of a pedestal
+     */
+    private static final float PEDESTAL_MAX_CHARGE = -1f;
+    /**
+     *  The current charge of a pedestal
+     */
+    private static final float PEDESTAL_CURRENT_CHARGE = -1f;
 
 
     // FRAMES FOR SPRITE SHEET
@@ -117,7 +128,7 @@ public class HostModel extends BoxObstacle {
      */
     private Vector2 force;
     /**
-     * Instructions for robot when unpossessed
+     * Instructions for host when unpossessed
      */
     private Vector2[] instructions;
     /**
@@ -125,17 +136,21 @@ public class HostModel extends BoxObstacle {
      */
     private int instructionNumber;
     /**
-     * Whether or not the robot has been possessed yet
+     * Whether or not the host has been possessed yet
      */
     private boolean hasBeenPossessed;
     /**
-     * Whether robot is moving forward through instructions
+     * Whether host is moving forward through instructions
      */
     private boolean forwardI;
     /**
-     * Whether the robot is supposed to move or not
+     * Whether the host is supposed to move or not
      */
     private boolean moving;
+    /**
+     * Whether the host is a pedestal or not
+     */
+    private boolean isPedestal;
 
     /**
      * drawing scales to resize the host (doesn't affect hit box)
@@ -190,6 +205,22 @@ public class HostModel extends BoxObstacle {
      */
     public void setMaxCharge(float maxCharge) {
         this.maxCharge = maxCharge;
+    }
+
+    /**
+     * Returns whether current host it a pedestal or not
+     * @return true if current host is a pedestal
+     */
+    public boolean isPedestal() {
+        return isPedestal;
+    }
+
+    /**
+     * Sets current host to a pedestal if pedestal is true
+     * @param pedestal is true if pedestal
+     */
+    public void setPedestal(boolean pedestal) {
+        isPedestal = pedestal;
     }
 
     /**
@@ -322,6 +353,35 @@ public class HostModel extends BoxObstacle {
     }
 
     /**
+     * Creates a new pedestal at the given position.
+     * <p>
+     * The size is expressed in physics units NOT pixels.  In order for
+     * drawing to work properly, you MUST set the drawScale. The drawScale
+     * converts the physics units to pixels.
+     *
+     * @param x      Initial x position of the box center
+     * @param y      Initial y position of the box center
+     * @param width  The object width in physics units
+     * @param height The object width in physics units
+     * @param isPedestal Whether host is a pedestal or not
+     */
+    public HostModel(float x, float y, float width, float height, boolean isPedestal) {
+        super(x, y, width*0.3f, height*0.5f);
+        force = new Vector2();
+        this.currentCharge = PEDESTAL_CURRENT_CHARGE;
+        this.maxCharge = PEDESTAL_MAX_CHARGE;
+        this.instructions = null;
+        this.instructionNumber = 0;
+        this.hasBeenPossessed = true;
+        this.isPedestal = isPedestal;
+        setDensity(DEFAULT_DENSITY);
+        setFriction(DEFAULT_FRICTION);
+        setRestitution(DEFAULT_RESTITUTION);
+        isPossessed = true;
+        isAlive = false;
+        setName("pedestal");
+    }
+    /**
      * Creates the physics Body(s) for this object, adding them to the world.
      * <p>
      * This method overrides the base method to keep your host from spinning.
@@ -382,7 +442,7 @@ public class HostModel extends BoxObstacle {
      * @return whether the host has blown up or not
      */
     public boolean incCurrentCharge() {
-        if (this.isPossessed) {
+        if (this.isPossessed && !this.isPedestal) {
             if (this.currentCharge == this.maxCharge) {
                 return false;
             } else {
@@ -471,6 +531,10 @@ public class HostModel extends BoxObstacle {
         body.applyForce(force, body.getLocalCenter(), true);
     }
 
+    public void setPedestalStrip(FilmStrip strip) {
+        this.pedestalHost = strip;
+        pedestalHost.setFrame(4);
+    }
 
     /**
      * sets the FilmStrip for the charged host and the corresponding gauge
@@ -702,6 +766,17 @@ public class HostModel extends BoxObstacle {
         }
     }
 
+    /**
+     * Strip animation for pedestal
+     */
+    public void animateStrip() {
+        if(this.pedestalHost.getFrame() < this.pedestalHost.getSize() - 1) {
+            this.pedestalHost.setFrame(this.pedestalHost.getFrame() + 1);
+        }
+        else {
+            this.pedestalHost.setFrame(0);
+        }
+    }
 
     /**
      * Draws the host object.
@@ -709,20 +784,23 @@ public class HostModel extends BoxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
+
+        if(this.isPedestal) {
+            canvas.draw(pedestalHost, Color.WHITE, pedestalHost.getRegionWidth() / 2, pedestalHost.getRegionHeight()/2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+        }
+
+
+        else {
+
         //Draw the host
         float chargeProgression = currentCharge / maxCharge;
         if (this.chargedHost != null && this.hostGaugeStrip != null) {
 
             // If bot has already been possessed colors should change
-            if(this.hasBeenPossessed) {
+            if (this.hasBeenPossessed) {
                 /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
                 if (this.currentCharge < this.maxCharge) {
-                    // Animation?
-//                if (isPossessed) {
-//                    canvas.draw(hostStrip, Color.WHITE, golemWalkOrigin.x, golemWalkOrigin.y, getX()*drawScale.x, getY()*drawScale.y, getAngle(),1,1);
-//                }
-
-                    canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
+                    canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
 
                     // Color changes more and more to a red or goal color here
                     Color warningColor = new Color(chargeProgression * 5, 4 - (4.5f * chargeProgression), 4 - (9 * chargeProgression), 1);
@@ -733,16 +811,15 @@ public class HostModel extends BoxObstacle {
                     canvas.draw(hostGaugeStrip, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
 
                 } else {
-                    canvas.draw(chargedHost, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
+                    canvas.draw(chargedHost, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                 }
             }
             // When the bot hasn't been possessed the indicator color should be black
             else {
-                canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
+                canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                 canvas.draw(hostGaugeStrip, Color.BLACK, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
             }
-
-
+        }
         }
     }
 

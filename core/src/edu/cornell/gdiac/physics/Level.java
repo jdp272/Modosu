@@ -17,7 +17,7 @@ public class Level {
      * An empty constructor for a level. Everything is null.
      */
     public Level() {
-        set(null, null, null, null, null);
+        set(null, null, null, null, null, null);
     }
 
     /**
@@ -35,9 +35,10 @@ public class Level {
             BoxObstacle[] obstacles,
             WaterTile[] water,
             ArrayList<HostModel> hosts,
-            SpiritModel start
+            SpiritModel start,
+            HostModel pedestal
     ) {
-        set(regions, obstacles, water, hosts, start);
+        set(regions, obstacles, water, hosts, start, pedestal);
     }
 
     /**
@@ -62,6 +63,9 @@ public class Level {
     /** An array of the hosts in the level */
     public ArrayList<HostModel> hosts;
 
+    /** The pedestal where the starting spirit starts */
+    public HostModel pedestal;
+
     /** The "host" where the player starts */
     public SpiritModel start;
 
@@ -70,13 +74,15 @@ public class Level {
             BoxObstacle[] obstacles,
             WaterTile[] water,
             ArrayList<HostModel> hosts,
-            SpiritModel start
+            SpiritModel start,
+            HostModel pedestal
     ) {
         this.regions = regions;
         this.obstacles = obstacles;
         this.water = water;
         this.hosts = hosts;
         this.start = start;
+        this.pedestal = pedestal;
     }
 
 }
