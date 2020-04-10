@@ -279,10 +279,9 @@ public class HostController {
         // PORTION OF CODE THAT DEALS WITH JUMPING BACK TO LAST HOST AFTER DEATH
 
         // In the case that spirit dies return to previous possessed bot
-        if (!spirit.isAlive() && !possessedBlownUp) {
+        if ((!spirit.isAlive() && !possessedBlownUp) || (possessed == pedestal && !spirit.isAlive())) {
             spirit.setPosition(possessed.getPosition());
             // TODO: Replace 100 with variable whatever amount we want the host to go up by
-
             if(possessed != pedestal) {
                 possessed.setCurrentCharge(possessed.getCurrentCharge() + 100);
             }

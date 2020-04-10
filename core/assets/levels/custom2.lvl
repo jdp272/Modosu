@@ -1,1 +1,1 @@
-{obstacleData:[],waterData:[],hostData:[{location:{x:29,y:11},chargeTime:1000}],pedestalData:{location:{x:25,y:13}},startLocation:{x:25,y:13}}
+{obstacleData:[{origin:{x:17,y:13},dimensions:{x:2,y:2},frame:20}],waterData:[{origin:{x:19,y:11},dimensions:{x:2,y:2},frame:3},{origin:{x:15,y:11},dimensions:{x:2,y:2},frame:3},{origin:{x:19,y:7},dimensions:{x:2,y:2},frame:3},{origin:{x:15,y:7},dimensions:{x:2,y:2},frame:3}],hostData:[{location:{x:17,y:9},chargeTime:1000}],pedestalData:{location:{x:17,y:11}},startLocation:{x:17,y:11}}

@@ -57,6 +57,7 @@ public class LevelDesignerMode extends WorldController {
 	/** Texture asset for foreground */
 	private TextureRegion foregroundTexture;
 
+
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
 
@@ -209,11 +210,11 @@ public class LevelDesignerMode extends WorldController {
 
 
 
-				spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
-					public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-						return factory.makePedestal(x, y);
-					}
-				});
+		spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
+			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+				return factory.makePedestal(x, y);
+			}
+		});
 
 		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
 			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
@@ -428,6 +429,8 @@ public class LevelDesignerMode extends WorldController {
 				selecting = true;
 			}
 		}
+
+
 	}
 
 	/**
@@ -452,7 +455,6 @@ public class LevelDesignerMode extends WorldController {
 				hasPed = true;
 			}
 		}
-
 
 				// Update the camera position
 		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
