@@ -199,7 +199,9 @@ public class GamePlayController extends WorldController {
 		spirit = level.start;
 		spirit.setName("spirit");
 
-		possessed = level.hosts.get(0);
+
+		possessed = pedestal;
+		spirit.setGoToCenter(true);
 
 		System.out.println(System.getProperty("user.dir"));
 
@@ -207,7 +209,7 @@ public class GamePlayController extends WorldController {
 
 		//level = loader.reset(lvl);
 		//parse level
-		hostController = new HostController(level.hosts, scale, arrowTex);
+		hostController = new HostController(level.hosts, scale, arrowTex, pedestal);
 
 		// How many hosts need to be possessed to win
 		numHosts = level.hosts.size();
@@ -245,6 +247,7 @@ public class GamePlayController extends WorldController {
 			havePossessed.put(host, false);
 		}
 		addQueue.add(level.start);
+		addQueue.add(level.pedestal);
 		collisionController.addHosts(level.hosts);
 		collisionController.addSpirit(level.start);
 	}

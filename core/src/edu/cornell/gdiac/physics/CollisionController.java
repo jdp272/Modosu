@@ -195,12 +195,12 @@ public class CollisionController implements ContactListener {
         Obstacle bd2 = (Obstacle) body2.getUserData();
 
         // Check for Collision with Pedestal
-//        if((body1.getUserData() == spirit && bd2.getName() == "pedestal") ||
-//                (bd1.getName() == "pedestal" && body2.getUserData() == spirit) ||
-//        (bd1.getName() == "host" && bd2.getName() == "pedestal") ||
-//                (bd1.getName() == "pedestal" && bd2.getName() == "host")){
-//            contact.setEnabled(false);
-//        }
+        if((body1.getUserData() == spirit && bd2.getName() == "pedestal") ||
+                (bd1.getName() == "pedestal" && body2.getUserData() == spirit) ||
+        (bd1.getName() == "host" && bd2.getName() == "pedestal") ||
+                (bd1.getName() == "pedestal" && bd2.getName() == "host")){
+            contact.setEnabled(false);
+        }
 
         // Check for Collision with Water
         if((body1.getUserData() == spirit && bd2.getName() == "water") ||

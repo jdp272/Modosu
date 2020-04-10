@@ -24,6 +24,7 @@ import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
 
+import java.awt.desktop.SystemEventListener;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Scanner;
@@ -208,11 +209,13 @@ public class LevelDesignerMode extends WorldController {
 
 		spawnList = new SpawnerList(canvas, scale);
 
-		spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
-			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-			    return factory.makePedestal(x,y);
-			}
-		});
+
+
+				spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
+					public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+						return factory.makePedestal(x, y);
+					}
+				});
 
 		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
 			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
@@ -234,17 +237,17 @@ public class LevelDesignerMode extends WorldController {
 			}
 		});
 
-		spawnList.addSpawner(spiritSpawn, new SpawnerList.CallbackFunction() {
-			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-				if (lastCreated == null) {
-					return factory.makeSpirit(x, y);
-				}
-				lastCreated.setX(x);
-				lastCreated.setY(y);
-
-				return null;
-			}
-		});
+//		spawnList.addSpawner(spiritSpawn, new SpawnerList.CallbackFunction() {
+//			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+//				if (lastCreated == null) {
+//					return factory.makeSpirit(x, y);
+//				}
+//				lastCreated.setX(x);
+//				lastCreated.setY(y);
+//
+//				return null;
+//			}
+//		});
 
 		selector = new ObstacleSelector(world);
 		selector.setTexture(crosshairTexture);
@@ -524,11 +527,11 @@ public class LevelDesignerMode extends WorldController {
 			if (obj instanceof SpiritModel) {
 				spirit = (SpiritModel) obj;
 				// Spirit is already saved in a field
-			} else if (obj instanceof HostModel) {
+			} else if (obj instanceof HostModel && obj.getName() != "pedestal") {
 				hostList.add((HostModel) obj);
-				if ((obj.getName()) == "pedestal") {
+			}
+			else if ((obj.getName()) == "pedestal") {
 					pedestal = (HostModel) obj;
-				}
 			} else if (obj instanceof WaterTile) {
 				waterList.add((WaterTile) obj);
 			} else if (obj instanceof BoxObstacle) {
