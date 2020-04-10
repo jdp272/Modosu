@@ -314,7 +314,7 @@ public class LevelDesignerMode extends WorldController {
 			right = true;
 		}
 
-		((WaterTile)board[x][y]).setFrame(above, below, left, right);
+		((WaterTile)board[x][y]).setFrame(above, below, left, right, true);
 		return true;
 	}
 
