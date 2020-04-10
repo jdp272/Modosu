@@ -27,6 +27,8 @@ public class HostController {
     /** The current position of the mouse */
     private Vector2 currMouse;
 
+    private HostModel pedestal;
+
     /** The draw scale of the game */
     private Vector2 scale;
 
@@ -62,7 +64,7 @@ public class HostController {
     /**
      * Creates and initialize a new instance of a HostController
      */
-    public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowTexture) {
+    public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowTexture, HostModel pedestal) {
         input = InputController.getInstance();
         clickPosition = new Vector2(-1,-1);
         hosts = h;
@@ -72,6 +74,7 @@ public class HostController {
         launched = false;
         this.scale = scale;
         arrowCache = new Vector2();
+        this.pedestal = pedestal;
     }
 
     /**

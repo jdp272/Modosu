@@ -53,6 +53,16 @@ public class Loader {
         public float chargeTime; // Maximum amount of charge that can be stored
 
         public Vector2[] instructions;
+        public boolean isPedestal;
+
+        public ImageFile imageFile;
+    }
+
+    public static class PedestalData {
+        public Vector2 location;
+        public float chargeTime = -1; // Maximum amount of charge that can be stored
+
+        public Vector2[] instructions = null;
 
         public ImageFile imageFile;
     }
@@ -74,6 +84,8 @@ public class Loader {
         public ObstacleData[] obstacleData;
         public WaterData[] waterData;
         public HostData[] hostData;
+
+        public PedestalData pedestalData;
 
         public Vector2 startLocation;
     }
@@ -163,16 +175,23 @@ public class Loader {
         // Store the host data
         levelData.hostData = new HostData[level.hosts.size()];
         for(int i = 0; i < level.hosts.size(); i++) {
-            HostData hData = new HostData();
-            hData.location = new Vector2(level.hosts.get(i).getX(), level.hosts.get(i).getY());
-            hData.chargeTime = level.hosts.get(i).getMaxCharge();
-            hData.instructions = level.hosts.get(i).getInstructionList();
+            if(!level.hosts.get(i).isPedestal()) {
+                HostData hData = new HostData();
+                hData.location = new Vector2(level.hosts.get(i).getX(), level.hosts.get(i).getY());
+                hData.chargeTime = level.hosts.get(i).getMaxCharge();
+                hData.instructions = level.hosts.get(i).getInstructionList();
+                hData.isPedestal = level.hosts.get(i).isPedestal();
 
-            levelData.hostData[i] = hData;
+                levelData.hostData[i] = hData;
+            }
         }
 
+        PedestalData pData = new PedestalData();
+        pData.location = new Vector2(level.pedestal.getX(), level.pedestal.getY());
+        levelData.pedestalData = pData;
+
         // Store the starting information
-        levelData.startLocation = new Vector2(level.start.getX(), level.start.getY());
+        levelData.startLocation = new Vector2(level.pedestal.getX(), level.pedestal.getY());
 
         // Store the now-populated level data
         json.toJson(levelData, f);
@@ -216,6 +235,7 @@ public class Loader {
         for (int i = 0; i < levelData.hostData.length; i++) {
             hData = levelData.hostData[i];
 
+
             /* NOTES: I'm assuming that eventually we'll have a simple creator
              for hosts, like a factory method or something, which we only need
              to give coordinates and the charge time. At that point, this can be
@@ -227,14 +247,13 @@ public class Loader {
 
              TODO: Make a host once HostModel constructor is ready
              */
-            hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions));
+                hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions));
 //            hosts.add(new HostModel(rData.location.x, rData.location.y, (int)Data.chargeTime), false);
         }
 
         // Create the starting "host" (with no charge capacity)
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
-        hosts.add(pedestal);
         // TODO: ensure implementation of 0 charge time means no cap
 
         return new Level(regions, obstacles, water, hosts, spirit, pedestal);
