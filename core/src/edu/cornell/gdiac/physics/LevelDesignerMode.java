@@ -24,10 +24,8 @@ import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
 
-import java.awt.desktop.SystemEventListener;
 import java.util.ArrayList;
-import java.util.ListIterator;
-import java.util.Scanner;
+
 
 /**
  * Gameplay specific controller for the ragdoll fishtank.

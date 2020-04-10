@@ -77,15 +77,6 @@ public class GamePlayController extends WorldController {
 
 	private Vector2 cache;
 
-	/** Keep track of what hosts have been possessed */
-	private HashMap<HostModel, Boolean> havePossessed;
-
-	/** How many hosts need to be possessed to win this level */
-	private int numHosts;
-
-	/** How many hosts have been possessed up to this frame */
-	private int numPossessed;
-
 	/** Animation for host walking */
 	private int currentLevel = 0;
 
@@ -161,9 +152,6 @@ public class GamePlayController extends WorldController {
 		lvl = 0;
 		world.setContactListener(collisionController);
 
-		havePossessed = new HashMap<>();
-		numPossessed = 0;
-
 		cache = new Vector2();
 
 		File f = new File("levels");
@@ -211,10 +199,6 @@ public class GamePlayController extends WorldController {
 		//parse level
 		hostController = new HostController(level.hosts, scale, arrowTex, pedestal);
 
-		// How many hosts need to be possessed to win
-		numHosts = level.hosts.size();
-		numPossessed = 0;
-
 		// Reset the collision controller
 		collisionController.reset();
 
@@ -244,7 +228,6 @@ public class GamePlayController extends WorldController {
 		}
 		for(HostModel host : level.hosts) {
 			addQueue.add(host);
-			havePossessed.put(host, false);
 		}
 		addQueue.add(level.start);
 		addQueue.add(level.pedestal);
@@ -315,7 +298,7 @@ public class GamePlayController extends WorldController {
 		keepInBounds();
 
 		// Check win condition
-		if ((numPossessed == numHosts) && !isComplete()){
+		if (hostController.checkAllPossessed() && !isComplete()){
 			setComplete(true);
 			SoundController.getInstance().play(VICTORY_SOUND,VICTORY_SOUND,false);
 		}
@@ -329,16 +312,6 @@ public class GamePlayController extends WorldController {
 			}
 
 			possessed = collisionController.getHostPossessed();
-
-			// Record a new possession
-			if (!havePossessed.get(possessed)) {
-
-				havePossessed.put(possessed, true);
-				if(!possessed.isPedestal()) {
-					pedestal.markRemoved(true);
-				}
-				numPossessed++;
-			}
 		}
 
 		// Calls update on hostController
