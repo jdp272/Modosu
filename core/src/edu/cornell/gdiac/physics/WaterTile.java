@@ -69,6 +69,20 @@ public class WaterTile extends BoxObstacle {
     public void setFrame(int frame) {
         waterStrip.setFrame(frame);
         this.frame = frame;
+        if(frame==1 || frame==3 || frame==5 || frame==6 || frame==10 || frame>12){
+            PolygonShape s = new PolygonShape();
+            s.setAsBox(getWidth()/2,getHeight()/4,new Vector2(0, getHeight()/4),0);
+            shape = s;
+        }else{
+            PolygonShape s = new PolygonShape();
+            s.setAsBox(getWidth()/2,getHeight()/2,new Vector2(0, 0),0);
+            shape = s;
+        }
+    }
+
+    public void setFrameLvlDsgn(int frame) {
+        waterStrip.setFrame(frame);
+        this.frame = frame;
     }
 
     /**
@@ -80,7 +94,7 @@ public class WaterTile extends BoxObstacle {
      * @param left If there is ground left of this tile
      * @param right If there is ground right of this tile
      */
-    public void setFrame(boolean above, boolean below, boolean left, boolean right) {
+    public void setFrame(boolean above, boolean below, boolean left, boolean right, boolean lvlDsgn) {
         int index = 0;
         if(above) {
             if(below) {
@@ -143,6 +157,10 @@ public class WaterTile extends BoxObstacle {
                 }
             }
         }
-        setFrame(index);
+        if(lvlDsgn){
+            setFrameLvlDsgn(index);
+        }else {
+            setFrame(index);
+        }
     }
 }
