@@ -103,11 +103,15 @@ public class HostController {
 
         input = InputController.getInstance();
 
+<<<<<<< Updated upstream
         if(possessed != pedestal) {
             pedestal.setBodyType(BodyDef.BodyType.StaticBody);
         }
 
 
+=======
+        // Brings the spirit to the center of the host
+>>>>>>> Stashed changes
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
             Vector2 dirToCenter = possessed.getPosition().sub(spirit.getPosition()).setLength(200f);
             spirit.setVX(dirToCenter.x);
@@ -272,11 +276,28 @@ public class HostController {
         if (!spirit.isAlive() && !possessedBlownUp) {
             spirit.setPosition(possessed.getPosition());
             // TODO: Replace 100 with variable whatever amount we want the host to go up by
-            possessed.setCurrentCharge(possessed.getCurrentCharge() + 100);
+
+            if(possessed != pedestal) {
+                possessed.setCurrentCharge(possessed.getCurrentCharge() + 100);
+            }
+
+            if(possessed == pedestal) {
+                System.out.println(pedestal.getBodyType());
+                spirit.setGoToCenter(true);
+                spirit.setIsPossessing(true);
+            }
         }
 
         //update other robots
         for (HostModel h : hosts) {
+
+            // Update the body type of each host
+            if ((h != possessed && !h.isMoving() && h.getBodyType() != BodyDef.BodyType.StaticBody) ||
+                    (h.isMoving() && h.beenPossessed() && h != possessed)) {
+                h.setBodyType(BodyDef.BodyType.StaticBody);
+
+            }
+
             // Updated Animation of Each Host
             h.updateAnimation(true, h.getLinearVelocity());
             if (h != possessed && !h.beenPossessed()) {
