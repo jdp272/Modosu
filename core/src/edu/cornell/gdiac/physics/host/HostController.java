@@ -103,15 +103,12 @@ public class HostController {
 
         input = InputController.getInstance();
 
-<<<<<<< Updated upstream
-        if(possessed != pedestal) {
-            pedestal.setBodyType(BodyDef.BodyType.StaticBody);
-        }
+//        if(possessed != pedestal) {
+//            pedestal.setBodyType(BodyDef.BodyType.StaticBody);
+//        }
 
 
-=======
         // Brings the spirit to the center of the host
->>>>>>> Stashed changes
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
             Vector2 dirToCenter = possessed.getPosition().sub(spirit.getPosition()).setLength(200f);
             spirit.setVX(dirToCenter.x);
