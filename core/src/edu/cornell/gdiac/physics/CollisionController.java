@@ -84,6 +84,7 @@ public class CollisionController implements ContactListener {
 
         hostPossessed = null;
 
+
         Fixture fix1 = contact.getFixtureA();
         Fixture fix2 = contact.getFixtureB();
 
@@ -112,8 +113,9 @@ public class CollisionController implements ContactListener {
                 // Spirit is alive whenever it is inside of a host
                 spirit.setAlive(true);
 
-                // Spirit Is Now Possessing a Host
-                spirit.setIsPossessing(true);
+                // Spirit is Going to Center Now
+                spirit.setGoToCenter(true);
+
 
                 // Spirit moves towards the possessed's center if wasn't already colliding with it last frame
                 if (hostPossessed != prevHostPossessed) {
@@ -191,6 +193,20 @@ public class CollisionController implements ContactListener {
 
         Obstacle bd1 = (Obstacle) body1.getUserData();
         Obstacle bd2 = (Obstacle) body2.getUserData();
+
+        // Check for Collision with Pedestal
+//        if((body1.getUserData() == spirit && bd2.getName() == "pedestal") ||
+//                (bd1.getName() == "pedestal" && body2.getUserData() == spirit) ||
+//        (bd1.getName() == "host" && bd2.getName() == "pedestal") ||
+//                (bd1.getName() == "pedestal" && bd2.getName() == "host")){
+//            contact.setEnabled(false);
+//        }
+
+        // Check for Collision with Water
+        if((body1.getUserData() == spirit && bd2.getName() == "water") ||
+        bd1.getName() == "water" && body2.getUserData() == spirit) {
+            contact.setEnabled(false);
+        }
 
         // Turn off collision handling if spirit already in the golem
         //        if((body1.getUserData() == spirit || body2.getUserData() == spirit) ){

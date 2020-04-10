@@ -158,7 +158,7 @@ public class BoxObstacle extends SimpleObstacle {
 		geometry = null;
 		alive = -1;
 		sx = 1;
-		sx = 1;
+		sy = 1;
 
 		// Initialize
 		resize(width, height);	
