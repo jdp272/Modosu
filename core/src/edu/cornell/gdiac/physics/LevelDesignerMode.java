@@ -200,8 +200,8 @@ public class LevelDesignerMode extends WorldController {
 		HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
 		addObject(hostSpawn);
 
-		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
-		addObject(spiritSpawn);
+//		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
+//		addObject(spiritSpawn);
 
 		HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
 		addObject(pedestalSpawn);
@@ -422,15 +422,8 @@ public class LevelDesignerMode extends WorldController {
 		Obstacle obj = spawnList.update(camTarget);
 
 		if(obj != null) {
-
-			if(obj.getName() == "pedestal" && !hasPed) {
-				System.out.println(obj.checkClicked());
-			    System.out.println("ASJDHASKDJSHAD");
-				addObject(obj);
-				selector.select(mouseX, mouseY);
-				selecting = true;
-			}
-			else if(obj.getName() != "pedestal") {
+		    // If the selected object is a pedestal then check if pedestal is already in the game
+			if((obj.getName() == "pedestal" && !hasPed) || obj.getName() != "pedestal") {
 				addObject(obj);
 				selector.select(mouseX, mouseY);
 				selecting = true;
@@ -451,23 +444,20 @@ public class LevelDesignerMode extends WorldController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
+		// Move an object if touched
+		InputController input = InputController.getInstance();
 
+		// TODO This is probably super ineffficient but it does the job
 		boolean hasPed = false;
-
+		// looks for pedestal object in the game thats been placed on the board
 		for(Obstacle obj : objects) {
-			if(obj.getName() == "pedestal" && obj.inGame) {
+			if (obj.getName() == "pedestal" && obj.inGame) {
 				hasPed = true;
 			}
 		}
 
-
-
-		// Move an object if touched
-		InputController input = InputController.getInstance();
-
-		// Update the camera position
+				// Update the camera position
 		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
-
 
 		updateSelector(hasPed);
 

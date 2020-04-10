@@ -358,6 +358,7 @@ public class GamePlayController extends WorldController {
 			canvas.toggleZoom();
 		}
 
+
 		// Uncomment this if we want to zoom in when a shot is fired, but not when it's being aimed
 		/*
 		if (spirit.hasLaunched) {

@@ -106,9 +106,6 @@ public class HostController {
 
         input = InputController.getInstance();
 
-        if(possessed != pedestal) {
-            pedestal.setBodyType(BodyDef.BodyType.StaticBody);
-        }
 
         // Brings the spirit to the center of the host
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
@@ -288,7 +285,16 @@ public class HostController {
             if(possessed != pedestal) {
                 possessed.setCurrentCharge(possessed.getCurrentCharge() + 100);
             }
+
+            if(possessed == pedestal) {
+                possessed.setPossessed(true);
+                spirit.setCurrentLife(spirit.getDefaultLife());
+                spirit.setHasLaunched(false);
+                spirit.setAlive(true);
+                spirit.setGoToCenter(true);
+            }
         }
+
 
         //update other robots
         for (HostModel h : hosts) {
