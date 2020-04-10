@@ -314,6 +314,11 @@ public class GamePlayController extends WorldController {
 			possessed = collisionController.getHostPossessed();
 		}
 
+		// Remove Pedestal Once Possessing a New Host
+		if(pedestal != possessed) {
+			pedestal.markRemoved(true);
+		}
+
 		// Calls update on hostController
 		hostController.update(delta, possessed, spirit, level.pedestal);
 		if (hostController.getLaunched()){
