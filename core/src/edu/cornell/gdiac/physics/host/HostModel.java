@@ -786,7 +786,12 @@ public class HostModel extends BoxObstacle {
     public void draw(GameCanvas canvas) {
 
         if(this.isPedestal) {
-            canvas.draw(pedestalHost, Color.WHITE, pedestalHost.getRegionWidth() / 2, pedestalHost.getRegionHeight()/2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+            // Make pedestal clear when no longer in possession.
+            if(this.isPossessed) {
+                canvas.draw(pedestalHost, Color.WHITE, pedestalHost.getRegionWidth() / 2, pedestalHost.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+            } else {
+                canvas.draw(pedestalHost, Color.CLEAR, pedestalHost.getRegionWidth() / 2, pedestalHost.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+            }
         }
 
 
