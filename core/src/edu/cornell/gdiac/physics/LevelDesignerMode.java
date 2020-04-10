@@ -421,6 +421,7 @@ public class LevelDesignerMode extends WorldController {
 		Obstacle obj = spawnList.update(camTarget);
 
 		if(obj != null) {
+		    // If the selected object is a pedestal then check if pedestal is already in the game
 			if((obj.getName() == "pedestal" && !hasPed) || obj.getName() != "pedestal") {
 				addObject(obj);
 				selector.select(mouseX, mouseY);
@@ -443,7 +444,9 @@ public class LevelDesignerMode extends WorldController {
 		// Move an object if touched
 		InputController input = InputController.getInstance();
 
+		// TODO This is probably super ineffficient but it does the job
 		boolean hasPed = false;
+		// looks for pedestal object in the game thats been placed on the board
 		for(Obstacle obj : objects) {
 			if (obj.getName() == "pedestal" && obj.inGame) {
 				hasPed = true;
