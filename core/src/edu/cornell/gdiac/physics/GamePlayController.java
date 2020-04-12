@@ -148,6 +148,7 @@ public class GamePlayController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		collisionController = new CollisionController();
+
 		lvl = 0;
 		world.setContactListener(collisionController);
 
@@ -182,10 +183,12 @@ public class GamePlayController extends WorldController {
 		System.out.println("loading level: " + levelName);
 		level = loader.loadLevel(f);
 
+		HUD.clearHUD();
+		HUD.setNumTotalHosts(level.hosts.size());
+
 		pedestal = level.pedestal;
 		spirit = level.start;
 		spirit.setName("spirit");
-
 
 		possessed = pedestal;
 		spirit.setGoToCenter(true);
@@ -297,8 +300,10 @@ public class GamePlayController extends WorldController {
 		//keep everything in bounds
 		keepInBounds();
 
+
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){
+			HUD.incrementCurrHosts();
 			setComplete(true);
 			SoundController.getInstance().play(VICTORY_SOUND,VICTORY_SOUND,false);
 		}
@@ -309,9 +314,17 @@ public class GamePlayController extends WorldController {
 			// Play possession sound if something different is possessed this frame
 			if (possessed != collisionController.getHostPossessed()) {
 				SoundController.getInstance().play(POSSESSION_SOUND,POSSESSION_SOUND,false);
+
+				// A new host has been possessed that has never been possessed before
+				if (collisionController.isNewPossession()) { HUD.incrementCurrHosts(); }
 			}
 
 			possessed = collisionController.getHostPossessed();
+		}
+
+		// Remove Pedestal Once Possessing a New Host
+		if(pedestal != possessed) {
+			pedestal.markRemoved(true);
 		}
 
 		// Calls update on hostController
@@ -330,6 +343,7 @@ public class GamePlayController extends WorldController {
 			setFailure(true);
 			SoundController.getInstance().play(FAILURE_SOUND, FAILURE_SOUND, false);
 		}
+
 
 		// Get arrow and draw if applicable
 		arrow = hostController.getArrow();
@@ -352,6 +366,7 @@ public class GamePlayController extends WorldController {
 		if (InputController.getInstance().didZoom()) {
 			canvas.toggleZoom();
 		}
+
 
 		// Uncomment this if we want to zoom in when a shot is fired, but not when it's being aimed
 		/*
