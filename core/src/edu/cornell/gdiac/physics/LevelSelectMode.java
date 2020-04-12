@@ -30,15 +30,15 @@ import edu.cornell.gdiac.util.ScreenListener;
  */
 public class LevelSelectMode extends WorldController implements Screen, InputProcessor {
     /** Texture file for background image */
-    private static final String BACKG_FILE = "shared/levelselectbackground.png";
+    private static final String BACKG_FILE = "shared/LevelSelectBackground.png";
     private static final String ONE_FILE = "shared/1.png";
     private static final String TWO_FILE = "shared/2.png";
     private static final String THREE_FILE = "shared/3.png";
     private static final String FOUR_FILE = "shared/4.png";
 
 
-    private static int LEVEL_X_START = 180;
-    private static int LEVEL_Y = 20;
+    private static int LEVEL_X_START = 170;
+    private static int LEVEL_Y = 230;
     private static int LEVEL_BUTTON_SPACING = 200;
 
     /** Listener that will update the player mode when we are done */
@@ -157,7 +157,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         setComplete(false);
         setFailure(false);
 
-        colorHovered = new Color(Color.GRAY);
+        colorHovered = new Color(Color.rgb565(190f,245f,253f));
         colorUnhovered = new Color(Color.WHITE);
         colorOne = colorUnhovered;
         colorTwo = colorUnhovered;
