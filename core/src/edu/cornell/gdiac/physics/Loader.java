@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -17,6 +18,7 @@ import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.ArrayList;
@@ -206,6 +208,9 @@ public class Loader {
      * @return A complete Level object that is the json file deserialized
      */
     public Level loadLevel(FileHandle f) {
+        // If this ever breaks try putting .readString() at the end of internal(f)
+        // Can't load from a file handle because the file system is weird when
+        // exported to a .jar
         LevelData levelData = json.fromJson(LevelData.class, f);
 
         // Load the map regions

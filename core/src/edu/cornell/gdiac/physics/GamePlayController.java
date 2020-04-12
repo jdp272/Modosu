@@ -82,7 +82,7 @@ public class GamePlayController extends WorldController {
 
 	private int currentLevel = 0;
 
-	private String[] levels;
+	private FileHandle[] levels;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -115,6 +115,7 @@ public class GamePlayController extends WorldController {
 		assets.add(WALK_SOUND);
 //		manager.load(EXPLOSION_SOUND, Sound.class);
 //		assets.add(EXPLOSION_SOUND);
+
 
 		super.preLoadContent(manager);
 	}
@@ -160,10 +161,14 @@ public class GamePlayController extends WorldController {
 
 		cache = new Vector2();
 
-		File f = new File("levels");
-		levels = f.list();
-		Arrays.sort(levels);
-		System.out.println(Arrays.toString(levels));
+		// This method of searching through the directory doesn't work on desktop
+		// once the project is converted into a .jar. They are "internal" files
+		// and so the f.list will return an empty list.
+
+		// FileHandle f = Gdx.files.internal("levels");
+		// levels = f.list();
+		// System.out.println(levels + "printing levels");
+
 		currentLevel = 0;
 	}
 
@@ -184,12 +189,14 @@ public class GamePlayController extends WorldController {
 
 		Vector2 gravity = new Vector2(world.getGravity());
 
-		String levelName = "levels/"+levels[currentLevel];
-		FileHandle f = new FileHandle(levelName);
+
+		FileHandle levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
+
+//		FileHandle f = new FileHandle(levelName);
 //		loader.saveLevel(f, level);
 
-		System.out.println("loading level: " + levelName);
-		level = loader.loadLevel(f);
+		//System.out.println("loading level: " + levelName);
+		level = loader.loadLevel(levelToLoad);
 
 		HUD.clearHUD();
 		HUD.setNumTotalHosts(level.hosts.size());
