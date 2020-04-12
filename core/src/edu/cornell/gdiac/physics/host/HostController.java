@@ -35,7 +35,11 @@ public class HostController {
     /** Whether the possessed host has blown up */
     private boolean possessedBlownUp;
 
+    /** Whether a successful launch occurred this frame */
     private boolean launched;
+    /** Whether player moved host this frame */
+    private boolean moved;
+
 
     private InputController input;
 
@@ -77,6 +81,7 @@ public class HostController {
         arrowCache = new Vector2();
         this.pedestal = pedestal;
         numHosts = h.size();
+        moved = false;
     }
 
     /**
@@ -144,6 +149,9 @@ public class HostController {
                 possessed.setBodyType(BodyDef.BodyType.DynamicBody);
             }
 
+            moved = false;
+
+            // When possessed, spirit should not move
             if (spirit.getIsPossessing()) {
                 spirit.setVX(0f);
                 spirit.setVY(0f);
@@ -159,9 +167,14 @@ public class HostController {
                 if (!spirit.hasLaunched || spirit.getIsPossessing()) {
 
                     // Move using player input
-                    if (!possessed.isPedestal()){
+//                    if (!possessed.isPedestal() && (input.getVertical() != 0 || input.getHorizontal() != 0)){
+                    if (!possessed.isPedestal()) {
                         possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal());
                         possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical());
+
+                        if (input.getVertical() != 0 || input.getHorizontal() != 0) {
+                            moved = true;
+                        }
                     }
 
                     if ((input.getVertical() != 0 || input.getHorizontal() != 0) && (!spirit.getGoToCenter())) {
@@ -220,7 +233,8 @@ public class HostController {
                             launched = true;
 
                         }
-                    } else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
+                    }
+                    else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
                         // Save current mouse location in arrowModel
                         // Save possessed current position as the starting drawing point
 
@@ -356,4 +370,5 @@ public class HostController {
         }
     }
 
+    public boolean isMoving() { return moved; }
 }
