@@ -197,6 +197,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
             listener.exitScreen(this,WorldController.EXIT_MENU);
         }
+        // Update sounds
+        SoundController.getInstance().update();
     }
 
 
