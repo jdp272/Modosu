@@ -112,6 +112,7 @@ public class GamePlayController extends WorldController {
 //		manager.load(EXPLOSION_SOUND, Sound.class);
 //		assets.add(EXPLOSION_SOUND);
 
+
 		super.preLoadContent(manager);
 	}
 
@@ -154,6 +155,9 @@ public class GamePlayController extends WorldController {
 
 		cache = new Vector2();
 
+		// This method of searching through the directory doesn't work on desktop
+		// once the project is converted into a .jar. They are "internal" files
+		// and so the f.list will return an empty list.
 		File f = new File("levels");
 		levels = f.list();
 		currentLevel = 0;
@@ -176,12 +180,15 @@ public class GamePlayController extends WorldController {
 
 		Vector2 gravity = new Vector2(world.getGravity());
 
-		String levelName = "levels/"+levels[currentLevel];
-		FileHandle f = new FileHandle(levelName);
+
+		// String levelName = "levels/"+levels[currentLevel];
+		String levelName = "levels/custom.lvl";
+
+//		FileHandle f = new FileHandle(levelName);
 //		loader.saveLevel(f, level);
 
 		System.out.println("loading level: " + levelName);
-		level = loader.loadLevel(f);
+		level = loader.loadLevel(levelName);
 
 		pedestal = level.pedestal;
 		spirit = level.start;
