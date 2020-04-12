@@ -16,6 +16,9 @@ public class CollisionController implements ContactListener {
     /** Whether the is the new host's first time possession */
     private boolean isNewPossession;
 
+    /** Whether the is the new host's first time possession */
+    private boolean isNewPossession;
+
     /** What host was possessed this frame, null if no possession occurred */
     private HostModel hostPossessed;
 
