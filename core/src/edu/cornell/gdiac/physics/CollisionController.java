@@ -13,9 +13,6 @@ public class CollisionController implements ContactListener {
     /** Whether the host was bounced against a wall this frame */
     private boolean bounced;
 
-    /** Whether the robot has touched against a wall this frame */
-    private boolean againstWall;
-
     /** Whether the is the new host's first time possession */
     private boolean isNewPossession;
 
@@ -42,7 +39,6 @@ public class CollisionController implements ContactListener {
         hostPossessed = null;
         isNewPossession = false;
         prevHostPossessed = null;
-        againstWall = false;
     }
 
     /**
@@ -243,7 +239,6 @@ public class CollisionController implements ContactListener {
     /** Reset all the fields to reflect this current frame */
     public void clear() {
         bounced = false;
-        againstWall = false;
         isNewPossession = false;
     }
 
@@ -259,8 +254,4 @@ public class CollisionController implements ContactListener {
 
     /** Getter method to return whether a wall bounce occurred this frame */
     public boolean isBounced() { return bounced; }
-
-    public boolean isAgainstWall() {
-        return againstWall;
-    }
 }

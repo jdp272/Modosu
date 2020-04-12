@@ -58,6 +58,8 @@ public class GamePlayController extends WorldController {
 	private static final String  FAILURE_SOUND = "shared/failure.mp3";
 	/** The asset for the victory sound */
 	private static final String  VICTORY_SOUND = "shared/victory.mp3";
+	/** The asset for the golem walking sound */
+	private static final String  WALK_SOUND = "host/walk.mp3";
 
 //	/** The asset for the explosion sound */
 //	private static final String  EXPLODE_SOUND = "host/afterburner.mp3";
@@ -108,6 +110,8 @@ public class GamePlayController extends WorldController {
 		assets.add(VICTORY_SOUND);
 		manager.load(LAUNCH_SOUND, Sound.class);
 		assets.add(LAUNCH_SOUND);
+		manager.load(WALK_SOUND, Sound.class);
+		assets.add(WALK_SOUND);
 //		manager.load(EXPLOSION_SOUND, Sound.class);
 //		assets.add(EXPLOSION_SOUND);
 
@@ -135,6 +139,7 @@ public class GamePlayController extends WorldController {
 		sounds.allocate(manager, FAILURE_SOUND);
 		sounds.allocate(manager, VICTORY_SOUND);
 		sounds.allocate(manager, LAUNCH_SOUND);
+		sounds.allocate(manager, WALK_SOUND);
 //		sounds.allocate(manager, EXPLOSION_SOUND);
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -333,10 +338,13 @@ public class GamePlayController extends WorldController {
 			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
 		}
 
-		if (collisionController.isAgainstWall() && !spirit.hasLaunched) {
-			spirit.setVX(0f);
-			spirit.setVY(0f);
+		if (hostController.isMoving()) {
+			SoundController.getInstance().play(WALK_SOUND, WALK_SOUND, true);
 		}
+		else {
+			SoundController.getInstance().stop(WALK_SOUND);
+		}
+
 
 		// Check lose condition
 		if (hostController.getPossessedBlownUp() && !isComplete() && !isFailure()) {
