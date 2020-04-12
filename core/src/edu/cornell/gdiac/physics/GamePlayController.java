@@ -322,6 +322,11 @@ public class GamePlayController extends WorldController {
 			possessed = collisionController.getHostPossessed();
 		}
 
+		// Remove Pedestal Once Possessing a New Host
+		if(pedestal != possessed) {
+			pedestal.markRemoved(true);
+		}
+
 		// Calls update on hostController
 		hostController.update(delta, possessed, spirit, level.pedestal);
 		if (hostController.getLaunched()){
@@ -361,6 +366,7 @@ public class GamePlayController extends WorldController {
 		if (InputController.getInstance().didZoom()) {
 			canvas.toggleZoom();
 		}
+
 
 		// Uncomment this if we want to zoom in when a shot is fired, but not when it's being aimed
 		/*

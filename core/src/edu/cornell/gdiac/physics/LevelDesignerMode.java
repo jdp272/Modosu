@@ -57,6 +57,7 @@ public class LevelDesignerMode extends WorldController {
 	/** Texture asset for foreground */
 	private TextureRegion foregroundTexture;
 
+
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
 
@@ -199,8 +200,8 @@ public class LevelDesignerMode extends WorldController {
 		HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
 		addObject(hostSpawn);
 
-		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
-		addObject(spiritSpawn);
+//		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
+//		addObject(spiritSpawn);
 
 		HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
 		addObject(pedestalSpawn);
@@ -209,11 +210,11 @@ public class LevelDesignerMode extends WorldController {
 
 
 
-				spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
-					public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-						return factory.makePedestal(x, y);
-					}
-				});
+		spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
+			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+				return factory.makePedestal(x, y);
+			}
+		});
 
 		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
 			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
@@ -343,7 +344,7 @@ public class LevelDesignerMode extends WorldController {
 	 * handles updating the spawner and creating new objects from the spawner,
 	 * which would be immediately picked up by the selector.
 	 */
-	private void updateSelector() {
+	private void updateSelector(boolean hasPed) {
 		InputController input = InputController.getInstance();
 
 		/* Offset the mouse based on the camera translation.
@@ -419,11 +420,17 @@ public class LevelDesignerMode extends WorldController {
 
 		// Spawn a new object if a spawner was clicked
 		Obstacle obj = spawnList.update(camTarget);
+
 		if(obj != null) {
-			addObject(obj);
-			selector.select(mouseX, mouseY);
-			selecting = true;
+		    // If the selected object is a pedestal then check if pedestal is already in the game
+			if((obj.getName() == "pedestal" && !hasPed) || obj.getName() != "pedestal") {
+				addObject(obj);
+				selector.select(mouseX, mouseY);
+				selecting = true;
+			}
 		}
+
+
 	}
 
 	/**
@@ -440,10 +447,19 @@ public class LevelDesignerMode extends WorldController {
 		// Move an object if touched
 		InputController input = InputController.getInstance();
 
-		// Update the camera position
+		// TODO This is probably super ineffficient but it does the job
+		boolean hasPed = false;
+		// looks for pedestal object in the game thats been placed on the board
+		for(Obstacle obj : objects) {
+			if (obj.getName() == "pedestal" && obj.inGame) {
+				hasPed = true;
+			}
+		}
+
+				// Update the camera position
 		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
 
-		updateSelector();
+		updateSelector(hasPed);
 
 		if(input.didPrimary()) {
 			//change wall texture that is currently selected at mouse location
