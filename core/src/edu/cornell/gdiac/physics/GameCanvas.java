@@ -75,7 +75,10 @@ public class GameCanvas {
 	
 	/** Camera for the underlying SpriteBatch */
 	private OrthographicCamera camera;
-	
+
+	/** HUD - For static items on screen */
+	private HUD hud;
+
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
 	/** Value to cache window height (if we are currently full screen) */
@@ -116,12 +119,15 @@ public class GameCanvas {
 		active = DrawPass.INACTIVE;
 		spriteBatch = new PolygonSpriteBatch();
 		debugRender = new ShapeRenderer();
-		
+
 		// Set the projection matrix (for proper scaling)
 		camera = new OrthographicCamera(getWidth(),getHeight());
 		camera.setToOrtho(false);
 		spriteBatch.setProjectionMatrix(camera.combined);
 		debugRender.setProjectionMatrix(camera.combined);
+
+		// Create stage for HUD
+		hud = new HUD(spriteBatch);
 
 		// Initialize the cache objects
 		holder = new TextureRegion();
@@ -138,6 +144,7 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot dispose while drawing active", new IllegalStateException());
 			return;
 		}
+		hud.dispose();
 		spriteBatch.dispose();
     	spriteBatch = null;
     	local  = null;
@@ -445,6 +452,15 @@ public class GameCanvas {
     	spriteBatch.end();
     	active = DrawPass.INACTIVE;
     }
+
+	/**
+	 * Draws the HUD
+	 */
+    public void drawHUD(float delta) {
+		spriteBatch.setProjectionMatrix(hud.getStage().getCamera().combined); //set the spriteBatch to draw what our stageViewport sees
+		hud.getStage().act(delta); //act the Hud
+		hud.getStage().draw(); //draw the Hud
+	}
 
 	/**
 	 * Draws the tinted texture at the given position.
