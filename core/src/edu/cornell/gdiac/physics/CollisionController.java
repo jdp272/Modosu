@@ -13,8 +13,8 @@ public class CollisionController implements ContactListener {
     /** Whether the host was bounced against a wall this frame */
     private boolean bounced;
 
-    /** Whether the robot has touched against a wall this frame */
-    private boolean againstWall;
+    /** Whether the is the new host's first time possession */
+    private boolean isNewPossession;
 
     /** What host was possessed this frame, null if no possession occurred */
     private HostModel hostPossessed;
@@ -37,8 +37,8 @@ public class CollisionController implements ContactListener {
         hostList = null;
         bounced = false;
         hostPossessed = null;
+        isNewPossession = false;
         prevHostPossessed = null;
-        againstWall = false;
     }
 
     /**
@@ -49,6 +49,7 @@ public class CollisionController implements ContactListener {
         hostList = null;
         bounced = false;
         hostPossessed = null;
+        isNewPossession = false;
     }
 
     /**
@@ -81,9 +82,8 @@ public class CollisionController implements ContactListener {
         // Reset all the fields to reflect this current frame if needed
         clear();
         prevHostPossessed = hostPossessed;
-
+        isNewPossession = false;
         hostPossessed = null;
-
 
         Fixture fix1 = contact.getFixtureA();
         Fixture fix2 = contact.getFixtureB();
@@ -100,6 +100,9 @@ public class CollisionController implements ContactListener {
                     (body1.getUserData() == r && body2.getUserData() == spirit))) {
 
                 hostPossessed = r;
+
+                // A new host has been possessed that has never been possessed before
+                if (!hostPossessed.beenPossessed()) { isNewPossession = true; }
 
                 // host is now possessed
                 hostPossessed.setPossessed(true);
@@ -236,10 +239,12 @@ public class CollisionController implements ContactListener {
     /** Reset all the fields to reflect this current frame */
     public void clear() {
         bounced = false;
-        againstWall = false;
+        isNewPossession = false;
     }
 
     // Getters
+    /** Getter method to return whether the possession is the first time for the host */
+    public boolean isNewPossession() { return isNewPossession; }
 
     /** Getter method to return the possessed host */
     public HostModel getHostPossessed() { return hostPossessed; }
@@ -249,8 +254,4 @@ public class CollisionController implements ContactListener {
 
     /** Getter method to return whether a wall bounce occurred this frame */
     public boolean isBounced() { return bounced; }
-
-    public boolean isAgainstWall() {
-        return againstWall;
-    }
 }

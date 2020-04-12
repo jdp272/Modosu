@@ -160,7 +160,7 @@ public abstract class WorldController implements Screen {
 		assets.add(ARROW_FILE);
 		manager.load(PEDESTAL_FILE, Texture.class);
 		assets.add(PEDESTAL_FILE);
-		
+
 		// Load the font
 		FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
 		size2Params.fontFileName = FONT_FILE;
@@ -192,7 +192,7 @@ public abstract class WorldController implements Screen {
 		hostGaugeTex = createTexture(manager, HOST_GAUGE_FILE, true);
 		wallTex = createTexture(manager, WALL_FILE, true);
 		arrowTex = new Texture(ARROW_FILE);
-		
+
 		// Allocate the font
 		if (manager.isLoaded(FONT_FILE)) {
 			displayFont = manager.get(FONT_FILE,BitmapFont.class);
@@ -662,13 +662,15 @@ public abstract class WorldController implements Screen {
 		canvas.clear();
 
 		canvas.begin();
+
 		canvas.draw(backgroundTexture, 0,0);
+
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
 
 		canvas.end();
-		
+
 		if (debug) {
 			canvas.beginDebug();
 			for(Obstacle obj : objects) {
@@ -680,7 +682,10 @@ public abstract class WorldController implements Screen {
 		if (arrow != null){
 			arrow.draw(canvas);
 		}
-		
+
+		// Sets the stage to draw the HUD
+		canvas.drawHUD(delta);
+
 		// Final message
 		if (complete && !failed) {
 			displayFont.setColor(Color.YELLOW);
@@ -694,6 +699,7 @@ public abstract class WorldController implements Screen {
 			canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
 			canvas.end();
 		}
+
 	}
 	
 	/**

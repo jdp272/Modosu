@@ -22,6 +22,7 @@ import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import edu.cornell.gdiac.util.ScreenListener;
+import edu.cornell.gdiac.util.SoundController;
 
 
 /**
@@ -30,15 +31,17 @@ import edu.cornell.gdiac.util.ScreenListener;
  */
 public class LevelSelectMode extends WorldController implements Screen, InputProcessor {
     /** Texture file for background image */
-    private static final String BACKG_FILE = "shared/levelselectbackground.png";
+    private static final String BACKG_FILE = "shared/LevelSelectBackground.png";
     private static final String ONE_FILE = "shared/1.png";
     private static final String TWO_FILE = "shared/2.png";
     private static final String THREE_FILE = "shared/3.png";
     private static final String FOUR_FILE = "shared/4.png";
+    private static final String CLICK_SOUND = "shared/click.mp3";
+    private static final String HOVER_SOUND = "shared/hover.mp3";
 
 
-    private static int LEVEL_X_START = 180;
-    private static int LEVEL_Y = 20;
+    private static int LEVEL_X_START = 170;
+    private static int LEVEL_Y = 230;
     private static int LEVEL_BUTTON_SPACING = 200;
 
     /** Listener that will update the player mode when we are done */
@@ -65,6 +68,11 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     private static Color colorHovered;
     /** Color of buttons when not hovered */
     private static Color colorUnhovered;
+
+    /** Mouse is currently hovering over a button */
+    private boolean hoverButton;
+    /** Volume of hover sound */
+    private static float hoverVolume = .40f;
 
     /** Color of level one button */
     private Color colorOne;
@@ -157,7 +165,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         setComplete(false);
         setFailure(false);
 
-        colorHovered = new Color(Color.GRAY);
+        colorHovered = new Color(Color.rgb565(190f,245f,253f));
         colorUnhovered = new Color(Color.WHITE);
         colorOne = colorUnhovered;
         colorTwo = colorUnhovered;
@@ -189,6 +197,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
             listener.exitScreen(this,WorldController.EXIT_MENU);
         }
+        // Update sounds
+        SoundController.getInstance().update();
     }
 
 
@@ -239,26 +249,31 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
         if(screenX >=  oneStart.x && screenX <= oneEnd.x) {
             if (screenY >= oneStart.y && screenY <= oneEnd.y) {
+                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
                 listener.exitScreenLevel(0);
             }
+
         }
 
         else if(screenX >= twoStart.x && screenX <= twoEnd.x ) {
             if (screenY >= twoStart.y && screenY <= twoEnd.y) {
+                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
                 listener.exitScreenLevel(1);
             }
         }
 
         else if(screenX >= threeStart.x && screenX <= threeEnd.x) {
             if (screenY >= threeStart.y && screenY <= threeEnd.y)  {
+                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+                listener.exitScreenLevel(2);
             }
-            listener.exitScreenLevel(2);
         }
 
         else if(screenX >= fourStart.x && screenX <= fourEnd.x) {
-            if (screenY >= fourEnd.y && screenY <= fourEnd.y)  {
+            if (screenY >= fourStart.y && screenY <= fourEnd.y)  {
+                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+                listener.exitScreenLevel(3);
             }
-            listener.exitScreenLevel(3);
         }
 
         return false;
@@ -281,32 +296,61 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
             if (screenX >= oneStart.x && screenX <= oneEnd.x) {
                 if (screenY >= oneStart.y && screenY <= oneEnd.y) {
                     colorOne = colorHovered;
-                } else {
-                    colorOne = colorUnhovered;
+                    if (!hoverButton) {
+                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverButton = true;
+                    }
                 }
-            } else if (screenX >= twoStart.x && screenX <= twoEnd.x) {
+                else {
+                    colorOne = colorUnhovered;
+                    hoverButton = false;
+                }
+            }
+            else if (screenX >= twoStart.x && screenX <= twoEnd.x) {
                 if (screenY >= twoStart.y && screenY <= twoEnd.y) {
                     colorTwo = colorHovered;
-                } else {
-                    colorTwo = colorUnhovered;
+                    if (!hoverButton) {
+                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverButton = true;
+                    }
                 }
-            } else if (screenX >= threeStart.x && screenX <= threeEnd.x) {
+                else {
+                    colorTwo = colorUnhovered;
+                    hoverButton = false;
+                }
+            }
+            else if (screenX >= threeStart.x && screenX <= threeEnd.x) {
                 if (screenY >= threeStart.y && screenY <= threeEnd.y) {
                     colorThree = colorHovered;
-                } else {
-                    colorThree = colorUnhovered;
+                    if (!hoverButton) {
+                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverButton = true;
+                    }
                 }
-            } else if (screenX >= fourStart.x && screenX <= fourEnd.x) {
+                else {
+                    colorThree = colorUnhovered;
+                    hoverButton = false;
+                }
+            }
+            else if (screenX >= fourStart.x && screenX <= fourEnd.x) {
                 if (screenY >= fourStart.y && screenY <= fourEnd.y) {
                     colorFour = colorHovered;
-                } else {
-                    colorFour = colorUnhovered;
+                    if (!hoverButton) {
+                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverButton = true;
+                    }
                 }
-            } else {
+                else {
+                    colorFour = colorUnhovered;
+                    hoverButton = false;
+                }
+            }
+            else {
                 colorOne = colorUnhovered;
                 colorTwo = colorUnhovered;
                 colorThree = colorUnhovered;
                 colorFour = colorUnhovered;
+                hoverButton = false;
             }
         }
         return true;
@@ -326,9 +370,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      * @param pointer the button or touch finger number
      * @return whether to hand the event to other listeners.
      */
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return true;
-    }
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) { return true; }
 
     /**
      * Called when a button on the Controller was pressed.
@@ -362,9 +404,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      * @param keycode the key pressed
      * @return whether to hand the event to other listeners.
      */
-    public boolean keyDown(int keycode) {
-        return true;
-    }
+    public boolean keyDown(int keycode) { return true; }
 
     /**
      * Called when a key is typed (UNSUPPORTED)
@@ -372,9 +412,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      * @param character the key typed
      * @return whether to hand the event to other listeners.
      */
-    public boolean keyTyped(char character) {
-        return true;
-    }
+    public boolean keyTyped(char character) { return true; }
 
     /**
      * Called when a key is released.
@@ -384,13 +422,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      * @param keycode the key released
      * @return whether to hand the event to other listeners.
      */
-    public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.N || keycode == Input.Keys.P) {
-            System.out.println("pressed N or P");
-            return false;
-        }
-        return true;
-    }
+    public boolean keyUp(int keycode) { return true; }
 
     /**
      * Called when the mouse wheel was scrolled. (UNSUPPORTED)
@@ -398,9 +430,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      * @param amount the amount of scroll from the wheel
      * @return whether to hand the event to other listeners.
      */
-    public boolean scrolled(int amount) {
-        return true;
-    }
+    public boolean scrolled(int amount) { return true; }
 
     /**
      * Called when the mouse or finger was dragged. (UNSUPPORTED)
@@ -410,8 +440,6 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      * @param pointer the button or touch finger number
      * @return whether to hand the event to other listeners.
      */
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return true;
-    }
+    public boolean touchDragged(int screenX, int screenY, int pointer) { return true; }
 
 }

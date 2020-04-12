@@ -58,6 +58,8 @@ public class GamePlayController extends WorldController {
 	private static final String  FAILURE_SOUND = "shared/failure.mp3";
 	/** The asset for the victory sound */
 	private static final String  VICTORY_SOUND = "shared/victory.mp3";
+	/** The asset for the golem walking sound */
+	private static final String  WALK_SOUND = "host/walk.mp3";
 
 //	/** The asset for the explosion sound */
 //	private static final String  EXPLODE_SOUND = "host/afterburner.mp3";
@@ -77,7 +79,6 @@ public class GamePlayController extends WorldController {
 
 	private Vector2 cache;
 
-	/** Animation for host walking */
 	private int currentLevel = 0;
 
 	private String[] levels;
@@ -109,6 +110,8 @@ public class GamePlayController extends WorldController {
 		assets.add(VICTORY_SOUND);
 		manager.load(LAUNCH_SOUND, Sound.class);
 		assets.add(LAUNCH_SOUND);
+		manager.load(WALK_SOUND, Sound.class);
+		assets.add(WALK_SOUND);
 //		manager.load(EXPLOSION_SOUND, Sound.class);
 //		assets.add(EXPLOSION_SOUND);
 
@@ -137,6 +140,7 @@ public class GamePlayController extends WorldController {
 		sounds.allocate(manager, FAILURE_SOUND);
 		sounds.allocate(manager, VICTORY_SOUND);
 		sounds.allocate(manager, LAUNCH_SOUND);
+		sounds.allocate(manager, WALK_SOUND);
 //		sounds.allocate(manager, EXPLOSION_SOUND);
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -150,6 +154,7 @@ public class GamePlayController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		collisionController = new CollisionController();
+
 		lvl = 0;
 		world.setContactListener(collisionController);
 
@@ -190,10 +195,12 @@ public class GamePlayController extends WorldController {
 		System.out.println("loading level: " + levelName);
 		level = loader.loadLevel(levelName);
 
+		HUD.clearHUD();
+		HUD.setNumTotalHosts(level.hosts.size());
+
 		pedestal = level.pedestal;
 		spirit = level.start;
 		spirit.setName("spirit");
-
 
 		possessed = pedestal;
 		spirit.setGoToCenter(true);
@@ -204,6 +211,7 @@ public class GamePlayController extends WorldController {
 
 		//level = loader.reset(lvl);
 		//parse level
+
 		hostController = new HostController(level.hosts, scale, arrowTex, pedestal);
 
 		// Reset the collision controller
@@ -304,8 +312,10 @@ public class GamePlayController extends WorldController {
 		//keep everything in bounds
 		keepInBounds();
 
+
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){
+			HUD.incrementCurrHosts();
 			setComplete(true);
 			SoundController.getInstance().play(VICTORY_SOUND,VICTORY_SOUND,false);
 		}
@@ -316,6 +326,9 @@ public class GamePlayController extends WorldController {
 			// Play possession sound if something different is possessed this frame
 			if (possessed != collisionController.getHostPossessed()) {
 				SoundController.getInstance().play(POSSESSION_SOUND,POSSESSION_SOUND,false);
+
+				// A new host has been possessed that has never been possessed before
+				if (collisionController.isNewPossession()) { HUD.incrementCurrHosts(); }
 			}
 
 			possessed = collisionController.getHostPossessed();
@@ -332,16 +345,20 @@ public class GamePlayController extends WorldController {
 			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
 		}
 
-		if (collisionController.isAgainstWall() && !spirit.hasLaunched) {
-			spirit.setVX(0f);
-			spirit.setVY(0f);
+		if (hostController.isMoving()) {
+			SoundController.getInstance().play(WALK_SOUND, WALK_SOUND, true);
 		}
+		else {
+			SoundController.getInstance().stop(WALK_SOUND);
+		}
+
 
 		// Check lose condition
 		if (hostController.getPossessedBlownUp() && !isComplete() && !isFailure()) {
 			setFailure(true);
 			SoundController.getInstance().play(FAILURE_SOUND, FAILURE_SOUND, false);
 		}
+
 
 		// Get arrow and draw if applicable
 		arrow = hostController.getArrow();
