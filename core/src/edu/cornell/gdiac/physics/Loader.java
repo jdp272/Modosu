@@ -244,8 +244,6 @@ public class Loader {
              This also assumes that a zero charge time means it has no time
              limit
 
-
-             TODO: Make a host once HostModel constructor is ready
              */
                 hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions));
 //            hosts.add(new HostModel(rData.location.x, rData.location.y, (int)Data.chargeTime), false);
@@ -254,8 +252,6 @@ public class Loader {
         // Create the starting "host" (with no charge capacity)
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
-        // TODO: ensure implementation of 0 charge time means no cap
-
         return new Level(regions, obstacles, water, hosts, spirit, pedestal);
     }
 

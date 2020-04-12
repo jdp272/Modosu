@@ -30,6 +30,7 @@ import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -161,6 +162,8 @@ public class GamePlayController extends WorldController {
 
 		File f = new File("levels");
 		levels = f.list();
+		Arrays.sort(levels);
+		System.out.println(Arrays.toString(levels));
 		currentLevel = 0;
 	}
 

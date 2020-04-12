@@ -184,7 +184,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
 
     /**
-     * The core gameplay loop of this world.
+     * The core update loop of this menuscreen.
      *
      * This method contains the specific update code for this mini-game. It does
      * not handle collisions, as those are managed by the parent class WorldController.
