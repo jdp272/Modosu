@@ -207,9 +207,11 @@ public class Loader {
      *
      * @return A complete Level object that is the json file deserialized
      */
-    public Level loadLevel(String f) {
+    public Level loadLevel(FileHandle f) {
         // If this ever breaks try putting .readString() at the end of internal(f)
-        LevelData levelData = json.fromJson(LevelData.class, Gdx.files.internal(f));
+        // Can't load from a file handle because the file system is weird when
+        // exported to a .jar
+        LevelData levelData = json.fromJson(LevelData.class, f);
 
         // Load the map regions
         Vector2[][] regions = levelData.regions;

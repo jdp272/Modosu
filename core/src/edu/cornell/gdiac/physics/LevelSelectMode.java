@@ -31,7 +31,7 @@ import edu.cornell.gdiac.util.SoundController;
  */
 public class LevelSelectMode extends WorldController implements Screen, InputProcessor {
     /** Texture file for background image */
-    private static final String BACKG_FILE = "shared/LevelSelectBackground.png";
+    private static final String BACKG_FILE = "shared/levelselectbackground.png";
     private static final String ONE_FILE = "shared/1.png";
     private static final String TWO_FILE = "shared/2.png";
     private static final String THREE_FILE = "shared/3.png";
