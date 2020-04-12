@@ -56,8 +56,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String CREDITS_FILE = "shared/credits.png";
 	private static final String QUIT_FILE = "shared/credits.png";
 
-	private static final String CLICK_SOUND = "shared/click.mp3";
-	private static final String HOVER_SOUND = "shared/hover.mp3";
+//	private static final String CLICK_SOUND = "shared/click.mp3";
+//	private static final String HOVER_SOUND = "shared/hover.mp3";
 	
 	/** Background texture for start-up */
 	private Texture background;
@@ -103,7 +103,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Level Design button-y (for scaling) */
 	private static int LEVEL_Y = 150;
 	/** Credit button-y (for scaling) */
-	private static int CREDITS_Y = 100;
+	private static int CREDITS_Y = 110;
 	/** Quit button-y (for scaling) */
 	private static int QUIT_Y = 525;
 	/** Quit button-x (for scaling) */
@@ -291,8 +291,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 *
 	 */
 	public void preLoadContent() {
-		manager.load(CLICK_SOUND, Sound.class);
-		manager.load(HOVER_SOUND, Sound.class);
+//		manager.load(CLICK_SOUND, Sound.class);
+//		manager.load(HOVER_SOUND, Sound.class);
 	}
 
 	/**
@@ -305,9 +305,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 *
 	 */
 	public void loadContent() {
-		SoundController sounds = SoundController.getInstance();
-		sounds.allocate(manager, CLICK_SOUND);
-		sounds.allocate(manager, HOVER_SOUND);
+//		SoundController sounds = SoundController.getInstance();
+//		sounds.allocate(manager, CLICK_SOUND);
+//		sounds.allocate(manager, HOVER_SOUND);
 	}
 	
 	/**
@@ -360,7 +360,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				lvlSelect.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 				credits = new Texture(CREDITS_FILE);
 				credits.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-				quit = new Texture(CREDITS_FILE);
+				quit = new Texture(QUIT_FILE);
 				quit.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			}
 		}
@@ -555,28 +555,28 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 2;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+//				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 			}
 		}
 
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlSelect.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 5;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+//				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 			}
 		}
 
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 4;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+//				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 			}
 		}
 
 		if(screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 6;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+//				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 			}
 		}
 
@@ -674,7 +674,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE)) {
 					colorStart = colorHovered;
-					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
+//					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
 				}
 				else {
 					colorStart = colorUnhovered;
@@ -684,7 +684,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			else if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X+(lvlSelect.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlSelect = colorHovered;
-					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
+//					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
 				}
 				else {
 					colorLvlSelect = colorUnhovered;
@@ -694,7 +694,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			else if(screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlDesign = colorHovered;
-					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
+//					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
 				}
 				else {
 					colorLvlDesign = colorUnhovered;
@@ -704,7 +704,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			else if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth()*scale*BUTTON_SCALE)) {
 					colorCredits = colorHovered;
-					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
+//					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
 				}
 				else {
 					colorCredits = colorUnhovered;
@@ -713,7 +713,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			else if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE)) {
 					colorQuit = colorHovered;
-					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
+//					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
 				}
 				else {
 					colorQuit = colorUnhovered;
