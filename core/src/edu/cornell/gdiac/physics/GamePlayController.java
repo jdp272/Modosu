@@ -77,7 +77,6 @@ public class GamePlayController extends WorldController {
 
 	private Vector2 cache;
 
-	/** Animation for host walking */
 	private int currentLevel = 0;
 
 	private String[] levels;
@@ -200,6 +199,7 @@ public class GamePlayController extends WorldController {
 
 		//level = loader.reset(lvl);
 		//parse level
+
 		hostController = new HostController(level.hosts, scale, arrowTex, pedestal);
 
 		// Reset the collision controller
