@@ -46,21 +46,18 @@ import edu.cornell.gdiac.util.*;
  * the application.  That is why we try to have as few resources as possible for this
  * loading screen.
  */
-public class LoadingMode extends WorldController implements Screen, InputProcessor, ControllerListener {
+public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	// Textures necessary to support the loading screen 
-	private static final String BACKGROUND_FILE = "shared/Menu.png";
+	private static final String BACKGROUND_FILE = "shared/menu.png";
 	private static final String PROGRESS_FILE = "shared/progressbar.png";
 	private static final String PLAY_BTN_FILE = "shared/start.png";
 	private static final String LVL_DSGN_FILE = "shared/leveldesign.png";
 	private static final String LVL_SLCT_FILE = "shared/levelselect.png";
 	private static final String CREDITS_FILE = "shared/credits.png";
+	private static final String QUIT_FILE = "shared/credits.png";
 
 	private static final String CLICK_SOUND = "shared/click.mp3";
 	private static final String HOVER_SOUND = "shared/hover.mp3";
-
-	/** Track all loaded assets (for unloading purposes) */
-	protected Array<String> assets;
-
 	
 	/** Background texture for start-up */
 	private Texture background;
@@ -74,7 +71,8 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	private Texture lvlSelect;
 	/** Credits button to display when done */
 	private Texture credits;
-
+	/** Quit button to display when done */
+	private Texture quit;
 	
 	// statusBar is a "texture atlas." Break it up into parts.
 	/** Left cap to the status background (grey region) */
@@ -100,12 +98,17 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	private static int BUTTON_X  = 175;
 	/** Start button-y (for scaling) */
 	private static int START_Y = 250;
+	/** Level Select button-y (for scaling) */
+	private static int LEVEL_SELECT_Y = 200;
 	/** Level Design button-y (for scaling) */
-	private static int LEVEL_Y = 200;
-	/** Level Design button-y (for scaling) */
-	private static int LEVEL_SELECT_Y = 150;
-	/** Level Design button-y (for scaling) */
+	private static int LEVEL_Y = 150;
+	/** Credit button-y (for scaling) */
 	private static int CREDITS_Y = 100;
+	/** Quit button-y (for scaling) */
+	private static int QUIT_Y = 525;
+	/** Quit button-x (for scaling) */
+	private static int QUIT_X = 900;
+
 	/** Color of buttons when hovered */
 	private static Color colorHovered;
 	/** Color of buttons when not hovered */
@@ -119,6 +122,8 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	private Color colorLvlSelect;
 	/** Color of credits button */
 	private Color colorCredits;
+	/** Color of quit button */
+	private Color colorQuit;
 
 	/** Ratio of the bar width to the screen */
 	private static float BAR_WIDTH_RATIO  = 0.66f;
@@ -228,7 +233,6 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 		this.manager = manager;
 		this.canvas  = canvas;
 		budget = millis;
-		assets = new Array<String>();
 		
 		// Compute the dimensions from the canvas
 		resize(canvas.getWidth(),canvas.getHeight());
@@ -239,22 +243,17 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 		colorLvlDesign = colorUnhovered;
 		colorLvlSelect = colorUnhovered;
 		colorCredits = colorUnhovered;
+		colorQuit = colorUnhovered;
 
-		manager.load(CLICK_SOUND, Sound.class);
-		assets.add(CLICK_SOUND);
-		manager.load(HOVER_SOUND, Sound.class);
-		assets.add(HOVER_SOUND);
-
-		SoundController sounds = SoundController.getInstance();
-		sounds.allocate(manager, CLICK_SOUND);
-		sounds.allocate(manager, HOVER_SOUND);
-		super.loadContent(manager);
+		preLoadContent();
+		loadContent();
 
 		// Load the next two images immediately.
 		playButton = null;
 		lvlDesign = null;
 		lvlSelect = null;
 		credits = null;
+		quit = null;
 		background = new Texture(BACKGROUND_FILE);
 		statusBar  = new Texture(PROGRESS_FILE);
 		
@@ -281,6 +280,35 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 		}
 		active = true;
 	}
+
+	/**
+	 * Preloads the assets for this controller.
+	 *
+	 * To make the game modes more for-loop friendly, we opted for nonstatic loaders
+	 * this time.  However, we still want the assets themselves to be static.  So
+	 * we have an AssetState that determines the current loading state.  If the
+	 * assets are already loaded, this method will do nothing.
+	 *
+	 */
+	public void preLoadContent() {
+		manager.load(CLICK_SOUND, Sound.class);
+		manager.load(HOVER_SOUND, Sound.class);
+	}
+
+	/**
+	 * Loads the assets for this controller.
+	 *
+	 * To make the game modes more for-loop friendly, we opted for nonstatic loaders
+	 * this time.  However, we still want the assets themselves to be static.  So
+	 * we have an AssetState that determines the current loading state.  If the
+	 * assets are already loaded, this method will do nothing.
+	 *
+	 */
+	public void loadContent() {
+		SoundController sounds = SoundController.getInstance();
+		sounds.allocate(manager, CLICK_SOUND);
+		sounds.allocate(manager, HOVER_SOUND);
+	}
 	
 	/**
 	 * Called when this screen should release all resources.
@@ -296,17 +324,17 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 
 		 background.dispose();
 		 statusBar.dispose();
+		 playButton.dispose();
+		 lvlSelect.dispose();
+		 lvlDesign.dispose();
+		 credits.dispose();
+		 quit.dispose();
 		 background = null;
 		 statusBar  = null;
 		 if (playButton != null) {
 			 playButton.dispose();
 			 playButton = null;
 		 }
-	}
-
-	@Override
-	public void reset() {
-
 	}
 
 	/**
@@ -332,6 +360,8 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 				lvlSelect.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 				credits = new Texture(CREDITS_FILE);
 				credits.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+				quit = new Texture(CREDITS_FILE);
+				quit.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 			}
 		}
 		// Update sounds
@@ -355,14 +385,17 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 			canvas.draw(playButton, colorStart, 0, 0,
 						BUTTON_X, START_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-			canvas.draw(lvlDesign, colorLvlDesign, 0, 0,
-					BUTTON_X, LEVEL_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-
 			canvas.draw(lvlSelect, colorLvlSelect, 0, 0,
 					BUTTON_X, LEVEL_SELECT_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
+			canvas.draw(lvlDesign, colorLvlDesign, 0, 0,
+					BUTTON_X, LEVEL_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
 			canvas.draw(credits, colorCredits, 0, 0,
 					BUTTON_X, CREDITS_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+
+			canvas.draw(quit, colorQuit, 0, 0,
+					QUIT_X, QUIT_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 		}
 		canvas.end();
 	}
@@ -421,6 +454,12 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 			//go to level design mode
 			if(pressState == 5 && listener != null){
 				listener.exitScreen(this,WorldController.EXIT_SELECT);
+			}
+
+			//close game
+			if(pressState == 6 && listener != null){
+				System.out.println("should be exiting the game");
+				listener.exitScreen(this,WorldController.EXIT_QUIT);
 			}
 		}
 	}
@@ -515,14 +554,7 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {
-				pressState = 1;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
-			}
-		}
-
-		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
-			if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
-				pressState = 3;
+				pressState = 2;
 				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 			}
 		}
@@ -530,6 +562,20 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlSelect.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 5;
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+			}
+		}
+
+		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
+			if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
+				pressState = 4;
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+			}
+		}
+
+		if(screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE) ) {
+			if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE) ) {
+				pressState = 6;
 				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 			}
 		}
@@ -548,18 +594,7 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	 * @param pointer the button or touch finger number
 	 * @return whether to hand the event to other listeners. 
 	 */	
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) { 
-		if (pressState == 1) {
-			pressState = 2;
-			return false;
-		}
-		if (pressState == 3) {
-			pressState = 4;
-			return false;
-		}
-
-		return true;
-	}
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) { return true; }
 	
 	/** 
 	 * Called when a button on the Controller was pressed. 
@@ -572,14 +607,7 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	 * @param buttonCode The button pressed
 	 * @return whether to hand the event to other listeners. 
 	 */
-	public boolean buttonDown (Controller controller, int buttonCode) {
-		if (buttonCode == startButton && pressState == 0) {
-			pressState = 1;
-			return false;
-		}
-
-		return true;
-	}
+	public boolean buttonDown (Controller controller, int buttonCode) { return true; }
 	
 	/** 
 	 * Called when a button on the Controller was released. 
@@ -592,14 +620,7 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	 * @param buttonCode The button pressed
 	 * @return whether to hand the event to other listeners. 
 	 */
-	public boolean buttonUp (Controller controller, int buttonCode) {
-		if (pressState == 1 && buttonCode == startButton) {
-			pressState = 2;
-			return false;
-		}
-
-		return true;
-	}
+	public boolean buttonUp (Controller controller, int buttonCode) { return true; }
 	
 	// UNSUPPORTED METHODS FROM InputProcessor
 
@@ -660,16 +681,6 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 				}
 			}
 
-			else if(screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE)) {
-				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE)) {
-					colorLvlDesign = colorHovered;
-					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
-				}
-				else {
-					colorLvlDesign = colorUnhovered;
-				}
-			}
-
 			else if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X+(lvlSelect.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlSelect = colorHovered;
@@ -677,6 +688,16 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 				}
 				else {
 					colorLvlSelect = colorUnhovered;
+				}
+			}
+
+			else if(screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE)) {
+				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE)) {
+					colorLvlDesign = colorHovered;
+					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
+				}
+				else {
+					colorLvlDesign = colorUnhovered;
 				}
 			}
 
@@ -689,11 +710,22 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 					colorCredits = colorUnhovered;
 				}
 			}
+			else if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE)) {
+				if (screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE)) {
+					colorQuit = colorHovered;
+					SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false);
+				}
+				else {
+					colorQuit = colorUnhovered;
+				}
+			}
+
 			else {
 				colorStart = colorUnhovered;
 				colorLvlDesign = colorUnhovered;
 				colorLvlSelect = colorUnhovered;
 				colorCredits = colorUnhovered;
+				colorQuit = colorUnhovered;
 			}
 		}
 
@@ -706,9 +738,7 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	 * @param amount the amount of scroll from the wheel
 	 * @return whether to hand the event to other listeners. 
 	 */	
-	public boolean scrolled(int amount) { 
-		return true; 
-	}
+	public boolean scrolled(int amount) { return true; }
 
 	/** 
 	 * Called when the mouse or finger was dragged. (UNSUPPORTED)
@@ -718,9 +748,7 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	 * @param pointer the button or touch finger number
 	 * @return whether to hand the event to other listeners. 
 	 */		
-	public boolean touchDragged(int screenX, int screenY, int pointer) { 
-		return true; 
-	}
+	public boolean touchDragged(int screenX, int screenY, int pointer) { return true; }
 	
 	// UNSUPPORTED METHODS FROM ControllerListener
 	
@@ -748,9 +776,7 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	 * @param value 	The axis value, -1 to 1
 	 * @return whether to hand the event to other listeners. 
 	 */
-	public boolean axisMoved (Controller controller, int axisCode, float value) {
-		return true;
-	}
+	public boolean axisMoved (Controller controller, int axisCode, float value) { return true; }
 
 	/** 
 	 * Called when a POV on the Controller moved. (UNSUPPORTED) 
@@ -762,9 +788,7 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	 * @param value 	The direction of the POV
 	 * @return whether to hand the event to other listeners. 
 	 */
-	public boolean povMoved (Controller controller, int povCode, PovDirection value) {
-		return true;
-	}
+	public boolean povMoved (Controller controller, int povCode, PovDirection value) { return true; }
 
 	/** 
 	 * Called when an x-slider on the Controller moved. (UNSUPPORTED) 
@@ -776,9 +800,7 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	 * @param value 	 The direction of the slider
 	 * @return whether to hand the event to other listeners. 
 	 */
-	public boolean xSliderMoved (Controller controller, int sliderCode, boolean value) {
-		return true;
-	}
+	public boolean xSliderMoved (Controller controller, int sliderCode, boolean value) { return true; }
 
 	/** 
 	 * Called when a y-slider on the Controller moved. (UNSUPPORTED) 
@@ -790,9 +812,7 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	 * @param value 	 The direction of the slider
 	 * @return whether to hand the event to other listeners. 
 	 */
-	public boolean ySliderMoved (Controller controller, int sliderCode, boolean value) {
-		return true;
-	}
+	public boolean ySliderMoved (Controller controller, int sliderCode, boolean value) { return true; }
 
 	/** 
 	 * Called when an accelerometer value on the Controller changed. (UNSUPPORTED) 
@@ -805,8 +825,5 @@ public class LoadingMode extends WorldController implements Screen, InputProcess
 	 * @param value A vector with the 3-axis acceleration
 	 * @return whether to hand the event to other listeners. 
 	 */
-	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
-		return true;
-	}
-
+	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) { return true; }
 }

@@ -35,6 +35,9 @@ import edu.cornell.gdiac.util.*;
 public class GDXRoot extends Game implements ScreenListener {
 	/** AssetManager to load game assets (textures, sounds, etc.) */
 	private AssetManager manager;
+
+	/** AssetManager to load game assets (textures, sounds, etc.) */
+	private AssetManager managerLoad;
 	/** Drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas; 
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
@@ -55,6 +58,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public GDXRoot() {
 		// Start loading with the asset manager
 		manager = new AssetManager();
+		managerLoad = new AssetManager();
 		
 		// Add font support to the asset manager
 		FileHandleResolver resolver = new InternalFileHandleResolver();
@@ -71,7 +75,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1);
-
 
 		controller = new GamePlayController();
 		levelDesigner = new LevelDesignerMode();
