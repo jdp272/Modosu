@@ -168,7 +168,7 @@ public class HostModel extends BoxObstacle {
      * (animation framerate is the framerate of the game divided by this value)
      * 4 seems to look pretty good
      */
-    private int framesPerUpdate = 4;
+    private int framesPerUpdate = 8;
 
     /**
      * Whether or not the animation should be updated on this frame
@@ -553,7 +553,7 @@ public class HostModel extends BoxObstacle {
 
     public void setPedestalStrip(FilmStrip strip) {
         this.pedestalHost = strip;
-        pedestalHost.setFrame(4);
+        pedestalHost.setFrame(0);
     }
 
     /**
@@ -803,11 +803,19 @@ public class HostModel extends BoxObstacle {
      * Strip animation for pedestal
      */
     public void animateStrip() {
-        if(this.pedestalHost.getFrame() < this.pedestalHost.getSize() - 1) {
-            this.pedestalHost.setFrame(this.pedestalHost.getFrame() + 1);
+        elapsedFrames++;
+        updateFrame = false;
+        System.out.println(elapsedFrames);
+        if (elapsedFrames >= framesPerUpdate) {
+            updateFrame = true;
+            elapsedFrames = 0;
         }
-        else {
-            this.pedestalHost.setFrame(0);
+        if(updateFrame) {
+            if (this.pedestalHost.getFrame() < this.pedestalHost.getSize() - 1) {
+                this.pedestalHost.setFrame(this.pedestalHost.getFrame() + 1);
+            } else {
+                this.pedestalHost.setFrame(0);
+            }
         }
     }
 
