@@ -11,27 +11,16 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.host.HostController;
 import edu.cornell.gdiac.physics.host.HostModel;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
-import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.SoundController;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * Gameplay controller for Modosu.
@@ -274,23 +263,35 @@ public class GamePlayController extends WorldController {
 
 		Vector2 pos = spirit.getPosition();
 		if(pos.x > bounds.x + bounds.width){
+			SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false);
+			spirit.setDidBounce(true);
 			spirit.setPosition(bounds.x + bounds.width, pos.y);
 			pos.x = bounds.x + bounds.width;
 			spirit.setVX(-spirit.getVX());
+			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
 		}
 		else if(pos.x < bounds.x){
+			SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false);
+			spirit.setDidBounce(true);
 			spirit.setPosition(bounds.x, pos.y);
 			pos.x = bounds.x;
 			spirit.setVX(-spirit.getVX());
+			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
 		}
 
 		if(pos.y > bounds.y + bounds.height){
+			SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false);
+			spirit.setDidBounce(true);
 			spirit.setPosition(pos.x, bounds.y + bounds.height);
 			spirit.setVY(-spirit.getVY());
+			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
 		}
 		else if(pos.y < bounds.y){
+			SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false);
+			spirit.setDidBounce(true);
 			spirit.setPosition(pos.x, bounds.y);
 			spirit.setVY(-spirit.getVY());
+			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
 		}
 
 		for(HostModel h : level.hosts){
@@ -421,5 +422,6 @@ public class GamePlayController extends WorldController {
 
 		// Clear collision controller
 		collisionController.clear();
+		spirit.setDidBounce(false);
 	}
 }
