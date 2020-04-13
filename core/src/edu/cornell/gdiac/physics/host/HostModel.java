@@ -10,11 +10,8 @@
 package edu.cornell.gdiac.physics.host;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
@@ -162,6 +159,7 @@ public class HostModel extends BoxObstacle {
      * The number of frames that have elapsed since the last animation update
      */
     private int elapsedFrames = 0;
+    private int pedFrames = 0;
 
     /**
      * The number of frames that should pass before the animation updates
@@ -169,12 +167,14 @@ public class HostModel extends BoxObstacle {
      * 4 seems to look pretty good
      */
     private int framesPerUpdate = 8;
+    private int pedFramesPerUpdate = 12;
 
     /**
      * Whether or not the animation should be updated on this frame
      * (though if the update is changing direction it will always happen)
      */
     private boolean updateFrame;
+    private boolean pedUpdateFrame;
 
 
     /**
@@ -803,14 +803,13 @@ public class HostModel extends BoxObstacle {
      * Strip animation for pedestal
      */
     public void animateStrip() {
-        elapsedFrames++;
-        updateFrame = false;
-        System.out.println(elapsedFrames);
-        if (elapsedFrames >= framesPerUpdate) {
-            updateFrame = true;
-            elapsedFrames = 0;
+        pedFrames++;
+        pedUpdateFrame = false;
+        if (pedFrames >= pedFramesPerUpdate) {
+            pedUpdateFrame = true;
+            pedFrames = 0;
         }
-        if(updateFrame) {
+        if(pedUpdateFrame) {
             if (this.pedestalHost.getFrame() < this.pedestalHost.getSize() - 1) {
                 this.pedestalHost.setFrame(this.pedestalHost.getFrame() + 1);
             } else {

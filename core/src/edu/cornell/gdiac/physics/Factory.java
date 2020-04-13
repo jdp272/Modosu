@@ -2,13 +2,11 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.host.HostModel;
-
-import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.util.FilmStrip;
 
 public class Factory {
@@ -17,7 +15,6 @@ public class Factory {
     private static int DEFAULT_LIFE = 400;
 
     private TextureRegion obstacleTex;
-    private TextureRegion spiritTex;
     private TextureRegion smallHostTex;
     private Texture smallHostGaugeTexture;
     private Texture smallHostTexture;
@@ -25,8 +22,18 @@ public class Factory {
     private Texture waterTexture;
     private Texture cornerTexture;
     private Texture pedestalTexture;
+    private Texture spiritBodyTexture;
+    private Texture spiritHeadTexture;
+    private Texture spiritTailTexture;
 
     /** Static Variables for Sprite Sheet */
+
+    /** Number of rows in the spirit image filmstrip */
+    private static final int SPIRIT_ROWS =  35;
+    /** Number of columns in the spirit image filmstrip */
+    private static final int SPIRIT_COLUMNS = 4;
+    /** Total Number of frames in the spirit image filmstrip */
+    private static final int SPIRIT_SIZE = 140;
 
     /** Number of rows in the host image filmstrip */
     private static final int HOST_ROWS = 8;
@@ -73,7 +80,9 @@ public class Factory {
     public Factory(
             Vector2 scale,
             TextureRegion obstacleTex,
-            TextureRegion spiritTex,
+            Texture spiritBodyTexture,
+            Texture spiritHeadTexture,
+            Texture spiritTailTexture,
             TextureRegion smallHostTex,
             Texture smallHostTexture,
             Texture smallHostGaugeTexture,
@@ -84,7 +93,9 @@ public class Factory {
     ) {
         this.scale = scale;
         this.obstacleTex = obstacleTex;
-        this.spiritTex = spiritTex;
+        this.spiritBodyTexture = spiritBodyTexture;
+        this.spiritHeadTexture = spiritHeadTexture;
+        this.spiritTailTexture = spiritTailTexture;
         this.smallHostTex = smallHostTex;
         this.smallHostTexture = smallHostTexture;
         this.smallHostGaugeTexture = smallHostGaugeTexture;
@@ -144,13 +155,13 @@ public class Factory {
         SpiritModel spirit = new SpiritModel(
                 x,
                 y,
-                spiritTex.getRegionWidth() / scale.x,
-                spiritTex.getRegionHeight() / scale.y,
+                (spiritHeadTexture.getWidth() / (SPIRIT_COLUMNS * 12)) / scale.x,
+                (spiritHeadTexture.getHeight() / (SPIRIT_ROWS * 4)) / scale.y,
                 SPIRIT_BOUNCES,
                 DEFAULT_LIFE
         );
         spirit.setDrawScale(scale);
-        spirit.setTexture(spiritTex);
+        spirit.setFilmStrip(new FilmStrip(spiritBodyTexture,  SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE), new FilmStrip(spiritHeadTexture, SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE), new FilmStrip(spiritTailTexture, SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE));
         spirit.setSensor(makeSensors);
         return spirit;
     }
