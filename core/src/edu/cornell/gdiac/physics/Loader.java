@@ -206,7 +206,8 @@ public class Loader {
         levelData.startLocation = new Vector2(level.pedestal.getX(), level.pedestal.getY());
 
         // Store the now-populated level data
-        json.toJson(levelData, f);
+        String output = json.toJson(levelData);
+        f.writeString(output, false);
     }
 
     /**
