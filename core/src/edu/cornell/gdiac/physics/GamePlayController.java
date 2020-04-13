@@ -189,14 +189,28 @@ public class GamePlayController extends WorldController {
 
 		Vector2 gravity = new Vector2(world.getGravity());
 
+		FileHandle levelToLoad;
+		if (currentLevel == 3) {
+				levelToLoad = Gdx.files.local("levels/custom3.lvl");
 
-		FileHandle levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
+
+
+		}
+		else {
+			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
+		}
 
 //		FileHandle f = new FileHandle(levelName);
 //		loader.saveLevel(f, level);
 
 		//System.out.println("loading level: " + levelName);
-		level = loader.loadLevel(levelToLoad);
+
+		try {
+			level = loader.loadLevel(levelToLoad);
+		}
+		catch(Exception e) {
+			level = loader.loadLevel(new FileHandle("levels/custom0.lvl"));
+		}
 
 		HUD.clearHUD();
 		HUD.setNumTotalHosts(level.hosts.size());

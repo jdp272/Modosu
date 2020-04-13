@@ -532,7 +532,9 @@ public class LevelDesignerMode extends WorldController {
 	 * @param levelName The name for the saved level
 	 */
 	private void save(String levelName) {
-		FileHandle f = new FileHandle(levelName);
+		// This has to be made local instead of the default, which is "internal" and can't be
+		// modified by a jar
+		FileHandle f = Gdx.files.local(levelName);
 
 		// TODO: Make this not creating new objects by updating Level to use PooledList(?)
 
