@@ -100,12 +100,13 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void dispose() {
 		// Call dispose on our children
 		setScreen(null);
+
 		controller.unloadContent(manager);
 		controller.dispose();
 
 		canvas.dispose();
 		canvas = null;
-	
+
 		// Unload all of the resources
 		manager.clear();
 		manager.dispose();

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import edu.cornell.gdiac.util.ScreenListener;
+
+import java.nio.ByteBuffer;
 
 
 public class GameOver extends WorldController implements Screen {
@@ -35,12 +37,23 @@ public class GameOver extends WorldController implements Screen {
     private Table table;
     private Label levelLabel;
     private Image golemImg;
+    private Image semiBackground;
+    private Image screenShotImage;
+
+    private Pixmap pixmap;
+    private Texture screenShotTexture;
+    private Texture transparentTexture;
+
+    /** Is added in WorldController */
+    //public static TextureRegion screenShotTexture;
+    public static Pixmap screenShotPixmap;
 
     /** Constants */
     private static final String WIN_LEVEL_TEXT = "level complete!";
     private static final String FAIL_LEVEL_TEXT = "level failed";
     private static final int ICON_SIZE_SMALL = 60;
     private static final int ICON_SIZE_BIG = 75;
+    private static final float ALPHA_BKG = .7f;
 
     /** Texture files for game icons */
     private static final String TEXTURE_ATLAS_FILE = "shared/gameIcons.txt";
@@ -119,6 +132,7 @@ public class GameOver extends WorldController implements Screen {
         retryButtonClicked = false;
         menuButtonClicked = false;
         isFail = true;
+        screenShotTexture = null;
     }
 
     public static void setFail(boolean isFailure) {
@@ -138,7 +152,6 @@ public class GameOver extends WorldController implements Screen {
     /************************* SCREEN METHODS *************************/
     @Override
     public void show() {
-
         /** Initialization */
         viewport = new ScreenViewport();
         stage = new Stage(viewport);
@@ -149,6 +162,38 @@ public class GameOver extends WorldController implements Screen {
         table = new Table();
         table.center();
         table.setFillParent(true);
+
+        // TODO: REMOVE IF THINGS START GETTING LAGGY
+        /** Create semi-transparent background */
+        // Flip the pixmap upside down
+        ByteBuffer pixels = screenShotPixmap.getPixels();
+        int w = Gdx.graphics.getWidth();
+        int h = Gdx.graphics.getHeight();
+        int numBytes = w * h * 4;
+        byte[] lines = new byte[numBytes];
+        int numBytesPerLine = w * 4;
+        for(int i = 0; i < h; i++) {
+            pixels.position((h - i - 1) * numBytesPerLine);
+            pixels.get(lines, i * numBytesPerLine, numBytesPerLine);
+        }
+        pixels.clear();
+        pixels.put(lines);
+        pixels.clear();
+
+        // Create image of pixmap
+        screenShotTexture = new Texture(screenShotPixmap);
+        screenShotImage = new Image(screenShotTexture);
+        stage.addActor(screenShotImage);
+
+        pixmap = new Pixmap(1,1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.BLACK);
+        pixmap.fillRectangle(0, 0, 1, 1);
+        transparentTexture = new Texture(pixmap);
+
+        semiBackground = new Image(transparentTexture);
+        semiBackground.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        semiBackground.getColor().a= ALPHA_BKG;
+        stage.addActor(semiBackground);
 
         /** Change variables depending on WIN vs FAIL */
         columnNum = isFail ? 2 : 3;
@@ -232,12 +277,15 @@ public class GameOver extends WorldController implements Screen {
         /** Checks if any buttons are clicked */
         if (menuButtonClicked) {
             listener.exitScreen(this, EXIT_MENU);
+            dispose();
         }
         else if (retryButtonClicked) {
             listener.exitScreen(this, EXIT_NEXT);
+            dispose();
         }
         else if (nextButtonClicked) {
             listener.exitScreen(this, EXIT_NEXT);
+            dispose();
         }
     }
 
@@ -263,7 +311,11 @@ public class GameOver extends WorldController implements Screen {
 
     @Override
     public void dispose() {
-        textureAtlas.dispose();
+        stage.dispose();
+        pixmap.dispose();
+        screenShotPixmap.dispose();
+        screenShotTexture.dispose();
+        transparentTexture.dispose();
     }
 
     /************************* WORLD CONTROLLER METHODS *************************/
