@@ -53,7 +53,8 @@ public class GameOver extends WorldController implements Screen {
     private static final String FAIL_LEVEL_TEXT = "level failed";
     private static final int ICON_SIZE_SMALL = 60;
     private static final int ICON_SIZE_BIG = 75;
-    private static final float ALPHA_BKG = .7f;
+    private static final float ALPHA_BKG = .75f;
+    private static final int TITLE_COLOR = 0xbef5fd;
 
     /** Texture files for game icons */
     private static final String TEXTURE_ATLAS_FILE = "shared/gameIcons.txt";
@@ -64,6 +65,9 @@ public class GameOver extends WorldController implements Screen {
     private static final String sMENU = "menu_icon";
     private static final String sNEXT = "next_icon";
     private static final String sRETRY = "retry_icon";
+    private static final String sMENU_CLICKED = "menu_clicked_icon";
+    private static final String sNEXT_CLICKED = "next_clicked_icon";
+    private static final String sRETRY_CLICKED = "retry_clicked_icon";
 
     /** Texture assets for game icons */
     private TextureRegion winGolemTexture;
@@ -201,12 +205,12 @@ public class GameOver extends WorldController implements Screen {
         golemTexture = isFail ? winGolemTexture : loseGolemTexture;
 
         /** Level Label */
-        Label.LabelStyle font = new Label.LabelStyle(displayFont, Color.WHITE);
+        Label.LabelStyle font = new Label.LabelStyle(displayFont, Color.SKY);
         levelLabel = new Label(labelText, font);
         table.add(levelLabel).colspan(columnNum);
 
         /** Add Row in Table */
-        table.row().padTop(20);
+        table.row().padTop(30);
 
         /** Golem Image */
         golemImg = new Image(winGolemTexture);
@@ -218,7 +222,7 @@ public class GameOver extends WorldController implements Screen {
         /** Menu Button */
         Button.ButtonStyle menuStyle = new Button.ButtonStyle();
         menuStyle.up = skin.getDrawable(sMENU);
-        menuStyle.down = skin.getDrawable(sMENU);
+        menuStyle.down = skin.getDrawable(sMENU_CLICKED);
         Button menu = new Button(menuStyle);
 
         menu.addListener(new ClickListener() {
@@ -234,7 +238,7 @@ public class GameOver extends WorldController implements Screen {
         if (!isFail) {
             Button.ButtonStyle nextStyle = new Button.ButtonStyle();
             nextStyle.up = skin.getDrawable(sNEXT);
-            nextStyle.down = skin.getDrawable(sNEXT);
+            nextStyle.down = skin.getDrawable(sNEXT_CLICKED);
             Button next = new Button(nextStyle);
 
             next.addListener(new ClickListener() {
@@ -250,7 +254,7 @@ public class GameOver extends WorldController implements Screen {
         /** Retry Button */
         Button.ButtonStyle retryStyle = new Button.ButtonStyle();
         retryStyle.up = skin.getDrawable(sRETRY);
-        retryStyle.down = skin.getDrawable(sRETRY);
+        retryStyle.down = skin.getDrawable(sRETRY_CLICKED);
         Button retry = new Button(retryStyle);
 
         retry.addListener(new ClickListener() {
