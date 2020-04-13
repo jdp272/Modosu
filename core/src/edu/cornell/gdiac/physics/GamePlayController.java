@@ -362,7 +362,7 @@ public class GamePlayController extends WorldController {
 			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
 		}
 
-		if (hostController.isMoving()) {
+		if (!isFailure() & !isComplete() & hostController.isMoving()) {
 			SoundController.getInstance().play(WALK_SOUND, WALK_SOUND, true);
 		}
 		else {
