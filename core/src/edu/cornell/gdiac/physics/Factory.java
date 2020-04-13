@@ -23,6 +23,7 @@ public class Factory {
     private Texture smallHostTexture;
     private Texture wallTexture;
     private Texture waterTexture;
+    private Texture cornerTexture;
     private Texture pedestalTexture;
 
     /** Static Variables for Sprite Sheet */
@@ -48,6 +49,13 @@ public class Factory {
     /** Number of total hosts in the water image filmstrip */
     private static final int WATER_SIZE = 16;
 
+    /** Number of rows in the water corner image filmstrip */
+    private static final int WATER_CORNER_ROWS = 2;
+    /** Number of columns in the water corner image filmstrip */
+    private static final int WATER_CORNER_COLUMNS = 2;
+    /** Number of total hosts in the water corner image filmstrip */
+    private static final int WATER_CORNER_SIZE = 4;
+
     /** Number of rows in the pedestal image filmstrip */
     private static final int PEDESTAL_ROWS = 1;
     /** Number of columns in the pedestal image filmstrip */
@@ -71,6 +79,7 @@ public class Factory {
             Texture smallHostGaugeTexture,
             Texture wallTexture,
             Texture waterTexture,
+            Texture cornerTexture,
             Texture pedestalTexture
     ) {
         this.scale = scale;
@@ -81,6 +90,7 @@ public class Factory {
         this.smallHostGaugeTexture = smallHostGaugeTexture;
         this.wallTexture = wallTexture;
         this.waterTexture = waterTexture;
+        this.cornerTexture = cornerTexture;
         this.pedestalTexture = pedestalTexture;
     }
 
@@ -119,6 +129,7 @@ public class Factory {
                 obstacleTex.getRegionHeight() / scale.y
         );
         water.setWaterStrip(new FilmStrip(waterTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
+        water.setCornerStrip(new FilmStrip(cornerTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
         water.setDrawScale(scale);
         water.setSX(0.25f);
         water.setSY(0.25f);

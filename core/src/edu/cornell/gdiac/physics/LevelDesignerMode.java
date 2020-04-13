@@ -289,32 +289,54 @@ public class LevelDesignerMode extends WorldController {
 	 *
 	 * @return True if a water tile was updated, false otherwise
 	 */
-	private boolean updateWaterTile(int x, int y) {
+	private boolean updateWaterTile(int x, int y, boolean corners) {
 		if(x < 0 || y < 0 || x >= board.length || y >= board[x].length || !(board[x][y] instanceof WaterTile)) {
 			return false;
 		}
 
-		boolean above = false;
-		if(y + 1 < board[x].length && !(board[x][y + 1] instanceof WaterTile)) {
-			above = true;
+		Obstacle above = null, below = null, left = null, right = null;
+		boolean hasGroundAbove = false, hasGroundBelow = false, hasGroundLeft = false, hasGroundRight = false;
+		boolean upLeftCorner = false, upRightCorner = false, downLeftCorner = false, downRightCorner = false;
+
+		// Set the adjacent tiles if they are in bounds, and if so, check if a
+		// ground border is needed
+		if(y + 1 < board[x].length) {
+			above = board[x][y + 1];
+			hasGroundAbove = !(above instanceof WaterTile);
+		}
+		if(y - 1 >= 0) {
+			below = board[x][y - 1];
+			hasGroundBelow = !(below instanceof WaterTile);
+		}
+		if(x - 1 >= 0) {
+			left = board[x - 1][y];
+			hasGroundLeft = !(left instanceof WaterTile);
+		}
+		if(x + 1 < board.length) {
+			right = board[x + 1][y];
+			hasGroundRight = !(right instanceof WaterTile);
 		}
 
-		boolean below = false;
-		if(y - 1 >= 0 && !(board[x][y - 1] instanceof WaterTile)) {
-			below = true;
-		}
+		if(!corners) {
+			((WaterTile) board[x][y]).setFrame(hasGroundAbove, hasGroundBelow, hasGroundLeft, hasGroundRight, true);
+		} else {
+			// If the corner should be drawn for each side, based on if adjacent
+			// water tiles have ground
+			if (above instanceof WaterTile && left instanceof WaterTile) {
+				upLeftCorner = ((WaterTile) above).getGroundLeft() && ((WaterTile) left).getGroundAbove();
+			}
+			if (above instanceof WaterTile && right instanceof WaterTile) {
+				upRightCorner = ((WaterTile) above).getGroundRight() && ((WaterTile) right).getGroundAbove();
+			}
+			if (below instanceof WaterTile && left instanceof WaterTile) {
+				downLeftCorner = ((WaterTile) below).getGroundLeft() && ((WaterTile) left).getGroundBelow();
+			}
+			if (below instanceof WaterTile && right instanceof WaterTile) {
+				downRightCorner = ((WaterTile) below).getGroundRight() && ((WaterTile) right).getGroundBelow();
+			}
 
-		boolean left = false;
-		if(x - 1 >= 0 && !(board[x - 1][y] instanceof WaterTile)) {
-			left = true;
+			((WaterTile) board[x][y]).setCorners(upLeftCorner, upRightCorner, downLeftCorner, downRightCorner);
 		}
-
-		boolean right = false;
-		if(x + 1 < board.length && !(board[x + 1][y] instanceof WaterTile)) {
-			right = true;
-		}
-
-		((WaterTile)board[x][y]).setFrame(above, below, left, right, true);
 		return true;
 	}
 
@@ -329,11 +351,17 @@ public class LevelDesignerMode extends WorldController {
 	 * @param y The y index in the board of the tile center to update
 	 */
 	private void updateWaterAroundRegion(int x, int y) {
-		updateWaterTile(x, y);
-		updateWaterTile(x - 1, y);
-		updateWaterTile(x + 1, y);
-		updateWaterTile(x, y - 1);
-		updateWaterTile(x, y + 1);
+		updateWaterTile(x, y, false);
+		updateWaterTile(x - 1, y, false);
+		updateWaterTile(x + 1, y, false);
+		updateWaterTile(x, y - 1, false);
+		updateWaterTile(x, y + 1, false);
+
+		updateWaterTile(x, y, true);
+		updateWaterTile(x - 1, y, true);
+		updateWaterTile(x + 1, y, true);
+		updateWaterTile(x, y - 1, true);
+		updateWaterTile(x, y + 1, true);
 	}
 
 	/**

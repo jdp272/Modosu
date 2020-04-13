@@ -90,6 +90,8 @@ public abstract class WorldController implements Screen {
 	private static String WALL_FILE = "shared/wallspritesheet.png";
 	/** File to texture for Water */
 	private static String WATER_FILE = "shared/waterspritesheet.png";
+	/** File to texture for Water corners */
+	private static String CORNER_FILE = "shared/water_corners_spritesheet.png";
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_FILE = "shared/coin_gold.png";
 
@@ -119,6 +121,8 @@ public abstract class WorldController implements Screen {
 	private static Texture wallTexture;
 	/** Texture for Water SpriteSheet */
 	private static Texture waterTexture;
+	/** Texture for Water Corner SpriteSheet */
+	private static Texture cornerTexture;
 	/** Texture for Pedestal SpriteSheet */
 	private static Texture pedestalTexture;
 
@@ -152,6 +156,8 @@ public abstract class WorldController implements Screen {
 		assets.add(WALL_FILE);
 		manager.load(WATER_FILE, Texture.class);
 		assets.add(WATER_FILE);
+		manager.load(CORNER_FILE, Texture.class);
+		assets.add(CORNER_FILE);
 		manager.load(SPIRIT_FILE, Texture.class);
 		assets.add(SPIRIT_FILE);
 		manager.load(OBSTACLE_FILE, Texture.class);
@@ -206,10 +212,11 @@ public abstract class WorldController implements Screen {
 		hostGaugeTexture = manager.get(HOST_GAUGE_FILE, Texture.class);
 		wallTexture = manager.get(WALL_FILE, Texture.class);
 		waterTexture = manager.get(WATER_FILE, Texture.class);
+		cornerTexture = manager.get(CORNER_FILE, Texture.class);
 		pedestalTexture = manager.get(PEDESTAL_FILE, Texture.class);
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture, pedestalTexture);
+		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture, cornerTexture, pedestalTexture);
 		loader = new Loader(factory);
 	}
 	

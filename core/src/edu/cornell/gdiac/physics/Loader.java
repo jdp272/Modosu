@@ -47,6 +47,11 @@ public class Loader {
         public Vector2 origin; // Center of the box
         public Vector2 dimensions;
         public int frame;
+
+        public boolean upLeft;
+        public boolean upRight;
+        public boolean downLeft;
+        public boolean downRight;
     }
 
     /** A struct that stores data from a host when read from the json */
@@ -171,6 +176,11 @@ public class Loader {
             wData.origin = new Vector2(level.water[i].getX(), level.water[i].getY());
             wData.frame = level.water[i].getFrame();
 
+            wData.upLeft = level.water[i].getUpLeftCorner();
+            wData.upRight = level.water[i].getUpRightCorner();
+            wData.downLeft = level.water[i].getDownLeftCorner();
+            wData.downRight = level.water[i].getDownRightCorner();
+
             levelData.waterData[i] = wData;
         }
 
@@ -232,6 +242,7 @@ public class Loader {
         for (int i = 0; i < levelData.waterData.length; i++) {
             wData = levelData.waterData[i];
             water[i] = factory.makeWater(wData.origin.x, wData.origin.y, wData.frame);
+            water[i].setCorners(wData.upLeft, wData.upRight, wData.downLeft, wData.downRight);
         }
 
         // Create the hosts
