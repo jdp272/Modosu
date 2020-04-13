@@ -451,7 +451,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				listener.exitScreen(this,WorldController.EXIT_DESIGN);
 			}
 
-			//go to level design mode
+			//go to level select mode
 			if(pressState == 5 && listener != null){
 				listener.exitScreen(this,WorldController.EXIT_SELECT);
 			}

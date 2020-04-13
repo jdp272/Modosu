@@ -1,0 +1,33 @@
+gameIcons.png
+size: 247, 222
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+menu_icon
+  rotate: false
+  xy: 0, 0
+  size: 111, 96
+  orig: 111, 96
+  offset: 0, 0
+  index: -1
+next_icon
+  rotate: false
+  xy: 111, 0
+  size: 109, 97
+  orig: 109, 97
+  offset: 0, 0
+  index: -1
+retry_icon
+  rotate: false
+  xy: 0, 97
+  size: 122, 121
+  orig: 122, 121
+  offset: 0, 0
+  index: -1
+wingolem_icon
+  rotate: false
+  xy: 122, 97
+  size: 125, 125
+  orig: 125, 125
+  offset: 0, 0
+  index: -1

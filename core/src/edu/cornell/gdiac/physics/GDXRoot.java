@@ -48,6 +48,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private LevelDesignerMode levelDesigner;
 
 	private LevelSelectMode levelSelect;
+
+	private GameOver gameOver;
 	
 	/**
 	 * Creates a new game from the configuration settings.
@@ -79,10 +81,12 @@ public class GDXRoot extends Game implements ScreenListener {
 		controller = new GamePlayController();
 		levelDesigner = new LevelDesignerMode();
 		levelSelect = new LevelSelectMode();
+		gameOver = new GameOver();
 
 		controller.preLoadContent(manager);
 		levelDesigner.preLoadContent(manager);
 		levelSelect.preLoadContent(manager);
+		gameOver.preLoadContent(manager);
 
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -150,10 +154,12 @@ public class GDXRoot extends Game implements ScreenListener {
 		controller = new GamePlayController();
 		levelDesigner = new LevelDesignerMode();
 		levelSelect = new LevelSelectMode();
+		gameOver = new GameOver();
 
 		controller.preLoadContent(manager);
 		levelDesigner.preLoadContent(manager);
 		levelSelect.preLoadContent(manager);
+		gameOver.preLoadContent(manager);
 
 		loading.setScreenListener(this);
 		setScreen(loading);
@@ -188,6 +194,13 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelSelect.setCanvas(canvas);
 			levelSelect.reset();
 			setScreen(levelSelect);
+		}
+		else if (exitCode == WorldController.EXIT_GAME) {
+			gameOver.loadContent(manager);
+			gameOver.setScreenListener(this);
+			gameOver.setCanvas(canvas);
+			gameOver.reset();
+			setScreen(gameOver);
 		}
 		else if (exitCode == WorldController.EXIT_NEXT) {
 			controller.reset();
