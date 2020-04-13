@@ -73,7 +73,8 @@ public abstract class WorldController implements Screen {
 	
 	// Pathnames to shared assets
 	/** Retro font for displaying messages */
-	private static String FONT_FILE = "shared/retrogame.ttf";
+
+	private static String FONT_FILE = "shared/AveriaSerifLibre.ttf";
 	/** Texture file for background image */
 	private static final String BACKG_FILE = "shared/background.png";
 	/** Texture file for host sprite */
@@ -90,10 +91,12 @@ public abstract class WorldController implements Screen {
 	private static String WALL_FILE = "shared/wallspritesheet.png";
 	/** File to texture for Water */
 	private static String WATER_FILE = "shared/waterspritesheet.png";
+	/** File to texture for Water corners */
+	private static String CORNER_FILE = "shared/water_corners_spritesheet.png";
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_FILE = "shared/spirit_pedestal.png";
 
-	private static int FONT_SIZE = 64;
+	private static int FONT_SIZE = 56;
 
 	/** The font for giving messages to the player */
 	protected BitmapFont displayFont;
@@ -119,6 +122,8 @@ public abstract class WorldController implements Screen {
 	private static Texture wallTexture;
 	/** Texture for Water SpriteSheet */
 	private static Texture waterTexture;
+	/** Texture for Water Corner SpriteSheet */
+	private static Texture cornerTexture;
 	/** Texture for Pedestal SpriteSheet */
 	private static Texture pedestalTexture;
 
@@ -152,6 +157,8 @@ public abstract class WorldController implements Screen {
 		assets.add(WALL_FILE);
 		manager.load(WATER_FILE, Texture.class);
 		assets.add(WATER_FILE);
+		manager.load(CORNER_FILE, Texture.class);
+		assets.add(CORNER_FILE);
 		manager.load(SPIRIT_FILE, Texture.class);
 		assets.add(SPIRIT_FILE);
 		manager.load(OBSTACLE_FILE, Texture.class);
@@ -206,10 +213,11 @@ public abstract class WorldController implements Screen {
 		hostGaugeTexture = manager.get(HOST_GAUGE_FILE, Texture.class);
 		wallTexture = manager.get(WALL_FILE, Texture.class);
 		waterTexture = manager.get(WATER_FILE, Texture.class);
+		cornerTexture = manager.get(CORNER_FILE, Texture.class);
 		pedestalTexture = manager.get(PEDESTAL_FILE, Texture.class);
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture, pedestalTexture);
+		factory = new Factory(scale, obstacleTex, spiritTex, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture, cornerTexture, pedestalTexture);
 		loader = new Loader(factory);
 	}
 	
@@ -268,9 +276,11 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_SELECT = 5;
 	/** Exit code for going to the main menu screen */
 	public static final int EXIT_MENU = 6;
+	/** Exit code for going to game complete screen */
+	public static final int EXIT_GAME = 7;
 
     /** How many frames after winning/losing do we continue? */
-	public static final int EXIT_COUNT = 120;
+	public static final int EXIT_COUNT = 50;
 
 	/** The amount of time for a physics engine step. */
 	public static final float WORLD_STEP = 1/60.0f;
@@ -307,7 +317,7 @@ public abstract class WorldController implements Screen {
 	/** Whether we have completed this level */
 	private boolean complete;
 	/** Whether we have failed at this world (and need a reset) */
-	private boolean failed;
+	protected boolean failed;
 	/** Whether or not debug mode is active */
 	private boolean debug;
 	/** Countdown active for winning or losing */
@@ -584,11 +594,16 @@ public abstract class WorldController implements Screen {
 		else if (countdown > 0) {
 			countdown--;
 		} else if (countdown == 0) {
+			// TODO: REMOVE IF THINGS START GETTING LAGGY
+			// Creates a screenshot of last screen
+			GameOver.screenShotPixmap = ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			if (failed) {
-				reset();
+				GameOver.setFail(true);
+				listener.exitScreen(this, EXIT_GAME);
 			} else if (complete) {
 				// TODO: go to the next level
-				listener.exitScreen(this, EXIT_NEXT);
+				GameOver.setFail(false);
+				listener.exitScreen(this, EXIT_GAME);
 				return false;
 			}
 		}
@@ -685,21 +700,6 @@ public abstract class WorldController implements Screen {
 
 		// Sets the stage to draw the HUD
 		canvas.drawHUD(delta);
-
-		// Final message
-		if (complete && !failed) {
-			displayFont.setColor(Color.YELLOW);
-			canvas.begin(); // DO NOT SCALE
-			canvas.drawTextCentered("VICTORY!", displayFont, 0.0f);
-			canvas.end();
-		}
-		else if (failed) {
-			displayFont.setColor(Color.RED);
-			canvas.begin(); // DO NOT SCALE
-			canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
-			canvas.end();
-		}
-
 	}
 	
 	/**

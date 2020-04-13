@@ -1,18 +1,30 @@
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
 
 public class WaterTile extends BoxObstacle {
-    /**
-     * The textures for the water
-     */
-    private FilmStrip waterStrip;
 
-    /** The frame in the film strip for this tile */
+    /** The textures for the water */
+    private FilmStrip waterStrip;
+    /** The textures for the corner layover that goes over the tile */
+    private FilmStrip cornerStrip;
+
+    /** The frame in the main water film strip for this tile */
     private int frame;
+
+    private boolean groundAbove;
+    private boolean groundBelow;
+    private boolean groundLeft;
+    private boolean groundRight;
+
+    private boolean upLeft;
+    private boolean upRight;
+    private boolean downLeft;
+    private boolean downRight;
 
 
     /**
@@ -44,7 +56,7 @@ public class WaterTile extends BoxObstacle {
     public WaterTile(float x, float y, float width, float height) { super(x,y,width,height); }
 
     /**
-     * sets the FilmStrip for the water and the corresponding gauge
+     * sets the FilmStrip for the water
      *
      * @param strip for the water
      */
@@ -52,6 +64,16 @@ public class WaterTile extends BoxObstacle {
         waterStrip = strip;
         waterStrip.setFrame(0);
         this.setTexture(strip);
+    }
+
+    /**
+     * sets the FilmStrip for the corner texture
+     *
+     * @param strip for the corner
+     */
+    public void setCornerStrip (FilmStrip strip) {
+        cornerStrip = strip;
+        cornerStrip.setFrame(0);
     }
 
     /**
@@ -86,7 +108,7 @@ public class WaterTile extends BoxObstacle {
     }
 
     /**
-     * Sets the correct frame of this water tile, based on the adjacent tiles.Z
+     * Sets the correct frame of this water tile, based on the adjacent tiles.
      * Each boolean indicates if there is ground in the corresponding direction
      *
      * @param above If there is ground above this tile
@@ -94,8 +116,14 @@ public class WaterTile extends BoxObstacle {
      * @param left If there is ground left of this tile
      * @param right If there is ground right of this tile
      */
-    public void setFrame(boolean above, boolean below, boolean left, boolean right, boolean lvlDsgn) {
+    public void  setFrame(boolean above, boolean below, boolean left, boolean right, boolean lvlDsgn) {
         int index = 0;
+
+        groundAbove = above;
+        groundBelow = below;
+        groundLeft = left;
+        groundRight = right;
+
         if(above) {
             if(below) {
                 if(left) {
@@ -157,10 +185,105 @@ public class WaterTile extends BoxObstacle {
                 }
             }
         }
-        if(lvlDsgn){
+        if(lvlDsgn) {
             setFrameLvlDsgn(index);
-        }else {
+        } else {
             setFrame(index);
+        }
+    }
+
+    /**
+     * @return If there is ground above this tile
+     */
+    public boolean getGroundAbove() {
+        return groundAbove;
+    }
+
+    /**
+     * @return If there is ground below this tile
+     */
+    public boolean getGroundBelow() {
+        return groundBelow;
+    }
+
+    /**
+     * @return If there is ground left of this tile
+     */
+    public boolean getGroundLeft() {
+        return groundLeft;
+    }
+
+    /**
+     * @return If there is ground right of this tile
+     */
+    public boolean getGroundRight() {
+        return groundRight;
+    }
+
+    /**
+     * @return If there is a corner in the upper left
+     */
+    public boolean getUpLeftCorner() {
+        return upLeft;
+    }
+
+    /**
+     * @return If there is a corner in the upper right
+     */
+    public boolean getUpRightCorner() {
+        return upRight;
+    }
+
+    /**
+     * @return If there is a corner in the lower left
+     */
+    public boolean getDownLeftCorner() {
+        return downLeft;
+    }
+
+    /**
+     * @return If there is a corner in the lower right
+     */
+    public boolean getDownRightCorner() {
+        return downRight;
+    }
+
+    /**
+     * Sets the correct corners, if any, of this water tile, based on adjacent
+     * tiles. Each boolean indicates if there is ground in the corresponding
+     * diagonal direction
+     *
+     * @param upLeft If there is ground in the tile above and to the left of this tile
+     * @param upRight If there is ground in the tile above and to the right of this tile
+     * @param downLeft If there is ground in the tile below and to the left of this tile
+     * @param downRight If there is ground in the tile below and to the right of this tile
+     */
+    public void setCorners(boolean upLeft, boolean upRight, boolean downLeft, boolean downRight) {
+        this.upLeft = upLeft;
+        this.upRight = upRight;
+        this.downLeft = downLeft;
+        this.downRight = downRight;
+    }
+
+    @Override
+    public void draw(GameCanvas canvas) {
+        super.draw(canvas);
+
+        if(upLeft) {
+            cornerStrip.setFrame(0);
+            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 64.f / cornerStrip.getRegionWidth(), 64.f / cornerStrip.getRegionHeight());
+        }
+        if(upRight) {
+            cornerStrip.setFrame(1);
+            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 64.f / cornerStrip.getRegionWidth(), 64.f / cornerStrip.getRegionHeight());
+        }
+        if(downLeft) {
+            cornerStrip.setFrame(2);
+            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 64.f / cornerStrip.getRegionWidth(), 64.f / cornerStrip.getRegionHeight());
+        }
+        if(downRight) {
+            cornerStrip.setFrame(3);
+            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 64.f / cornerStrip.getRegionWidth(), 64.f / cornerStrip.getRegionHeight());
         }
     }
 }

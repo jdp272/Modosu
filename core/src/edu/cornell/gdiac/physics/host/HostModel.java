@@ -158,6 +158,24 @@ public class HostModel extends BoxObstacle {
     private float sx = 0.3f;
     private float sy = 0.3f;
 
+    /**
+     * The number of frames that have elapsed since the last animation update
+     */
+    private int elapsedFrames = 0;
+
+    /**
+     * The number of frames that should pass before the animation updates
+     * (animation framerate is the framerate of the game divided by this value)
+     * 4 seems to look pretty good
+     */
+    private int framesPerUpdate = 4;
+
+    /**
+     * Whether or not the animation should be updated on this frame
+     * (though if the update is changing direction it will always happen)
+     */
+    private boolean updateFrame;
+
 
     /**
      * Cache object for transforming the force according the object angle
@@ -343,6 +361,7 @@ public class HostModel extends BoxObstacle {
         this.instructions = ins;
         this.instructionNumber = 0;
         this.hasBeenPossessed = false;
+        this.updateFrame = true;
         this.moving = (ins != null);
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
@@ -373,6 +392,7 @@ public class HostModel extends BoxObstacle {
         this.instructions = null;
         this.instructionNumber = 0;
         this.hasBeenPossessed = true;
+        this.updateFrame = true;
         this.isPedestal = isPedestal;
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
@@ -674,10 +694,9 @@ public class HostModel extends BoxObstacle {
         FilmStrip node = null;
         int frame = 0;
 
-        if(state) {
+        if (state) {
             node = chargedHost;
-        }
-        else {
+        } else {
             node = notChargedHost;
         }
 
@@ -685,6 +704,18 @@ public class HostModel extends BoxObstacle {
             frame = node.getFrame();
         }
 
+        // To allow framerate control of this animation
+        elapsedFrames++;
+        updateFrame = false;
+        if (elapsedFrames >= framesPerUpdate) {
+            updateFrame = true;
+            elapsedFrames = 0;
+        }
+
+        // I'm a little concerned about slowing all animation within the host using one thing, because
+        // if the framerate is sufficiently low it might feel unresponsive because the golem does not immediately
+        // turn in the direction you are moving. For now, because framrate is relatively high, disregard this.
+        if (updateFrame) {
         if (direction.x > 0) {
             // NORTH EAST
             if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
@@ -716,7 +747,7 @@ public class HostModel extends BoxObstacle {
                 if (frame < HOST_NORTHWEST_END && frame >= HOST_NORTHWEST_START) {
                     frame++;
                 } else {
-                    frame=HOST_NORTHWEST_START;
+                    frame = HOST_NORTHWEST_START;
                 }
             }
             // SOUTH WEST
@@ -724,7 +755,7 @@ public class HostModel extends BoxObstacle {
                 if (frame < HOST_SOUTHWEST_END && frame >= HOST_SOUTHWEST_START) {
                     frame++;
                 } else {
-                    frame=HOST_SOUTHWEST_START;
+                    frame = HOST_SOUTHWEST_START;
                 }
             }
             // WEST
@@ -732,16 +763,16 @@ public class HostModel extends BoxObstacle {
                 if (frame < HOST_WEST_END && frame >= HOST_WEST_START) {
                     frame++;
                 } else {
-                    frame=HOST_WEST_START;
+                    frame = HOST_WEST_START;
                 }
             }
-        } else if(direction.x == 0 || Math.abs(direction.x) < 0.1) {
+        } else if (direction.x == 0 || Math.abs(direction.x) < 0.1) {
             // NORTH
             if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
                 if (frame < HOST_NORTH_END && frame >= HOST_NORTH_START) {
                     frame++;
                 } else {
-                    frame=HOST_NORTH_START;
+                    frame = HOST_NORTH_START;
                 }
             }
             // SOUTH
@@ -749,10 +780,12 @@ public class HostModel extends BoxObstacle {
                 if (frame < HOST_SOUTH_END && frame >= HOST_SOUTH_START) {
                     frame++;
                 } else {
-                    frame=HOST_SOUTH_START;
+                    frame = HOST_SOUTH_START;
                 }
             }
         }
+    }
+
         if(node != null) {
             node.setFrame(frame);
             hostGaugeStrip.setFrame(frame);
