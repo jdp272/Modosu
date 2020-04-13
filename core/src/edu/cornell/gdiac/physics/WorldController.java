@@ -91,7 +91,7 @@ public abstract class WorldController implements Screen {
 	/** File to texture for Water */
 	private static String WATER_FILE = "shared/waterspritesheet.png";
 	/** File to texture for Pedestal */
-	private static String PEDESTAL_FILE = "shared/coin_gold.png";
+	private static String PEDESTAL_FILE = "shared/spirit_pedestal.png";
 
 	private static int FONT_SIZE = 64;
 

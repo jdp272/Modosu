@@ -51,9 +51,9 @@ public class Factory {
     /** Number of rows in the pedestal image filmstrip */
     private static final int PEDESTAL_ROWS = 1;
     /** Number of columns in the pedestal image filmstrip */
-    private static final int PEDESTAL_COLS = 8;
+    private static final int PEDESTAL_COLS = 4;
     /** Number of total pedestals in the pedestal image filmstrip */
-    private static final int PEDESTAL_SIZE = 8;
+    private static final int PEDESTAL_SIZE = 4;
 
 
     /** The draw scale of objects */
