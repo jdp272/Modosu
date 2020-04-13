@@ -54,7 +54,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String LVL_DSGN_FILE = "shared/leveldesign.png";
 	private static final String LVL_SLCT_FILE = "shared/levelselect.png";
 	private static final String CREDITS_FILE = "shared/credits.png";
-	private static final String QUIT_FILE = "shared/credits.png";
+	private static final String QUIT_FILE = "shared/quit.png";
 
 //	private static final String CLICK_SOUND = "shared/click.mp3";
 //	private static final String HOVER_SOUND = "shared/hover.mp3";
@@ -107,7 +107,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Quit button-y (for scaling) */
 	private static int QUIT_Y = 525;
 	/** Quit button-x (for scaling) */
-	private static int QUIT_X = 900;
+	private static int QUIT_X = 960;
 
 	/** Color of buttons when hovered */
 	private static Color colorHovered;
