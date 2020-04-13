@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -17,6 +18,7 @@ import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.ArrayList;
@@ -194,7 +196,8 @@ public class Loader {
         levelData.startLocation = new Vector2(level.pedestal.getX(), level.pedestal.getY());
 
         // Store the now-populated level data
-        json.toJson(levelData, f);
+        String output = json.toJson(levelData);
+        f.writeString(output, false);
     }
 
     /**
@@ -206,6 +209,9 @@ public class Loader {
      * @return A complete Level object that is the json file deserialized
      */
     public Level loadLevel(FileHandle f) {
+        // If this ever breaks try putting .readString() at the end of internal(f)
+        // Can't load from a file handle because the file system is weird when
+        // exported to a .jar
         LevelData levelData = json.fromJson(LevelData.class, f);
 
         // Load the map regions
@@ -244,8 +250,6 @@ public class Loader {
              This also assumes that a zero charge time means it has no time
              limit
 
-
-             TODO: Make a host once HostModel constructor is ready
              */
                 hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions));
 //            hosts.add(new HostModel(rData.location.x, rData.location.y, (int)Data.chargeTime), false);
@@ -254,8 +258,6 @@ public class Loader {
         // Create the starting "host" (with no charge capacity)
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
-        // TODO: ensure implementation of 0 charge time means no cap
-
         return new Level(regions, obstacles, water, hosts, spirit, pedestal);
     }
 

@@ -73,23 +73,24 @@ public abstract class WorldController implements Screen {
 	
 	// Pathnames to shared assets
 	/** Retro font for displaying messages */
+
 	private static String FONT_FILE = "shared/AveriaSerifLibre.ttf";
 	/** Texture file for background image */
 	private static final String BACKG_FILE = "shared/background.png";
 	/** Texture file for host sprite */
-	private static final String HOST_FILE = "host/hostSpriteSheet.png";
+	private static final String HOST_FILE = "host/hostspritesheet.png";
 	/** Texture file for spirit sprite */
 	private static final String SPIRIT_FILE = "host/spirit.png";
 	/** File to texture for obstacles */
 	private static String OBSTACLE_FILE = "host/crate02.png";
 	/** File to texture for Hosts' Gauge */
-	private static String HOST_GAUGE_FILE = "host/hostGaugeSpriteSheet.png";
+	private static String HOST_GAUGE_FILE = "host/hostgaugespritesheet.png";
 	/** Texture file for arrow sprite */
 	private static final String ARROW_FILE = "shared/arrow.png";
 	/** File to texture for Walls */
-	private static String WALL_FILE = "shared/wallSpriteSheet.png";
+	private static String WALL_FILE = "shared/wallspritesheet.png";
 	/** File to texture for Water */
-	private static String WATER_FILE = "shared/waterSpriteSheet.png";
+	private static String WATER_FILE = "shared/waterspritesheet.png";
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_FILE = "shared/coin_gold.png";
 

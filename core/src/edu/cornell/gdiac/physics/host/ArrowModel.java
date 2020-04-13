@@ -36,8 +36,8 @@ public class ArrowModel {
         Color c;
 
         // Determine the color based on whether the velocity passes threshold
-        if (sx > .21) {
-            c = new Color(Color.PURPLE);
+        if (sx > .14) {
+            c = new Color(Color.WHITE);
         }
         else {
             c = new Color(Color.RED);
@@ -56,10 +56,10 @@ public class ArrowModel {
 
         // Change scaling
         if (velocityRepresented.len()/100 < 4.4) {
-            sx = velocityRepresented.len()/100;
+            sx = velocityRepresented.len()/150;
         }
         else {
-            sx = 5;
+            sx = 3;
         }
     }
 }

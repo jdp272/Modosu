@@ -30,6 +30,7 @@ import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -58,6 +59,8 @@ public class GamePlayController extends WorldController {
 	private static final String  FAILURE_SOUND = "shared/failure.mp3";
 	/** The asset for the victory sound */
 	private static final String  VICTORY_SOUND = "shared/victory.mp3";
+	/** The asset for the golem walking sound */
+	private static final String  WALK_SOUND = "host/walk.mp3";
 
 //	/** The asset for the explosion sound */
 //	private static final String  EXPLODE_SOUND = "host/afterburner.mp3";
@@ -79,7 +82,7 @@ public class GamePlayController extends WorldController {
 
 	private int currentLevel = 0;
 
-	private String[] levels;
+	private FileHandle[] levels;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -108,8 +111,11 @@ public class GamePlayController extends WorldController {
 		assets.add(VICTORY_SOUND);
 		manager.load(LAUNCH_SOUND, Sound.class);
 		assets.add(LAUNCH_SOUND);
+		manager.load(WALK_SOUND, Sound.class);
+		assets.add(WALK_SOUND);
 //		manager.load(EXPLOSION_SOUND, Sound.class);
 //		assets.add(EXPLOSION_SOUND);
+
 
 		super.preLoadContent(manager);
 	}
@@ -135,6 +141,7 @@ public class GamePlayController extends WorldController {
 		sounds.allocate(manager, FAILURE_SOUND);
 		sounds.allocate(manager, VICTORY_SOUND);
 		sounds.allocate(manager, LAUNCH_SOUND);
+		sounds.allocate(manager, WALK_SOUND);
 //		sounds.allocate(manager, EXPLOSION_SOUND);
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -154,8 +161,14 @@ public class GamePlayController extends WorldController {
 
 		cache = new Vector2();
 
-		File f = new File("levels");
-		levels = f.list();
+		// This method of searching through the directory doesn't work on desktop
+		// once the project is converted into a .jar. They are "internal" files
+		// and so the f.list will return an empty list.
+
+		// FileHandle f = Gdx.files.internal("levels");
+		// levels = f.list();
+		// System.out.println(levels + "printing levels");
+
 		currentLevel = 0;
 	}
 
@@ -176,12 +189,28 @@ public class GamePlayController extends WorldController {
 
 		Vector2 gravity = new Vector2(world.getGravity());
 
-		String levelName = "levels/"+levels[currentLevel];
-		FileHandle f = new FileHandle(levelName);
+		FileHandle levelToLoad;
+		if (currentLevel == 3) {
+				levelToLoad = Gdx.files.local("levels/custom3.lvl");
+
+
+
+		}
+		else {
+			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
+		}
+
+//		FileHandle f = new FileHandle(levelName);
 //		loader.saveLevel(f, level);
 
-		System.out.println("loading level: " + levelName);
-		level = loader.loadLevel(f);
+		//System.out.println("loading level: " + levelName);
+
+		try {
+			level = loader.loadLevel(levelToLoad);
+		}
+		catch(Exception e) {
+			level = loader.loadLevel(new FileHandle("levels/custom0.lvl"));
+		}
 
 		HUD.clearHUD();
 		HUD.setNumTotalHosts(level.hosts.size());
@@ -333,10 +362,13 @@ public class GamePlayController extends WorldController {
 			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
 		}
 
-		if (collisionController.isAgainstWall() && !spirit.hasLaunched) {
-			spirit.setVX(0f);
-			spirit.setVY(0f);
+		if (hostController.isMoving()) {
+			SoundController.getInstance().play(WALK_SOUND, WALK_SOUND, true);
 		}
+		else {
+			SoundController.getInstance().stop(WALK_SOUND);
+		}
+
 
 		// Check lose condition
 		if (hostController.getPossessedBlownUp() && !isComplete() && !isFailure()) {

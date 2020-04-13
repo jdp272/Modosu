@@ -59,15 +59,15 @@ public class SpiritModel extends BoxObstacle {
         setFriction(SPIRIT_FRICTION);
         setRestitution(SPIRIT_RESTITUTION);
         setFixedRotation(true);
-        float[] verts = {-0.25f,0,
-                -0.2f,-0.2f,
-                0,-0.25f,
-                0.2f,-0.2f,
-                0.25f,0,
-                0.2f,0.2f,
-                0,0.25f,
-                -0.2f,0.2f};
-        shape.set(verts);
+//        float[] verts = {-0.25f,0,
+//                -0.2f,-0.2f,
+//                0,-0.25f,
+//                0.2f,-0.2f,
+//                0.25f,0,
+//                0.2f,0.2f,
+//                0,0.25f,
+//                -0.2f,0.2f};
+//        shape.set(verts);
 
         bounces = b;
         this.defaultLife = defaultLife;

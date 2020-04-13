@@ -494,21 +494,27 @@ public class LevelDesignerMode extends WorldController {
 		}
 		if(input.didSave()) {
 
-			// TODO: COMBINE THIS WITH InputController SOMEHOW!
-			Gdx.input.getTextInput(new Input.TextInputListener() {
-				@Override
-				public void input (String levelName) {
-					System.out.println("Saving level as levels/" + levelName + ".lvl");
-					save("levels/" + levelName + ".lvl");
-				}
+//			// TODO: COMBINE THIS WITH InputController SOMEHOW!
+//			Gdx.input.getTextInput(new Input.TextInputListener() {
+//				@Override
+//				public void input (String levelName) {
+//					System.out.println("Saving level as levels/" + levelName + ".lvl");
+//					save("levels/" + levelName + ".lvl");
+//				}
+//
+//				@Override
+//				public void canceled () {
+//					System.out.println("Cancelling save");
+//				}
+//			}, "Input custom level name", "custom", "");
 
-				@Override
-				public void canceled () {
-					System.out.println("Cancelling save");
-				}
-			}, "Input custom level name", "custom", "");
-
-//			save("custom.lvl");
+			if(hasPed) {
+				String levelName = "custom3"; // TODO: don't always name it this
+				save("levels/" + levelName + ".lvl");
+				System.out.println("Saving level as levels/" + levelName + ".lvl");
+			} else {
+				System.out.println("Did not save level: no pedestal found");
+			}
 		}
 
 		canvas.setCamTarget(camTarget);
@@ -521,10 +527,14 @@ public class LevelDesignerMode extends WorldController {
 	/**
 	 * Saves the current set up as a level
 	 *
+	 * Requires: the level is valid, and thus has a pedestal
+	 *
 	 * @param levelName The name for the saved level
 	 */
 	private void save(String levelName) {
-		FileHandle f = new FileHandle(levelName);
+		// This has to be made local instead of the default, which is "internal" and can't be
+		// modified by a jar
+		FileHandle f = Gdx.files.local(levelName);
 
 		// TODO: Make this not creating new objects by updating Level to use PooledList(?)
 
