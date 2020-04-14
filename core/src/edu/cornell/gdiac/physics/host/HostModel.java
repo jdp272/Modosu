@@ -61,6 +61,8 @@ public class HostModel extends BoxObstacle {
      */
     private static final float PEDESTAL_CURRENT_CHARGE = -1f;
 
+    /** The gauge color for unpossessed robots */
+    private static final Color unpossessedColor = new Color(0x6B5C5CFF);
 
     // FRAMES FOR SPRITE SHEET
 
@@ -862,7 +864,7 @@ public class HostModel extends BoxObstacle {
             // When the bot hasn't been possessed the indicator color should be black
             else {
                 canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-                canvas.draw(hostGaugeStrip, Color.BLACK, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
+                canvas.draw(hostGaugeStrip, unpossessedColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
             }
         }
         }

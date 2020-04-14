@@ -10,9 +10,9 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.FilmStrip;
 
 public class Factory {
-    private static int SMALL_MAX_CHARGE = 1000;
-    private static int SPIRIT_BOUNCES = 10;
-    private static int DEFAULT_LIFE = 400;
+    private static int SMALL_MAX_CHARGE = 800;
+    private static int SPIRIT_BOUNCES = 8;
+    private static int DEFAULT_LIFE = 300;
 
     private TextureRegion obstacleTex;
     private TextureRegion smallHostTex;
