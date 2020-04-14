@@ -25,6 +25,8 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 
 /**
@@ -57,6 +59,13 @@ public class LevelDesignerMode extends WorldController {
 	/** Texture asset for foreground */
 	private TextureRegion foregroundTexture;
 
+	/** The level to be loaded in reset() */
+	private int currentLevel = 0;
+	/** A boolean indicating if the board should not be reloaded from the file */
+	private boolean clear = false;
+	/** A boolean indicating if the board should be loaded at the start of
+	 * next update */
+	private boolean repopulate = false;
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
@@ -150,8 +159,15 @@ public class LevelDesignerMode extends WorldController {
 		camTarget = new Vector2();
 
 		board = new Obstacle[16][9];
+	}
 
-		level = new Level();
+	/**
+	 *  Sets the number of the level that is loaded in the reset() function
+	 *
+	 * @param l The level number
+	 */
+	public void setCurrentLevel(int l) {
+		currentLevel = l;
 	}
 
 	/**
@@ -174,25 +190,25 @@ public class LevelDesignerMode extends WorldController {
 		addQueue.clear();
 		world.dispose();
 
+		// Clear the board
+		for(int x = 0; x < board.length; x++) {
+			Arrays.fill(board[x], null);
+		}
+
 		FileHandle f = new FileHandle("out.lvl");
 
 		world = new World(gravity,false);
 
 //		level = loader.loadLevel(f);
 
-		setComplete(false);
-		setFailure(false);
-		populateLevel();
-	}
-
-	/**
-	 * Lays out the game geography.
-	 */
-	private void populateLevel() {
-
 		Wall boxSpawn = factory.makeWall(0.f, 0.f);
 		boxSpawn.setWallLvlDsgn(20);
 		addObject(boxSpawn);
+
+		setComplete(false);
+		setFailure(false);
+
+		// Setup the spawner list
 
 		WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
 		addObject(waterSpawn);
@@ -207,14 +223,6 @@ public class LevelDesignerMode extends WorldController {
 		addObject(pedestalSpawn);
 
 		spawnList = new SpawnerList(canvas, scale);
-
-
-
-		spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
-			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-				return factory.makePedestal(x, y);
-			}
-		});
 
 		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
 			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
@@ -236,6 +244,28 @@ public class LevelDesignerMode extends WorldController {
 			}
 		});
 
+		spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
+			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+				return factory.makePedestal(x, y);
+			}
+		});
+
+		selector = new ObstacleSelector(world);
+		selector.setTexture(crosshairTexture);
+		selector.setDrawScale(scale);
+
+		if(!clear) {
+			populateLevel();
+		} else {
+			clear = false;
+		}
+	}
+
+	/**
+	 * Lays out the game geography.
+	 */
+	private void populateLevel() {
+
 //		spawnList.addSpawner(spiritSpawn, new SpawnerList.CallbackFunction() {
 //			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
 //				if (lastCreated == null) {
@@ -248,9 +278,56 @@ public class LevelDesignerMode extends WorldController {
 //			}
 //		});
 
-		selector = new ObstacleSelector(world);
-		selector.setTexture(crosshairTexture);
-		selector.setDrawScale(scale);
+		// TODO: Change this with GamePlayController!!
+		FileHandle levelToLoad;
+		if (currentLevel == 3) {
+			levelToLoad = Gdx.files.local("levels/custom3.lvl");
+		} else {
+			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
+		}
+
+		try {
+			level = loader.loadLevel(levelToLoad);
+		} catch (Exception e) {
+			level = loader.loadLevel(new FileHandle("levels/custom0.lvl"));
+		}
+
+		for(Obstacle obj : level.obstacles) {
+			addNewObstacle(obj);
+		}
+		for(Obstacle obj : level.hosts) {
+			addNewObstacle(obj);
+		}
+		for(Obstacle obj : level.water) {
+			addNewObstacle(obj);
+		}
+		System.out.println("\tal");
+		addNewObstacle(level.pedestal);
+		addNewObstacle(level.start);
+	}
+
+	/**
+	 * Adds the given obstacle to the world and to the board array, if it is in
+	 * bounds and nothing is at its tile. It is also snapped to the grid
+	 *
+	 * @param obj The obstacle to add. It should not already be in the world
+	 */
+	private void addNewObstacle(Obstacle obj) {
+		int x = coordToTile(obj.getX());
+		int y = coordToTile(obj.getY());
+
+		if(x >= 0 && y >= 0 && x < board.length && y < board[x].length && board[x][y] == null) {
+			obj.setPosition(tileToCoord(x), tileToCoord(y));
+
+			board[x][y] = obj;
+			System.out.println(objects.size());
+			addObject(obj);
+
+			// TODO: uncomment this when hasPedestal is added
+//			if(obj.getName() == "pedestal") {
+//				hasPedestal = true;
+//			}
+		}
 	}
 
 	/**
@@ -482,7 +559,17 @@ public class LevelDesignerMode extends WorldController {
 			}
 		}
 
-				// Update the camera position
+
+		if(input.didClear()) {
+			clear = true; // Remove everything from the board
+			reset();
+		}
+		if(input.didReset()) {
+			clear = false; // Reset the board based on the level
+			reset();
+		}
+
+		// Update the camera position
 		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
 
 		updateSelector(hasPed);
@@ -535,7 +622,7 @@ public class LevelDesignerMode extends WorldController {
 //			}, "Input custom level name", "custom", "");
 
 			if(hasPed) {
-				String levelName = "custom3"; // TODO: don't always name it this
+				String levelName = "custom" + currentLevel;
 				save("levels/" + levelName + ".lvl");
 				System.out.println("Saving level as levels/" + levelName + ".lvl");
 			} else {
@@ -581,7 +668,7 @@ public class LevelDesignerMode extends WorldController {
 				hostList.add((HostModel) obj);
 			}
 			else if ((obj.getName()) == "pedestal") {
-					pedestal = (HostModel) obj;
+				pedestal = (HostModel) obj;
 			} else if (obj instanceof WaterTile) {
 				waterList.add((WaterTile) obj);
 			} else if (obj instanceof BoxObstacle) {

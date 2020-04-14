@@ -1,1 +1,1 @@
-{obstacleData:[],waterData:[],hostData:[{location:{x:17,y:11},chargeTime:1000},{location:{x:25,y:11},chargeTime:1000}],startLocation:{x:21,y:7}}
+{obstacleData:[],waterData:[],hostData:[{location:{x:19,y:9},chargeTime:1000},{location:{x:7,y:9},chargeTime:1000}],pedestalData:{location:{x:13,y:9}},startLocation:{x:13,y:9}}
