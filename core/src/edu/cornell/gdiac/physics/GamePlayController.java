@@ -401,8 +401,12 @@ public class GamePlayController extends WorldController {
 		canvas.updateCamera();
 
 		// Handle camera zooming
-		if (InputController.getInstance().didZoom()) {
+		if (InputController.getInstance().didZoom() && !spirit.hasLaunched) {
 			canvas.toggleZoom();
+		}
+
+		else if (spirit.hasLaunched) {
+			canvas.zoomIn();
 		}
 
 
@@ -418,9 +422,12 @@ public class GamePlayController extends WorldController {
 		}
 
 		// Zoom back in if you click to aim a shot; Want to see what players think about this
+		/*
 		if (InputController.getInstance().didTertiary()) {
 			canvas.zoomIn();
 		}
+		*/
+
 
 		// Update sounds
 		SoundController.getInstance().update();
