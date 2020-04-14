@@ -301,7 +301,6 @@ public class LevelDesignerMode extends WorldController {
 		for(Obstacle obj : level.water) {
 			addNewObstacle(obj);
 		}
-		System.out.println("\tal");
 		addNewObstacle(level.pedestal);
 		addNewObstacle(level.start);
 	}
@@ -320,7 +319,6 @@ public class LevelDesignerMode extends WorldController {
 			obj.setPosition(tileToCoord(x), tileToCoord(y));
 
 			board[x][y] = obj;
-			System.out.println(objects.size());
 			addObject(obj);
 
 			// TODO: uncomment this when hasPedestal is added
