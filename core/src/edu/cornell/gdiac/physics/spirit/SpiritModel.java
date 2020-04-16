@@ -310,12 +310,15 @@ public class SpiritModel extends BoxObstacle {
     public void draw(GameCanvas canvas) {
         // Color fades as life progression decreases
         float lifeProgression = this.currentLife / this.defaultLife;
+        float disFromBounce = (Vector2.dst2(this.getPosition().x, this.getPosition().y, this.getPosAtBounce().x, this.getPosAtBounce().y)) / 8;
         Color lifeColor = new Color(1, 1, 1, lifeProgression);
+        Color tailColor = new Color(1, 1,1, lifeProgression * disFromBounce);
 
 
 
         // Only draw spirit when it's flying
         if (!isPossessing && !goToCenter) {
+
 
             if(this.didBounce) {
                 canvas.draw(spiritHeadStrip, lifeColor, spiritHeadStrip.getRegionWidth() - 14, spiritHeadStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, this.getVelocity().angleRad(), 0.75f, 0.75f);
@@ -323,9 +326,13 @@ public class SpiritModel extends BoxObstacle {
             }
             else {
                 canvas.draw(spiritHeadStrip, lifeColor, spiritHeadStrip.getRegionWidth() - 14, spiritHeadStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, this.getVelocity().angleRad(), 0.75f, 0.75f);
-                if(Vector2.dst2(this.getPosition().x, this.getPosition().y, this.getPosAtBounce().x, this.getPosAtBounce().y) >= 5f)
-                canvas.draw(spiritTailStrip, lifeColor, spiritTailStrip.getRegionWidth() - 14, spiritTailStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, this.getVelocity().angleRad(), 0.75f, 0.75f);
+                if(Vector2.dst2(this.getPosition().x, this.getPosition().y, this.getPosAtBounce().x, this.getPosAtBounce().y) >= 8f) {
+                    canvas.draw(spiritTailStrip, lifeColor, spiritTailStrip.getRegionWidth() - 14, spiritTailStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, this.getVelocity().angleRad(), 0.75f, 0.75f);
+                }
+                else {
+                    canvas.draw(spiritTailStrip, tailColor, spiritHeadStrip.getRegionWidth() - 14, spiritHeadStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, this.getVelocity().angleRad(), 0.75f, 0.75f);
+                }
+                }
             }
         }
     }
-}
