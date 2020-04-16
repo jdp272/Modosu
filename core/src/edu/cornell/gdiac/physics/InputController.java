@@ -86,6 +86,9 @@ public class InputController {
 	/** If a new spirit button was pressed */
 	private boolean spiritPressed;
 	private boolean spiritPrevious;
+	/** If a clear button was pressed */
+	private boolean clearPressed;
+	private boolean clearPrevious;
 	/** If the delete button was pressed */
 	private boolean deletePressed;
 	private boolean deletePrevious;
@@ -253,6 +256,13 @@ public class InputController {
 	public boolean newSpirit() { return spiritPressed && !spiritPrevious; }
 
 	/**
+	 * Returns true if the clear button was pressed.
+	 *
+	 * @return true if the clear button was pressed.
+	 */
+	public boolean didClear() { return clearPressed && !clearPrevious; }
+
+	/**
 	 * Returns true if the delete button was pressed.
 	 *
 	 * @return true if the delete button was pressed.
@@ -310,6 +320,7 @@ public class InputController {
 		boxPrevious = boxPressed;
 		hostPrevious = hostPressed;
 		spiritPrevious = spiritPressed;
+		clearPrevious = clearPressed;
 		deletePrevious = deletePressed;
 		savePrevious = savePressed;
 		menuPrevious = menuPressed;
@@ -345,6 +356,7 @@ public class InputController {
 		boxPressed = xbox.getX();
 //		hostPressed = ...
 //		spiritPressed = ...
+//		clearPressed = ...
 //		deletePressed = ...
 //		savePressed = ...
 //		menuPressed = ...
@@ -389,11 +401,10 @@ public class InputController {
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
 
-		
-
-		boxPressed = (secondary && boxPressed)  || (Gdx.input.isKeyPressed(Input.Keys.B));
-		hostPressed = (secondary && hostPressed)  || (Gdx.input.isKeyPressed(Input.Keys.G));
-		spiritPressed = (secondary && spiritPressed)  || (Gdx.input.isKeyPressed(Input.Keys.Z));
+		boxPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.B));
+		hostPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.G));
+		spiritPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.Z));
+		clearPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.C));
 		deletePressed = (secondary && deletePressed)  || (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE));
 		savePressed = (secondary && savePressed)  || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
 		menuPressed = (secondary && menuPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));

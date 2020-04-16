@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import edu.cornell.gdiac.util.SoundController;
 
 public class HUD {
 
@@ -35,13 +37,14 @@ public class HUD {
 
     /* Scene2D Widgets */
     private static Label hostCounterLabel;
+    private Texture hostCounterTexture;
 
     /* Initialization */
     public HUD(PolygonSpriteBatch spriteBatch) {
         numCurrentHosts = 0;
         numTotalHosts = 0;
 
-        viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        viewport = new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         stage = new Stage(viewport, spriteBatch);
 
         /* Create label for the text */
@@ -60,7 +63,8 @@ public class HUD {
 
         /* For the text and the image to overlay */
         Stack stack = new Stack();
-        Image counterBackground = new Image(new Texture(Gdx.files.internal(GOLEM_INDICATOR_FILE)));
+        hostCounterTexture = new Texture(Gdx.files.internal(GOLEM_INDICATOR_FILE));
+        Image counterBackground = new Image(hostCounterTexture);
         stack.add(counterBackground);
         stack.add(hostCounterLabel);
 
@@ -89,13 +93,13 @@ public class HUD {
         hostCounterLabel.setText(PADDING + numCurrentHosts + " / " + numTotalHosts);
     }
 
-    /* Clears the HUD values */
     public static void clearHUD() {
         numCurrentHosts = 0;
         numTotalHosts = 0;
     }
 
     public void dispose() {
+        hostCounterTexture.dispose();
         stage.dispose();
     }
 }

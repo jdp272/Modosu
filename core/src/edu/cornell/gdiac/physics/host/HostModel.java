@@ -10,11 +10,8 @@
 package edu.cornell.gdiac.physics.host;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
@@ -64,6 +61,8 @@ public class HostModel extends BoxObstacle {
      */
     private static final float PEDESTAL_CURRENT_CHARGE = -1f;
 
+    /** The gauge color for unpossessed robots */
+    private static final Color unpossessedColor = new Color(0x6B5C5CFF);
 
     // FRAMES FOR SPRITE SHEET
 
@@ -157,6 +156,27 @@ public class HostModel extends BoxObstacle {
      */
     private float sx = 0.3f;
     private float sy = 0.3f;
+
+    /**
+     * The number of frames that have elapsed since the last animation update
+     */
+    private int elapsedFrames = 0;
+    private int pedFrames = 0;
+
+    /**
+     * The number of frames that should pass before the animation updates
+     * (animation framerate is the framerate of the game divided by this value)
+     * 4 seems to look pretty good
+     */
+    private int framesPerUpdate = 8;
+    private int pedFramesPerUpdate = 12;
+
+    /**
+     * Whether or not the animation should be updated on this frame
+     * (though if the update is changing direction it will always happen)
+     */
+    private boolean updateFrame;
+    private boolean pedUpdateFrame;
 
 
     /**
@@ -343,6 +363,7 @@ public class HostModel extends BoxObstacle {
         this.instructions = ins;
         this.instructionNumber = 0;
         this.hasBeenPossessed = false;
+        this.updateFrame = true;
         this.moving = (ins != null);
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
@@ -373,6 +394,7 @@ public class HostModel extends BoxObstacle {
         this.instructions = null;
         this.instructionNumber = 0;
         this.hasBeenPossessed = true;
+        this.updateFrame = true;
         this.isPedestal = isPedestal;
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
@@ -533,7 +555,7 @@ public class HostModel extends BoxObstacle {
 
     public void setPedestalStrip(FilmStrip strip) {
         this.pedestalHost = strip;
-        pedestalHost.setFrame(4);
+        pedestalHost.setFrame(0);
     }
 
     /**
@@ -674,10 +696,9 @@ public class HostModel extends BoxObstacle {
         FilmStrip node = null;
         int frame = 0;
 
-        if(state) {
+        if (state) {
             node = chargedHost;
-        }
-        else {
+        } else {
             node = notChargedHost;
         }
 
@@ -685,6 +706,18 @@ public class HostModel extends BoxObstacle {
             frame = node.getFrame();
         }
 
+        // To allow framerate control of this animation
+        elapsedFrames++;
+        updateFrame = false;
+        if (elapsedFrames >= framesPerUpdate) {
+            updateFrame = true;
+            elapsedFrames = 0;
+        }
+
+        // I'm a little concerned about slowing all animation within the host using one thing, because
+        // if the framerate is sufficiently low it might feel unresponsive because the golem does not immediately
+        // turn in the direction you are moving. For now, because framrate is relatively high, disregard this.
+        if (updateFrame) {
         if (direction.x > 0) {
             // NORTH EAST
             if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
@@ -716,7 +749,7 @@ public class HostModel extends BoxObstacle {
                 if (frame < HOST_NORTHWEST_END && frame >= HOST_NORTHWEST_START) {
                     frame++;
                 } else {
-                    frame=HOST_NORTHWEST_START;
+                    frame = HOST_NORTHWEST_START;
                 }
             }
             // SOUTH WEST
@@ -724,7 +757,7 @@ public class HostModel extends BoxObstacle {
                 if (frame < HOST_SOUTHWEST_END && frame >= HOST_SOUTHWEST_START) {
                     frame++;
                 } else {
-                    frame=HOST_SOUTHWEST_START;
+                    frame = HOST_SOUTHWEST_START;
                 }
             }
             // WEST
@@ -732,16 +765,16 @@ public class HostModel extends BoxObstacle {
                 if (frame < HOST_WEST_END && frame >= HOST_WEST_START) {
                     frame++;
                 } else {
-                    frame=HOST_WEST_START;
+                    frame = HOST_WEST_START;
                 }
             }
-        } else if(direction.x == 0 || Math.abs(direction.x) < 0.1) {
+        } else if (direction.x == 0 || Math.abs(direction.x) < 0.1) {
             // NORTH
             if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
                 if (frame < HOST_NORTH_END && frame >= HOST_NORTH_START) {
                     frame++;
                 } else {
-                    frame=HOST_NORTH_START;
+                    frame = HOST_NORTH_START;
                 }
             }
             // SOUTH
@@ -749,10 +782,12 @@ public class HostModel extends BoxObstacle {
                 if (frame < HOST_SOUTH_END && frame >= HOST_SOUTH_START) {
                     frame++;
                 } else {
-                    frame=HOST_SOUTH_START;
+                    frame = HOST_SOUTH_START;
                 }
             }
         }
+    }
+
         if(node != null) {
             node.setFrame(frame);
             hostGaugeStrip.setFrame(frame);
@@ -770,11 +805,18 @@ public class HostModel extends BoxObstacle {
      * Strip animation for pedestal
      */
     public void animateStrip() {
-        if(this.pedestalHost.getFrame() < this.pedestalHost.getSize() - 1) {
-            this.pedestalHost.setFrame(this.pedestalHost.getFrame() + 1);
+        pedFrames++;
+        pedUpdateFrame = false;
+        if (pedFrames >= pedFramesPerUpdate) {
+            pedUpdateFrame = true;
+            pedFrames = 0;
         }
-        else {
-            this.pedestalHost.setFrame(0);
+        if(pedUpdateFrame) {
+            if (this.pedestalHost.getFrame() < this.pedestalHost.getSize() - 1) {
+                this.pedestalHost.setFrame(this.pedestalHost.getFrame() + 1);
+            } else {
+                this.pedestalHost.setFrame(0);
+            }
         }
     }
 
@@ -822,7 +864,7 @@ public class HostModel extends BoxObstacle {
             // When the bot hasn't been possessed the indicator color should be black
             else {
                 canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-                canvas.draw(hostGaugeStrip, Color.BLACK, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
+                canvas.draw(hostGaugeStrip, unpossessedColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
             }
         }
         }

@@ -31,7 +31,7 @@ import edu.cornell.gdiac.util.SoundController;
  */
 public class LevelSelectMode extends WorldController implements Screen, InputProcessor {
     /** Texture file for background image */
-    private static final String BACKG_FILE = "shared/LevelSelectBackground.png";
+    private static final String BACKG_FILE = "shared/levelselectbackground.png";
     private static final String ONE_FILE = "shared/1.png";
     private static final String TWO_FILE = "shared/2.png";
     private static final String THREE_FILE = "shared/3.png";
@@ -184,7 +184,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
 
     /**
-     * The core gameplay loop of this world.
+     * The core update loop of this menuscreen.
      *
      * This method contains the specific update code for this mini-game. It does
      * not handle collisions, as those are managed by the parent class WorldController.
@@ -197,6 +197,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
             listener.exitScreen(this,WorldController.EXIT_MENU);
         }
+        // Update sounds
+        SoundController.getInstance().update();
     }
 
 

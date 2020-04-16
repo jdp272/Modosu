@@ -2,30 +2,38 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.host.HostModel;
-
-import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.util.FilmStrip;
 
 public class Factory {
-    private static int SMALL_MAX_CHARGE = 1000;
-    private static int SPIRIT_BOUNCES = 10;
-    private static int DEFAULT_LIFE = 400;
+    private static int SMALL_MAX_CHARGE = 800;
+    private static int SPIRIT_BOUNCES = 8;
+    private static int DEFAULT_LIFE = 300;
 
     private TextureRegion obstacleTex;
-    private TextureRegion spiritTex;
     private TextureRegion smallHostTex;
     private Texture smallHostGaugeTexture;
     private Texture smallHostTexture;
     private Texture wallTexture;
     private Texture waterTexture;
+    private Texture cornerTexture;
     private Texture pedestalTexture;
+    private Texture spiritBodyTexture;
+    private Texture spiritHeadTexture;
+    private Texture spiritTailTexture;
 
     /** Static Variables for Sprite Sheet */
+
+    /** Number of rows in the spirit image filmstrip */
+    private static final int SPIRIT_ROWS =  35;
+    /** Number of columns in the spirit image filmstrip */
+    private static final int SPIRIT_COLUMNS = 4;
+    /** Total Number of frames in the spirit image filmstrip */
+    private static final int SPIRIT_SIZE = 140;
 
     /** Number of rows in the host image filmstrip */
     private static final int HOST_ROWS = 8;
@@ -48,12 +56,19 @@ public class Factory {
     /** Number of total hosts in the water image filmstrip */
     private static final int WATER_SIZE = 16;
 
+    /** Number of rows in the water corner image filmstrip */
+    private static final int WATER_CORNER_ROWS = 2;
+    /** Number of columns in the water corner image filmstrip */
+    private static final int WATER_CORNER_COLUMNS = 2;
+    /** Number of total hosts in the water corner image filmstrip */
+    private static final int WATER_CORNER_SIZE = 4;
+
     /** Number of rows in the pedestal image filmstrip */
     private static final int PEDESTAL_ROWS = 1;
     /** Number of columns in the pedestal image filmstrip */
-    private static final int PEDESTAL_COLS = 8;
+    private static final int PEDESTAL_COLS = 4;
     /** Number of total pedestals in the pedestal image filmstrip */
-    private static final int PEDESTAL_SIZE = 8;
+    private static final int PEDESTAL_SIZE = 4;
 
 
     /** The draw scale of objects */
@@ -65,22 +80,28 @@ public class Factory {
     public Factory(
             Vector2 scale,
             TextureRegion obstacleTex,
-            TextureRegion spiritTex,
+            Texture spiritBodyTexture,
+            Texture spiritHeadTexture,
+            Texture spiritTailTexture,
             TextureRegion smallHostTex,
             Texture smallHostTexture,
             Texture smallHostGaugeTexture,
             Texture wallTexture,
             Texture waterTexture,
+            Texture cornerTexture,
             Texture pedestalTexture
     ) {
         this.scale = scale;
         this.obstacleTex = obstacleTex;
-        this.spiritTex = spiritTex;
+        this.spiritBodyTexture = spiritBodyTexture;
+        this.spiritHeadTexture = spiritHeadTexture;
+        this.spiritTailTexture = spiritTailTexture;
         this.smallHostTex = smallHostTex;
         this.smallHostTexture = smallHostTexture;
         this.smallHostGaugeTexture = smallHostGaugeTexture;
         this.wallTexture = wallTexture;
         this.waterTexture = waterTexture;
+        this.cornerTexture = cornerTexture;
         this.pedestalTexture = pedestalTexture;
     }
 
@@ -119,6 +140,7 @@ public class Factory {
                 obstacleTex.getRegionHeight() / scale.y
         );
         water.setWaterStrip(new FilmStrip(waterTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
+        water.setCornerStrip(new FilmStrip(cornerTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
         water.setDrawScale(scale);
         water.setSX(0.25f);
         water.setSY(0.25f);
@@ -133,13 +155,13 @@ public class Factory {
         SpiritModel spirit = new SpiritModel(
                 x,
                 y,
-                spiritTex.getRegionWidth() / scale.x,
-                spiritTex.getRegionHeight() / scale.y,
+                (spiritHeadTexture.getWidth() / (SPIRIT_COLUMNS * 12)) / scale.x,
+                (spiritHeadTexture.getHeight() / (SPIRIT_ROWS * 4)) / scale.y,
                 SPIRIT_BOUNCES,
                 DEFAULT_LIFE
         );
         spirit.setDrawScale(scale);
-        spirit.setTexture(spiritTex);
+        spirit.setFilmStrip(new FilmStrip(spiritBodyTexture,  SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE), new FilmStrip(spiritHeadTexture, SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE), new FilmStrip(spiritTailTexture, SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE));
         spirit.setSensor(makeSensors);
         return spirit;
     }
