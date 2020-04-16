@@ -161,6 +161,11 @@ public class GamePlayController extends WorldController {
 		currentLevel = 0;
 	}
 
+	/**
+	 *  Sets the number of the level that is loaded in the reset() function
+	 *
+	 * @param l The level number
+	 */
 	public void setCurrentLevel(int l) {
 		currentLevel = l;
 	}
