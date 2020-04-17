@@ -63,6 +63,11 @@ public class HostController {
     private long ticks;
 
     private int numHosts;
+
+
+    // TOGGLE VARIABLES
+    // If true, the player can drag from anywhere and the shot will be aimed from there
+    private boolean dragAnywhere = true;
     /**
      * Creates and initialize a new instance of a HostController
      */
