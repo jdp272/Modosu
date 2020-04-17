@@ -128,7 +128,17 @@ public abstract class WorldController implements Screen {
 	private static Texture pedestalTexture;
 
 	public ArrowModel arrow;
+
+	/** Whether sound mode is on */
+	private boolean sound;
+
+	public void setSound(boolean s) {
+		System.out.println("sound was set to : " + sound) ;
+		sound = s;
+	}
+	public boolean getSound() { return sound; }
 	/**
+	 *
 	 * Preloads the assets for this controller.
 	 *
 	 * To make the game modes more for-loop friendly, we opted for nonstatic loaders
@@ -578,18 +588,19 @@ public abstract class WorldController implements Screen {
 		
 		// Now it is time to maybe switch screens.
 		if (input.didExit()) {
-			listener.exitScreen(this, EXIT_QUIT);
+			listener.exitScreen(this, EXIT_QUIT, sound);
 			return false;
 		} else if (input.didAdvance()) {
-			listener.exitScreen(this, EXIT_NEXT);
+			listener.exitScreen(this, EXIT_NEXT, sound);
 			return false;
 		} else if (input.didRetreat()) {
-			listener.exitScreen(this, EXIT_PREV);
+			listener.exitScreen(this, EXIT_PREV, sound);
 			return false;
 		}
 		else if (input.didMenu()) {
+			System.out.println("DID IT GO HERE IN WORLD");
 			setMenu(true);
-			listener.exitScreen(this, EXIT_MENU);
+			listener.exitScreen(this, EXIT_MENU, sound);
 		}
 		else if (countdown > 0) {
 			countdown--;
@@ -599,11 +610,11 @@ public abstract class WorldController implements Screen {
 			GameOver.screenShotPixmap = ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			if (failed) {
 				GameOver.setFail(true);
-				listener.exitScreen(this, EXIT_GAME);
+				listener.exitScreen(this, EXIT_GAME, sound);
 			} else if (complete) {
 				// TODO: go to the next level
 				GameOver.setFail(false);
-				listener.exitScreen(this, EXIT_GAME);
+				listener.exitScreen(this, EXIT_GAME, sound);
 				return false;
 			}
 		}

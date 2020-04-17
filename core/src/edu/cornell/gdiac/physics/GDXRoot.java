@@ -76,7 +76,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
-		loading = new LoadingMode(canvas,manager,1);
+		loading = new LoadingMode(canvas,manager,1, true);
 
 		controller = new GamePlayController();
 		levelDesigner = new LevelDesignerMode();
@@ -133,7 +133,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 *
 	 * @param level The level to start the game at
 	 */
-	public void exitScreenLevel(int level) {
+	public void exitScreenLevel(int level, boolean sound) {
 		if (screen == levelSelect){
 			levelSelect.dispose();
 			levelSelect = null;
@@ -142,15 +142,16 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.setCurrentLevel(level);
+			controller.setSound(sound);
 			controller.reset();
 
 			setScreen(controller);
 		}
 	}
 
-	private void reset() {
+	private void reset(boolean sound) {
 		canvas  = new GameCanvas();
-		loading = new LoadingMode(canvas,manager,1);
+		loading = new LoadingMode(canvas,manager,1, sound);
 
 		controller = new GamePlayController();
 		levelDesigner = new LevelDesignerMode();
@@ -174,11 +175,13 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param screen   The screen requesting to exit
 	 * @param exitCode The state of the screen upon exit
 	 */
-	public void exitScreen(Screen screen, int exitCode) {
+	public void exitScreen(Screen screen, int exitCode, boolean sound) {
 		if (screen == loading && exitCode == WorldController.EXIT_PLAY) {
 			controller.loadContent(manager);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
+			System.out.println("it goes here here? This is sound " + sound);
+			controller.setSound(sound);
 			controller.reset();
 			setScreen(controller);
 		}
@@ -193,6 +196,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelSelect.loadContent(manager);
 			levelSelect.setScreenListener(this);
 			levelSelect.setCanvas(canvas);
+			levelSelect.setSound(sound);
 			levelSelect.reset();
 			setScreen(levelSelect);
 		}
@@ -216,9 +220,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			Gdx.app.exit();
 		}
 		else if (exitCode == WorldController.EXIT_MENU) {
-			reset();
+			reset(sound);
 		}
 	}
-
-
 }

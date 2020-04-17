@@ -39,6 +39,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     private static final String CLICK_SOUND = "shared/click.mp3";
     private static final String HOVER_SOUND = "shared/hover.mp3";
 
+    private boolean sound;
+
 
     private static int LEVEL_X_START = 170;
     private static int LEVEL_Y = 230;
@@ -72,7 +74,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     /** Mouse is currently hovering over a button */
     private boolean hoverButton;
     /** Volume of hover sound */
-    private static float hoverVolume = .40f;
+    private static float hoverVolume = .25f;
 
     /** Color of level one button */
     private Color colorOne;
@@ -165,6 +167,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         setComplete(false);
         setFailure(false);
 
+        sound = false;
+
         colorHovered = new Color(Color.rgb565(190f,245f,253f));
         colorUnhovered = new Color(Color.WHITE);
         colorOne = colorUnhovered;
@@ -195,7 +199,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      */
     public void update(float dt) {
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
-            listener.exitScreen(this,WorldController.EXIT_MENU);
+            listener.exitScreen(this,WorldController.EXIT_MENU, sound);
         }
         // Update sounds
         SoundController.getInstance().update();
@@ -230,6 +234,13 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     }
 
     /**
+     * Sets the ScreenListener for this mode
+     *
+     * The ScreenListener will respond to requests to quit.
+     */
+    public void setSound(boolean s) { sound = s; }
+
+    /**
      * Called when the screen was touched or a mouse button was pressed.
      *
      * This method checks to see if the play button is available and if the click
@@ -249,30 +260,30 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
         if(screenX >=  oneStart.x && screenX <= oneEnd.x) {
             if (screenY >= oneStart.y && screenY <= oneEnd.y) {
-                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
-                listener.exitScreenLevel(0);
+                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                listener.exitScreenLevel(0, sound);
             }
 
         }
 
         else if(screenX >= twoStart.x && screenX <= twoEnd.x ) {
             if (screenY >= twoStart.y && screenY <= twoEnd.y) {
-                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
-                listener.exitScreenLevel(1);
+                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                listener.exitScreenLevel(1, sound);
             }
         }
 
         else if(screenX >= threeStart.x && screenX <= threeEnd.x) {
             if (screenY >= threeStart.y && screenY <= threeEnd.y)  {
-                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
-                listener.exitScreenLevel(2);
+                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                listener.exitScreenLevel(2, sound);
             }
         }
 
         else if(screenX >= fourStart.x && screenX <= fourEnd.x) {
             if (screenY >= fourStart.y && screenY <= fourEnd.y)  {
-                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
-                listener.exitScreenLevel(3);
+                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                listener.exitScreenLevel(3, sound);
             }
         }
 
@@ -297,7 +308,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 if (screenY >= oneStart.y && screenY <= oneEnd.y) {
                     colorOne = colorHovered;
                     if (!hoverButton) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
                         hoverButton = true;
                     }
                 }
@@ -310,7 +321,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 if (screenY >= twoStart.y && screenY <= twoEnd.y) {
                     colorTwo = colorHovered;
                     if (!hoverButton) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
                         hoverButton = true;
                     }
                 }
@@ -323,7 +334,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 if (screenY >= threeStart.y && screenY <= threeEnd.y) {
                     colorThree = colorHovered;
                     if (!hoverButton) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
                         hoverButton = true;
                     }
                 }
@@ -336,7 +347,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 if (screenY >= fourStart.y && screenY <= fourEnd.y) {
                     colorFour = colorHovered;
                     if (!hoverButton) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
                         hoverButton = true;
                     }
                 }

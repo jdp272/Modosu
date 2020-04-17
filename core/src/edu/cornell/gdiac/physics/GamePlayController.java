@@ -62,9 +62,6 @@ public class GamePlayController extends WorldController {
 	/** The asset for the golem walking sound */
 	private static final String  WALK_SOUND = "host/walk.mp3";
 
-//	/** The asset for the explosion sound */
-//	private static final String  EXPLODE_SOUND = "host/afterburner.mp3";
-
 
 	private AssetState assetState = AssetState.EMPTY;
 
@@ -334,7 +331,7 @@ public class GamePlayController extends WorldController {
 		if (hostController.checkAllPossessed() && !isComplete()){
 			HUD.incrementCurrHosts();
 			setComplete(true);
-			SoundController.getInstance().play(VICTORY_SOUND,VICTORY_SOUND,false);
+			if (getSound()) { SoundController.getInstance().play(VICTORY_SOUND,VICTORY_SOUND,false); }
 		}
 
 		// Determine if there is any possession
@@ -342,7 +339,7 @@ public class GamePlayController extends WorldController {
 
 			// Play possession sound if something different is possessed this frame
 			if (possessed != collisionController.getHostPossessed()) {
-				SoundController.getInstance().play(POSSESSION_SOUND,POSSESSION_SOUND,false);
+				if (getSound()) { SoundController.getInstance().play(POSSESSION_SOUND,POSSESSION_SOUND,false); }
 
 				// A new host has been possessed that has never been possessed before
 				if (collisionController.isNewPossession()) { HUD.incrementCurrHosts(); }
@@ -359,21 +356,21 @@ public class GamePlayController extends WorldController {
 		// Calls update on hostController
 		hostController.update(delta, possessed, spirit, level.pedestal);
 		if (hostController.getLaunched()){
-			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
+			if (getSound()) { SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false); }
 		}
 
 		if (!isFailure() & !isComplete() & hostController.isMoving()) {
-			SoundController.getInstance().play(WALK_SOUND, WALK_SOUND, true);
+			if (getSound()) { SoundController.getInstance().play(WALK_SOUND, WALK_SOUND, true); }
 		}
 		else {
-			SoundController.getInstance().stop(WALK_SOUND);
+			if (getSound()) { SoundController.getInstance().stop(WALK_SOUND); }
 		}
 
 
 		// Check lose condition
 		if (hostController.getPossessedBlownUp() && !isComplete() && !isFailure()) {
 			setFailure(true);
-			SoundController.getInstance().play(FAILURE_SOUND, FAILURE_SOUND, false);
+			if (getSound()) { SoundController.getInstance().play(FAILURE_SOUND, FAILURE_SOUND, false); }
 		}
 
 
@@ -383,7 +380,7 @@ public class GamePlayController extends WorldController {
 
 		// Update bouncing if applicable
 		if (collisionController.isBounced()) {
-			SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false);
+			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
 		}
 
 		// Calculate spirit's screen coordinates from box2d coordinates

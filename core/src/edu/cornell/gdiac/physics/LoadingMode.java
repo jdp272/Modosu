@@ -55,9 +55,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private static final String LVL_SLCT_FILE = "shared/levelselect.png";
 	private static final String CREDITS_FILE = "shared/credits.png";
 	private static final String QUIT_FILE = "shared/quit.png";
+	private static final String MUTE_FILE = "shared/mute.png";
+	private static final String UNMUTE_FILE = "shared/unmute.png";
 
 	private static final String CLICK_SOUND = "shared/click.mp3";
 	private static final String HOVER_SOUND = "shared/hover.mp3";
+
+	/** Whether sound mode is on */
+	private boolean sound;
 	
 	/** Background texture for start-up */
 	private Texture background;
@@ -73,6 +78,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Texture credits;
 	/** Quit button to display when done */
 	private Texture quit;
+	/** Mute button to display when done */
+	private Texture mute;
+	/** Unmute button to display active */
+	private Texture unmute;
 	
 	// statusBar is a "texture atlas." Break it up into parts.
 	/** Left cap to the status background (grey region) */
@@ -109,6 +118,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	/** Quit button-x (for scaling) */
 	private static int QUIT_X = 960;
 
+	/** Quit button-y (for scaling) */
+	private static int MUTE_Y = 525;
+	/** Quit button-x (for scaling) */
+	private static int MUTE_X = 900;
+
 	/** Color of buttons when hovered */
 	private static Color colorHovered;
 	/** Color of buttons when not hovered */
@@ -129,6 +143,10 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	private Color colorCredits;
 	/** Color of quit button */
 	private Color colorQuit;
+	/** Color of mute button */
+	private Color colorMute;
+	/** Color of unmute button */
+	private Color colorUnmute;
 
 	/** Ratio of the bar width to the screen */
 	private static float BAR_WIDTH_RATIO  = 0.66f;
@@ -220,7 +238,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param manager The AssetManager to load in the background
 	 */
 	public LoadingMode(GameCanvas canvas, AssetManager manager) {
-		this(canvas, manager,DEFAULT_BUDGET);
+		this(canvas, manager,DEFAULT_BUDGET, true);
 	}
 
 	/**
@@ -234,13 +252,15 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * @param manager The AssetManager to load in the background
 	 * @param millis The loading budget in milliseconds
 	 */
-	public LoadingMode(GameCanvas canvas, AssetManager manager, int millis) {
+	public LoadingMode(GameCanvas canvas, AssetManager manager, int millis, boolean sound) {
 		this.manager = manager;
 		this.canvas  = canvas;
 		budget = millis;
 		
 		// Compute the dimensions from the canvas
 		resize(canvas.getWidth(),canvas.getHeight());
+
+		this.sound = sound;
 
 		colorHovered = new Color(Color.DARK_GRAY);
 		colorUnhovered = new Color(Color.WHITE);
@@ -249,6 +269,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		colorLvlSelect = colorUnhovered;
 		colorCredits = colorUnhovered;
 		colorQuit = colorUnhovered;
+		colorMute = colorUnhovered;
+		colorUnmute = colorUnhovered;
 
 		preLoadContent();
 
@@ -260,6 +282,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		quit = null;
 		background = new Texture(BACKGROUND_FILE);
 		statusBar  = new Texture(PROGRESS_FILE);
+		mute = null;
+		unmute = null;
 		
 		// No progress so far.		
 		progress   = 0;
@@ -333,6 +357,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		 lvlDesign.dispose();
 		 credits.dispose();
 		 quit.dispose();
+		 unmute.dispose();
+		 mute.dispose();;
 		 background = null;
 		 statusBar  = null;
 		 if (playButton != null) {
@@ -366,6 +392,11 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				credits.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 				quit = new Texture(QUIT_FILE);
 				quit.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+				mute = new Texture(MUTE_FILE);
+				mute.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+				unmute = new Texture(UNMUTE_FILE);
+				unmute.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
 				loadContent();
 			}
 		}
@@ -401,6 +432,12 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			canvas.draw(quit, colorQuit, 0, 0,
 					QUIT_X, QUIT_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			if (sound) {
+				canvas.draw(unmute, colorMute, 0,0, MUTE_X, MUTE_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			}
+			else {
+				canvas.draw(mute, colorMute, 0,0, MUTE_X, MUTE_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+			}
 		}
 		canvas.end();
 	}
@@ -448,23 +485,23 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			// We are are ready, notify our listener
 			if (isReady() && listener != null) {
-				listener.exitScreen(this, WorldController.EXIT_PLAY);
+				listener.exitScreen(this, WorldController.EXIT_PLAY, sound);
 			}
 
 			//go to level design mode
 			if(pressState == 4 && listener != null){
-				listener.exitScreen(this,WorldController.EXIT_DESIGN);
+				listener.exitScreen(this,WorldController.EXIT_DESIGN, sound);
 			}
 
 			//go to level select mode
 			if(pressState == 5 && listener != null){
-				listener.exitScreen(this,WorldController.EXIT_SELECT);
+				listener.exitScreen(this,WorldController.EXIT_SELECT, sound);
 			}
 
 			//close game
 			if(pressState == 6 && listener != null){
 				System.out.println("should be exiting the game");
-				listener.exitScreen(this,WorldController.EXIT_QUIT);
+				listener.exitScreen(this,WorldController.EXIT_QUIT, sound);
 			}
 		}
 	}
@@ -560,29 +597,35 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 2;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
 			}
 		}
 
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlSelect.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 5;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
 			}
 		}
 
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 4;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
 			}
 		}
 
 		if(screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 6;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
 			}
+		}
+
+		if (screenX >= MUTE_X && screenX <= MUTE_X + (mute.getWidth()*scale*BUTTON_SCALE) ) {
+				if (screenY >= MUTE_Y && screenY <= MUTE_Y + (mute.getHeight()*scale*BUTTON_SCALE) ) {
+					sound = !sound;
+				}
 		}
 
 		return false;
@@ -675,12 +718,14 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	public boolean mouseMoved(int screenX, int screenY) {
 		screenY = canvas.getHeight()-screenY;
 
+
+
 		if (active && playButton != null){
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE)) {
 					colorStart = colorHovered;
 					if (!hoverButton) {
-						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
 						hoverButton = true;
 					}
 				}
@@ -694,7 +739,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X+(lvlSelect.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlSelect = colorHovered;
 					if (!hoverButton) {
-						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
 						hoverButton = true;
 					}
 				}
@@ -708,7 +753,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlDesign = colorHovered;
 					if (!hoverButton) {
-						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
 						hoverButton = true;
 					}
 				}
@@ -722,7 +767,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth()*scale*BUTTON_SCALE)) {
 					colorCredits = colorHovered;
 					if (!hoverButton) {
-						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
 						hoverButton = true;
 					}
 				}
@@ -735,12 +780,21 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				if (screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE)) {
 					colorQuit = colorHovered;
 					if (!hoverButton) {
-						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
 						hoverButton = true;
 					}
 				}
+				else if (screenX >= MUTE_X && screenX <= MUTE_X + (mute.getWidth()*scale*BUTTON_SCALE)) {
+					colorMute = colorHovered;
+					if (!hoverButton) {
+						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+						hoverButton = true;
+					}
+				}
+
 				else {
 					colorQuit = colorUnhovered;
+					colorMute = colorUnhovered;
 					hoverButton = false;
 				}
 			}
@@ -751,6 +805,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				colorLvlSelect = colorUnhovered;
 				colorCredits = colorUnhovered;
 				colorQuit = colorUnhovered;
+				colorMute = colorUnhovered;
 				hoverButton = false;
 			}
 		}
