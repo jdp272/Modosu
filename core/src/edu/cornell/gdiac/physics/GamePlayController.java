@@ -11,6 +11,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
@@ -72,6 +73,9 @@ public class GamePlayController extends WorldController {
 	private int currentLevel = 0;
 
 	private FileHandle[] levels;
+
+	// TOGGLE BETWEEN BOUNCES AND LIFESPAN (true = bounce based)
+	public static boolean bounceBased = true;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -334,7 +338,22 @@ public class GamePlayController extends WorldController {
 
 		//keep everything in bounds
 		keepInBounds();
+/*
+		// TODO: REMOVE THIS CODE, IT IS ONLY FOR TESTING THE GAME
+		if (InputController.getInstance().didIncreaseSpirit()) {
+			SpiritModel.defaultLife += 30;
+		}
+		if (InputController.getInstance().didDecreaseSpirit()) {
+			SpiritModel.defaultLife += 30;
+			//if (SpiritModel.defaultLife <= 0) SpiritModel.defaultLife = 1;
 
+		}
+		*/
+
+		if (InputController.getInstance().didToggleSpirit()) {
+			if (bounceBased) bounceBased = false;
+			else bounceBased = true;
+		}
 
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){
@@ -389,6 +408,7 @@ public class GamePlayController extends WorldController {
 
 		// Update bouncing if applicable
 		if (collisionController.isBounced()) {
+			spirit.decBounces();
 			SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false);
 		}
 

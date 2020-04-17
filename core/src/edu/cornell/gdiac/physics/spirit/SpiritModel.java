@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.GamePlayController;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
 
@@ -28,6 +29,7 @@ public class SpiritModel extends BoxObstacle {
     /** If the spirit was slingshotted i.e. true if not possessing host, false if possessing host */
     public boolean hasLaunched;
     /** The default life of the spirit **/
+    // TODO: Static and public for testing
     private float defaultLife;
     /** Current life of the spirit **/
     private float currentLife;
@@ -181,6 +183,10 @@ public class SpiritModel extends BoxObstacle {
         isAlive = alive;
     }
 
+    public boolean outOfBounces() {
+        return (bounces == 0);
+    }
+
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      *
@@ -215,14 +221,15 @@ public class SpiritModel extends BoxObstacle {
         goToCenter = goCenter;
     }
 
-    public boolean decBounces(){
-        if (bounces == 0){
-            return false;
-        } else {
-            bounces--;
-            return true;
+    public boolean decBounces() {
+            if (bounces == 0) {
+                return false;
+            } else {
+                bounces--;
+                return true;
+            }
         }
-    }
+
 
     /**
      * returns the velocity vector

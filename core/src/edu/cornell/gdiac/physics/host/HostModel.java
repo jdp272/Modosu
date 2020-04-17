@@ -120,6 +120,7 @@ public class HostModel extends BoxObstacle {
     private float currentCharge;
     /**
      * The maximum charge of the host
+     * TODO public and static for testing, make private, non-static later
      */
     private float maxCharge;
     /**

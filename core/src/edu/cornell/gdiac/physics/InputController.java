@@ -106,7 +106,19 @@ public class InputController {
 	private Vector2 crosscache;
 	/** For the gamepad crosshair control */
 	private float momentum;
-	
+
+	/** For adjusting the spirit life duration or num bounces */
+	private boolean increaseSpirit;
+	private boolean decreaseSpirit;
+
+	/** For switching spirit health mode */
+	private boolean toggleSpiritMode;
+
+	/** For adjusting the host max charge */
+	private boolean increaseHost;
+	private boolean decreaseHost;
+
+
 	/** An X-Box controller (if it is connected) */
 	XBox360Controller xbox;
 	
@@ -281,8 +293,18 @@ public class InputController {
 	 *
 	 * @return true if the main menu button was pressed.
 	 */
-	public boolean didMenu() { return menuPressed && !menuPrevious;
-	}
+	public boolean didMenu() { return menuPressed && !menuPrevious; }
+
+	public boolean didIncreaseSpirit() { return increaseSpirit; }
+
+	public boolean didDecreaseSpirit() { return decreaseSpirit; }
+
+	public boolean didToggleSpirit() { return toggleSpiritMode; }
+
+	public boolean didIncreaseHost() { return increaseHost; }
+
+	public boolean didDecrease() { return decreaseSpirit; }
+
 	/**
 	 * Creates a new input controller
 	 * 
@@ -408,6 +430,17 @@ public class InputController {
 		deletePressed = (secondary && deletePressed)  || (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE));
 		savePressed = (secondary && savePressed)  || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
 		menuPressed = (secondary && menuPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
+
+		// KEYS FOR TOGGLING AND ADJUSTING
+		increaseHost = Gdx.input.isKeyJustPressed(Input.Keys.P);
+		decreaseHost = Gdx.input.isKeyJustPressed(Input.Keys.O);
+
+		increaseSpirit = Gdx.input.isKeyJustPressed(Input.Keys.I);
+		decreaseSpirit = Gdx.input.isKeyJustPressed(Input.Keys.U);
+
+		toggleSpiritMode = Gdx.input.isKeyJustPressed(Input.Keys.T);
+
+
 
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);

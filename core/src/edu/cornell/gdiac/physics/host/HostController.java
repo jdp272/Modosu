@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import edu.cornell.gdiac.physics.GamePlayController;
 import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
@@ -65,9 +66,6 @@ public class HostController {
     private int numHosts;
 
 
-    // TOGGLE VARIABLES
-    // If true, the player can drag from anywhere and the shot will be aimed from there
-    private boolean dragAnywhere = true;
     /**
      * Creates and initialize a new instance of a HostController
      */
@@ -280,7 +278,7 @@ public class HostController {
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
 
         // When the spirit has been launched, need to decrement life of spirit
-        if (spirit.hasLaunched) {
+        if (spirit.hasLaunched && !GamePlayController.bounceBased) {
             // If you can decrement life, decrement life
             if (spirit.decCurrentLife()) {
                 // Spirit isn't dead yet
@@ -289,6 +287,14 @@ public class HostController {
             else {
                 // Because you can't decrement anymore, spirit is dead
                 spirit.setAlive(false);
+            }
+        }
+        else if (spirit.hasLaunched && GamePlayController.bounceBased) {
+            if (spirit.outOfBounces()) {
+                spirit.setAlive(false);
+            }
+            else {
+                spirit.setAlive(true);
             }
         }
 
