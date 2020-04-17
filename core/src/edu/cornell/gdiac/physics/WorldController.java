@@ -614,7 +614,7 @@ public abstract class WorldController implements Screen {
 		} else if (countdown == 0) {
 			// TODO: REMOVE IF THINGS START GETTING LAGGY
 			// Creates a screenshot of last screen
-			GameOver.screenShotPixmap = ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			// GameOver.screenShotPixmap = ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			if (failed) {
 				GameOver.setFail(true);
 				listener.exitScreen(this, EXIT_GAME);
