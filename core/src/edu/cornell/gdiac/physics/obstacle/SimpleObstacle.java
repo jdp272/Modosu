@@ -827,12 +827,12 @@ public abstract class SimpleObstacle extends Obstacle {
 		bodyinfo.active = true;
 		body = world.createBody(bodyinfo);
 		body.setUserData(this);
-		
+
 		// Only initialize if a body was created.
 		if (body != null) {
 			createFixtures();
 			return true;
-		} 
+		}
 		
 		bodyinfo.active = false;
 		return false;
@@ -877,7 +877,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	 * primary purpose is to adjust changes to the fixture, which have to take place 
 	 * after collision.
 	 *
-	 * @param dt Timing values from parent loop
+	 * @param delta Timing values from parent loop
 	 */
 	public void update(float delta) {
 		// Recreate the fixture object if dimensions changed.

@@ -191,8 +191,8 @@ public class BoxObstacle extends SimpleObstacle {
 	protected void createFixtures() {
 		if (body == null) {
 			return;
-		} 
-		
+		}
+
 	    releaseFixtures();
 
 		// Create the fixture

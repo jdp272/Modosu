@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -40,13 +41,13 @@ public class GameOver extends WorldController implements Screen {
     private Image semiBackground;
     private Image screenShotImage;
 
-    private Pixmap pixmap;
-    private Texture screenShotTexture;
+//    private Pixmap pixmap;
+//    private Texture screenShotTexture;
     private Texture transparentTexture;
 
     /** Is added in WorldController */
     //public static TextureRegion screenShotTexture;
-    public static Pixmap screenShotPixmap;
+//    public static Pixmap screenShotPixmap;
 
     /** Constants */
     private static final String WIN_LEVEL_TEXT = "level complete!";
@@ -136,7 +137,7 @@ public class GameOver extends WorldController implements Screen {
         retryButtonClicked = false;
         menuButtonClicked = false;
         isFail = true;
-        screenShotTexture = null;
+        //screenShotTexture = null;
     }
 
     public static void setFail(boolean isFailure) {
@@ -170,34 +171,34 @@ public class GameOver extends WorldController implements Screen {
         // TODO: REMOVE IF THINGS START GETTING LAGGY
         /** Create semi-transparent background */
         // Flip the pixmap upside down
-        ByteBuffer pixels = screenShotPixmap.getPixels();
-        int w = Gdx.graphics.getWidth();
-        int h = Gdx.graphics.getHeight();
-        int numBytes = w * h * 4;
-        byte[] lines = new byte[numBytes];
-        int numBytesPerLine = w * 4;
-        for(int i = 0; i < h; i++) {
-            pixels.position((h - i - 1) * numBytesPerLine);
-            pixels.get(lines, i * numBytesPerLine, numBytesPerLine);
-        }
-        pixels.clear();
-        pixels.put(lines);
-        pixels.clear();
-
-        // Create image of pixmap
-        screenShotTexture = new Texture(screenShotPixmap);
-        screenShotImage = new Image(screenShotTexture);
-        stage.addActor(screenShotImage);
-
-        pixmap = new Pixmap(1,1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.BLACK);
-        pixmap.fillRectangle(0, 0, 1, 1);
-        transparentTexture = new Texture(pixmap);
-
-        semiBackground = new Image(transparentTexture);
-        semiBackground.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        semiBackground.getColor().a= ALPHA_BKG;
-        stage.addActor(semiBackground);
+//        ByteBuffer pixels = screenShotPixmap.getPixels();
+//        int w = Gdx.graphics.getWidth();
+//        int h = Gdx.graphics.getHeight();
+//        int numBytes = w * h * 4;
+//        byte[] lines = new byte[numBytes];
+//        int numBytesPerLine = w * 4;
+//        for(int i = 0; i < h; i++) {
+//            pixels.position((h - i - 1) * numBytesPerLine);
+//            pixels.get(lines, i * numBytesPerLine, numBytesPerLine);
+//        }
+//        pixels.clear();
+//        pixels.put(lines);
+//        pixels.clear();
+//
+//        // Create image of pixmap
+//        screenShotTexture = new Texture(screenShotPixmap);
+//        screenShotImage = new Image(screenShotTexture);
+//        stage.addActor(screenShotImage);
+//
+//        pixmap = new Pixmap(1,1, Pixmap.Format.RGBA8888);
+//        pixmap.setColor(Color.BLACK);
+//        pixmap.fillRectangle(0, 0, 1, 1);
+//        transparentTexture = new Texture(pixmap);
+//
+//        semiBackground = new Image(transparentTexture);
+//        semiBackground.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+//        semiBackground.getColor().a= ALPHA_BKG;
+//        stage.addActor(semiBackground);
 
         /** Change variables depending on WIN vs FAIL */
         columnNum = isFail ? 2 : 3;
@@ -205,7 +206,7 @@ public class GameOver extends WorldController implements Screen {
         golemTexture = isFail ? winGolemTexture : loseGolemTexture;
 
         /** Level Label */
-        Label.LabelStyle font = new Label.LabelStyle(displayFont, Color.SKY);
+        Label.LabelStyle font = new Label.LabelStyle(displayFont, Color.WHITE);
         levelLabel = new Label(labelText, font);
         table.add(levelLabel).colspan(columnNum);
 
@@ -275,6 +276,7 @@ public class GameOver extends WorldController implements Screen {
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
 
@@ -317,10 +319,10 @@ public class GameOver extends WorldController implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
-        pixmap.dispose();
-        screenShotPixmap.dispose();
-        screenShotTexture.dispose();
-        transparentTexture.dispose();
+//        pixmap.dispose();
+//        screenShotPixmap.dispose();
+//        screenShotTexture.dispose();
+//        transparentTexture.dispose();
     }
 
     /************************* WORLD CONTROLLER METHODS *************************/

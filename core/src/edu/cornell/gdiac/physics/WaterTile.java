@@ -16,11 +16,6 @@ public class WaterTile extends BoxObstacle {
     /** The frame in the main water film strip for this tile */
     private int frame;
 
-    private boolean groundAbove;
-    private boolean groundBelow;
-    private boolean groundLeft;
-    private boolean groundRight;
-
     private boolean upLeft;
     private boolean upRight;
     private boolean downLeft;
@@ -119,11 +114,6 @@ public class WaterTile extends BoxObstacle {
     public void  setFrame(boolean above, boolean below, boolean left, boolean right, boolean lvlDsgn) {
         int index = 0;
 
-        groundAbove = above;
-        groundBelow = below;
-        groundLeft = left;
-        groundRight = right;
-
         if(above) {
             if(below) {
                 if(left) {
@@ -190,34 +180,6 @@ public class WaterTile extends BoxObstacle {
         } else {
             setFrame(index);
         }
-    }
-
-    /**
-     * @return If there is ground above this tile
-     */
-    public boolean getGroundAbove() {
-        return groundAbove;
-    }
-
-    /**
-     * @return If there is ground below this tile
-     */
-    public boolean getGroundBelow() {
-        return groundBelow;
-    }
-
-    /**
-     * @return If there is ground left of this tile
-     */
-    public boolean getGroundLeft() {
-        return groundLeft;
-    }
-
-    /**
-     * @return If there is ground right of this tile
-     */
-    public boolean getGroundRight() {
-        return groundRight;
     }
 
     /**

@@ -232,6 +232,8 @@ public class CollisionController implements ContactListener {
         // Recognize spirit against a wall to play sound
         if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
                 bd1.getName() == "wall" && body2.getUserData() == spirit) {
+            spirit.setDidBounce(true);
+            spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
             bounced = true;
         }
     }

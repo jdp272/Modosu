@@ -2,13 +2,10 @@ package edu.cornell.gdiac.physics.host;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.graphics.g2d.*;
-
-import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
-import edu.cornell.gdiac.physics.*;
 
 import java.util.ArrayList;
 
@@ -66,6 +63,11 @@ public class HostController {
     private long ticks;
 
     private int numHosts;
+
+
+    // TOGGLE VARIABLES
+    // If true, the player can drag from anywhere and the shot will be aimed from there
+    private boolean dragAnywhere = true;
     /**
      * Creates and initialize a new instance of a HostController
      */
@@ -271,6 +273,7 @@ public class HostController {
 
         // Update the Animation of the possessed host
 
+        spirit.updateAnimation();
         possessed.updateAnimation(possessed.beenPossessed(), possessed.getLinearVelocity());
         pedestal.animateStrip();
 
