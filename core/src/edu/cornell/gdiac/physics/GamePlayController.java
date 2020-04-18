@@ -265,7 +265,7 @@ public class GamePlayController extends WorldController {
 
 		Vector2 pos = spirit.getPosition();
 		if(pos.x > bounds.x + bounds.width){
-			SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false);
+			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
 			spirit.setDidBounce(true);
 			spirit.setPosition(bounds.x + bounds.width, pos.y);
 			pos.x = bounds.x + bounds.width;
@@ -273,7 +273,7 @@ public class GamePlayController extends WorldController {
 			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
 		}
 		else if(pos.x < bounds.x){
-			SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false);
+			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
 			spirit.setDidBounce(true);
 			spirit.setPosition(bounds.x, pos.y);
 			pos.x = bounds.x;
@@ -282,14 +282,14 @@ public class GamePlayController extends WorldController {
 		}
 
 		if(pos.y > bounds.y + bounds.height){
-			SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false);
+			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
 			spirit.setDidBounce(true);
 			spirit.setPosition(pos.x, bounds.y + bounds.height);
 			spirit.setVY(-spirit.getVY());
 			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
 		}
 		else if(pos.y < bounds.y){
-			SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false);
+			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
 			spirit.setDidBounce(true);
 			spirit.setPosition(pos.x, bounds.y);
 			spirit.setVY(-spirit.getVY());

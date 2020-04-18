@@ -194,7 +194,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.loadContent(manager);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
-			System.out.println("it goes here here? This is sound " + sound);
 			controller.setSound(sound);
 			controller.reset();
 			setScreen(controller);
@@ -204,6 +203,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelSelect.loadContent(manager);
 			levelSelect.setScreenListener(this);
 			levelSelect.setCanvas(canvas);
+			levelSelect.setSound(sound);
 			levelSelect.reset();
 			setScreen(levelSelect);
 		}
