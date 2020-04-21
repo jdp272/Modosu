@@ -153,9 +153,8 @@ public abstract class WorldController implements Screen {
 	/** Whether sound mode is on */
 	private boolean sound;
 
-	public void setSound(boolean s) {
-		sound = s;
-	}
+	public void setSound(boolean s) { sound = s; }
+
 	public boolean getSound() { return sound; }
 	/**
 	 *

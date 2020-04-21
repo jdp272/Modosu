@@ -282,7 +282,6 @@ public class GameOver extends WorldController implements Screen {
 
         /** Checks if any buttons are clicked */
         if (menuButtonClicked) {
-            System.out.println("THIS IS GET SOUNDS:" + getSound());
             listener.exitScreen(this, EXIT_MENU, getSound());
             dispose();
         }

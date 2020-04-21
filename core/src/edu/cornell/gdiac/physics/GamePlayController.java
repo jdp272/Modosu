@@ -43,8 +43,7 @@ public class GamePlayController extends WorldController {
 	/** The asset for the possession sound */
 	private static final String  POSSESSION_SOUND = "host/possession.mp3";
 	/** The asset for the slingshot sound */
-//	private static final String  LAUNCH_SOUND = "host/launch.mp3";
-	private static final String  LAUNCH_SOUND = "host/launch2.mp3";
+	private static final String  LAUNCH_SOUND = "host/launch.mp3";
 	/** The asset for the failure sound */
 	private static final String  FAILURE_SOUND = "shared/failure.mp3";
 	/** The asset for the victory sound */
@@ -335,7 +334,7 @@ public class GamePlayController extends WorldController {
 
 		//keep everything in bounds
 		keepInBounds();
-
+		System.out.println(getSound());
 
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){
