@@ -21,6 +21,8 @@ public class Factory {
     private Texture wallTexture;
     private Texture waterTexture;
     private Texture cornerTexture;
+    private Texture sandTexture;
+    private Texture cornerSandTexture;
     private Texture pedestalTexture;
     private Texture spiritBodyTexture;
     private Texture spiritHeadTexture;
@@ -89,6 +91,8 @@ public class Factory {
             Texture wallTexture,
             Texture waterTexture,
             Texture cornerTexture,
+            Texture sandTexture,
+            Texture cornerSandTexture,
             Texture pedestalTexture
     ) {
         this.scale = scale;
@@ -102,6 +106,8 @@ public class Factory {
         this.wallTexture = wallTexture;
         this.waterTexture = waterTexture;
         this.cornerTexture = cornerTexture;
+        this.sandTexture = sandTexture;
+        this.cornerSandTexture = cornerSandTexture;
         this.pedestalTexture = pedestalTexture;
     }
 
@@ -150,6 +156,31 @@ public class Factory {
         water.setName("water");
         return water;
     }
+
+    public SandTile makeSand(float x, float y) {
+        return makeSand(x, y, 0);
+    }
+
+    public SandTile makeSand(float x, float y, int frame) {
+        SandTile sand = new SandTile(
+                x,
+                y,
+                obstacleTex.getRegionWidth() / scale.x,
+                obstacleTex.getRegionHeight() / scale.y
+        );
+        sand.setSandtrip(new FilmStrip(sandTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
+        sand.setCornerStrip(new FilmStrip(cornerSandTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
+        sand.setDrawScale(scale);
+        sand.setSX(0.25f);
+        sand.setSY(0.25f);
+        sand.setFrame(frame);
+        sand.setBodyType(BodyDef.BodyType.KinematicBody);
+        sand.setSensor(makeSensors);
+        sand.setName("sand");
+        return sand;
+    }
+
+
 
     public SpiritModel makeSpirit(float x, float y) {
         SpiritModel spirit = new SpiritModel(

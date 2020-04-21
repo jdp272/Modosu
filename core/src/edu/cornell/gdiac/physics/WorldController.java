@@ -100,6 +100,10 @@ public abstract class WorldController implements Screen {
 	private static String WATER_FILE = "shared/waterspritesheet.png";
 	/** File to texture for Water corners */
 	private static String CORNER_FILE = "shared/water_corners_spritesheet.png";
+	/** File to texture for sand */
+	private static String SAND_FILE = "shared/sandspritesheet.png";
+	/** File to texture for Sand corners */
+	private static String CORNER_SAND_FILE = "shared/water_corners_spritesheet.png";
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_FILE = "shared/spirit_pedestal.png";
 
@@ -131,6 +135,10 @@ public abstract class WorldController implements Screen {
 	private static Texture waterTexture;
 	/** Texture for Water Corner SpriteSheet */
 	private static Texture cornerTexture;
+	/** Texture for Sand SpriteSheet */
+	private static Texture sandTexture;
+	/** Texture for Sand Corner SpriteSheet */
+	private static Texture cornerSandTexture;
 	/** Texture for Pedestal SpriteSheet */
 	private static Texture pedestalTexture;
 	/** Texture for Spirit Head Texture */
@@ -146,7 +154,6 @@ public abstract class WorldController implements Screen {
 	private boolean sound;
 
 	public void setSound(boolean s) {
-		System.out.println("sound was set to : " + sound) ;
 		sound = s;
 	}
 	public boolean getSound() { return sound; }
@@ -180,6 +187,10 @@ public abstract class WorldController implements Screen {
 		assets.add(WATER_FILE);
 		manager.load(CORNER_FILE, Texture.class);
 		assets.add(CORNER_FILE);
+		manager.load(SAND_FILE, Texture.class);
+		assets.add(SAND_FILE);
+		manager.load(CORNER_SAND_FILE, Texture.class);
+		assets.add(CORNER_SAND_FILE);
 		manager.load(OBSTACLE_FILE, Texture.class);
 		assets.add(OBSTACLE_FILE);
 		manager.load(ARROW_FILE, Texture.class);
@@ -239,13 +250,15 @@ public abstract class WorldController implements Screen {
 		wallTexture = manager.get(WALL_FILE, Texture.class);
 		waterTexture = manager.get(WATER_FILE, Texture.class);
 		cornerTexture = manager.get(CORNER_FILE, Texture.class);
+		sandTexture = manager.get(SAND_FILE, Texture.class);
+		cornerSandTexture = manager.get(CORNER_SAND_FILE, Texture.class);
 		pedestalTexture = manager.get(PEDESTAL_FILE, Texture.class);
 		spiritBodyTexture = manager.get(SPIRIT_BODY_FILE, Texture.class);
 		spiritHeadTexture = manager.get(SPIRIT_HEAD_FILE, Texture.class);
 		spiritTailTexture = manager.get(SPIRIT_TAIL_FILE, Texture.class);
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, obstacleTex, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture, cornerTexture, pedestalTexture);
+		factory = new Factory(scale, obstacleTex, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture);
 		loader = new Loader(factory);
 	}
 	
@@ -616,7 +629,6 @@ public abstract class WorldController implements Screen {
 			return false;
 		}
 		else if (input.didMenu()) {
-			System.out.println("DID IT GO HERE IN WORLD");
 			setMenu(true);
 			listener.exitScreen(this, EXIT_MENU, sound);
 		}

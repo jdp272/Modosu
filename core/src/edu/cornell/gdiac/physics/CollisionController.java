@@ -13,6 +13,9 @@ public class CollisionController implements ContactListener {
     /** Whether the host was bounced against a wall this frame */
     private boolean bounced;
 
+    /** Whether the host is walking through sand this frame */
+    private boolean inSand;
+
     /** Whether the is the new host's first time possession */
     private boolean isNewPossession;
 
@@ -39,6 +42,7 @@ public class CollisionController implements ContactListener {
         hostPossessed = null;
         isNewPossession = false;
         prevHostPossessed = null;
+        inSand = false;
     }
 
     /**
@@ -211,22 +215,23 @@ public class CollisionController implements ContactListener {
             contact.setEnabled(false);
         }
 
-        // Turn off collision handling if spirit already in the golem
-        //        if((body1.getUserData() == spirit || body2.getUserData() == spirit) ){
-//            contact.setEnabled(false);
-//        }
+        // All collisions with Sand
+        if((bd1.getName() == "sand") || bd1.getName() == "sand" ) {
+            contact.setEnabled(false);
+        }
+
         for (HostModel r : hostList) {
             if (((body1.getUserData() == spirit && body2.getUserData() == r) ||
                     (body1.getUserData() == r && body2.getUserData() == spirit))) {
                 contact.setEnabled(false);
             }
 
-//            if ((( body2.getUserData() == r) || (body1.getUserData() == r )) && !r.isPossessed() ) {
-//                if (!r.isMoving()) {
-//                    //contact.setEnabled(false);
-//                    //r.setLinearVelocity(new Vector2(0, 0));
-//                }
-//            }
+            // change boolean flag if in sand
+            if (((bd1.getName() == "sand" && body2.getUserData() == r) ||
+                    (body1.getUserData() == r && bd2.getName() == "sand"))) {
+                contact.setEnabled(false);
+                inSand = true;
+            }
         }
 
         // Recognize spirit against a wall to play sound
@@ -242,6 +247,7 @@ public class CollisionController implements ContactListener {
     public void clear() {
         bounced = false;
         isNewPossession = false;
+        inSand = false;
     }
 
     // Getters
@@ -256,4 +262,6 @@ public class CollisionController implements ContactListener {
 
     /** Getter method to return whether a wall bounce occurred this frame */
     public boolean isBounced() { return bounced; }
+
+    public boolean getInSand() { return inSand; }
 }

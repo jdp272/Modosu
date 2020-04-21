@@ -485,7 +485,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			// We are are ready, notify our listener
 			if (isReady() && listener != null) {
-				System.out.println("starting the game with sound: " + sound);
 				listener.exitScreen(this, WorldController.EXIT_PLAY, sound);
 			}
 
@@ -501,7 +500,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			//close game
 			if(pressState == 6 && listener != null){
-				System.out.println("should be exiting the game");
 				listener.exitScreen(this,WorldController.EXIT_QUIT, sound);
 			}
 		}

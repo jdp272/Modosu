@@ -107,9 +107,9 @@ public class HostController {
      * The very last thing that it should do is apply forces to the appropriate objects.
      *
      * @param dt Number of seconds since last animation frame
+     * @param inSand
      */
-    public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal) {
-
+    public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand) {
 
         input = InputController.getInstance();
 
@@ -171,8 +171,10 @@ public class HostController {
                     // Move using player input
 //                    if (!possessed.isPedestal() && (input.getVertical() != 0 || input.getHorizontal() != 0)){
                     if (!possessed.isPedestal()) {
-                        possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal());
-                        possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical());
+                        float obstacleFactor = 1;
+                        if (inSand) { obstacleFactor = .5f; }
+                        possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal() * obstacleFactor);
+                        possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical() * obstacleFactor);
 
                         if (input.getVertical() != 0 || input.getHorizontal() != 0) {
                             moved = true;

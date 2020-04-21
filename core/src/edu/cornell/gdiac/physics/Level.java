@@ -17,7 +17,7 @@ public class Level {
      * An empty constructor for a level. Everything is null.
      */
     public Level() {
-        set(null, null, null, null, null, null);
+        set(null, null, null, null, null, null, null);
     }
 
     /**
@@ -34,11 +34,12 @@ public class Level {
             Vector2[][] regions,
             BoxObstacle[] obstacles,
             WaterTile[] water,
+            SandTile[] sand,
             ArrayList<HostModel> hosts,
             SpiritModel start,
             HostModel pedestal
     ) {
-        set(regions, obstacles, water, hosts, start, pedestal);
+        set(regions, obstacles, water, sand, hosts, start, pedestal);
     }
 
     /**
@@ -60,6 +61,9 @@ public class Level {
     /** An array of the water tiles in the level */
     public WaterTile[] water;
 
+    /** An array of the sand tiles in the level */
+    public SandTile[] sand;
+
     /** An array of the hosts in the level */
     public ArrayList<HostModel> hosts;
 
@@ -73,6 +77,7 @@ public class Level {
             Vector2[][] regions,
             BoxObstacle[] obstacles,
             WaterTile[] water,
+            SandTile[] sand,
             ArrayList<HostModel> hosts,
             SpiritModel start,
             HostModel pedestal
@@ -80,6 +85,7 @@ public class Level {
         this.regions = regions;
         this.obstacles = obstacles;
         this.water = water;
+        this.sand = sand;
         this.hosts = hosts;
         this.start = start;
         this.pedestal = pedestal;

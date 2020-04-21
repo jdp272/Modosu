@@ -15,6 +15,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.host.HostController;
 import edu.cornell.gdiac.physics.host.HostModel;
@@ -249,6 +250,9 @@ public class GamePlayController extends WorldController {
 		for(Obstacle obj : level.water) {
 			addQueue.add(obj);
 		}
+		for(Obstacle obj : level.sand) {
+			addQueue.add(obj);
+		}
 		for(HostModel host : level.hosts) {
 			addQueue.add(host);
 		}
@@ -359,8 +363,9 @@ public class GamePlayController extends WorldController {
 			pedestal.markRemoved(true);
 		}
 
+
 		// Calls update on hostController
-		hostController.update(delta, possessed, spirit, level.pedestal);
+		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand());
 		if (hostController.getLaunched()){
 			if (getSound()) { SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false); }
 		}

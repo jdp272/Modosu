@@ -213,6 +213,9 @@ public class LevelDesignerMode extends WorldController {
 		WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
 		addObject(waterSpawn);
 
+		SandTile sandSpawn = factory.makeSand(0.f, 0.f);
+		addObject(sandSpawn);
+
 		HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
 		addObject(hostSpawn);
 
@@ -235,6 +238,12 @@ public class LevelDesignerMode extends WorldController {
 		spawnList.addSpawner(waterSpawn, new SpawnerList.CallbackFunction() {
 			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
 				return factory.makeWater(x, y);
+			}
+		});
+
+		spawnList.addSpawner(sandSpawn, new SpawnerList.CallbackFunction() {
+			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+				return factory.makeSand(x, y);
 			}
 		});
 
@@ -286,11 +295,13 @@ public class LevelDesignerMode extends WorldController {
 			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
 		}
 
-		try {
+//		try {
 			level = loader.loadLevel(levelToLoad);
-		} catch (Exception e) {
-			level = loader.loadLevel(new FileHandle("levels/custom0.lvl"));
-		}
+//		} catch (Exception e) {
+//			System.out.println(e);
+//			System.out.println(levelToLoad);
+//			level = loader.loadLevel(new FileHandle("levels/custom0.lvl"));
+//		}
 
 		for(Obstacle obj : level.obstacles) {
 			addNewObstacle(obj);
@@ -299,6 +310,9 @@ public class LevelDesignerMode extends WorldController {
 			addNewObstacle(obj);
 		}
 		for(Obstacle obj : level.water) {
+			addNewObstacle(obj);
+		}
+		for(Obstacle obj : level.sand) {
 			addNewObstacle(obj);
 		}
 		addNewObstacle(level.pedestal);
@@ -437,6 +451,92 @@ public class LevelDesignerMode extends WorldController {
 		updateWaterTile(x + 1, y - 1);
 	}
 
+
+	/**
+	 * Updates the texture for sand tile at index x, y in the board based on
+	 * its surroundings (if they are sand or ground)
+	 *
+	 * If the tile is not a sand tile, or if the tile is out of bounds, nothing
+	 * happens.
+	 *
+	 * @param x The x index in the board of the tile to update
+	 * @param y The y index in the board of the tile to update
+	 *
+	 * @return True if a sand tile was updated, false otherwise
+	 */
+	private boolean updateSandTile(int x, int y) {
+		if(x < 0 || y < 0 || x >= board.length || y >= board[x].length || !(board[x][y] instanceof SandTile)) {
+			return false;
+		}
+
+		Obstacle above = null, below = null, left = null, right = null;
+		boolean hasGroundAbove = false, hasGroundBelow = false, hasGroundLeft = false, hasGroundRight = false;
+		boolean upLeftCorner = false, upRightCorner = false, downLeftCorner = false, downRightCorner = false;
+
+		// Set the adjacent tiles if they are in bounds, and if so, check if a
+		// ground border is needed
+		if(y + 1 < board[x].length) {
+			above = board[x][y + 1];
+			hasGroundAbove = !(above instanceof SandTile);
+		}
+		if(y - 1 >= 0) {
+			below = board[x][y - 1];
+			hasGroundBelow = !(below instanceof SandTile);
+		}
+		if(x - 1 >= 0) {
+			left = board[x - 1][y];
+			hasGroundLeft = !(left instanceof SandTile);
+		}
+		if(x + 1 < board.length) {
+			right = board[x + 1][y];
+			hasGroundRight = !(right instanceof SandTile);
+		}
+
+		// If the corner should be drawn for each side, based on if adjacent
+		// sand tiles have ground
+		if (above instanceof SandTile && left instanceof SandTile) {
+			upLeftCorner = !(board[x - 1][y + 1] instanceof SandTile);
+		}
+		if (above instanceof SandTile && right instanceof SandTile) {
+			upRightCorner = !(board[x + 1][y + 1] instanceof SandTile);
+		}
+		if (below instanceof SandTile && left instanceof SandTile) {
+			downLeftCorner = !(board[x - 1][y - 1] instanceof SandTile);
+		}
+		if (below instanceof SandTile && right instanceof SandTile) {
+			downRightCorner = !(board[x + 1][y - 1] instanceof SandTile);
+		}
+
+		((SandTile) board[x][y]).setFrame(hasGroundAbove, hasGroundBelow, hasGroundLeft, hasGroundRight, true);
+		((SandTile) board[x][y]).setCorners(upLeftCorner, upRightCorner, downLeftCorner, downRightCorner);
+
+		return true;
+	}
+
+	/**
+	 * Updates the texture for sand tile at and around (x, y) in the board.
+	 * this function calls updateSandTile
+	 *
+	 * If the tile is not a sand tile, or if the tile is out of bounds, nothing
+	 * happens.
+	 *
+	 * @param x The x index in the board of the tile center to update
+	 * @param y The y index in the board of the tile center to update
+	 */
+	private void updateSandAroundRegion(int x, int y) {
+		updateSandTile(x, y);
+
+		updateSandTile(x - 1, y);
+		updateSandTile(x + 1, y);
+		updateSandTile(x, y - 1);
+		updateSandTile(x, y + 1);
+
+		updateSandTile(x - 1, y + 1);
+		updateSandTile(x + 1, y + 1);
+		updateSandTile(x - 1, y - 1);
+		updateSandTile(x + 1, y - 1);
+	}
+
 	/**
 	 * Does the updating for the selector.
 	 *
@@ -484,6 +584,7 @@ public class LevelDesignerMode extends WorldController {
 					board[x][y] = null;
 				}
 				updateWaterAroundRegion(x, y); // Update the surroundings after removing the water
+				updateSandAroundRegion(x, y); // Update the surroundings after removing the sand
 			}
 
 		} else if (!input.didTertiary() && selector.isSelected()) {
@@ -513,6 +614,8 @@ public class LevelDesignerMode extends WorldController {
 
 					// Update water tile images
 					updateWaterAroundRegion(x, y);
+					// Update sand tile images
+					updateSandAroundRegion(x, y);
 				}
 			}
 		} else {
@@ -652,6 +755,7 @@ public class LevelDesignerMode extends WorldController {
 		SpiritModel spirit = null;
 		ArrayList<BoxObstacle> obstacleList = new ArrayList<>();
 		ArrayList<BoxObstacle> waterList = new ArrayList<>();
+		ArrayList<BoxObstacle> sandList = new ArrayList<>();
 		ArrayList<HostModel> hostList = new ArrayList<>();
 		HostModel pedestal = null;
 		for(Obstacle obj : objects) {
@@ -669,6 +773,8 @@ public class LevelDesignerMode extends WorldController {
 				pedestal = (HostModel) obj;
 			} else if (obj instanceof WaterTile) {
 				waterList.add((WaterTile) obj);
+			} else if (obj instanceof SandTile) {
+				sandList.add((SandTile) obj);
 			} else if (obj instanceof BoxObstacle) {
 				obstacleList.add((BoxObstacle) obj);
 			}
@@ -679,10 +785,12 @@ public class LevelDesignerMode extends WorldController {
 		obstacleList.toArray(obstacleArray);
 		WaterTile[] waterArray = new WaterTile[waterList.size()];
 		waterList.toArray(waterArray);
+		SandTile[] sandArray = new SandTile[sandList.size()];
+		sandList.toArray(sandArray);
 
 		// TODO: what if spirit is null
 
-		level.set(null, obstacleArray, waterArray, hostList, spirit, pedestal);
+		level.set(null, obstacleArray, waterArray, sandArray, hostList, spirit, pedestal);
 		loader.saveLevel(f, level);
 	}
 

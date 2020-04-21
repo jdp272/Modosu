@@ -54,6 +54,18 @@ public class Loader {
         public boolean downRight;
     }
 
+    /** A struct that stores data from sand when read from the json */
+    public static class SandData {
+        public Vector2 origin; // Center of the box
+        public Vector2 dimensions;
+        public int frame;
+
+        public boolean upLeft;
+        public boolean upRight;
+        public boolean downLeft;
+        public boolean downRight;
+    }
+
     /** A struct that stores data from a host when read from the json */
     public static class HostData {
         public Vector2 location;
@@ -90,6 +102,7 @@ public class Loader {
 
         public ObstacleData[] obstacleData;
         public WaterData[] waterData;
+        public SandData[] sandData;
         public HostData[] hostData;
 
         public PedestalData pedestalData;
@@ -184,6 +197,22 @@ public class Loader {
             levelData.waterData[i] = wData;
         }
 
+        // Store the sand data
+        levelData.sandData = new SandData[level.sand.length];
+        for(int i = 0; i < level.sand.length; i++) {
+            SandData sData = new SandData();
+            sData.dimensions = level.sand[i].getDimension();
+            sData.origin = new Vector2(level.sand[i].getX(), level.sand[i].getY());
+            sData.frame = level.sand[i].getFrame();
+
+            sData.upLeft = level.sand[i].getUpLeftCorner();
+            sData.upRight = level.sand[i].getUpRightCorner();
+            sData.downLeft = level.sand[i].getDownLeftCorner();
+            sData.downRight = level.sand[i].getDownRightCorner();
+
+            levelData.sandData[i] = sData;
+        }
+
         // Store the host data
         levelData.hostData = new HostData[level.hosts.size()];
         for(int i = 0; i < level.hosts.size(); i++) {
@@ -246,6 +275,15 @@ public class Loader {
             water[i].setCorners(wData.upLeft, wData.upRight, wData.downLeft, wData.downRight);
         }
 
+        SandTile[] sand = new SandTile[levelData.sandData.length];
+        SandData sData;
+
+        for (int i = 0; i < levelData.sandData.length; i++) {
+            sData = levelData.sandData[i];
+            sand[i] = factory.makeSand(sData.origin.x, sData.origin.y, sData.frame);
+            sand[i].setCorners(sData.upLeft, sData.upRight, sData.downLeft, sData.downRight);
+        }
+
         // Create the hosts
         ArrayList<HostModel> hosts = new ArrayList<HostModel>();
         HostData hData; // A simple reference to the data being processed
@@ -269,7 +307,7 @@ public class Loader {
         // Create the starting "host" (with no charge capacity)
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
-        return new Level(regions, obstacles, water, hosts, spirit, pedestal);
+        return new Level(regions, obstacles, water, sand, hosts, spirit, pedestal);
     }
 
     public Level reset(int level) {
