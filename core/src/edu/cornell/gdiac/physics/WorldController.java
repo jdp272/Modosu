@@ -32,6 +32,7 @@ import edu.cornell.gdiac.physics.host.ArrowModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.ScreenListener;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.File;
 import java.util.Iterator;
@@ -349,6 +350,8 @@ public abstract class WorldController implements Screen {
 	protected static final float DEFAULT_HEIGHT = 18.0f;
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
+	/** Max number of levels */
+	protected static final int MAX_NUM_LEVELS = 8; //////////////// CHANGE DEPENDING ON AMOUNT OF LEVELS ///////////////
 	
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
@@ -376,7 +379,10 @@ public abstract class WorldController implements Screen {
 	private boolean debug;
 	/** Countdown active for winning or losing */
 	private int countdown;
+	/** Controls the menu */
 	public boolean menu;
+	/** Current level */
+	protected static int currentLevel;
 
 	/** list of level files*/
 	protected File[] levels;
@@ -401,6 +407,25 @@ public abstract class WorldController implements Screen {
 	 */
 	public void setDebug(boolean value) {
 		debug = value;
+	}
+
+	/**
+	 *  Sets the current level to param
+	 *
+	 * @param l The level number
+	 */
+	public void setCurrentLevel(int l) {
+		currentLevel = l;
+	}
+
+	/**
+	 *  Increments the current level when won
+	 *
+	 */
+	public void incrementCurrentLevel() {
+		// currentLevel = (int) Math.min(currentLevel + 1, MAX_NUM_LEVELS);
+		// TODO: Game Complete When Beat All Levels -- currently loops
+		currentLevel = (currentLevel + 1) % MAX_NUM_LEVELS;
 	}
 
 	/**
@@ -538,6 +563,7 @@ public abstract class WorldController implements Screen {
 		debug  = false;
 		active = false;
 		countdown = -1;
+		currentLevel = 0;
 	}
 	
 	/**
