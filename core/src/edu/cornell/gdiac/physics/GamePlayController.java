@@ -182,7 +182,7 @@ public class GamePlayController extends WorldController {
 //		}
 
 //		try {
-			level = loader.loadLevel(levelToLoad);
+		level = loader.loadLevel(levelToLoad);
 //		}
 //		catch(Exception e) {
 //			level = loader.loadLevel(new FileHandle("levels/custom1.lvl"));
