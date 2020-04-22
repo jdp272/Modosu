@@ -290,8 +290,8 @@ public class GameOver extends WorldController implements Screen {
             dispose();
         }
         else if (nextButtonClicked) {
-            listener.exitScreen(this, EXIT_NEXT, getSound());
-            dispose();
+            incrementCurrentLevel();
+            listener.exitScreenLevel(currentLevel, getSound());
         }
     }
 

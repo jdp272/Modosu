@@ -160,6 +160,17 @@ public class GDXRoot extends Game implements ScreenListener {
 				setScreen(controller);
 			}
 		}
+		else if (screen == gameOver) {
+			gameOver.dispose();
+			controller.loadContent(manager);
+			controller.setScreenListener(this);
+			controller.setCanvas(canvas);
+			controller.setCurrentLevel(level);
+			controller.setSound(sound);
+			controller.reset();
+
+			setScreen(controller);
+		}
 	}
 
 	private void reset(boolean sound) {
