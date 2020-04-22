@@ -68,11 +68,6 @@ public class GamePlayController extends WorldController {
 
 	private Vector2 cache;
 
-	private int currentLevel = 0;
-
-
-
-
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -160,17 +155,6 @@ public class GamePlayController extends WorldController {
 		// FileHandle f = Gdx.files.internal("levels");
 		// levels = f.list();
 		// System.out.println(levels + "printing levels");
-
-		currentLevel = 0;
-	}
-
-	/**
-	 *  Sets the number of the level that is loaded in the reset() function
-	 *
-	 * @param l The level number
-	 */
-	public void setCurrentLevel(int l) {
-		currentLevel = l;
 	}
 
 	/**
@@ -190,7 +174,6 @@ public class GamePlayController extends WorldController {
 		System.out.println("levels/" + levels[currentLevel%levels.length].getName());
 		levelToLoad = Gdx.files.local("levels/" + levels[currentLevel%levels.length].getName());
 
-
 //		if (currentLevel == 3) {
 //				levelToLoad = Gdx.files.local("levels/custom3.lvl");
 //		}
@@ -199,7 +182,7 @@ public class GamePlayController extends WorldController {
 //		}
 
 //		try {
-			level = loader.loadLevel(levelToLoad);
+		level = loader.loadLevel(levelToLoad);
 //		}
 //		catch(Exception e) {
 //			level = loader.loadLevel(new FileHandle("levels/custom1.lvl"));
