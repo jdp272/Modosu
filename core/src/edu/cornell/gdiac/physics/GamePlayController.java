@@ -23,6 +23,8 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
 
+import java.io.File;
+
 /**
  * Gameplay controller for Modosu.
  *
@@ -68,7 +70,8 @@ public class GamePlayController extends WorldController {
 
 	private int currentLevel = 0;
 
-	private FileHandle[] levels;
+
+
 
 	/**
 	 * Preloads the assets for this controller.
@@ -147,6 +150,9 @@ public class GamePlayController extends WorldController {
 
 		cache = new Vector2();
 
+		File folder = new File("levels");
+		levels = folder.listFiles();
+
 		// This method of searching through the directory doesn't work on desktop
 		// once the project is converted into a .jar. They are "internal" files
 		// and so the f.list will return an empty list.
@@ -181,27 +187,23 @@ public class GamePlayController extends WorldController {
 		Vector2 gravity = new Vector2(world.getGravity());
 
 		FileHandle levelToLoad;
-		if (currentLevel == 3) {
-				levelToLoad = Gdx.files.local("levels/custom3.lvl");
+		System.out.println("levels/" + levels[currentLevel%levels.length].getName());
+		levelToLoad = Gdx.files.local("levels/" + levels[currentLevel%levels.length].getName());
 
 
+//		if (currentLevel == 3) {
+//				levelToLoad = Gdx.files.local("levels/custom3.lvl");
+//		}
+//		else {
+//			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
+//		}
 
-		}
-		else {
-			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
-		}
-
-//		FileHandle f = new FileHandle(levelName);
-//		loader.saveLevel(f, level);
-
-		//System.out.println("loading level: " + levelName);
-
-		try {
+//		try {
 			level = loader.loadLevel(levelToLoad);
-		}
-		catch(Exception e) {
-			level = loader.loadLevel(new FileHandle("levels/custom0.lvl"));
-		}
+//		}
+//		catch(Exception e) {
+//			level = loader.loadLevel(new FileHandle("levels/custom1.lvl"));
+//		}
 
 		HUD.clearHUD();
 		HUD.setNumTotalHosts(level.hosts.size());
@@ -334,7 +336,6 @@ public class GamePlayController extends WorldController {
 
 		//keep everything in bounds
 		keepInBounds();
-		System.out.println(getSound());
 
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){

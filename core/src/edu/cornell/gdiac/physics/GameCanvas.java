@@ -978,7 +978,12 @@ public class GameCanvas {
 			return;
 		}
 		GlyphLayout layout = new GlyphLayout(font,text);
-		font.draw(spriteBatch, layout, x, y);
+
+		GlyphLayout glyphLayout = new GlyphLayout();
+		glyphLayout.setText(font,text);
+		float w = glyphLayout.width;
+
+		font.draw(spriteBatch, layout, x-(w/2), y);
     }
 
     /**

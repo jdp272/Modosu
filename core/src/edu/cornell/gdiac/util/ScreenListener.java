@@ -51,4 +51,14 @@ public interface ScreenListener {
 	 * @param sound Whether there is sound on this game
 	 */
 	public void exitScreenLevel(int level, boolean sound);
+
+	/**
+	 * The given screen has made a request to exit its player mode
+	 * and enter the game mode on a specific level.
+	 *
+	 * @param level The level to start the game at
+	 * @param sound Whether there is sound on this game
+	 * @param page what page the user is on
+	 */
+	public void exitScreenLevel(int level, boolean sound, int page);
 }

@@ -24,6 +24,9 @@ import com.badlogic.gdx.graphics.g2d.*;
 import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.util.SoundController;
 
+import java.io.File;
+import java.util.Arrays;
+
 
 /**
  * Manages the level selection of Modosu
@@ -36,6 +39,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     private static final String TWO_FILE = "shared/2.png";
     private static final String THREE_FILE = "shared/3.png";
     private static final String FOUR_FILE = "shared/4.png";
+    private static final String NEXT_FILE = "shared/next.png";
     private static final String CLICK_SOUND = "shared/click.mp3";
     private static final String HOVER_SOUND = "shared/hover.mp3";
 
@@ -55,6 +59,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     private TextureRegion twoTexture;
     private TextureRegion threeTexture;
     private TextureRegion fourTexture;
+    private TextureRegion nextTexture;
+    private TextureRegion prevTexture;
 
     /** Vectors that maintain the positions of the level buttons */
     private Vector2 oneStart;
@@ -65,6 +71,10 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     private Vector2 threeEnd;
     private Vector2 fourStart;
     private Vector2 fourEnd;
+    private Vector2 nextStart;
+    private Vector2 nextEnd;
+    private Vector2 prevStart;
+    private Vector2 prevEnd;
 
     /** Color of buttons when hovered */
     private static Color colorHovered;
@@ -85,8 +95,17 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     /** Color of level four button */
     private Color colorFour;
 
+    private Color colorNext;
+    private Color colorPrev;
+
+
     /** Track asset loading from all instances and subclasses */
     private AssetState assetState = AssetState.EMPTY;
+
+    /** Page of levels user is on */
+    private int page;
+    private int pages;
+    private File[] levelNames;
 
 
     /**
@@ -104,6 +123,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
             return;
         }
 
+
         assetState = AssetState.LOADING;
         manager.load(BACKG_FILE, Texture.class);
         assets.add(BACKG_FILE);
@@ -115,6 +135,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         assets.add(THREE_FILE);
         manager.load(FOUR_FILE, Texture.class);
         assets.add(FOUR_FILE);
+        manager.load(NEXT_FILE, Texture.class);
+        assets.add(NEXT_FILE);
 
         super.preLoadContent(manager);
     }
@@ -138,6 +160,10 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         twoTexture = createTexture(manager,TWO_FILE,false);
         threeTexture = createTexture(manager,THREE_FILE,false);
         fourTexture = createTexture(manager,FOUR_FILE,false);
+        nextTexture = createTexture(manager,NEXT_FILE,false);
+        prevTexture = createTexture(manager,NEXT_FILE, false);
+        prevTexture.flip(true,false);
+
 
         oneStart = new Vector2(LEVEL_X_START, LEVEL_Y);
         oneEnd = new Vector2(LEVEL_X_START + oneTexture.getRegionWidth(), LEVEL_Y+oneTexture.getRegionHeight());
@@ -147,6 +173,10 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         threeEnd = new Vector2(threeStart.x+threeTexture.getRegionWidth(), LEVEL_Y+threeTexture.getRegionHeight());
         fourStart = new Vector2(threeEnd.x + LEVEL_BUTTON_SPACING, LEVEL_Y);
         fourEnd = new Vector2(fourStart.x+fourTexture.getRegionWidth(), LEVEL_Y+fourTexture.getRegionHeight());
+        nextStart = new Vector2(threeEnd.x + (LEVEL_BUTTON_SPACING * (5f/8f)), LEVEL_Y * 2);
+        nextEnd = new Vector2(nextStart.x+nextTexture.getRegionWidth(), (LEVEL_Y*2)+nextTexture.getRegionHeight());
+        prevStart = new Vector2(oneEnd.x + (LEVEL_BUTTON_SPACING * (3f/8f)), LEVEL_Y * 2);
+        prevEnd = new Vector2(prevStart.x+nextTexture.getRegionWidth(), (LEVEL_Y*2)+nextTexture.getRegionHeight());
 
         super.loadContent(manager);
         assetState = AssetState.COMPLETE;
@@ -167,7 +197,9 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         setComplete(false);
         setFailure(false);
 
+
         sound = false;
+        page = 0;
 
         colorHovered = new Color(Color.rgb565(190f,245f,253f));
         colorUnhovered = new Color(Color.WHITE);
@@ -175,6 +207,12 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         colorTwo = colorUnhovered;
         colorThree = colorUnhovered;
         colorFour = colorUnhovered;
+        colorNext = colorUnhovered;
+        colorPrev = colorUnhovered;
+
+        File folder = new File("levels");
+        levelNames = folder.listFiles();
+        pages = (int)Math.ceil(folder.listFiles().length/4.0);
     }
 
     /**
@@ -216,10 +254,35 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     public void draw(float dt) {
         canvas.begin();
         canvas.draw(backgroundTexture, 0, 0);
-        canvas.draw(oneTexture, colorOne,0f, 0f, oneStart.x, oneStart.y,0,1,1);
-        canvas.draw(twoTexture, colorTwo, 0f, 0f, twoStart.x, twoStart.y,0,1,1);
-        canvas.draw(threeTexture, colorThree,0f,0f,threeStart.x, threeStart.y,0,1,1);
-        canvas.draw(fourTexture, colorFour,0f,0f,fourStart.x, fourStart.y,0,1,1);
+//        canvas.draw(oneTexture, colorOne,0f, 0f, oneStart.x, oneStart.y,0,1,1);
+//        canvas.draw(twoTexture, colorTwo, 0f, 0f, twoStart.x, twoStart.y,0,1,1);
+//        canvas.draw(threeTexture, colorThree,0f,0f,threeStart.x, threeStart.y,0,1,1);
+//        canvas.draw(fourTexture, colorFour,0f,0f,fourStart.x, fourStart.y,0,1,1);
+        if(page != pages-1) {
+            canvas.draw(nextTexture, colorNext, 0f, 0f, nextStart.x, nextStart.y, 0, 1, 1);
+        }
+        if(page != 0) {
+            canvas.draw(prevTexture, colorPrev, 0f, 0f, prevStart.x, prevStart.y, 0, 1, 1);
+        }
+        displayFont.setColor(colorOne);
+        String name = levelNames[page*4].getName();
+        canvas.drawText(name.substring(0,name.length()-4), displayFont, oneStart.x+8, oneEnd.y);
+        if(page*4 + 1 < levelNames.length) {
+            displayFont.setColor(colorTwo);
+            name = levelNames[page * 4 + 1].getName();
+            canvas.drawText(name.substring(0, name.length() - 4), displayFont, twoStart.x + 8, oneEnd.y);
+        }
+        if(page*4 + 2 < levelNames.length) {
+            displayFont.setColor(colorThree);
+            name = levelNames[page * 4 + 2].getName();
+            canvas.drawText(name.substring(0, name.length() - 4), displayFont, threeStart.x + 8, oneEnd.y);
+        }
+        if(page*4 + 3 < levelNames.length) {
+            displayFont.setColor(colorFour);
+            name = levelNames[page * 4 + 3].getName();
+            canvas.drawText(name.substring(0, name.length() - 4), displayFont, fourStart.x + 8, oneEnd.y);
+        }
+        displayFont.setColor(colorUnhovered);
         canvas.end();
     }
 
@@ -261,29 +324,42 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         if(screenX >=  oneStart.x && screenX <= oneEnd.x) {
             if (screenY >= oneStart.y && screenY <= oneEnd.y) {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
-                listener.exitScreenLevel(0, sound);
+                listener.exitScreenLevel(0, sound, page);
             }
 
         }
 
-        else if(screenX >= twoStart.x && screenX <= twoEnd.x ) {
+        else if(screenX >= twoStart.x && screenX <= twoEnd.x && page*4 + 1 < levelNames.length) {
             if (screenY >= twoStart.y && screenY <= twoEnd.y) {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
-                listener.exitScreenLevel(1, sound);
+                listener.exitScreenLevel(1, sound, page);
             }
         }
 
-        else if(screenX >= threeStart.x && screenX <= threeEnd.x) {
+        else if(screenX >= threeStart.x && screenX <= threeEnd.x && page*4 + 2 < levelNames.length) {
             if (screenY >= threeStart.y && screenY <= threeEnd.y)  {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
-                listener.exitScreenLevel(2, sound);
+                listener.exitScreenLevel(2, sound, page);
             }
         }
 
-        else if(screenX >= fourStart.x && screenX <= fourEnd.x) {
+        else if(screenX >= fourStart.x && screenX <= fourEnd.x && page*4 + 3 < levelNames.length) {
             if (screenY >= fourStart.y && screenY <= fourEnd.y)  {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
-                listener.exitScreenLevel(3, sound);
+                listener.exitScreenLevel(3, sound, page);
+            }
+        }
+
+        else if(screenX >= nextStart.x && screenX <= nextEnd.x && page != pages-1) {
+            if (screenY >= nextStart.y && screenY <= nextEnd.y)  {
+                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                page++;
+            }
+        }
+        else if(screenX >= prevStart.x && screenX <= prevEnd.x && page != 0) {
+            if (screenY >= prevStart.y && screenY <= prevEnd.y)  {
+                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                page--;
             }
         }
 
@@ -356,11 +432,39 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                     hoverButton = false;
                 }
             }
+            else if (screenX >= nextStart.x && screenX <= nextEnd.x && page != pages-1) {
+                if (screenY >= nextStart.y && screenY <= nextEnd.y) {
+                    colorNext = colorHovered;
+                    if (!hoverButton) {
+                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+                        hoverButton = true;
+                    }
+                }
+                else {
+                    colorPrev = colorUnhovered;
+                    hoverButton = false;
+                }
+            }
+            else if (screenX >= prevStart.x && screenX <= prevEnd.x && page != 0) {
+                if (screenY >= prevStart.y && screenY <= prevEnd.y) {
+                    colorPrev = colorHovered;
+                    if (!hoverButton) {
+                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+                        hoverButton = true;
+                    }
+                }
+                else {
+                    colorPrev = colorUnhovered;
+                    hoverButton = false;
+                }
+            }
             else {
                 colorOne = colorUnhovered;
                 colorTwo = colorUnhovered;
                 colorThree = colorUnhovered;
                 colorFour = colorUnhovered;
+                colorNext = colorUnhovered;
+                colorPrev = colorUnhovered;
                 hoverButton = false;
             }
         }

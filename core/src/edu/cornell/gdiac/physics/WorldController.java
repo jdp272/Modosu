@@ -33,6 +33,7 @@ import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.ScreenListener;
 
+import java.io.File;
 import java.util.Iterator;
 
 /**
@@ -111,6 +112,11 @@ public abstract class WorldController implements Screen {
 
 	/** The font for giving messages to the player */
 	protected BitmapFont displayFont;
+	/** fonts for level numbers in level select */
+	protected BitmapFont oneFont;
+	protected BitmapFont twoFont;
+	protected BitmapFont threeFont;
+	protected BitmapFont fourFont;
 	/** Texture asset for background image */
 	private TextureRegion backgroundTexture;
 	/** The texture for robots */
@@ -238,8 +244,16 @@ public abstract class WorldController implements Screen {
 		// Allocate the font
 		if (manager.isLoaded(FONT_FILE)) {
 			displayFont = manager.get(FONT_FILE,BitmapFont.class);
+			oneFont = manager.get(FONT_FILE,BitmapFont.class);
+			twoFont = manager.get(FONT_FILE,BitmapFont.class);
+			threeFont = manager.get(FONT_FILE,BitmapFont.class);
+			fourFont = manager.get(FONT_FILE,BitmapFont.class);
 		} else {
 			displayFont = null;
+			oneFont = null;
+			twoFont = null;
+			threeFont = null;
+			fourFont = null;
 		}
 
 		worldAssetState = AssetState.COMPLETE;
@@ -363,6 +377,9 @@ public abstract class WorldController implements Screen {
 	/** Countdown active for winning or losing */
 	private int countdown;
 	public boolean menu;
+
+	/** list of level files*/
+	protected File[] levels;
 
 	/**
 	 * Returns true if debug mode is active.

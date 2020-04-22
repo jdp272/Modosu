@@ -24,6 +24,7 @@ import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -159,6 +160,9 @@ public class LevelDesignerMode extends WorldController {
 		camTarget = new Vector2();
 
 		board = new Obstacle[16][9];
+
+		File folder = new File("levels");
+		levels = folder.listFiles();
 	}
 
 	/**
@@ -289,14 +293,19 @@ public class LevelDesignerMode extends WorldController {
 
 		// TODO: Change this with GamePlayController!!
 		FileHandle levelToLoad;
-		if (currentLevel == 3) {
-			levelToLoad = Gdx.files.local("levels/custom3.lvl");
-		} else {
-			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
-		}
+//		if (currentLevel == 3) {
+//			levelToLoad = Gdx.files.local("levels/custom3.lvl");
+//		} else {
+//			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
+//		}
+
+		System.out.println("levels/" + levels[0].getName());
+		levelToLoad = Gdx.files.local("levels/" + levels[currentLevel%levels.length].getName());
+		//levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
+
 
 //		try {
-			level = loader.loadLevel(levelToLoad);
+		level = loader.loadLevel(levelToLoad);
 //		} catch (Exception e) {
 //			System.out.println(e);
 //			System.out.println(levelToLoad);
@@ -723,7 +732,7 @@ public class LevelDesignerMode extends WorldController {
 //			}, "Input custom level name", "custom", "");
 
 			if(hasPed) {
-				String levelName = "custom" + currentLevel;
+				String levelName = Integer.toString(currentLevel);
 				save("levels/" + levelName + ".lvl");
 				System.out.println("Saving level as levels/" + levelName + ".lvl");
 			} else {

@@ -162,6 +162,38 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 	}
 
+	/**
+	 * The given screen has made a request to exit its player mode
+	 * and enter the game mode on a specific level.
+	 *
+	 * @param level The level to start the game at
+	 */
+	public void exitScreenLevel(int level, boolean sound, int page) {
+		if (screen == levelSelect){
+			levelSelect.dispose();
+			levelSelect = null;
+
+			if(goLevelDesigner) {
+				levelDesigner.loadContent(manager);
+				levelDesigner.setScreenListener(this);
+				levelDesigner.setCanvas(canvas);
+				levelDesigner.setCurrentLevel(level + (page*4));
+				levelDesigner.reset();
+
+				setScreen(levelDesigner);
+			} else {
+				controller.loadContent(manager);
+				controller.setScreenListener(this);
+				controller.setCanvas(canvas);
+				controller.setCurrentLevel(level + (page*4));
+				controller.setSound(sound);
+				controller.reset();
+
+				setScreen(controller);
+			}
+		}
+	}
+
 	private void reset(boolean sound) {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1, sound);
@@ -179,6 +211,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}
+
+
 
 	/**
 	 * The given screen has made a request to exit its player mode.
