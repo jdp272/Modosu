@@ -333,6 +333,8 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_MENU = 6;
 	/** Exit code for going to game complete screen */
 	public static final int EXIT_GAME = 7;
+	/** Exit code for going to the credits screen */
+	public static final int EXIT_CREDITS = 8;
 
     /** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 50;

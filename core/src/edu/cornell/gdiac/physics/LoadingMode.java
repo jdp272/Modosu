@@ -488,19 +488,24 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				listener.exitScreen(this, WorldController.EXIT_PLAY, sound);
 			}
 
-			//go to level design mode
-			if(pressState == 4 && listener != null){
-				listener.exitScreen(this,WorldController.EXIT_DESIGN, sound);
+			// Go to level design mode
+			if (pressState == 4 && listener != null) {
+				listener.exitScreen(this, WorldController.EXIT_DESIGN, sound);
 			}
 
-			//go to level select mode
-			if(pressState == 5 && listener != null){
-				listener.exitScreen(this,WorldController.EXIT_SELECT, sound);
+			// Go to level select mode
+			if (pressState == 5 && listener != null) {
+				listener.exitScreen(this, WorldController.EXIT_SELECT, sound);
 			}
 
-			//close game
-			if(pressState == 6 && listener != null){
-				listener.exitScreen(this,WorldController.EXIT_QUIT, sound);
+			// Go to credits mode
+			if (pressState == 8 && listener != null) {
+				listener.exitScreen(this, WorldController.EXIT_CREDITS, sound);
+			}
+
+			// Close game
+			if (pressState == 6 && listener != null) {
+				listener.exitScreen(this, WorldController.EXIT_QUIT, sound);
 			}
 		}
 	}
@@ -610,6 +615,13 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
 				pressState = 4;
+				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+			}
+		}
+
+		if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
+			if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth() * scale * BUTTON_SCALE)) {
+				pressState = 8;
 				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
 			}
 		}
