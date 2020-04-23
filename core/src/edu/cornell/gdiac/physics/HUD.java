@@ -23,6 +23,7 @@ public class HUD {
     private static int FONT_COLOR_GREEN = 0xC0BAB2;
     private static String FONT_FILE = "shared/Asul.ttf";
     private static String GOLEM_INDICATOR_FILE = "shared/golemcounter.png";
+    private static String LIFE_FILE = "shared/life.png";
     private static String PADDING = "            ";
 
     /* Declaration for new Stage */
@@ -32,17 +33,22 @@ public class HUD {
     /* Golem & Time Tracking Variables */
     private static int numCurrentHosts;
     private static int numTotalHosts;
+    private static int numLives;
     private static float timeCount;
     private static int worldTimer;
 
     /* Scene2D Widgets */
     private static Label hostCounterLabel;
     private Texture hostCounterTexture;
+    private Texture lifeTexture;
 
     /* Initialization */
     public HUD(PolygonSpriteBatch spriteBatch) {
         numCurrentHosts = 0;
         numTotalHosts = 0;
+        numLives = 0;
+
+
 
         viewport = new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         stage = new Stage(viewport, spriteBatch);
@@ -68,11 +74,25 @@ public class HUD {
         stack.add(counterBackground);
         stack.add(hostCounterLabel);
 
+        /* Life Manangement */
+        Stack lifeStack = new Stack();
+        lifeTexture = new Texture(Gdx.files.internal(LIFE_FILE));
+        // depending on the number of lives
+
+
         /* Create table to add Stack */
         Table table = new Table();
         table.top();
         table.setFillParent(true);
         table.add(stack).expandX().padTop(10).padLeft(10).left();
+
+        table.setDebug(true);
+
+        for (int i = 0; i < numLives; i++) {
+            Image life = new Image(lifeTexture);
+            table.add(life).width(50).height(50).padRight(10).right();
+        }
+
         stage.addActor(table);
     }
 
@@ -100,6 +120,7 @@ public class HUD {
 
     public void dispose() {
         hostCounterTexture.dispose();
+        lifeTexture.dispose();
         stage.dispose();
     }
 }
