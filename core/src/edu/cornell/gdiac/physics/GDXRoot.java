@@ -294,6 +294,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 		else if (exitCode == WorldController.EXIT_CREDITS) {
 			goLevelDesigner = false;
+			credits.setSound(sound);
 			credits.setScreenListener(this);
 			setScreen(credits);
 		}
