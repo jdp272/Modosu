@@ -483,16 +483,22 @@ public class LoadingMode implements Screen, InputProcessor {
 				listener.exitScreen(this, WorldController.EXIT_PLAY, sound);
 			}
 
-			//go to level design mode
+			// Go to level design mode
 			if (isReady && buttonPressed == pressState.DESIGN && listener != null) {
 				buttonPressed = pressState.NONE;
 				listener.exitScreen(this,WorldController.EXIT_DESIGN, sound);
 			}
 
-			//go to level select mode
+			// Go to level select mode
 			if(isReady && buttonPressed == pressState.SELECT && listener != null) {
 				buttonPressed = pressState.NONE;
 				listener.exitScreen(this,WorldController.EXIT_SELECT, sound);
+			}
+
+			// Go to credits mode
+			if (isReady && buttonPressed == pressState.CREDITS && listener != null) {
+				buttonPressed = pressState.NONE;
+				listener.exitScreen(this, WorldController.EXIT_CREDITS, sound);
 			}
 
 			//close game
@@ -614,6 +620,14 @@ public class LoadingMode implements Screen, InputProcessor {
 			}
 		}
 
+		if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
+			if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth() * scale * BUTTON_SCALE)) {
+				buttonPressed = pressState.CREDITS;
+				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+				isPressed = true;
+			}
+		}
+
 		if(screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.QUIT;
@@ -671,6 +685,16 @@ public class LoadingMode implements Screen, InputProcessor {
 			if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
 				if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
 					if (buttonPressed == pressState.DESIGN) { isReady = true; }
+					else {
+						isReady = false;
+						buttonPressed = pressState.NONE;
+					}
+				}
+			}
+
+			if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
+				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth() * scale * BUTTON_SCALE)) {
+					if (buttonPressed == pressState.CREDITS) { isReady = true; }
 					else {
 						isReady = false;
 						buttonPressed = pressState.NONE;
