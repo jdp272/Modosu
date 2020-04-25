@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
@@ -21,8 +22,6 @@ public class HostController {
     private Texture arrowText;
     /** The arrow created by the shot */
     private ArrowModel arrow;
-    /** The current position of the mouse */
-    private Vector2 currMouse;
 
     private HostModel pedestal;
 
@@ -37,24 +36,30 @@ public class HostController {
     /** Whether player moved host this frame */
     private boolean moved;
 
+    /** Spirit position in screen coordinates */
+    private Vector2 spiritCenter;
 
     private InputController input;
 
     // Cache variables
-    /** Arrow position cache */
-    private Vector2 arrowCache;
+
+    private Vector2 mousePosCache;
+
+    private Vector2 velocityCache;
+
+    private Vector2 spiritCache;
 
     /** Constant to change the speed of golem movement */
-    private static final float HOST_MOVEMENT_SPEED = 5.f;
+    private static final float HOST_MOVEMENT_SPEED = 5f;
 
     /** Minimum speed for shot spirit */
-    private static final float MINIMUM_SHOT_SPEED = 10.f;
+    private static final float MINIMUM_SHOT_SPEED = 10f;
 
     /** Maximum speed for shot spirit */
-    private static final float MAXIMUM_SHOT_SPEED = 20.f;
+    private static final float MAXIMUM_SHOT_SPEED = 20f;
 
     /** Multiplier for velocity of spirit when shot */
-    private static final float SHOOTING_MULTIPLIER = 5.f;
+    private static final float SHOOTING_MULTIPLIER = 2f;
 
     /** Minimum distance to target before going to next instruction, for autonomous mode */
     private static final float NEXT_INSTRUCTION_DIST = 0.5f;
@@ -62,16 +67,15 @@ public class HostController {
     /** The number of ticks since we started this controller */
     private long ticks;
 
+    /** The number of hosts on this level */
     private int numHosts;
 
+    private GameCanvas canvas;
 
-    // TOGGLE VARIABLES
-    // If true, the player can drag from anywhere and the shot will be aimed from there
-    private boolean dragAnywhere = true;
     /**
      * Creates and initialize a new instance of a HostController
      */
-    public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowTexture, HostModel pedestal) {
+    public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowTexture, HostModel pedestal, GameCanvas c) {
         input = InputController.getInstance();
         clickPosition = new Vector2(-1,-1);
         hosts = h;
@@ -80,10 +84,14 @@ public class HostController {
         possessedBlownUp = false;
         launched = false;
         this.scale = scale;
-        arrowCache = new Vector2();
+        spiritCenter = new Vector2(c.getWidth()/2, c.getHeight()/2);
+        mousePosCache = new Vector2();
+        velocityCache = new Vector2();
+        spiritCache = new Vector2();
         this.pedestal = pedestal;
         numHosts = h.size();
         moved = false;
+        canvas = c;
     }
 
     /**
@@ -111,12 +119,9 @@ public class HostController {
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand) {
 
-        input = InputController.getInstance();
-
-
         // Brings the spirit to the center of the host
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
-            Vector2 dirToCenter = possessed.getPosition().sub(spirit.getPosition()).setLength(200f);
+            Vector2 dirToCenter = possessed.getPosition().sub(spirit.getPosition()).setLength(150f);
             spirit.setVX(dirToCenter.x);
             spirit.setVY(dirToCenter.y);
 
@@ -168,8 +173,6 @@ public class HostController {
 
                 if (!spirit.hasLaunched || spirit.getIsPossessing()) {
 
-                    // Move using player input
-//                    if (!possessed.isPedestal() && (input.getVertical() != 0 || input.getHorizontal() != 0)){
                     if (!possessed.isPedestal()) {
                         float obstacleFactor = 1;
                         if (inSand) { obstacleFactor = .5f; }
@@ -189,69 +192,66 @@ public class HostController {
                     if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
                         // Clicked Mouse
                         clickPosition = clickPosition.set(Gdx.input.getX(), Gdx.input.getY());
-                        arrowCache.set(possessed.getPosition());
-                        arrowCache.scl(scale);
-                        arrow = new ArrowModel(arrowText, arrowCache);
+                        arrow = new ArrowModel(arrowText, spiritCache.set(spirit.getPosition().scl(scale.x, scale.y)));
                     }
 
-                    // Released Mouse -- Shoot
-                    else if (!input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
-                        arrow = null;
-
+                    // Arrow has been created, either held down or release
+                    else if(clickPosition.x != 1 && clickPosition.y != -1) {
                         // Calculate the new velocity vector
-                        shootVector = shootVector.set(Gdx.input.getX(), Gdx.input.getY());
-                        shootVector = shootVector.sub(clickPosition);
-                        shootVector.x = -shootVector.x;
-
-                        clickPosition.x = -1;
-                        clickPosition.y = -1;
+                        Vector2 mousePos = mousePosCache.set(Gdx.input.getX(), canvas.getHeight()- Gdx.input.getY());
+                        Vector2 shootVector = spiritCache.set(spiritCenter).sub(mousePos);
 
                         float vx = SHOOTING_MULTIPLIER * shootVector.x / scale.x;
                         float vy = SHOOTING_MULTIPLIER * shootVector.y / scale.y;
 
                         float magnitude = Math.abs(vx * vx + vy * vy);
 
-                        // Only shoot if the shooting speed is large enough
-                        if (magnitude > MINIMUM_SHOT_SPEED) {
+                        // Released Mouse -- Shoot
+                        if (!input.didTertiary()) {
+                            // Arrow should disappear when released
+                            arrow = null;
 
-                            // Re-center the spirit for maximum accuracy and in case spirit is off center
-                            spirit.setPosition(possessed.getPosition());
+                            clickPosition.x = -1;
+                            clickPosition.y = -1;
 
-                            // Cap the speed of the shot
-                            if (magnitude > MAXIMUM_SHOT_SPEED) {
-                                float angle = (float) Math.atan2(vy, vx);
-                                vx = MAXIMUM_SHOT_SPEED * (float) Math.cos(angle);
-                                vy = MAXIMUM_SHOT_SPEED * (float) Math.sin(angle);
+                            // Only shoot if the shooting speed is large enough
+                            if (magnitude > MINIMUM_SHOT_SPEED) {
+
+                                // Re-center the spirit for maximum accuracy and in case spirit is off center
+                                spirit.setPosition(possessed.getPosition());
+
+                                // Cap the speed of the shot
+                                if (magnitude > MAXIMUM_SHOT_SPEED) {
+                                    float angle = (float) Math.atan2(vy, vx);
+                                    vx = MAXIMUM_SHOT_SPEED * (float) Math.cos(angle);
+                                    vy = MAXIMUM_SHOT_SPEED * (float) Math.sin(angle);
+                                }
+
+                                // Set the spirit's velocity
+                                spirit.setVX(vx);
+                                spirit.setVY(vy);
+
+                                // Upon Release of Spirit, possessed host and spirit are no longer possessed/possessing
+                                spirit.setHasLaunched(true);
+                                spirit.setIsPossessing(false);
+                                spirit.setGoToCenter(false);
+
+                                possessed.setPossessed(false);
+
+                                launched = true;
                             }
-
-                            // Set the spirit's velocity
-                            spirit.setVX(vx);
-                            spirit.setVY(vy);
-
-                            // Upon Release of Spirit, possessed host and spirit are no longer possessed/possessing
-                            spirit.setHasLaunched(true);
-                            spirit.setIsPossessing(false);
-                            spirit.setGoToCenter(false);
-
-                            possessed.setPossessed(false);
-                            launched = true;
-
+                        }
+                        // Holding down mouse -- Redirecting
+                        else {
+                            // Set where the spirit currently is for starting draw location
+                            arrow.setCurrLoc(velocityCache.set(spirit.getPosition().scl(scale.x, scale.y)));
+                            // Set the velocity represented by the arrow
+                            arrow.setVelocityRepresented(shootVector, magnitude > MINIMUM_SHOT_SPEED);
                         }
                     }
-                    else if (input.didTertiary() && clickPosition.x != -1 && clickPosition.y != -1) {
-                        // Save current mouse location in arrowModel
-                        // Save possessed current position as the starting drawing point
 
-                        currMouse = new Vector2(Gdx.input.getX(), Gdx.input.getY());
-                        arrowCache.set(possessed.getPosition());
-                        arrowCache.scl(scale);
-                        arrow.setCurrLoc(currMouse, arrowCache);
+                    else {
 
-                        //would be velocity
-                        shootVector = shootVector.set(Gdx.input.getX(), Gdx.input.getY());
-                        shootVector = shootVector.sub(clickPosition);
-                        shootVector.x = -shootVector.x;
-                        arrow.setVelocityRepresented(shootVector);
                     }
                 }
                 else {

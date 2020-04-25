@@ -17,49 +17,49 @@ public class ArrowModel {
     /** The horizontal scaling of this arrow */
     private float sx;
     /** The texture for the arrow */
-    Texture arrTexture;
+    private Texture arrTexture;
+    /** Whether the arrow would have passed the minimum velocity for a shot*/
+    private boolean pastThreshold;
+
 
     /** Creates an instance of an arrow to show direction */
-    public ArrowModel(Texture arrText, Vector2 robPos) {
+    public ArrowModel(Texture arrText, Vector2 golemPos) {
         this.arrTexture = arrText;
-        start = robPos;
-        currLoc = robPos;
+        start = golemPos;
+        currLoc = golemPos;
         velocityRepresented = new Vector2(0,0);
     }
 
-    public void setCurrLoc(Vector2 mousePos, Vector2 robPos) {
-        currLoc = mousePos;
-        start = robPos;
+    public void setCurrLoc(Vector2 golemPos) {
+        start = golemPos;
     }
 
     public void draw (GameCanvas canvas) {
         Color c;
 
         // Determine the color based on whether the velocity passes threshold
-        if (sx > .14) {
-            c = new Color(Color.WHITE);
-        }
-        else {
-            c = new Color(Color.RED);
-        }
+        if (pastThreshold) { c = new Color(Color.WHITE); }
+        else { c = new Color(Color.RED); }
 
         // Draw the arrow
         canvas.begin();
-        canvas.draw(arrTexture, c, arrTexture.getWidth()/2, arrTexture.getHeight()/2, start.x + velocityRepresented.setLength(75f).x,
+        canvas.draw(arrTexture, c, 0, arrTexture.getHeight()/2, start.x + velocityRepresented.setLength(75f).x,
                 start.y + velocityRepresented.setLength(75f).y,  velocityRepresented.angleRad(), sx, 1);
         canvas.end();
     }
 
-    public void setVelocityRepresented(Vector2 velocity) {
+    public void setVelocityRepresented(Vector2 velocity, boolean metThreshold) {
         // Set velocityRepresented to the actual velocity if the shot was fired
         velocityRepresented = velocity;
+        // Set pastThreshold to whether it met the threshold or not
+        pastThreshold = metThreshold;
 
         // Change scaling
-        if (velocityRepresented.len()/100 < 4.4) {
-            sx = velocityRepresented.len()/150;
+        if (velocityRepresented.len()/200 < 2.2) {
+            sx = velocityRepresented.len()/200;
         }
         else {
-            sx = 3;
+            sx = 2.2f;
         }
     }
 }

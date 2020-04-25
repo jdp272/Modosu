@@ -15,7 +15,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.host.HostController;
 import edu.cornell.gdiac.physics.host.HostModel;
@@ -205,7 +204,7 @@ public class GamePlayController extends WorldController {
 		//level = loader.reset(lvl);
 		//parse level
 
-		hostController = new HostController(level.hosts, scale, arrowTex, pedestal);
+		hostController = new HostController(level.hosts, scale, arrowTex, pedestal, canvas);
 
 		// Reset the collision controller
 		collisionController.reset();

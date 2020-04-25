@@ -170,7 +170,6 @@ public class GameCanvas {
 				camera.zoom = targetZoom;
 				zooming = false;
 			}
-
 		}
 
 		camera.update();
