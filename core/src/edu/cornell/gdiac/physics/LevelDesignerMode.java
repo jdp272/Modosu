@@ -642,22 +642,37 @@ public class LevelDesignerMode extends WorldController {
 		int x = coordToTile(corner.getX() + (TILE_WIDTH / 2.f));
 		int y = coordToTile(corner.getY() + (TILE_WIDTH / 2.f));
 
+		// Ensure the new edges are within the array, and that the width and
+		// height are at least 1 tile. That means that the upper bounds have to
+		// be at least 1, so that the size will always be 1, and the lower
+		// bounds have to start before the end of the array, so there is at
+		// least 1 tile there
+		int top = 	 Math.min(Math.max(y, 1), board[0].length);
+		int bottom = Math.min(Math.max(y, 0), board[0].length - 1);
+		int left =   Math.min(Math.max(x, 0), board.length - 1);
+		int right =  Math.min(Math.max(x, 1), board.length);
+
+		// In each case, reset the variables that shouldn't change
 		switch(corner.corner) {
 		case TOP_LEFT:
-			topBorder = y;
-			leftBorder = x;
+			bottom = bottomBorder;
+			right = rightBorder;
+
 			break;
 		case TOP_RIGHT:
-			topBorder = y;
-			rightBorder = x;
+			bottom = bottomBorder;
+			left = leftBorder;
+
 			break;
 		case BOTTOM_LEFT:
-			bottomBorder = y;
-			leftBorder = x;
+			top = topBorder;
+			right = rightBorder;
+
 			break;
 		case BOTTOM_RIGHT:
-			bottomBorder = y;
-			rightBorder = x;
+			top = topBorder;
+			left = leftBorder;
+
 			break;
 		default:
 			System.out.println("Invalid corner being processed");
@@ -665,11 +680,33 @@ public class LevelDesignerMode extends WorldController {
 			break;
 		}
 
+		// Remove everything that has become out of bounds
+		for(int i = leftBorder; i < rightBorder; i++) {
+			for(int j = bottomBorder; j < topBorder; j++) {
+				if((i < left || i >= right || j < bottom || j >= top) && board[i][j] != null) {
+					board[i][j].markRemoved(true);
+					board[i][j] = null;
+				}
+			}
+		}
+
+		// Assign the new borders
+		topBorder = top;
+		bottomBorder = bottom;
+		leftBorder = left;
+		rightBorder = right;
+
+		// Update terrain tiles based on the new borders
+		for(int i = leftBorder; i < rightBorder; i++) {
+			for(int j = bottomBorder; j < topBorder; j++) {
+				updateWaterTile(i, j);
+				updateSandTile(i, j);
+			}
+		}
+
 		updateCornerPositions();
 
 		System.out.println("x: [" + leftBorder + ", " + rightBorder + "], y: [" + bottomBorder + ", " + topBorder + "]");
-
-//		corner.setPosition(tileToCoord(x) - (TILE_WIDTH / 2.f), tileToCoord(y) - (TILE_WIDTH / 2.f));
 	}
 
 	/**
