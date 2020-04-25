@@ -65,8 +65,8 @@ public class LevelDesignerMode extends WorldController {
 
 	/** The level to be loaded in reset() */
 	private int currentLevel = 0;
-	/** A boolean indicating if the board should not be reloaded from the file */
-	private boolean clear = false;
+	/** A boolean indicating if the board should be reloaded from the file */
+	private boolean loadBoard = true;
 	/** A boolean indicating if the board should be loaded at the start of
 	 * next update */
 	private boolean repopulate = false;
@@ -115,10 +115,14 @@ public class LevelDesignerMode extends WorldController {
 		public final Corner corner;
 	}
 
-	private int topBorder = 9;
-	private int bottomBorder = 0;
-	private int leftBorder = 0;
-	private int rightBorder = 16;
+	private int topBorder;
+	private int bottomBorder;
+	private int leftBorder;
+	private int rightBorder;
+
+	private int initialBottomBorder;
+	private int initialLeftBorder;
+
 	private CornerObstacle topLeft;
 	private CornerObstacle topRight;
 	private CornerObstacle bottomLeft;
@@ -261,10 +265,27 @@ public class LevelDesignerMode extends WorldController {
 		setComplete(false);
 		setFailure(false);
 
-		if(!clear) {
+		if(loadBoard) {
+//			bottomBorder = 0;
+//			leftBorder = 0;
+
+			bottomBorder = (board[0].length / 2) - (screenTileHeight() / 2);
+			leftBorder = (board.length / 2) - (screenTileWidth()  / 2);
+
+			initialBottomBorder = bottomBorder;
+			initialLeftBorder = leftBorder;
+
+			topBorder = bottomBorder + screenTileHeight();
+			rightBorder = leftBorder + screenTileWidth();
+
+			// Not checking to ensure that these borders are within the array
+			// bounds because no screen should be so large that the max board
+			// size of 127x127 fits inside the screen.
+
+			// Populate the level once the board boundaries are set up
 			populateLevel();
 		} else {
-			clear = false;
+			loadBoard = true;
 		}
 
 		// Setup the spawner list
@@ -357,10 +378,11 @@ public class LevelDesignerMode extends WorldController {
 	 * should be called whenever the borders are changed.
 	 */
 	private void updateCornerPositions() {
-		float top = tileToCoord(topBorder) - (TILE_WIDTH / 2.f);
-		float bottom = tileToCoord(bottomBorder) - (TILE_WIDTH / 2.f);
-		float left = tileToCoord(leftBorder) - (TILE_WIDTH / 2.f);
-		float right = tileToCoord(rightBorder) - (TILE_WIDTH / 2.f);
+		float top = yTileToCoord(topBorder) - (TILE_WIDTH / 2.f);
+		float bottom = yTileToCoord(bottomBorder) - (TILE_WIDTH / 2.f);
+
+		float left = xTileToCoord(leftBorder) - (TILE_WIDTH / 2.f);
+		float right = xTileToCoord(rightBorder) - (TILE_WIDTH / 2.f);
 
 		topLeft.setPosition(left, top);
 		topRight.setPosition(right, top);
@@ -424,11 +446,11 @@ public class LevelDesignerMode extends WorldController {
 	 * @param obj The obstacle to add. It should not already be in the world
 	 */
 	private void addNewObstacle(Obstacle obj) {
-		int x = coordToTile(obj.getX());
-		int y = coordToTile(obj.getY());
+		int x = xCoordToTile(obj.getX());
+		int y = yCoordToTile(obj.getY());
 
 		if(x >= leftBorder && y >= bottomBorder && x < rightBorder && y < topBorder && board[x][y] == null) {
-			obj.setPosition(tileToCoord(x), tileToCoord(y));
+			obj.setPosition(xTileToCoord(x), yTileToCoord(y));
 
 			board[x][y] = obj;
 			addObject(obj);
@@ -443,12 +465,23 @@ public class LevelDesignerMode extends WorldController {
 	/**
 	 * Gets the x index of tile index that an x coordinate is in
 	 *
-	 * @param coord The box2D coordinate
+	 * @param coord The box2D x coordinate
 	 *
 	 * @return The x value of the tile index
 	 */
-	private int coordToTile(float coord) {
-		return Math.round((coord - (TILE_WIDTH / 2.f)) / TILE_WIDTH);
+	private int xCoordToTile(float coord) {
+		return Math.round((coord - (TILE_WIDTH / 2.f)) / TILE_WIDTH) + initialLeftBorder;
+	}
+
+	/**
+	 * Gets the y index of tile index that an y coordinate is in
+	 *
+	 * @param coord The box2D y coordinate
+	 *
+	 * @return The y value of the tile index
+	 */
+	private int yCoordToTile(float coord) {
+		return Math.round((coord - (TILE_WIDTH / 2.f)) / TILE_WIDTH) + initialBottomBorder;
 	}
 
 	/**
@@ -458,8 +491,45 @@ public class LevelDesignerMode extends WorldController {
 	 *
 	 * @return The box2D x coordinate of the tile center
 	 */
-	private float tileToCoord(int index) {
-		return (index + 0.5f) * TILE_WIDTH;
+	private float xTileToCoord(int index) {
+		return xTileToCoord(index, false);
+	}
+
+	/**
+	 * Gets the y coordinate of the center of a tile
+	 *
+	 * @param index The y value of the tile index
+	 *
+	 * @return The box2D y coordinate of the tile center
+	 */
+	private float yTileToCoord(int index) {
+		return yTileToCoord(index, false);
+	}
+
+	/**
+	 * Gets the x coordinate of a tile
+	 *
+	 * @param index The x value of the tile index
+	 * @param corner If true, gets the lower left corner coordinate. Otherwise,
+	 *               gets the center coordinate
+	 *
+	 * @return The box2D x coordinate of the tile
+	 */
+	private float xTileToCoord(int index, boolean corner) {
+		return ((index - initialLeftBorder) + 0.5f) * TILE_WIDTH - (corner ? TILE_WIDTH / 2.f : 0);
+	}
+
+	/**
+	 * Gets the y coordinate of a tile
+	 *
+	 * @param index The y value of the tile index
+	 * @param corner If true, gets the lower left corner coordinate. Otherwise,
+	 *               gets the center coordinate
+	 *
+	 * @return The box2D y coordinate of the tile corner
+	 */
+	private float yTileToCoord(int index, boolean corner) {
+		return ((index - initialBottomBorder) + 0.5f) * TILE_WIDTH - (corner ? TILE_WIDTH / 2.f : 0);
 	}
 
 	/**
@@ -639,8 +709,8 @@ public class LevelDesignerMode extends WorldController {
 	private void processBorderChange(CornerObstacle corner) {
 		// Offset the location so the corner sits at a corner of the tile, not
 		// the center
-		int x = coordToTile(corner.getX() + (TILE_WIDTH / 2.f));
-		int y = coordToTile(corner.getY() + (TILE_WIDTH / 2.f));
+		int x = xCoordToTile(corner.getX() + (TILE_WIDTH / 2.f));
+		int y = yCoordToTile(corner.getY() + (TILE_WIDTH / 2.f));
 
 		// Ensure the new edges are within the array, and that the width and
 		// height are at least 1 tile. That means that the upper bounds have to
@@ -744,8 +814,8 @@ public class LevelDesignerMode extends WorldController {
 			selecting = true;
 
 			// The tile indices
-			int x = coordToTile(mouseX);
-			int y = coordToTile(mouseY);
+			int x = xCoordToTile(mouseX);
+			int y = yCoordToTile(mouseY);
 
 			/* Remove the object from its previous location in the board. If a
 			   different object is located there (when the selected object just
@@ -767,8 +837,8 @@ public class LevelDesignerMode extends WorldController {
 			} else if(deselected != null) {
 
 				// The tile indices
-				int x = coordToTile(deselected.getX());
-				int y = coordToTile(deselected.getY());
+				int x = xCoordToTile(deselected.getX());
+				int y = yCoordToTile(deselected.getY());
 
 				// TODO: remove destroyed bodies from the pooled list, if we do that
 
@@ -783,7 +853,7 @@ public class LevelDesignerMode extends WorldController {
 						board[x][y].markRemoved(true);
 					}
 
-					deselected.setPosition(tileToCoord(x), tileToCoord(y));
+					deselected.setPosition(xTileToCoord(x), yTileToCoord(y));
 					board[x][y] = deselected;
 
 					// Update water tile images
@@ -836,11 +906,11 @@ public class LevelDesignerMode extends WorldController {
 
 
 		if(input.didClear()) {
-			clear = true; // Remove everything from the board
+			loadBoard = false; // Remove everything from the board
 			reset();
 		}
 		if(input.didReset()) {
-			clear = false; // Reset the board based on the level
+			loadBoard = true; // Reset the board based on the level
 			reset();
 		}
 
@@ -980,12 +1050,20 @@ public class LevelDesignerMode extends WorldController {
 
 		// Draw background unscaled.
 		canvas.begin();
-		for(int x = leftBorder; x < rightBorder; x += screenTileWidth()) {
-			for(int y = bottomBorder; y < topBorder; y += screenTileHeight()) {
-				float width = Math.min(canvas.getWidth(), TILE_WIDTH * scale.x * (rightBorder - x));
-				float height = Math.min(canvas.getHeight(), TILE_WIDTH * scale.y * (topBorder - y));
-				canvas.draw(backgroundTexture.getTexture(), TILE_WIDTH * scale.x * x, TILE_WIDTH * scale.y * y,  width, height,
+
+		// Use the lower left corner of tiles, not the center, to start drawing the canvas
+		for(float x = xTileToCoord(leftBorder, true); x < xTileToCoord(rightBorder, true); x += TILE_WIDTH * screenTileWidth()) {
+			for(float y = yTileToCoord(bottomBorder, true); y < yTileToCoord(topBorder, true); y += TILE_WIDTH * screenTileHeight()) {
+
+				// Calculate the width and height of the canvas segment. If the
+				// board doesn't extend the entire way, find the desired dimensions
+				float width = Math.min(canvas.getWidth(), scale.x * (xTileToCoord(rightBorder, true) - x));
+				float height = Math.min(canvas.getHeight(), scale.y * (yTileToCoord(topBorder, true) - y));
+
+				// Draw only the part of the texture that is in game
+				canvas.draw(backgroundTexture.getTexture(), scale.x * x, scale.y * y,  width, height,
 						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
+
 //				canvas.draw(backgroundTexture, Color.WHITE, TILE_WIDTH * scale.x * x, TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
 			}
 		}
@@ -1008,10 +1086,10 @@ public class LevelDesignerMode extends WorldController {
 		}
 
 		// Draw foreground last. The foreground indicates what is within the bounds of the game and what is outside
-		canvas.begin();
-		canvas.draw(foregroundTexture, FORE_COLOR,  TILE_WIDTH * scale.x * leftBorder, TILE_WIDTH * scale.y * bottomBorder, scale.x * TILE_WIDTH * (rightBorder - leftBorder), scale.y * TILE_WIDTH * (topBorder - bottomBorder));
-		selector.draw(canvas);
-		canvas.end();
+//		canvas.begin();
+//		canvas.draw(foregroundTexture, FORE_COLOR,  TILE_WIDTH * scale.x * leftBorder, TILE_WIDTH * scale.y * bottomBorder, scale.x * TILE_WIDTH * (rightBorder - leftBorder), scale.y * TILE_WIDTH * (topBorder - bottomBorder));
+//		selector.draw(canvas);
+//		canvas.end();
 	}
 
 }
