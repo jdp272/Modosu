@@ -105,7 +105,7 @@ public abstract class WorldController implements Screen {
 	/** File to texture for sand */
 	private static String SAND_FILE = "shared/sandspritesheet.png";
 	/** File to texture for Sand corners */
-	private static String CORNER_SAND_FILE = "shared/water_corners_spritesheet.png";
+	private static String CORNER_SAND_FILE = "shared/sand_corners_spritesheet.png";
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_FILE = "shared/spirit_pedestal.png";
 
