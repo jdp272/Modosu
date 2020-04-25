@@ -1,41 +1,47 @@
 Modosu by Ludic8
 
-
-TODO:
-* split up RobotController: move world building to WorldController and keep only actual robot related items in there
-* look how ragdoll implemented mouse controls (InputController?) would probably be called from "update" in RobotController
-* implement firing for robot v
-* look how lab3 shot bullets without having the ship create the object (was done in GameplayController)
-* build world level
-
 Architecture:
 
 PHYSICS:
+* CollisionController - implements ContactListener
+* Factory
 * GameCanvas
-* GDXRoot
+* GameOver - extends WorldController implements Screen
+* GamePlayController - extends WorldController
+* GDXRoot - extends Game implements ScreenListener
+* HUD
 * InputController
-* LoadingMode
+* Level
+* LevelDesignerMode - extends WorldController
+* LevelSelectMode - extends WorldController implements Screen, InputProcessor
+* Loader
+* LoadingMode - implements Screen, InputProcessor
+
+* SpawnerList
+
 * WorldController - implements Screen
 
-ROBOT:
-* RobotController - extends WorldController, implements Contact Listener
-* RobotModel - extends BoxObstacle
+    HOST:
+    * AIController
+    * ArrowModel
+    * HostController
+    * HostModel - extends BoxObstacle
 
-OBSTACLE:
-* BoxObstacle - extends SimpleObstacle
-* CapsuleObstacle - extends SimpleObstacle
-* ComplexObstacle - extends Obstacle
-* Obstacle
-* obstacleSelector
-* PolygonObstacle - extends SimpleObstacle
-* SimpleObstacle - extends Obstacle
-* Wheelobstacle - extends SimpleObstacle
-
+    OBSTACLE:
+    * BoxObstacle - extends SimpleObstacle
+    * Obstacle
+    * ObstacleSelector - implements QueryCallback
+    * SandTile - extends BoxObstacle
+    * SimpleObstacle - extends Obstacle
+    * Wall - extends BoxObstacle
+    * WaterTile - extends BoxObstacle
+    
+    SPIRIT:
+    * SpiritModel - extends BoxObstacle
 
 UTIL:
 * FilmStrip - extends TextureRegion
 * PooledList
-* RandomController
 * ScreenListener
 * SoundController
-* XBox360Controller
+

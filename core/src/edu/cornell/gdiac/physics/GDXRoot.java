@@ -205,6 +205,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelDesigner.setCanvas(canvas);
 				levelDesigner.setCurrentLevel(level + (page*4));
 				levelDesigner.reset();
+				levelDesigner.setSound(sound);
 
 				setScreen(levelDesigner);
 			}
@@ -311,6 +312,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 		else if (exitCode == WorldController.EXIT_MENU) {
 			goLevelDesigner = false;
+			System.out.println();
 			reset(sound);
 		}
 	}

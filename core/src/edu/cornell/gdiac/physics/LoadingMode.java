@@ -624,7 +624,6 @@ public class LoadingMode implements Screen, InputProcessor {
 
 		if (screenX >= MUTE_X && screenX <= MUTE_X + (mute.getWidth()*scale*BUTTON_SCALE) ) {
 				if (screenY >= MUTE_Y && screenY <= MUTE_Y + (mute.getHeight()*scale*BUTTON_SCALE) ) {
-					sound = !sound;
 					isPressed = true;
 					buttonPressed = pressState.MUTE;
 				}
