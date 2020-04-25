@@ -198,11 +198,11 @@ public class Factory {
     }
 
     public HostModel makeSmallHost(float x, float y) {
-        return makeSmallHost(x, y, null);
+        return makeSmallHost(x, y, null, 0);
     }
 
-    public HostModel makeSmallHost(float x, float y, Vector2[] instructions) {
-        return makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, smallHostTex, smallHostGaugeTexture, smallHostTexture);
+    public HostModel makeSmallHost(float x, float y, Vector2[] instructions, int currentCharge) {
+        return makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, currentCharge, smallHostTex, smallHostGaugeTexture, smallHostTexture);
     }
 
     public HostModel makePedestal(float x, float y) {
@@ -226,7 +226,7 @@ public class Factory {
         return ped;
     }
 
-    private HostModel makeHostInternal(float x, float y, Vector2[] instructions, int maxCharge, TextureRegion hostTex, Texture smallHostGaugeTexture, Texture hostTexture) {
+    private HostModel makeHostInternal(float x, float y, Vector2[] instructions, int maxCharge, int currentCharge, TextureRegion hostTex, Texture smallHostGaugeTexture, Texture hostTexture) {
         HostModel host = new HostModel(
                 x,
                 y,
@@ -243,6 +243,7 @@ public class Factory {
         host.setChargedHostStrip(new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
         host.setNotChargedHostStrip(new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
         host.setHostStateSprite(host.beenPossessed(), new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new Vector2(0, -1));
+        host.setCurrentCharge(currentCharge);
         host.setName("host");
         host.setSensor(makeSensors);
         return host;

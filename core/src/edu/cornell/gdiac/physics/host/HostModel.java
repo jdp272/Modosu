@@ -55,11 +55,11 @@ public class HostModel extends BoxObstacle {
     /**
      * The max charge of a pedestal
      */
-    private static final float PEDESTAL_MAX_CHARGE = -1f;
+    private static final int PEDESTAL_MAX_CHARGE = -1;
     /**
      *  The current charge of a pedestal
      */
-    private static final float PEDESTAL_CURRENT_CHARGE = -1f;
+    private static final int PEDESTAL_CURRENT_CHARGE = -1;
 
     /** The gauge color for unpossessed robots */
     private static final Color unpossessedColor = new Color(0x6B5C5CFF);
@@ -117,7 +117,7 @@ public class HostModel extends BoxObstacle {
     /**
      * The current charge of the host
      */
-    private float currentCharge;
+    private int currentCharge;
     /**
      * The maximum charge of the host
      */
@@ -323,7 +323,7 @@ public class HostModel extends BoxObstacle {
      * @param width  The object width in physics units
      * @param height The object width in physics units
      */
-    public HostModel(float width, float height, float currentCharge, float maxCharge) {
+    public HostModel(float width, float height, int currentCharge, float maxCharge) {
         this(0, 0, width, height, currentCharge, maxCharge);
     }
 
@@ -339,7 +339,7 @@ public class HostModel extends BoxObstacle {
      * @param width  The object width in physics units
      * @param height The object width in physics units
      */
-    public HostModel(float x, float y, float width, float height, float currentCharge, float maxCharge) {
+    public HostModel(float x, float y, float width, float height, int currentCharge, float maxCharge) {
         this(x, y, width, height, currentCharge, maxCharge, null);
     }
 
@@ -355,7 +355,7 @@ public class HostModel extends BoxObstacle {
      * @param width  The object width in physics units
      * @param height The object width in physics units
      */
-    public HostModel(float x, float y, float width, float height, float currentCharge, float maxCharge, Vector2[] ins) {
+    public HostModel(float x, float y, float width, float height, int currentCharge, float maxCharge, Vector2[] ins) {
         super(x, y, width*0.3f, height*0.5f);
         force = new Vector2();
         this.currentCharge = currentCharge;
@@ -445,7 +445,7 @@ public class HostModel extends BoxObstacle {
      *
      * @param currentCharge representing the current charge of host.
      */
-    public void setCurrentCharge(float currentCharge) {
+    public void setCurrentCharge(int currentCharge) {
         this.currentCharge = currentCharge;
     }
 
@@ -454,7 +454,7 @@ public class HostModel extends BoxObstacle {
      *
      * @return the current charge of the host as a float.
      */
-    public float getCurrentCharge() {
+    public int getCurrentCharge() {
         return this.currentCharge;
     }
 

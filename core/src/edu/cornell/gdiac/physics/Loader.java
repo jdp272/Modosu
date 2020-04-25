@@ -27,6 +27,7 @@ public class Loader {
 
     // Fields
 
+
     public enum ImageFile {
         Robot,
         Crate
@@ -66,11 +67,9 @@ public class Loader {
     /** A struct that stores data from a host when read from the json */
     public static class HostData {
         public Vector2 location;
-        public float currentCharge;
-
+        public int currentCharge;
         public Vector2[] instructions;
         public boolean isPedestal;
-
         public ImageFile imageFile;
     }
 
@@ -216,9 +215,9 @@ public class Loader {
             if(!level.hosts.get(i).isPedestal()) {
                 HostData hData = new HostData();
                 hData.location = new Vector2(level.hosts.get(i).getX(), level.hosts.get(i).getY());
-                hData.chargeTime = level.hosts.get(i).getMaxCharge();
                 hData.instructions = level.hosts.get(i).getInstructionList();
                 hData.isPedestal = level.hosts.get(i).isPedestal();
+                hData.currentCharge = level.hosts.get(i).getCurrentCharge();
 
                 levelData.hostData[i] = hData;
             }
@@ -297,7 +296,7 @@ public class Loader {
              limit
 
              */
-                hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions));
+                hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions, hData.currentCharge));
 //            hosts.add(new HostModel(rData.location.x, rData.location.y, (int)Data.chargeTime), false);
         }
 

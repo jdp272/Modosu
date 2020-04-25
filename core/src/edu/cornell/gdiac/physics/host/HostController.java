@@ -118,6 +118,7 @@ public class HostController {
      * @param inSand
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand) {
+        System.out.println(possessed.getCurrentCharge());
 
         // Brings the spirit to the center of the host
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
