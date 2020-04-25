@@ -215,7 +215,7 @@ public class Factory {
         HostModel ped = new HostModel(
                 x,
                 y,
-                                ((pedestalTexture.getWidth() / 4) / scale.x),
+                ((pedestalTexture.getWidth() / 4) / scale.x),
                 (pedestalTexture.getHeight()  * 2/ scale.y),
                 true
         );

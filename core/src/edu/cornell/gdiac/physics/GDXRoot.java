@@ -15,6 +15,8 @@
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.assets.*;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.assets.loaders.*;
@@ -48,6 +50,12 @@ public class GDXRoot extends Game implements ScreenListener {
 	private LevelDesignerMode levelDesigner;
 	/** Level selection screen controller */
 	private LevelSelectMode levelSelect;
+
+	/** Music to be played on main menu screen */
+	private Music mainMenuMusic;
+	/** Music to be played during gameplay */
+	private Music gameplayMusic;
+
 
 	/** Stores whether to exit to level designer after a level is selected */
 	private boolean goLevelDesigner = false;
@@ -93,6 +101,9 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		loading.setScreenListener(this);
 		setScreen(loading);
+
+//		mainMenuMusic = Gdx.audio.newMusic(new FileHandle("shared/gameplaymusic.wav"));
+//		mainMenuMusic.play();
 	}
 
 	/** 
@@ -141,7 +152,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelSelect.dispose();
 			levelSelect = null;
 
-			if(goLevelDesigner) {
+			if (goLevelDesigner) {
 				levelDesigner.loadContent(manager);
 				levelDesigner.setScreenListener(this);
 				levelDesigner.setCanvas(canvas);
@@ -149,7 +160,8 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelDesigner.reset();
 
 				setScreen(levelDesigner);
-			} else {
+			}
+			else {
 				controller.loadContent(manager);
 				controller.setScreenListener(this);
 				controller.setCanvas(canvas);
@@ -158,6 +170,9 @@ public class GDXRoot extends Game implements ScreenListener {
 				controller.reset();
 
 				setScreen(controller);
+				//gameplayMusic = Gdx.audio.newMusic(new FileHandle("shared/gameplaymusic.wav"));
+				//gameplayMusic.play();
+				//gameplayMusic.setLooping(true);
 			}
 		}
 		else if (screen == gameOver) {
@@ -192,7 +207,8 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelDesigner.reset();
 
 				setScreen(levelDesigner);
-			} else {
+			}
+			else {
 				controller.loadContent(manager);
 				controller.setScreenListener(this);
 				controller.setCanvas(canvas);
@@ -200,12 +216,20 @@ public class GDXRoot extends Game implements ScreenListener {
 				controller.setSound(sound);
 				controller.reset();
 
+//				mainMenuMusic.stop();
+//				mainMenuMusic.dispose();
+//
+//				gameplayMusic.play();
+//				gameplayMusic.setLooping(true);
 				setScreen(controller);
 			}
 		}
 	}
 
 	private void reset(boolean sound) {
+//		gameplayMusic.stop();
+//		gameplayMusic.dispose();
+
 		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1, sound);
 
@@ -221,6 +245,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		loading.setScreenListener(this);
 		setScreen(loading);
+//		mainMenuMusic.play();
 	}
 
 
