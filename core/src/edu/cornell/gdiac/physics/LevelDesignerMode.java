@@ -11,23 +11,24 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.assets.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.physics.box2d.*;
-
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.host.HostModel;
-import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.obstacle.ObstacleSelector;
+import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 
 /**
@@ -689,8 +690,16 @@ public class LevelDesignerMode extends WorldController {
 			if(selector.isSelected()) {
 				// Get the selection, then remove it from the selector
 				Obstacle selection = selector.getObstacle();
+
+				// If its a wall then change the tile
 				if(selection.getName() == "wall") {
-					((Wall)selection).setWallLvlDsgn(((Wall)selection).wall+1);
+					((Wall)selection).setWallLvlDsgn(((Wall)selection).wallFrame +1);
+				}
+
+				// If its a golem then increment the current charge of the golem
+				if(selection.getName() == "host") {
+					System.out.println("INCREMEENTED");
+					((HostModel)selection).incCurrentCharge();
 				}
 			}
 		}
@@ -700,7 +709,12 @@ public class LevelDesignerMode extends WorldController {
 				// Get the selection, then remove it from the selector
 				Obstacle selection = selector.getObstacle();
 				if(selection.getName() == "wall") {
-					((Wall)selection).setWallLvlDsgn(((Wall)selection).wall-1);
+					((Wall)selection).setWallLvlDsgn(((Wall)selection).wallFrame -1);
+				}
+
+				// If its a golem then decrement the current charge of the golem
+                if(selection.getName() == "host") {
+					((HostModel)selection).setCurrentCharge(((HostModel)selection).getCurrentCharge() - 1);
 				}
 			}
 		}

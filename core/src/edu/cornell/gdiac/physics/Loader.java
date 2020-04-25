@@ -1,6 +1,5 @@
 package edu.cornell.gdiac.physics;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -18,8 +17,6 @@ import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
-
-import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.ArrayList;
 
@@ -69,7 +66,7 @@ public class Loader {
     /** A struct that stores data from a host when read from the json */
     public static class HostData {
         public Vector2 location;
-        public float chargeTime; // Maximum amount of charge that can be stored
+        public float currentCharge;
 
         public Vector2[] instructions;
         public boolean isPedestal;
@@ -173,7 +170,7 @@ public class Loader {
             oData.dimensions = level.obstacles[i].getDimension();
             oData.origin = new Vector2(level.obstacles[i].getX(), level.obstacles[i].getY());
             if(level.obstacles[i] instanceof Wall){
-                oData.frame = ((Wall)level.obstacles[i]).wall;
+                oData.frame = ((Wall)level.obstacles[i]).wallFrame;
             }else{
                 oData.frame = -1;
             }

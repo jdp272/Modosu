@@ -129,7 +129,7 @@ public class Factory {
         //box.setTexture(obstacleTex);
         box.setBodyType(BodyDef.BodyType.StaticBody);
         box.setSensor(makeSensors);
-        box.setWall(frame);
+        box.setWallFrame(frame);
         box.setName("wall");
         return box;
     }
@@ -221,6 +221,7 @@ public class Factory {
         );
         ped.setDrawScale(scale);
         ped.setPedestalStrip(new FilmStrip(pedestalTexture, PEDESTAL_ROWS, PEDESTAL_COLS, PEDESTAL_SIZE));
+        ped.setName("pedestal");
         ped.setSensor(makeSensors);
         return ped;
     }
@@ -242,6 +243,7 @@ public class Factory {
         host.setChargedHostStrip(new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
         host.setNotChargedHostStrip(new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
         host.setHostStateSprite(host.beenPossessed(), new FilmStrip(hostTexture, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new Vector2(0, -1));
+        host.setName("host");
         host.setSensor(makeSensors);
         return host;
     }

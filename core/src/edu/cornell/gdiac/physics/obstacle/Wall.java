@@ -6,7 +6,7 @@ import edu.cornell.gdiac.util.FilmStrip;
 
 public class Wall extends BoxObstacle {
 
-    public int wall;
+    public int wallFrame;
 
     /**
      * The texture strip for the wall
@@ -23,20 +23,20 @@ public class Wall extends BoxObstacle {
     }
 
 
-    public void setWall(int n){
+    public void setWallFrame(int n){
         if(n>23){
-            wall = 0;
+            wallFrame = 0;
         }else if(n < 0){
-            wall = 23;
+            wallFrame = 23;
         }else {
-            wall = n;
+            wallFrame = n;
         }
-        if(wall > 17 && wall < 24 ){
+        if(wallFrame > 17 && wallFrame < 24 ){
             PolygonShape s = new PolygonShape();
             s.setAsBox(getWidth()/2,getHeight()/4,new Vector2(0, getHeight()/4),0);
             shape = s;
         }
-        else if(wall < 4){
+        else if(wallFrame < 4){
             PolygonShape s = new PolygonShape();
             s.setAsBox(0,0,new Vector2(0, 0),0);
             shape = s;
@@ -46,22 +46,22 @@ public class Wall extends BoxObstacle {
             s.setAsBox(getWidth()/2,getHeight()/2,new Vector2(0, 0),0);
             shape = s;
         }
-        wallStrip.setFrame(wall);
+        wallStrip.setFrame(wallFrame);
     }
 
 
     public void setWallLvlDsgn(int n){
         if(n>23){
-            wall = 0;
+            wallFrame = 0;
         }else if(n < 0){
-            wall = 23;
+            wallFrame = 23;
         }else {
-            wall = n;
+            wallFrame = n;
         }
         PolygonShape s = new PolygonShape();
         s.setAsBox(getWidth()/2,getHeight()/2,new Vector2(0, 0),0);
         shape = s;
-        wallStrip.setFrame(wall);
+        wallStrip.setFrame(wallFrame);
     }
 
 
