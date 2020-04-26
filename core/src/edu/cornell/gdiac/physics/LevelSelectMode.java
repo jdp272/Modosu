@@ -25,7 +25,9 @@ import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
-
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -104,8 +106,10 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
     /** Page of levels user is on */
     private int page;
+    /** number of pages needed to display all levels available */
     private int pages;
-    private File[] levelNames;
+    /** list of files to retrieve their names*/
+    private List<File> levelNames;
 
     /** Whether the mouse is currently pressed down  */
     private boolean   isPressed;
@@ -214,7 +218,42 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         colorPrev = colorUnhovered;
 
         File folder = new File("levels");
-        levelNames = folder.listFiles();
+        File[] levels = folder.listFiles();
+        //need to sort levels here
+        final Pattern p = Pattern.compile("^\\d+");
+        Comparator<File> c = new Comparator<File>() {
+            @Override
+            public int compare(File obj1, File obj2) {
+                String object1 = obj1.getName();
+                String object2 = obj2.getName();
+                Matcher m = p.matcher(object1);
+                Integer number1 = null;
+                if (!m.find()) {
+                    return object1.compareTo(object2);
+                }
+                else {
+                    Integer number2 = null;
+                    number1 = Integer.parseInt(m.group());
+                    m = p.matcher(object2);
+                    if (!m.find()) {
+                        return object1.compareTo(object2);
+                    }
+                    else {
+                        number2 = Integer.parseInt(m.group());
+                        int comparison = number1.compareTo(number2);
+                        if (comparison != 0) {
+                            return comparison;
+                        }
+                        else {
+                            return object1.compareTo(object2);
+                        }
+                    }
+                }
+            }
+        };
+        levelNames = new ArrayList<File>(Arrays.asList(levels));
+        Collections.sort(levelNames, c);
+
         pages = (int)Math.ceil(folder.listFiles().length/4.0);
     }
 
@@ -268,21 +307,21 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
             canvas.draw(prevTexture, colorPrev, 0f, 0f, prevStart.x, prevStart.y, 0, 1, 1);
         }
         displayFont.setColor(colorOne);
-        String name = levelNames[page*4].getName();
+        String name = levelNames.get(page * 4).getName();
         canvas.drawText(name.substring(0,name.length()-4), displayFont, oneStart.x+8, oneEnd.y);
-        if (page*4 + 1 < levelNames.length) {
+        if (page*4 + 1 < levelNames.size()) {
             displayFont.setColor(colorTwo);
-            name = levelNames[page * 4 + 1].getName();
+            name = levelNames.get(page * 4 + 1).getName();
             canvas.drawText(name.substring(0, name.length() - 4), displayFont, twoStart.x + 8, oneEnd.y);
         }
-        if (page*4 + 2 < levelNames.length) {
+        if (page*4 + 2 < levelNames.size()) {
             displayFont.setColor(colorThree);
-            name = levelNames[page * 4 + 2].getName();
+            name = levelNames.get(page * 4 + 2).getName();
             canvas.drawText(name.substring(0, name.length() - 4), displayFont, threeStart.x + 8, oneEnd.y);
         }
-        if (page*4 + 3 < levelNames.length) {
+        if (page*4 + 3 < levelNames.size()) {
             displayFont.setColor(colorFour);
-            name = levelNames[page * 4 + 3].getName();
+            name = levelNames.get(page * 4 + 3).getName();
             canvas.drawText(name.substring(0, name.length() - 4), displayFont, fourStart.x + 8, oneEnd.y);
         }
         displayFont.setColor(colorUnhovered);
@@ -333,7 +372,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
         }
 
-        else if(screenX >= twoStart.x && screenX <= twoEnd.x && page*4 + 1 < levelNames.length) {
+        else if(screenX >= twoStart.x && screenX <= twoEnd.x && page*4 + 1 < levelNames.size()) {
             if (screenY >= twoStart.y && screenY <= twoEnd.y) {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
                 pressState = 1;
@@ -341,7 +380,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
             }
         }
 
-        else if(screenX >= threeStart.x && screenX <= threeEnd.x && page*4 + 2 < levelNames.length) {
+        else if(screenX >= threeStart.x && screenX <= threeEnd.x && page*4 + 2 < levelNames.size()) {
             if (screenY >= threeStart.y && screenY <= threeEnd.y)  {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
                 pressState = 2;
@@ -349,7 +388,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
             }
         }
 
-        else if(screenX >= fourStart.x && screenX <= fourEnd.x && page*4 + 3 < levelNames.length) {
+        else if(screenX >= fourStart.x && screenX <= fourEnd.x && page*4 + 3 < levelNames.size()) {
             if (screenY >= fourStart.y && screenY <= fourEnd.y)  {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
                 pressState = 3;
@@ -400,17 +439,17 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 }
 
             }
-            else if (screenX >= twoStart.x && screenX <= twoEnd.x && page * 4 + 1 < levelNames.length) {
+            else if (screenX >= twoStart.x && screenX <= twoEnd.x && page * 4 + 1 < levelNames.size()) {
                 if (screenY >= twoStart.y && screenY <= twoEnd.y && pressState == 1) {
                     listener.exitScreenLevel(1, sound, page);
                 }
             }
-            else if (screenX >= threeStart.x && screenX <= threeEnd.x && page * 4 + 2 < levelNames.length) {
+            else if (screenX >= threeStart.x && screenX <= threeEnd.x && page * 4 + 2 < levelNames.size()) {
                 if (screenY >= threeStart.y && screenY <= threeEnd.y && pressState == 2) {
                     listener.exitScreenLevel(2, sound, page);
                 }
             }
-            else if (screenX >= fourStart.x && screenX <= fourEnd.x && page * 4 + 3 < levelNames.length) {
+            else if (screenX >= fourStart.x && screenX <= fourEnd.x && page * 4 + 3 < levelNames.size()) {
                 if (screenY >= fourStart.y && screenY <= fourEnd.y && pressState == 3) {
                     listener.exitScreenLevel(3, sound, page);
                 }
@@ -464,7 +503,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                     hoverButton = false;
                 }
             }
-            else if (screenX >= twoStart.x && screenX <= twoEnd.x) {
+            else if (screenX >= twoStart.x && screenX <= twoEnd.x && page*4 + 1 < levelNames.size()) {
                 if (screenY >= twoStart.y && screenY <= twoEnd.y) {
                     colorTwo = colorHovered;
                     if (!hoverButton) {
@@ -477,7 +516,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                     hoverButton = false;
                 }
             }
-            else if (screenX >= threeStart.x && screenX <= threeEnd.x) {
+            else if (screenX >= threeStart.x && screenX <= threeEnd.x && page*4 + 2 < levelNames.size()) {
                 if (screenY >= threeStart.y && screenY <= threeEnd.y) {
                     colorThree = colorHovered;
                     if (!hoverButton) {
@@ -490,7 +529,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                     hoverButton = false;
                 }
             }
-            else if (screenX >= fourStart.x && screenX <= fourEnd.x) {
+            else if (screenX >= fourStart.x && screenX <= fourEnd.x && page*4 + 3 < levelNames.size()) {
                 if (screenY >= fourStart.y && screenY <= fourEnd.y) {
                     colorFour = colorHovered;
                     if (!hoverButton) {
