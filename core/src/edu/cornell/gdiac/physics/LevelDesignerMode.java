@@ -790,9 +790,10 @@ public class LevelDesignerMode extends WorldController {
 		}
 
 		// Remove everything that has become out of bounds
+		// Also remove the borders to add walls there
 		for(int i = leftBorder; i < rightBorder; i++) {
 			for(int j = bottomBorder; j < topBorder; j++) {
-				if((i < left || i >= right || j < bottom || j >= top) && board[i][j] != null) {
+				if((i < leftBorder + 2 || i >= rightBorder - 1 || j < bottomBorder + 2 || j >= topBorder - 1) && board[i][j] != null) {
 					board[i][j].markRemoved(true);
 					board[i][j] = null;
 				}
@@ -805,11 +806,40 @@ public class LevelDesignerMode extends WorldController {
 		leftBorder = left;
 		rightBorder = right;
 
-		// Update terrain tiles based on the new borders
+		// Update terrain tiles based on the new borders and add walls
 		for(int i = leftBorder; i < rightBorder; i++) {
 			for(int j = bottomBorder; j < topBorder; j++) {
-				updateWaterTile(i, j);
-				updateSandTile(i, j);
+				float xCoord = xTileToCoord(i);
+				float yCoord = yTileToCoord(j);
+
+				if(j == bottomBorder) {
+					if(board[i][j] != null) {
+						board[i][j].markRemoved(true);
+						board[i][j] = null;
+					}
+					addNewObstacle(factory.makeWall(xCoord, yCoord, i == leftBorder ? 18 : i == rightBorder - 1 ? 23 : i % 2 == 0 ? 20 : 22));
+				} else if(j == bottomBorder + 1) {
+					if(board[i][j] != null) {
+						board[i][j].markRemoved(true);
+						board[i][j] = null;
+					}
+					addNewObstacle(factory.makeWall(xCoord, yCoord, i == leftBorder ? 8 : i == rightBorder - 1 ? 9 : 1));
+				} else if(i == leftBorder || i == rightBorder - 1) {
+					if(board[i][j] != null) {
+						board[i][j].markRemoved(true);
+						board[i][j] = null;
+					}
+					addNewObstacle(factory.makeWall(xCoord, yCoord, 6));
+				} else if(j == topBorder - 1) {
+					if(board[i][j] != null) {
+						board[i][j].markRemoved(true);
+						board[i][j] = null;
+					}
+					addNewObstacle(factory.makeWall(xCoord, yCoord, i % 2 == 0 ? 20 : 22));
+				} else {
+					updateWaterTile(i, j);
+					updateSandTile(i, j);
+				}
 			}
 		}
 
