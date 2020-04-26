@@ -1,19 +1,20 @@
-package edu.cornell.gdiac.physics;
+package edu.cornell.gdiac.physics.obstacle;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
 
-public class SandTile extends BoxObstacle {
+public class WaterTile extends BoxObstacle {
 
-    /** The textures for the sand */
-    private FilmStrip sandStrip;
+    /** The textures for the water */
+    private FilmStrip waterStrip;
     /** The textures for the corner layover that goes over the tile */
     private FilmStrip cornerStrip;
 
-    /** The frame in the main sand film strip for this tile */
+    /** The frame in the main water film strip for this tile */
     private int frame;
 
     private boolean upLeft;
@@ -23,7 +24,7 @@ public class SandTile extends BoxObstacle {
 
 
     /**
-     * Creates a new sand tile at the origin.
+     * Creates a new water tile at the origin.
      *
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
@@ -32,12 +33,12 @@ public class SandTile extends BoxObstacle {
      * @param width		The object width in physics units
      * @param height	The object width in physics units
      */
-    public SandTile(float width, float height) {
+    public WaterTile(float width, float height) {
         super(width, height);
     }
 
     /**
-     * Creates a new sand tile.
+     * Creates a new water tilet.
      *
      * The size is expressed in physics units NOT pixels.  In order for
      * drawing to work properly, you MUST set the drawScale. The drawScale
@@ -48,16 +49,16 @@ public class SandTile extends BoxObstacle {
      * @param width		The object width in physics units
      * @param height	The object width in physics units
      */
-    public SandTile(float x, float y, float width, float height) { super(x,y,width,height); }
+    public WaterTile(float x, float y, float width, float height) { super(x,y,width,height); }
 
     /**
-     * sets the FilmStrip for the sand
+     * sets the FilmStrip for the water
      *
-     * @param strip for the sand
+     * @param strip for the water
      */
-    public void setSandtrip (FilmStrip strip) {
-        sandStrip = strip;
-        sandStrip.setFrame(0);
+    public void setWaterStrip (FilmStrip strip) {
+        waterStrip = strip;
+        waterStrip.setFrame(0);
         this.setTexture(strip);
     }
 
@@ -72,19 +73,19 @@ public class SandTile extends BoxObstacle {
     }
 
     /**
-     * Gets the frame for this sand tile, for the filmstrip
+     * Gets the frame for this water tile, for the filmstrip
      */
     public int getFrame() {
         return frame;
     }
 
     /**
-     * Sets the frame for this sand tile to be the given frame in the filmstrip
+     * Sets the frame for this water tile to be the given frame in the filmstrip
      *
-     * @param frame The frame to set for this sand tile, between 0 and 15, incl
+     * @param frame The frame to set for this water tile, between 0 and 15, incl
      */
     public void setFrame(int frame) {
-        sandStrip.setFrame(frame);
+        waterStrip.setFrame(frame);
         this.frame = frame;
         if(frame==1 || frame==3 || frame==5 || frame==6 || frame==10 || frame>12){
             PolygonShape s = new PolygonShape();
@@ -98,12 +99,12 @@ public class SandTile extends BoxObstacle {
     }
 
     public void setFrameLvlDsgn(int frame) {
-        sandStrip.setFrame(frame);
+        waterStrip.setFrame(frame);
         this.frame = frame;
     }
 
     /**
-     * Sets the correct frame of this sand tile, based on the adjacent tiles.
+     * Sets the correct frame of this water tile, based on the adjacent tiles.
      * Each boolean indicates if there is ground in the corresponding direction
      *
      * @param above If there is ground above this tile
@@ -211,7 +212,7 @@ public class SandTile extends BoxObstacle {
     }
 
     /**
-     * Sets the correct corners, if any, of this sand tile, based on adjacent
+     * Sets the correct corners, if any, of this water tile, based on adjacent
      * tiles. Each boolean indicates if there is ground in the corresponding
      * diagonal direction
      *

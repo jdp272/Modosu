@@ -19,17 +19,9 @@ import com.badlogic.gdx.math.*;
 import edu.cornell.gdiac.util.*;
 
 /**
- * Class for reading player input. 
- *
- * This supports both a keyboard and X-Box controller. In previous solutions, we only 
- * detected the X-Box controller on start-up.  This class allows us to hot-swap in
- * a controller via the new XBox360Controller class.
+ * Class for reading player input. This supports a keyboard.
  */
 public class InputController {
-	// Sensitivity for moving crosshair with gameplay
-	private static final float GP_ACCELERATE = 1.0f;
-	private static final float GP_MAX_SPEED  = 10.0f;
-	private static final float GP_THRESHOLD  = 0.01f;
 
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
@@ -106,9 +98,6 @@ public class InputController {
 	private Vector2 crosscache;
 	/** For the gamepad crosshair control */
 	private float momentum;
-	
-	/** An X-Box controller (if it is connected) */
-	XBox360Controller xbox;
 	
 	/**
 	 * Returns the amount of sideways movement. 
@@ -289,9 +278,7 @@ public class InputController {
 	 * The input controller attempts to connect to the X-Box controller at device 0,
 	 * if it exists.  Otherwise, it falls back to the keyboard control.
 	 */
-	public InputController() { 
-		// If we have a game-pad for id, then use it.
-		xbox = new XBox360Controller(0);
+	public InputController() {
 		crosshair = new Vector2();
 		crosscache = new Vector2();
 	}
@@ -324,62 +311,11 @@ public class InputController {
 		deletePrevious = deletePressed;
 		savePrevious = savePressed;
 		menuPrevious = menuPressed;
-		
-		// Check to see if a GamePad is connected
-		if (xbox.isConnected()) {
-			readGamepad(bounds, scale);
-			readKeyboard(bounds, scale, true); // Read as a back-up
-		} else {
-			readKeyboard(bounds, scale, false);
-		}
+
+		readKeyboard(bounds, scale, false);
+
 	}
 
-	/**
-	 * Reads input from an X-Box controller connected to this computer.
-	 *
-	 * The method provides both the input bounds and the drawing scale.  It needs
-	 * the drawing scale to convert screen coordinates to world coordinates.  The
-	 * bounds are for the crosshair.  They cannot go outside of this zone.
-	 *
-	 * @param bounds The input bounds for the crosshair.  
-	 * @param scale  The drawing scale
-	 */
-	private void readGamepad(Rectangle bounds, Vector2 scale) {
-		resetPressed = xbox.getStart();
-		exitPressed  = xbox.getBack();
-		nextPressed  = xbox.getRB();
-		prevPressed  = xbox.getLB();
-		primePressed = xbox.getA();
-		debugPressed  = xbox.getY();
-
-		// TODO:
-		boxPressed = xbox.getX();
-//		hostPressed = ...
-//		spiritPressed = ...
-//		clearPressed = ...
-//		deletePressed = ...
-//		savePressed = ...
-//		menuPressed = ...
-
-		// Increase animation frame, but only if trying to move
-		horizontal = xbox.getLeftX();
-		vertical   = xbox.getLeftY();
-		secondPressed = xbox.getRightTrigger() > 0.6f;
-		
-		// Move the crosshairs with the right stick.
-		tertiaryPressed = xbox.getA();
-		crosscache.set(xbox.getLeftX(), xbox.getLeftY());
-		if (crosscache.len2() > GP_THRESHOLD) {
-			momentum += GP_ACCELERATE;
-			momentum = Math.min(momentum, GP_MAX_SPEED);
-			crosscache.scl(momentum);
-			crosscache.scl(1/scale.x,1/scale.y);
-			crosshair.add(crosscache);
-		} else {
-			momentum = 0;
-		}
-		clampPosition(bounds);
-	}
 
 	/**
 	 * Reads input from the keyboard.

@@ -15,7 +15,9 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.files.FileHandle;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
+import edu.cornell.gdiac.physics.obstacle.SandTile;
 import edu.cornell.gdiac.physics.obstacle.Wall;
+import edu.cornell.gdiac.physics.obstacle.WaterTile;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
 import java.util.ArrayList;
@@ -84,17 +86,8 @@ public class Loader {
 
     /** A struct that stores all the data of a level when read from the json */
     public static class LevelData {
-        /**
-         * An ArrayList of regions on the board. Each region is an island within
-         * which hosts can be located. Outside each counts as out of bounds.
-         *
-         * Each region is represented as a list of points being the polygon
-         * borders of the region.
-         *
-         * Example: A single square region may be represented as
-         * [ [ (0, 0), (0, 100), (100, 100), (100, 0) ] ]
-         */
-        public Vector2[][] regions;
+        public Vector2 dimensions;
+        public Vector2 lowerLeft;
 
         public ObstacleData[] obstacleData;
         public WaterData[] waterData;
@@ -159,8 +152,8 @@ public class Loader {
     public void saveLevel(FileHandle f, Level level) {
         LevelData levelData = new LevelData();
 
-        // Store the region information
-        levelData.regions = level.regions;
+        // Store the ground information
+        levelData.dimensions = level.dimensions;
 
         // Store the obstacle data
         levelData.obstacleData = new ObstacleData[level.obstacles.length];
@@ -250,7 +243,8 @@ public class Loader {
         LevelData levelData = json.fromJson(LevelData.class, f);
 
         // Load the map regions
-        Vector2[][] regions = levelData.regions;
+        Vector2 dimensions = levelData.dimensions;
+        Vector2 lowerLeft = levelData.lowerLeft;
 
         // Create the obstacles
         BoxObstacle[] obstacles = new BoxObstacle[levelData.obstacleData.length];
@@ -303,7 +297,7 @@ public class Loader {
         // Create the starting "host" (with no charge capacity)
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
-        return new Level(regions, obstacles, water, sand, hosts, spirit, pedestal);
+        return new Level(dimensions, obstacles, water, sand, hosts, spirit, pedestal);
     }
 
     public Level reset(int level) {

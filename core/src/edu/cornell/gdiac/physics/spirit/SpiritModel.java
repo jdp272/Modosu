@@ -332,7 +332,7 @@ public class SpiritModel extends BoxObstacle {
                 else {
                     canvas.draw(spiritTailStrip, tailColor, spiritHeadStrip.getRegionWidth() - 14, spiritHeadStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, this.getVelocity().angleRad(), 0.75f, 0.75f);
                 }
-                }
             }
         }
     }
+}

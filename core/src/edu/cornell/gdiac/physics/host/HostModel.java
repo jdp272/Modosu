@@ -826,7 +826,6 @@ public class HostModel extends BoxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-
         if(this.isPedestal) {
             // Make pedestal clear when no longer in possession.
             if(this.isPossessed) {
@@ -834,39 +833,35 @@ public class HostModel extends BoxObstacle {
             } else {
                 canvas.draw(pedestalHost, Color.CLEAR, pedestalHost.getRegionWidth() / 2, pedestalHost.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
             }
-        }
+        } else {
+            // Draw the host
+            float chargeProgression = currentCharge / maxCharge;
+            if (this.chargedHost != null && this.hostGaugeStrip != null) {
 
+                // If bot has already been possessed colors should change
+                if (this.hasBeenPossessed) {
+                    /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
+                    if (this.currentCharge < this.maxCharge) {
+                        canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
 
-        else {
+                        // Color changes more and more to a red or goal color here
+                        Color warningColor = new Color(chargeProgression * 5, 4 - (4.5f * chargeProgression), 4 - (9 * chargeProgression), 1);
+                        if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
+                            // Color of the 3 flashes
+                            warningColor = Color.BLACK;
+                        }
+                        canvas.draw(hostGaugeStrip, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
 
-        //Draw the host
-        float chargeProgression = currentCharge / maxCharge;
-        if (this.chargedHost != null && this.hostGaugeStrip != null) {
-
-            // If bot has already been possessed colors should change
-            if (this.hasBeenPossessed) {
-                /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
-                if (this.currentCharge < this.maxCharge) {
-                    canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-
-                    // Color changes more and more to a red or goal color here
-                    Color warningColor = new Color(chargeProgression * 5, 4 - (4.5f * chargeProgression), 4 - (9 * chargeProgression), 1);
-                    if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
-                        // Color of the 3 flashes
-                        warningColor = Color.BLACK;
+                    } else {
+                        canvas.draw(chargedHost, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     }
-                    canvas.draw(hostGaugeStrip, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-
-                } else {
-                    canvas.draw(chargedHost, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                }
+                // When the bot hasn't been possessed the indicator color should be black
+                else {
+                    canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                    canvas.draw(hostGaugeStrip, unpossessedColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
                 }
             }
-            // When the bot hasn't been possessed the indicator color should be black
-            else {
-                canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-                canvas.draw(hostGaugeStrip, unpossessedColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
-            }
-        }
         }
     }
 

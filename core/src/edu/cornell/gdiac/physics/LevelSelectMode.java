@@ -25,7 +25,7 @@ import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
-import java.util.Arrays;
+
 
 
 /**
@@ -107,6 +107,11 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     private int pages;
     private File[] levelNames;
 
+    /** Whether the mouse is currently pressed down  */
+    private boolean   isPressed;
+
+    /** State of what was pressed down  */
+    private int pressState;
 
     /**
      * Preloads the assets for this controller.
@@ -119,9 +124,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      * @param manager Reference to global asset manager.
      */
     public void preLoadContent(AssetManager manager) {
-        if (assetState != AssetState.EMPTY) {
-            return;
-        }
+        if (assetState != AssetState.EMPTY) { return; }
 
 
         assetState = AssetState.LOADING;
@@ -258,7 +261,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 //        canvas.draw(twoTexture, colorTwo, 0f, 0f, twoStart.x, twoStart.y,0,1,1);
 //        canvas.draw(threeTexture, colorThree,0f,0f,threeStart.x, threeStart.y,0,1,1);
 //        canvas.draw(fourTexture, colorFour,0f,0f,fourStart.x, fourStart.y,0,1,1);
-        if(page != pages-1) {
+        if (page != pages-1) {
             canvas.draw(nextTexture, colorNext, 0f, 0f, nextStart.x, nextStart.y, 0, 1, 1);
         }
         if(page != 0) {
@@ -267,17 +270,17 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         displayFont.setColor(colorOne);
         String name = levelNames[page*4].getName();
         canvas.drawText(name.substring(0,name.length()-4), displayFont, oneStart.x+8, oneEnd.y);
-        if(page*4 + 1 < levelNames.length) {
+        if (page*4 + 1 < levelNames.length) {
             displayFont.setColor(colorTwo);
             name = levelNames[page * 4 + 1].getName();
             canvas.drawText(name.substring(0, name.length() - 4), displayFont, twoStart.x + 8, oneEnd.y);
         }
-        if(page*4 + 2 < levelNames.length) {
+        if (page*4 + 2 < levelNames.length) {
             displayFont.setColor(colorThree);
             name = levelNames[page * 4 + 2].getName();
             canvas.drawText(name.substring(0, name.length() - 4), displayFont, threeStart.x + 8, oneEnd.y);
         }
-        if(page*4 + 3 < levelNames.length) {
+        if (page*4 + 3 < levelNames.length) {
             displayFont.setColor(colorFour);
             name = levelNames[page * 4 + 3].getName();
             canvas.drawText(name.substring(0, name.length() - 4), displayFont, fourStart.x + 8, oneEnd.y);
@@ -324,7 +327,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         if(screenX >=  oneStart.x && screenX <= oneEnd.x) {
             if (screenY >= oneStart.y && screenY <= oneEnd.y) {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
-                listener.exitScreenLevel(0, sound, page);
+                pressState = 0;
+                isPressed = true;
             }
 
         }
@@ -332,37 +336,104 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         else if(screenX >= twoStart.x && screenX <= twoEnd.x && page*4 + 1 < levelNames.length) {
             if (screenY >= twoStart.y && screenY <= twoEnd.y) {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
-                listener.exitScreenLevel(1, sound, page);
+                pressState = 1;
+                isPressed = true;
             }
         }
 
         else if(screenX >= threeStart.x && screenX <= threeEnd.x && page*4 + 2 < levelNames.length) {
             if (screenY >= threeStart.y && screenY <= threeEnd.y)  {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
-                listener.exitScreenLevel(2, sound, page);
+                pressState = 2;
+                isPressed = true;
             }
         }
 
         else if(screenX >= fourStart.x && screenX <= fourEnd.x && page*4 + 3 < levelNames.length) {
             if (screenY >= fourStart.y && screenY <= fourEnd.y)  {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
-                listener.exitScreenLevel(3, sound, page);
+                pressState = 3;
+                isPressed = true;
             }
         }
 
         else if(screenX >= nextStart.x && screenX <= nextEnd.x && page != pages-1) {
             if (screenY >= nextStart.y && screenY <= nextEnd.y)  {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                pressState = 4;
+                isPressed = true;
                 page++;
             }
         }
         else if(screenX >= prevStart.x && screenX <= prevEnd.x && page != 0) {
             if (screenY >= prevStart.y && screenY <= prevEnd.y)  {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                pressState = 5;
+                isPressed = true;
                 page--;
             }
         }
 
+        return false;
+    }
+
+
+    /**
+     * Called when a finger was lifted or a mouse button was released.
+     *
+     * This method checks to see if the play button is currently pressed down. If so,
+     * it signals the that the player is ready to go.
+     *
+     * @param screenX the x-coordinate of the mouse on the screen
+     * @param screenY the y-coordinate of the mouse on the screen
+     * @param pointer the button or touch finger number
+     * @return whether to hand the event to other listeners.
+     */
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        // Flip to match graphics coordinates
+        screenY = 576-screenY;
+
+        if (isPressed) {
+            if (screenX >= oneStart.x && screenX <= oneEnd.x) {
+                if (screenY >= oneStart.y && screenY <= oneEnd.y && pressState == 0 ) {
+                    listener.exitScreenLevel(0, sound, page);
+                }
+
+            }
+            else if (screenX >= twoStart.x && screenX <= twoEnd.x && page * 4 + 1 < levelNames.length) {
+                if (screenY >= twoStart.y && screenY <= twoEnd.y && pressState == 1) {
+                    listener.exitScreenLevel(1, sound, page);
+                }
+            }
+            else if (screenX >= threeStart.x && screenX <= threeEnd.x && page * 4 + 2 < levelNames.length) {
+                if (screenY >= threeStart.y && screenY <= threeEnd.y && pressState == 2) {
+                    listener.exitScreenLevel(2, sound, page);
+                }
+            }
+            else if (screenX >= fourStart.x && screenX <= fourEnd.x && page * 4 + 3 < levelNames.length) {
+                if (screenY >= fourStart.y && screenY <= fourEnd.y && pressState == 3) {
+                    listener.exitScreenLevel(3, sound, page);
+                }
+            }
+            else if (screenX >= nextStart.x && screenX <= nextEnd.x && page != pages - 1) {
+                if (screenY >= nextStart.y && screenY <= nextEnd.y && pressState == 4) {
+                    page++;
+                }
+            }
+            else if (screenX >= prevStart.x && screenX <= prevEnd.x && page != 0) {
+                if (screenY >= prevStart.y && screenY <= prevEnd.y && pressState == 5) {
+                    page--;
+                }
+            }
+        }
+        colorOne = colorUnhovered;
+        colorTwo = colorUnhovered;
+        colorThree = colorUnhovered;
+        colorFour = colorUnhovered;
+        colorNext = colorUnhovered;
+        colorPrev = colorUnhovered;
+        hoverButton = false;
+        isPressed = false;
         return false;
     }
 
@@ -471,47 +542,12 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         return true;
     }
 
+
     // UNSUPPORTED METHODS FROM InputProcessor
 
 
-    /**
-     * Called when a finger was lifted or a mouse button was released.
-     *
-     * This method checks to see if the play button is currently pressed down. If so,
-     * it signals the that the player is ready to go.
-     *
-     * @param screenX the x-coordinate of the mouse on the screen
-     * @param screenY the y-coordinate of the mouse on the screen
-     * @param pointer the button or touch finger number
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) { return true; }
 
-    /**
-     * Called when a button on the Controller was pressed.
-     *
-     * The buttonCode is controller specific. This listener only supports the start
-     * button on an X-Box controller.  This outcome of this method is identical to
-     * pressing (but not releasing) the play button.
-     *
-     * @param controller The game controller
-     * @param buttonCode The button pressed
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean buttonDown (Controller controller, int buttonCode) { return true; }
 
-    /**
-     * Called when a button on the Controller was released.
-     *
-     * The buttonCode is controller specific. This listener only supports the start
-     * button on an X-Box controller.  This outcome of this method is identical to
-     * releasing the the play button after pressing it.
-     *
-     * @param controller The game controller
-     * @param buttonCode The button pressed
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean buttonUp (Controller controller, int buttonCode) { return true; }
 
     /**
      * Called when a key is pressed (UNSUPPORTED)
