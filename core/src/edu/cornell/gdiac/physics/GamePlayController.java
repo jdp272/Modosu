@@ -206,6 +206,9 @@ public class GamePlayController extends WorldController {
 		HUD.clearHUD();
 		HUD.setNumTotalHosts(level.hosts.size());
 
+		dimensions.set(level.dimensions);
+		System.out.println("dimensions: " + dimensions);
+
 		pedestal = level.pedestal;
 		spirit = level.start;
 		spirit.setName("spirit");
@@ -334,7 +337,7 @@ public class GamePlayController extends WorldController {
 
 		//keep everything in bounds
 		keepInBounds();
-		System.out.println(getSound());
+//		System.out.println(getSound());
 
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){

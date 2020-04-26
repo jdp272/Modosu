@@ -775,6 +775,7 @@ public class GameCanvas {
 	 * Draws the given section of the given texture.
 	 *
 	 * @param texture 	The texture to draw
+	 * @param tint		The color to tint the texture
 	 * @param x        	The x-coordinate of the bottom left corner
 	 * @param y 		The y-coordinate of the bottom left corner
 	 * @param width		The texture width
@@ -784,13 +785,14 @@ public class GameCanvas {
 	 * @param u2		The fraction of the texture (x) where drawing should end
 	 * @param v2		The fraction of the texture (y) where drawing should end
 	 */
-	public void draw (Texture texture, float x, float y, float width, float height,
+	public void draw (Texture texture, Color tint, float x, float y, float width, float height,
 					  float u, float v, float u2, float v2) {
 		if (active != DrawPass.STANDARD) {
 			Gdx.app.error("GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
 		}
 
+		spriteBatch.setColor(tint);
 		spriteBatch.draw(texture, x, y, width, height, u, v, u2, v2);
 	}
 

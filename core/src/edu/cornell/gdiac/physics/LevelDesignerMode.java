@@ -67,9 +67,6 @@ public class LevelDesignerMode extends WorldController {
 	private int currentLevel = 0;
 	/** A boolean indicating if the board should be reloaded from the file */
 	private boolean loadBoard = true;
-	/** A boolean indicating if the board should be loaded at the start of
-	 * next update */
-	private boolean repopulate = false;
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
@@ -82,6 +79,9 @@ public class LevelDesignerMode extends WorldController {
 
 	/** The camera position */
 	private Vector2 camTarget;
+
+	/** Intermediate vector used for arithmetic */
+	private Vector2 cache;
 
 	/** The 2D array that is the board */
 	private Obstacle[][] board;
@@ -197,7 +197,11 @@ public class LevelDesignerMode extends WorldController {
 		setComplete(false);
 		setFailure(false);
 
+		// No need to render HUD in level designer
+		renderHUD = false;
+
 		camTarget = new Vector2();
+		cache = new Vector2();
 
 		board = new Obstacle[MAX_BOARD_TILES][MAX_BOARD_TILES];
 	}
@@ -238,8 +242,6 @@ public class LevelDesignerMode extends WorldController {
 		// The objects should be sensors
 		factory.makeSensors = true;
 
-		camTarget.set(canvas.getWidth() / 2.f, canvas.getHeight() / 2.f);
-
 		for(Obstacle obj : objects) {
 			obj.deactivatePhysics(world);
 		}
@@ -258,10 +260,6 @@ public class LevelDesignerMode extends WorldController {
 
 //		level = loader.loadLevel(f);
 
-		Wall boxSpawn = factory.makeWall(0.f, 0.f);
-		boxSpawn.setWallLvlDsgn(20);
-		addObject(boxSpawn);
-
 		setComplete(false);
 		setFailure(false);
 
@@ -269,6 +267,16 @@ public class LevelDesignerMode extends WorldController {
 //			bottomBorder = 0;
 //			leftBorder = 0;
 
+//			initialBottomBorder = bottomBorder
+
+			// Not checking to ensure that these borders are within the array
+			// bounds because no screen should be so large that the max board
+			// size of 127x127 fits inside the screen.
+
+			// Populate the level once the board boundaries are set up
+			populateLevel();
+		} else {
+			// Reset the level size based on the size of the screen
 			bottomBorder = (board[0].length / 2) - (screenTileHeight() / 2);
 			leftBorder = (board.length / 2) - (screenTileWidth()  / 2);
 
@@ -278,17 +286,17 @@ public class LevelDesignerMode extends WorldController {
 			topBorder = bottomBorder + screenTileHeight();
 			rightBorder = leftBorder + screenTileWidth();
 
-			// Not checking to ensure that these borders are within the array
-			// bounds because no screen should be so large that the max board
-			// size of 127x127 fits inside the screen.
-
-			// Populate the level once the board boundaries are set up
-			populateLevel();
-		} else {
 			loadBoard = true;
 		}
 
+		// After populateLevel(), when the borders are set from the loaded level
+		camTarget.set(scale.x * TILE_WIDTH * (rightBorder - leftBorder) / 2.f,
+				scale.y * TILE_WIDTH * (topBorder - bottomBorder) / 2.f);
+
 		// Setup the spawner list
+		Wall boxSpawn = factory.makeWall(0.f, 0.f);
+		boxSpawn.setWallLvlDsgn(20);
+		addObject(boxSpawn);
 
 		WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
 		addObject(waterSpawn);
@@ -422,6 +430,18 @@ public class LevelDesignerMode extends WorldController {
 //			System.out.println(levelToLoad);
 //			level = loader.loadLevel(new FileHandle("levels/custom0.lvl"));
 //		}
+
+		dimensions = level.dimensions;
+		lowerLeft.setZero();
+
+		bottomBorder = (board[0].length / 2) - (int)((dimensions.y / TILE_WIDTH) / 2);
+		leftBorder = (board.length / 2) - (int)((dimensions.x / TILE_WIDTH) / 2);
+
+		initialBottomBorder = bottomBorder;
+		initialLeftBorder = leftBorder;
+
+		topBorder = bottomBorder + (int)(dimensions.y / TILE_WIDTH);
+		rightBorder = leftBorder + (int)(dimensions.x / TILE_WIDTH);
 
 		for(Obstacle obj : level.obstacles) {
 			addNewObstacle(obj);
@@ -712,15 +732,18 @@ public class LevelDesignerMode extends WorldController {
 		int x = xCoordToTile(corner.getX() + (TILE_WIDTH / 2.f));
 		int y = yCoordToTile(corner.getY() + (TILE_WIDTH / 2.f));
 
-		// Ensure the new edges are within the array, and that the width and
-		// height are at least 1 tile. That means that the upper bounds have to
-		// be at least 1, so that the size will always be 1, and the lower
-		// bounds have to start before the end of the array, so there is at
-		// least 1 tile there
-		int top = 	 Math.min(Math.max(y, 1), board[0].length);
+		// Ensure there is at least 1 row and 1 column of the array that can be
+		// used
+		int top    = Math.min(Math.max(y, 1), board[0].length);
 		int bottom = Math.min(Math.max(y, 0), board[0].length - 1);
-		int left =   Math.min(Math.max(x, 0), board.length - 1);
-		int right =  Math.min(Math.max(x, 1), board.length);
+		int left   = Math.min(Math.max(x, 0), board.length - 1);
+		int right  = Math.min(Math.max(x, 1), board.length);
+
+		// Ensure the board never has size 0
+		top    = Math.max(top, bottomBorder + 1);
+		bottom = Math.min(bottom, topBorder - 1);
+		left   = Math.min(left, rightBorder - 1);
+		right  = Math.max(right, leftBorder + 1);
 
 		// In each case, reset the variables that shouldn't change
 		switch(corner.corner) {
@@ -773,6 +796,9 @@ public class LevelDesignerMode extends WorldController {
 				updateSandTile(i, j);
 			}
 		}
+
+		dimensions.set(TILE_WIDTH * (rightBorder - leftBorder), TILE_WIDTH * (topBorder - bottomBorder));
+		lowerLeft.set(TILE_WIDTH * (leftBorder - initialLeftBorder), TILE_WIDTH * (bottomBorder - initialBottomBorder));
 
 		updateCornerPositions();
 
@@ -917,6 +943,9 @@ public class LevelDesignerMode extends WorldController {
 		// Update the camera position
 		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
 
+		dimensions.set(TILE_WIDTH * (rightBorder - leftBorder), TILE_WIDTH * (topBorder - bottomBorder));
+		lowerLeft.set(TILE_WIDTH * (leftBorder - initialLeftBorder), TILE_WIDTH * (bottomBorder - initialBottomBorder));
+
 		updateSelector(hasPed);
 
 		if(input.didPrimary()) {
@@ -1002,10 +1031,24 @@ public class LevelDesignerMode extends WorldController {
 		ArrayList<BoxObstacle> sandList = new ArrayList<>();
 		ArrayList<HostModel> hostList = new ArrayList<>();
 		HostModel pedestal = null;
+
+		System.out.println(cache);
+
 		for(Obstacle obj : objects) {
 			if (!obj.inGame) {
 				continue;
 			}
+
+			// To update the position of each object, offset its position by the
+			// lower left offset. It has to be negated, because lower left is
+			// initially the offset of the ground. To move objects in the
+			// opposite direction (to be the same distance from the corner of
+			// the ground), they must move in the other direction.
+			cache.set(lowerLeft);
+			cache.scl(-1.f);
+			cache.add(obj.getPosition());
+
+			obj.setPosition(cache);
 
 			if (obj instanceof SpiritModel) {
 				spirit = (SpiritModel) obj;
@@ -1024,6 +1067,9 @@ public class LevelDesignerMode extends WorldController {
 			}
 		}
 
+//		dimensionsCache.set((rightBorder - leftBorder) * TILE_WIDTH, (topBorder - bottomBorder) * TILE_WIDTH);
+//		System.out.println(dimensionsCache);
+
 		// For now, until the types used for levels are fixed
 		BoxObstacle[] obstacleArray = new BoxObstacle[obstacleList.size()];
 		obstacleList.toArray(obstacleArray);
@@ -1034,62 +1080,64 @@ public class LevelDesignerMode extends WorldController {
 
 		// TODO: what if spirit is null
 
-		level.set(null, obstacleArray, waterArray, sandArray, hostList, spirit, pedestal);
+		level.set(dimensions, obstacleArray, waterArray, sandArray, hostList, spirit, pedestal);
 		loader.saveLevel(f, level);
+
+		reset();
 	}
 
-	/**
-	 * Draw the physics objects together with foreground and background
-	 *
-	 * This is completely overridden to support custom background and foreground art.
-	 *
-	 * @param dt Timing values from parent loop
-	 */
-	public void draw(float dt) {
-		canvas.clear();
-
-		// Draw background unscaled.
-		canvas.begin();
-
-		// Use the lower left corner of tiles, not the center, to start drawing the canvas
-		for(float x = xTileToCoord(leftBorder, true); x < xTileToCoord(rightBorder, true); x += TILE_WIDTH * screenTileWidth()) {
-			for(float y = yTileToCoord(bottomBorder, true); y < yTileToCoord(topBorder, true); y += TILE_WIDTH * screenTileHeight()) {
-
-				// Calculate the width and height of the canvas segment. If the
-				// board doesn't extend the entire way, find the desired dimensions
-				float width = Math.min(canvas.getWidth(), scale.x * (xTileToCoord(rightBorder, true) - x));
-				float height = Math.min(canvas.getHeight(), scale.y * (yTileToCoord(topBorder, true) - y));
-
-				// Draw only the part of the texture that is in game
-				canvas.draw(backgroundTexture.getTexture(), scale.x * x, scale.y * y,  width, height,
-						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
-
-//				canvas.draw(backgroundTexture, Color.WHITE, TILE_WIDTH * scale.x * x, TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
-			}
-		}
-//		canvas.draw(backgroundTexture, Color.WHITE, 0, 0,canvas.getWidth(),canvas.getHeight());
-		canvas.end();
-
-		canvas.begin();
-
-		for(Obstacle obj : objects) {
-			obj.draw(canvas);
-		}
-		canvas.end();
-
-		if (isDebug()) {
-			canvas.beginDebug();
-			for(Obstacle obj : objects) {
-				obj.drawDebug(canvas);
-			}
-			canvas.endDebug();
-		}
-
-		// Draw foreground last. The foreground indicates what is within the bounds of the game and what is outside
+//	/**
+//	 * Draw the physics objects together with foreground and background
+//	 *
+//	 * This is completely overridden to support custom background and foreground art.
+//	 *
+//	 * @param dt Timing values from parent loop
+//	 */
+//	public void draw(float dt) {
+//		canvas.clear();
+//
+//		// Draw background unscaled.
 //		canvas.begin();
-//		canvas.draw(foregroundTexture, FORE_COLOR,  TILE_WIDTH * scale.x * leftBorder, TILE_WIDTH * scale.y * bottomBorder, scale.x * TILE_WIDTH * (rightBorder - leftBorder), scale.y * TILE_WIDTH * (topBorder - bottomBorder));
-//		selector.draw(canvas);
+//
+//		// Use the lower left corner of tiles, not the center, to start drawing the canvas
+//		for(float x = xTileToCoord(leftBorder, true); x < xTileToCoord(rightBorder, true); x += TILE_WIDTH * screenTileWidth()) {
+//			for(float y = yTileToCoord(bottomBorder, true); y < yTileToCoord(topBorder, true); y += TILE_WIDTH * screenTileHeight()) {
+//
+//				// Calculate the width and height of the canvas segment. If the
+//				// board doesn't extend the entire way, find the desired dimensions
+//				float width = Math.min(canvas.getWidth(), scale.x * (xTileToCoord(rightBorder, true) - x));
+//				float height = Math.min(canvas.getHeight(), scale.y * (yTileToCoord(topBorder, true) - y));
+//
+//				// Draw only the part of the texture that is in game
+//				canvas.draw(backgroundTexture.getTexture(), scale.x * x, scale.y * y,  width, height,
+//						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
+//
+////				canvas.draw(backgroundTexture, Color.WHITE, TILE_WIDTH * scale.x * x, TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
+//			}
+//		}
+////		canvas.draw(backgroundTexture, Color.WHITE, 0, 0,canvas.getWidth(),canvas.getHeight());
 //		canvas.end();
-	}
+//
+//		canvas.begin();
+//
+//		for(Obstacle obj : objects) {
+//			obj.draw(canvas);
+//		}
+//		canvas.end();
+//
+//		if (isDebug()) {
+//			canvas.beginDebug();
+//			for(Obstacle obj : objects) {
+//				obj.drawDebug(canvas);
+//			}
+//			canvas.endDebug();
+//		}
+//
+//		// Draw foreground last. The foreground indicates what is within the bounds of the game and what is outside
+////		canvas.begin();
+////		canvas.draw(foregroundTexture, FORE_COLOR,  TILE_WIDTH * scale.x * leftBorder, TILE_WIDTH * scale.y * bottomBorder, scale.x * TILE_WIDTH * (rightBorder - leftBorder), scale.y * TILE_WIDTH * (topBorder - bottomBorder));
+////		selector.draw(canvas);
+////		canvas.end();
+//	}
 
 }

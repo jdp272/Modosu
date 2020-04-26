@@ -17,7 +17,7 @@ public class ArrowModel {
     /** The horizontal scaling of this arrow */
     private float sx;
     /** The texture for the arrow */
-    Texture arrTexture;
+    private Texture arrTexture;
 
     /** Creates an instance of an arrow to show direction */
     public ArrowModel(Texture arrText, Vector2 robPos) {
@@ -37,10 +37,10 @@ public class ArrowModel {
 
         // Determine the color based on whether the velocity passes threshold
         if (sx > .14) {
-            c = new Color(Color.WHITE);
+            c = Color.WHITE;
         }
         else {
-            c = new Color(Color.RED);
+            c = Color.RED;
         }
 
         // Draw the arrow
