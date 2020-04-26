@@ -27,8 +27,18 @@ public class Factory {
     private Texture spiritBodyTexture;
     private Texture spiritHeadTexture;
     private Texture spiritTailTexture;
+    private Texture energyPillarBodyTexture;
+    private Texture energyPillarBodyChargeTexture;
+    private Texture energyPillarRadiusTexture;
 
     /** Static Variables for Sprite Sheet */
+
+    /** Number of rows in the energy pillar filmstrip */
+    private static final int ENERGY_PILLAR_ROWS = 1;
+    /** Number of columns in the energy pillar filmstrip */
+    private static final int ENERGY_PILLAR_COLUMNS = 1;
+    /** Number of frames in the energy pillar filmstrip */
+    private static final int ENERGY_PILLAR_SIZE = 1;
 
     /** Number of rows in the spirit image filmstrip */
     private static final int SPIRIT_ROWS =  35;
