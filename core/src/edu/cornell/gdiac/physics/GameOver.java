@@ -59,8 +59,8 @@ public class GameOver extends WorldController implements Screen {
 
     /** Texture files for game icons */
     private static final String TEXTURE_ATLAS_FILE = "shared/gameIcons.txt";
-    private static final String WINGOLEM_ICON = "shared/GameComplete/wingolem_icon.png";
-    private static final String LOSEGOLEM_ICON = "shared/GameComplete/wingolem_icon.png";
+    private static final String WINGOLEM_ICON = "shared/GameComplete/happygolem.png";
+    private static final String LOSEGOLEM_ICON = "shared/GameComplete/sadgolem.png";
 
     /** Skin file names */
     private static final String sMENU = "menu_icon";
@@ -203,7 +203,7 @@ public class GameOver extends WorldController implements Screen {
         /** Change variables depending on WIN vs FAIL */
         columnNum = isFail ? 2 : 3;
         labelText = isFail ? FAIL_LEVEL_TEXT : WIN_LEVEL_TEXT;
-        golemTexture = isFail ? winGolemTexture : loseGolemTexture;
+        golemTexture = isFail ? loseGolemTexture : winGolemTexture;
 
         /** Level Label */
         Label.LabelStyle font = new Label.LabelStyle(displayFont, Color.WHITE);
@@ -214,8 +214,8 @@ public class GameOver extends WorldController implements Screen {
         table.row().padTop(30);
 
         /** Golem Image */
-        golemImg = new Image(winGolemTexture);
-        table.add(golemImg).colspan(columnNum);
+        golemImg = new Image(golemTexture);
+        table.add(golemImg).width(200).height(200).colspan(columnNum);
 
         /** Add Row in Table */
         table.row().uniform().pad(30);

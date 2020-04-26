@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.assets.loaders.*;
 import com.badlogic.gdx.assets.loaders.resolvers.*;
 
+import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.util.*;
 
 
@@ -50,12 +51,12 @@ public class GDXRoot extends Game implements ScreenListener {
 	private LevelDesignerMode levelDesigner;
 	/** Level selection screen controller */
 	private LevelSelectMode levelSelect;
-
+	/** Credits screen controller */
+	private Credits credits;
 	/** Music to be played on main menu screen */
 	private Music mainMenuMusic;
 	/** Music to be played during gameplay */
 	private Music gameplayMusic;
-
 
 	/** Stores whether to exit to level designer after a level is selected */
 	private boolean goLevelDesigner = false;
@@ -93,6 +94,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		levelDesigner = new LevelDesignerMode();
 		levelSelect = new LevelSelectMode();
 		gameOver = new GameOver();
+		credits = new Credits();
 
 		controller.preLoadContent(manager);
 		levelDesigner.preLoadContent(manager);
@@ -314,6 +316,12 @@ public class GDXRoot extends Game implements ScreenListener {
 			goLevelDesigner = false;
 			System.out.println();
 			reset(sound);
+		}
+		else if (exitCode == WorldController.EXIT_CREDITS) {
+			goLevelDesigner = false;
+			credits.setSound(sound);
+			credits.setScreenListener(this);
+			setScreen(credits);
 		}
 	}
 }
