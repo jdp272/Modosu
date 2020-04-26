@@ -83,7 +83,7 @@ public class HUD {
         golemTable = new Table();
         golemTable.top();
         golemTable.setFillParent(true);
-        golemTable.add(stack).expandX().padTop(10).padLeft(10).left();
+        golemTable.add(stack).expandX().padTop(5).padLeft(5).left();
         // golemTable.setDebug(true);
 
         /* Create spirit table to add stack */
@@ -94,7 +94,7 @@ public class HUD {
 
         for (int i = 0; i < numLives; i++) {
             Image life = new Image(lifeTexture);
-            spiritTable.add(life).width(50).height(50).padTop(10).padRight(10).right();
+            spiritTable.add(life).width(50).height(50).padTop(5).padRight(5).right();
         }
 
         stage.addActor(golemTable);
@@ -110,7 +110,7 @@ public class HUD {
         spiritTable.clearChildren();
         for (int i = 0; i < numLives; i++) {
             Image life = new Image(lifeTexture);
-            spiritTable.add(life).width(50).height(50).padTop(10).padRight(10).right();
+            spiritTable.add(life).width(50).height(50).padTop(5).padRight(5).right();
         }
     }
 
