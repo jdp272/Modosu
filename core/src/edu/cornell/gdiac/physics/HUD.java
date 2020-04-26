@@ -21,6 +21,7 @@ public class HUD {
     /* Static variables */
     private static int FONT_SIZE = 24;
     private static int FONT_COLOR_GREEN = 0xC0BAB2;
+    private static int SPIRIT_LIVES = 3;
     private static String FONT_FILE = "shared/Asul.ttf";
     private static String GOLEM_INDICATOR_FILE = "shared/golemcounter.png";
     private static String LIFE_FILE = "shared/life.png";
@@ -38,17 +39,17 @@ public class HUD {
     private static int worldTimer;
 
     /* Scene2D Widgets */
+    private Table golemTable;
+    private static Table spiritTable;
     private static Label hostCounterLabel;
     private Texture hostCounterTexture;
-    private Texture lifeTexture;
+    private static Texture lifeTexture;
 
     /* Initialization */
     public HUD(PolygonSpriteBatch spriteBatch) {
         numCurrentHosts = 0;
         numTotalHosts = 0;
-        numLives = 0;
-
-
+        numLives = SPIRIT_LIVES;
 
         viewport = new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         stage = new Stage(viewport, spriteBatch);
@@ -77,27 +78,41 @@ public class HUD {
         /* Life Manangement */
         Stack lifeStack = new Stack();
         lifeTexture = new Texture(Gdx.files.internal(LIFE_FILE));
-        // depending on the number of lives
 
+        /* Create golem table to add stack */
+        golemTable = new Table();
+        golemTable.top();
+        golemTable.setFillParent(true);
+        golemTable.add(stack).expandX().padTop(10).padLeft(10).left();
+        // golemTable.setDebug(true);
 
-        /* Create table to add Stack */
-        Table table = new Table();
-        table.top();
-        table.setFillParent(true);
-        table.add(stack).expandX().padTop(10).padLeft(10).left();
-
-        table.setDebug(true);
+        /* Create spirit table to add stack */
+        spiritTable = new Table();
+        spiritTable.top().right();
+        spiritTable.setFillParent(true);
+        // spiritTable.setDebug(true);
 
         for (int i = 0; i < numLives; i++) {
             Image life = new Image(lifeTexture);
-            table.add(life).width(50).height(50).padRight(10).right();
+            spiritTable.add(life).width(50).height(50).padTop(10).padRight(10).right();
         }
 
-        stage.addActor(table);
+        stage.addActor(golemTable);
+        stage.addActor(spiritTable);
     }
 
     /* Gets the Stage */
     public Stage getStage() { return stage; }
+
+    public static void setSpiritLives(int lives) {
+        numLives = lives;
+
+        spiritTable.clearChildren();
+        for (int i = 0; i < numLives; i++) {
+            Image life = new Image(lifeTexture);
+            spiritTable.add(life).width(50).height(50).padTop(10).padRight(10).right();
+        }
+    }
 
     /* Increments the number of current hosts possessed */
     public static void incrementCurrHosts() {
