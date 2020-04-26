@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.HUD;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
 
@@ -20,7 +21,7 @@ public class SpiritModel extends BoxObstacle {
 
     // Spirit constants
     private static final int SPIRIT_BOUNCES = 4;
-
+    private static final int SPIRIT_LIVES = 3;
     private static final int SPIRIT_FRAME_STARTING = 0;
 
     /** The number of bounces of the character */
@@ -31,6 +32,8 @@ public class SpiritModel extends BoxObstacle {
     private float defaultLife;
     /** Current life of the spirit **/
     private float currentLife;
+    /** Number of lives of the spirit **/
+    private int numOfLives;
     /** Boolean indicating whether spirit is alive or not */
     private boolean isAlive;
     /** Boolean indicating whether spirit is in the center of a possessed host, false if not */
@@ -76,7 +79,7 @@ public class SpiritModel extends BoxObstacle {
         this.posAtBounce = this.getPosition();
     }
 
-    public SpiritModel(float x, float y, float width, float height, int b, float defaultLife) {
+    public SpiritModel(float x, float y, float width, float height, int lives, int b, float defaultLife) {
         super(x, y, width, height);
 
         setDensity(SPIRIT_DENSITY);
@@ -94,6 +97,8 @@ public class SpiritModel extends BoxObstacle {
 //        shape.set(verts);
 
         bounces = b;
+        numOfLives = lives;
+        HUD.setSpiritLives(lives);
         this.defaultLife = defaultLife;
         this.currentLife = this.defaultLife;
         isAlive = true;
@@ -147,6 +152,25 @@ public class SpiritModel extends BoxObstacle {
      */
     public void setCurrentLife(float currentLife) {
         this.currentLife = currentLife;
+    }
+
+    /**
+     * Boolean if the spirit has lives left
+     *
+     * True if there are no lives left
+     * @return boolean indicating if game is over
+     */
+    public boolean hasNoLivesLeft() {
+        return numOfLives <= 0;
+    }
+
+    /**
+     * Decrements the life amount of the spirit
+     */
+    public void decrementNumLives() {
+        numOfLives = numOfLives - 1;
+        System.out.println("DECREMENTED NUMBER OF LIVES. NOW HAVE: " + numOfLives);
+        HUD.setSpiritLives(numOfLives);
     }
 
     /**
@@ -247,12 +271,13 @@ public class SpiritModel extends BoxObstacle {
     public boolean decCurrentLife() {
         // When the
         if(this.hasLaunched) {
-            if (this.currentLife == 0) {
+            if (this.currentLife <= 0) {
                 // spirit is dead
                 this.isAlive = false;
                 return false;
             }
             else {
+                this.isAlive = true;
                 this.currentLife--;
                 return true;
             }

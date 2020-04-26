@@ -364,7 +364,7 @@ public class GamePlayController extends WorldController {
 
 
 		// Check lose condition
-		if (hostController.getPossessedBlownUp() && !isComplete() && !isFailure()) {
+		if ((hostController.getPossessedBlownUp() || spirit.hasNoLivesLeft()) && !isComplete() && !isFailure()) {
 			setFailure(true);
 			if (getSound()) { SoundController.getInstance().play(FAILURE_SOUND, FAILURE_SOUND, false); }
 		}

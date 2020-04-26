@@ -13,6 +13,7 @@ import edu.cornell.gdiac.util.FilmStrip;
 
 public class Factory {
     private static int SMALL_MAX_CHARGE = 800;
+    private static int SPIRIT_LIVES = 3;
     private static int SPIRIT_BOUNCES = 8;
     private static int DEFAULT_LIFE = 300;
 
@@ -190,6 +191,7 @@ public class Factory {
                 y,
                 (spiritHeadTexture.getWidth() / (SPIRIT_COLUMNS * 12)) / scale.x,
                 (spiritHeadTexture.getHeight() / (SPIRIT_ROWS * 4)) / scale.y,
+                SPIRIT_LIVES,
                 SPIRIT_BOUNCES,
                 DEFAULT_LIFE
         );
