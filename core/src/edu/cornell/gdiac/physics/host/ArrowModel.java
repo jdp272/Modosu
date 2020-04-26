@@ -38,8 +38,8 @@ public class ArrowModel {
         Color c;
 
         // Determine the color based on whether the velocity passes threshold
-        if (pastThreshold) { c = new Color(Color.WHITE); }
-        else { c = new Color(Color.RED); }
+        if (pastThreshold) { c =Color.WHITE; }
+        else { c = Color.RED; }
 
         // Draw the arrow
         canvas.begin();

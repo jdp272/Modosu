@@ -190,6 +190,9 @@ public class GamePlayController extends WorldController {
 		HUD.clearHUD();
 		HUD.setNumTotalHosts(level.hosts.size());
 
+		dimensions.set(level.dimensions);
+		System.out.println("dimensions: " + dimensions);
+
 		pedestal = level.pedestal;
 		spirit = level.start;
 		spirit.setName("spirit");

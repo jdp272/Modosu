@@ -19,6 +19,7 @@ package edu.cornell.gdiac.physics;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -159,6 +160,14 @@ public abstract class WorldController implements Screen {
 
 	/** Whether sound mode is on */
 	private boolean sound;
+
+	/** Whether to render the HUD */
+	protected boolean renderHUD;
+
+	/** The dimensions of the board */
+	protected Vector2 dimensions;
+	/** Offset of the lower left corner. Allows for the ground to be offset */
+	protected Vector2 lowerLeft;
 
 	public void setSound(boolean s) { sound = s; }
 
@@ -555,15 +564,18 @@ public abstract class WorldController implements Screen {
 	 */
 	protected WorldController(Rectangle bounds, Vector2 gravity) {
 		assets = new Array<String>();
-		world = new World(gravity,false);
+		world = new World(gravity, false);
 		this.bounds = new Rectangle(bounds);
-		this.scale = new Vector2(1,1);
+		this.scale = new Vector2(1, 1);
 		complete = false;
 		failed = false;
-		debug  = false;
+		debug = false;
 		active = false;
+		renderHUD = true;
 		countdown = -1;
 		currentLevel = 0;
+		dimensions = new Vector2();
+		lowerLeft = new Vector2();
 	}
 	
 	/**
@@ -761,7 +773,34 @@ public abstract class WorldController implements Screen {
 
 		canvas.begin();
 
-		canvas.draw(backgroundTexture, 0,0);
+//		System.out.println("Drawing");
+//		System.out.println("dimensions: " + dimensions);
+//		System.out.println("scale: " + scale);
+//		System.out.println("canvas size: (" + canvas.getWidth() + ", " + canvas.getHeight() + ")");
+		// Use the lower left corner of tiles, not the center, to start drawing the canvas
+		for(float x = 0; x < scale.x * dimensions.x; x += canvas.getWidth()) {
+//			System.out.println("x = " + x);
+			for(float y = 0; y < scale.y * dimensions.y; y += canvas.getHeight()) {
+//				System.out.println("y = " + y);
+
+				// Calculate the width and height of the canvas segment. If the
+				// board doesn't extend the entire way, find the desired dimensions
+				float width = Math.min(canvas.getWidth(), (scale.x * dimensions.x) - x);
+				float height = Math.min(canvas.getHeight(), (scale.y * dimensions.y) - y);
+
+				// Draw only the part of the texture that is in game, using the
+				// texture coordinates
+				canvas.draw(backgroundTexture.getTexture(), Color.WHITE,
+						(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
+						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
+
+//				canvas.draw(backgroundTexture, Color.WHITE, TILE_WIDTH * scale.x * x, TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
+			}
+		}
+//		canvas.draw(backgroundTexture, Color.WHITE, 0, 0,canvas.getWidth(),canvas.getHeight());
+		canvas.end();
+
+		canvas.begin();
 
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
@@ -782,7 +821,9 @@ public abstract class WorldController implements Screen {
 		}
 
 		// Sets the stage to draw the HUD
-		canvas.drawHUD(delta);
+		if(renderHUD) {
+			canvas.drawHUD(delta);
+		}
 	}
 	
 	/**
