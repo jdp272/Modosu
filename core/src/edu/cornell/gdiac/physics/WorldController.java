@@ -30,7 +30,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import edu.cornell.gdiac.physics.host.ArrowModel;
+import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.obstacle.Wall;
+import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.ScreenListener;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
@@ -805,7 +808,24 @@ public abstract class WorldController implements Screen {
 		canvas.begin();
 
 		for(Obstacle obj : objects) {
-			obj.draw(canvas);
+			if(!(obj instanceof Wall) || !(obj instanceof HostModel)) {
+				obj.draw(canvas);
+			}
+		}
+		for(Obstacle obj : objects) {
+			if(obj instanceof Wall && ((Wall) obj).wall > 17) {
+				obj.draw(canvas);
+			}
+		}
+		for(Obstacle obj : objects) {
+			if(obj instanceof HostModel || obj instanceof SpiritModel) {
+				obj.draw(canvas);
+			}
+		}
+		for(Obstacle obj : objects) {
+			if(obj instanceof Wall && ((Wall) obj).wall < 18) {
+				obj.draw(canvas);
+			}
 		}
 
 		canvas.end();
