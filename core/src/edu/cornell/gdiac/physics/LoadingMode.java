@@ -501,7 +501,7 @@ public class LoadingMode implements Screen, InputProcessor {
 				listener.exitScreen(this, WorldController.EXIT_CREDITS, sound);
 			}
 
-			//close game
+			// Close game
 			if(isReady && buttonPressed == pressState.QUIT && listener != null) {
 				buttonPressed = pressState.NONE;
 				listener.exitScreen(this,WorldController.EXIT_QUIT, sound);

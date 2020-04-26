@@ -53,12 +53,10 @@ public class GDXRoot extends Game implements ScreenListener {
 	private LevelSelectMode levelSelect;
 	/** Credits screen controller */
 	private Credits credits;
-
 	/** Music to be played on main menu screen */
 	private Music mainMenuMusic;
 	/** Music to be played during gameplay */
 	private Music gameplayMusic;
-
 
 	/** Stores whether to exit to level designer after a level is selected */
 	private boolean goLevelDesigner = false;
