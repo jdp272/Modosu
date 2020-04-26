@@ -98,6 +98,7 @@ public class SpiritModel extends BoxObstacle {
 
         bounces = b;
         numOfLives = lives;
+        HUD.setSpiritLives(lives);
         this.defaultLife = defaultLife;
         this.currentLife = this.defaultLife;
         isAlive = true;
