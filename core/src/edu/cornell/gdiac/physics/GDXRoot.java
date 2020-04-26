@@ -206,6 +206,10 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelDesigner.setScreenListener(this);
 				levelDesigner.setCanvas(canvas);
 				levelDesigner.setCurrentLevel(level + (page*4));
+				if(level == -1){
+					levelDesigner.setLoadBoard(false);
+					System.out.println("TEST");
+				}
 				levelDesigner.reset();
 				levelDesigner.setSound(sound);
 
@@ -273,6 +277,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 		else if (screen == loading && exitCode == WorldController.EXIT_DESIGN) {
 			goLevelDesigner = true;
+			levelSelect.goToDesigner = true;
 			levelSelect.loadContent(manager);
 			levelSelect.setScreenListener(this);
 			levelSelect.setCanvas(canvas);
@@ -282,6 +287,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 		else if (screen == loading && exitCode == WorldController.EXIT_SELECT) {
 			goLevelDesigner = false;
+			levelSelect.goToDesigner = false;
 			levelSelect.loadContent(manager);
 			levelSelect.setScreenListener(this);
 			levelSelect.setCanvas(canvas);

@@ -153,6 +153,8 @@ public class LevelDesignerMode extends WorldController {
 		super.preLoadContent(manager);
 	}
 
+	public void setLoadBoard(boolean b){ loadBoard = b;}
+
 	/**
 	 * Loads the assets for this controller.
 	 *
@@ -187,8 +189,7 @@ public class LevelDesignerMode extends WorldController {
 
 	/**
 	 * Creates and initialize a new instance of the level designer
-	 *
-	 * The world has lower gravity to simulate being underwater.
+
 	 */
 	public LevelDesignerMode() {
 		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,WATER_GRAVITY);

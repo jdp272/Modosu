@@ -111,6 +111,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     /** list of files to retrieve their names*/
     private List<File> levelNames;
 
+    public boolean goToDesigner;
+
     /** Whether the mouse is currently pressed down  */
     private boolean   isPressed;
 
@@ -372,7 +374,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
         }
 
-        else if(screenX >= twoStart.x && screenX <= twoEnd.x && page*4 + 1 < levelNames.size()) {
+        else if(screenX >= twoStart.x && screenX <= twoEnd.x && (page*4 + 1 < levelNames.size() || goToDesigner)) {
             if (screenY >= twoStart.y && screenY <= twoEnd.y) {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
                 pressState = 1;
@@ -380,7 +382,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
             }
         }
 
-        else if(screenX >= threeStart.x && screenX <= threeEnd.x && page*4 + 2 < levelNames.size()) {
+        else if(screenX >= threeStart.x && screenX <= threeEnd.x && (page*4 + 2 < levelNames.size() || goToDesigner)) {
             if (screenY >= threeStart.y && screenY <= threeEnd.y)  {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
                 pressState = 2;
@@ -388,7 +390,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
             }
         }
 
-        else if(screenX >= fourStart.x && screenX <= fourEnd.x && page*4 + 3 < levelNames.size()) {
+        else if(screenX >= fourStart.x && screenX <= fourEnd.x && (page*4 + 3 < levelNames.size() || goToDesigner)) {
             if (screenY >= fourStart.y && screenY <= fourEnd.y)  {
                 if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
                 pressState = 3;
@@ -439,20 +441,33 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 }
 
             }
-            else if (screenX >= twoStart.x && screenX <= twoEnd.x && page * 4 + 1 < levelNames.size()) {
+            else if (screenX >= twoStart.x && screenX <= twoEnd.x) {
                 if (screenY >= twoStart.y && screenY <= twoEnd.y && pressState == 1) {
-                    listener.exitScreenLevel(1, sound, page);
+                    if(page * 4 + 1 < levelNames.size()) {
+                        listener.exitScreenLevel(1, sound, page);
+                    }else{
+                        listener.exitScreenLevel(-1, sound, page);
+                    }
                 }
             }
-            else if (screenX >= threeStart.x && screenX <= threeEnd.x && page * 4 + 2 < levelNames.size()) {
+            else if (screenX >= threeStart.x && screenX <= threeEnd.x) {
                 if (screenY >= threeStart.y && screenY <= threeEnd.y && pressState == 2) {
-                    listener.exitScreenLevel(2, sound, page);
+                    if(page * 4 + 2 < levelNames.size()) {
+                        listener.exitScreenLevel(2, sound, page);
+                    }else{
+                        listener.exitScreenLevel(-1, sound, page);
+                    }
                 }
             }
-            else if (screenX >= fourStart.x && screenX <= fourEnd.x && page * 4 + 3 < levelNames.size()) {
+            else if (screenX >= fourStart.x && screenX <= fourEnd.x) {
                 if (screenY >= fourStart.y && screenY <= fourEnd.y && pressState == 3) {
-                    listener.exitScreenLevel(3, sound, page);
+                    if(page * 4 + 3 < levelNames.size()) {
+                        listener.exitScreenLevel(3, sound, page);
+                    }else{
+                        listener.exitScreenLevel(-1, sound, page);
+                    }
                 }
+
             }
             else if (screenX >= nextStart.x && screenX <= nextEnd.x && page != pages - 1) {
                 if (screenY >= nextStart.y && screenY <= nextEnd.y && pressState == 4) {
@@ -503,7 +518,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                     hoverButton = false;
                 }
             }
-            else if (screenX >= twoStart.x && screenX <= twoEnd.x && page*4 + 1 < levelNames.size()) {
+            else if (screenX >= twoStart.x && screenX <= twoEnd.x && (page*4 + 1 < levelNames.size() || goToDesigner)) {
                 if (screenY >= twoStart.y && screenY <= twoEnd.y) {
                     colorTwo = colorHovered;
                     if (!hoverButton) {
@@ -516,7 +531,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                     hoverButton = false;
                 }
             }
-            else if (screenX >= threeStart.x && screenX <= threeEnd.x && page*4 + 2 < levelNames.size()) {
+            else if (screenX >= threeStart.x && screenX <= threeEnd.x && (page*4 + 2 < levelNames.size() || goToDesigner)) {
                 if (screenY >= threeStart.y && screenY <= threeEnd.y) {
                     colorThree = colorHovered;
                     if (!hoverButton) {
@@ -529,7 +544,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                     hoverButton = false;
                 }
             }
-            else if (screenX >= fourStart.x && screenX <= fourEnd.x && page*4 + 3 < levelNames.size()) {
+            else if (screenX >= fourStart.x && screenX <= fourEnd.x && (page*4 + 3 < levelNames.size() || goToDesigner)) {
                 if (screenY >= fourStart.y && screenY <= fourEnd.y) {
                     colorFour = colorHovered;
                     if (!hoverButton) {
