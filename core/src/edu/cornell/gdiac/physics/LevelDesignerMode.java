@@ -50,6 +50,11 @@ public class LevelDesignerMode extends WorldController {
     public static final int MIN_CHARGE_CAPACITY = 0;
 
     /**
+     * The magic number that solves all scaling issues.
+     */
+    public static final int TILE_CONST = 64;
+
+    /**
      * Texture file for mouse crosshairs
      */
     private static final String CROSS_FILE = "shared/crosshair.png";
@@ -66,11 +71,6 @@ public class LevelDesignerMode extends WorldController {
      * Speed for changing camera position
      */
     private static final float CAMERA_SPEED = 5.f;
-
-    /**
-     * Width of each tile, in box2D coordinates
-     */
-    private static final float TILE_WIDTH = 2.f;
 
     /**
      * The maximum width and height of the board, in tile coordinates
@@ -145,13 +145,13 @@ public class LevelDesignerMode extends WorldController {
 
     public class CornerObstacle extends BoxObstacle {
         public CornerObstacle(TextureRegion tex, Corner corner) {
-            super(obstacleTex.getRegionWidth() / scale.x, obstacleTex.getRegionHeight() / scale.y);
+            super(TILE_CONST / scale.x, TILE_CONST / scale.y);
             this.corner = corner;
 
             setTexture(tex);
             setDrawScale(scale);
-            setSX(obstacleTex.getRegionWidth() / tex.getRegionWidth());
-            setSY(obstacleTex.getRegionHeight() / tex.getRegionHeight());
+            setSX(TILE_CONST / tex.getRegionWidth());
+            setSY(TILE_CONST / tex.getRegionHeight());
             setBodyType(BodyDef.BodyType.StaticBody);
             setSensor(true);
             setName("corner");
@@ -274,7 +274,7 @@ public class LevelDesignerMode extends WorldController {
      * nearest tile index.
      */
     public int screenTileWidth() {
-        return (int) (canvas.getWidth() / scale.x / TILE_WIDTH);
+        return (int) (canvas.getWidth() / scale.x / Constants.TILE_WIDTH);
     }
 
     /**
@@ -282,7 +282,7 @@ public class LevelDesignerMode extends WorldController {
      * nearest tile index.
      */
     public int screenTileHeight() {
-        return (int) (canvas.getHeight() / scale.y / TILE_WIDTH);
+        return (int) (canvas.getHeight() / scale.y / Constants.TILE_WIDTH);
     }
 
     /**
@@ -353,8 +353,8 @@ public class LevelDesignerMode extends WorldController {
         }
 
         // After populateLevel(), when the borders are set from the loaded level
-        camTarget.set(scale.x * TILE_WIDTH * (rightBorder - leftBorder) / 2.f,
-                scale.y * TILE_WIDTH * (topBorder - bottomBorder) / 2.f);
+        camTarget.set(scale.x * Constants.TILE_WIDTH * (rightBorder - leftBorder) / 2.f,
+                scale.y * Constants.TILE_WIDTH * (topBorder - bottomBorder) / 2.f);
 
         // Setup the spawner list
         Wall boxSpawn = factory.makeWall(0.f, 0.f);
@@ -449,11 +449,11 @@ public class LevelDesignerMode extends WorldController {
      * should be called whenever the borders are changed.
      */
     private void updateCornerPositions() {
-        float top = yTileToCoord(topBorder) - (TILE_WIDTH / 2.f);
-        float bottom = yTileToCoord(bottomBorder) - (TILE_WIDTH / 2.f);
+        float top = yTileToCoord(topBorder) - (Constants.TILE_WIDTH / 2.f);
+        float bottom = yTileToCoord(bottomBorder) - (Constants.TILE_WIDTH / 2.f);
 
-        float left = xTileToCoord(leftBorder) - (TILE_WIDTH / 2.f);
-        float right = xTileToCoord(rightBorder) - (TILE_WIDTH / 2.f);
+        float left = xTileToCoord(leftBorder) - (Constants.TILE_WIDTH / 2.f);
+        float right = xTileToCoord(rightBorder) - (Constants.TILE_WIDTH / 2.f);
 
         topLeft.setPosition(left, top);
         topRight.setPosition(right, top);
@@ -500,14 +500,14 @@ public class LevelDesignerMode extends WorldController {
         dimensions = level.dimensions;
         lowerLeft.setZero();
 
-        bottomBorder = (board[0].length / 2) - (int) ((dimensions.y / TILE_WIDTH) / 2);
-        leftBorder = (board.length / 2) - (int) ((dimensions.x / TILE_WIDTH) / 2);
+        bottomBorder = (board[0].length / 2) - (int) ((dimensions.y / Constants.TILE_WIDTH) / 2);
+        leftBorder = (board.length / 2) - (int) ((dimensions.x / Constants.TILE_WIDTH) / 2);
 
         initialBottomBorder = bottomBorder;
         initialLeftBorder = leftBorder;
 
-        topBorder = bottomBorder + (int) (dimensions.y / TILE_WIDTH);
-        rightBorder = leftBorder + (int) (dimensions.x / TILE_WIDTH);
+        topBorder = bottomBorder + (int) (dimensions.y / Constants.TILE_WIDTH);
+        rightBorder = leftBorder + (int) (dimensions.x / Constants.TILE_WIDTH);
 
         for (Obstacle obj : level.obstacles) {
             addNewObstacle(obj);
@@ -555,7 +555,7 @@ public class LevelDesignerMode extends WorldController {
      * @return The x value of the tile index
      */
     private int xCoordToTile(float coord) {
-        return Math.round((coord - (TILE_WIDTH / 2.f)) / TILE_WIDTH) + initialLeftBorder;
+        return Math.round((coord - (Constants.TILE_WIDTH / 2.f)) / Constants.TILE_WIDTH) + initialLeftBorder;
     }
 
     /**
@@ -565,7 +565,7 @@ public class LevelDesignerMode extends WorldController {
      * @return The y value of the tile index
      */
     private int yCoordToTile(float coord) {
-        return Math.round((coord - (TILE_WIDTH / 2.f)) / TILE_WIDTH) + initialBottomBorder;
+        return Math.round((coord - (Constants.TILE_WIDTH / 2.f)) / Constants.TILE_WIDTH) + initialBottomBorder;
     }
 
     /**
@@ -597,7 +597,7 @@ public class LevelDesignerMode extends WorldController {
      * @return The box2D x coordinate of the tile
      */
     private float xTileToCoord(int index, boolean corner) {
-        return ((index - initialLeftBorder) + 0.5f) * TILE_WIDTH - (corner ? TILE_WIDTH / 2.f : 0);
+        return ((index - initialLeftBorder) + 0.5f) * Constants.TILE_WIDTH - (corner ? Constants.TILE_WIDTH / 2.f : 0);
     }
 
     /**
@@ -609,7 +609,7 @@ public class LevelDesignerMode extends WorldController {
      * @return The box2D y coordinate of the tile corner
      */
     private float yTileToCoord(int index, boolean corner) {
-        return ((index - initialBottomBorder) + 0.5f) * TILE_WIDTH - (corner ? TILE_WIDTH / 2.f : 0);
+        return ((index - initialBottomBorder) + 0.5f) * Constants.TILE_WIDTH - (corner ? Constants.TILE_WIDTH / 2.f : 0);
     }
 
     /**
@@ -787,8 +787,8 @@ public class LevelDesignerMode extends WorldController {
     private void processBorderChange(CornerObstacle corner) {
         // Offset the location so the corner sits at a corner of the tile, not
         // the center
-        int x = xCoordToTile(corner.getX() + (TILE_WIDTH / 2.f));
-        int y = yCoordToTile(corner.getY() + (TILE_WIDTH / 2.f));
+        int x = xCoordToTile(corner.getX() + (Constants.TILE_WIDTH / 2.f));
+        int y = yCoordToTile(corner.getY() + (Constants.TILE_WIDTH / 2.f));
 
         // Ensure there is at least 1 row and 1 column of the array that can be
         // used
@@ -885,8 +885,8 @@ public class LevelDesignerMode extends WorldController {
             }
         }
 
-        dimensions.set(TILE_WIDTH * (rightBorder - leftBorder), TILE_WIDTH * (topBorder - bottomBorder));
-        lowerLeft.set(TILE_WIDTH * (leftBorder - initialLeftBorder), TILE_WIDTH * (bottomBorder - initialBottomBorder));
+        dimensions.set(Constants.TILE_WIDTH * (rightBorder - leftBorder), Constants.TILE_WIDTH * (topBorder - bottomBorder));
+        lowerLeft.set(Constants.TILE_WIDTH * (leftBorder - initialLeftBorder), Constants.TILE_WIDTH * (bottomBorder - initialBottomBorder));
 
         updateCornerPositions();
 
@@ -1031,8 +1031,8 @@ public class LevelDesignerMode extends WorldController {
         // Update the camera position
         camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
 
-        dimensions.set(TILE_WIDTH * (rightBorder - leftBorder), TILE_WIDTH * (topBorder - bottomBorder));
-        lowerLeft.set(TILE_WIDTH * (leftBorder - initialLeftBorder), TILE_WIDTH * (bottomBorder - initialBottomBorder));
+        dimensions.set(Constants.TILE_WIDTH * (rightBorder - leftBorder), Constants.TILE_WIDTH * (topBorder - bottomBorder));
+        lowerLeft.set(Constants.TILE_WIDTH * (leftBorder - initialLeftBorder), Constants.TILE_WIDTH * (bottomBorder - initialBottomBorder));
 
         updateSelector(hasPed);
 
@@ -1167,7 +1167,7 @@ public class LevelDesignerMode extends WorldController {
             }
         }
 
-//		dimensionsCache.set((rightBorder - leftBorder) * TILE_WIDTH, (topBorder - bottomBorder) * TILE_WIDTH);
+//		dimensionsCache.set((rightBorder - leftBorder) * Constants.TILE_WIDTH, (topBorder - bottomBorder) * Constants.TILE_WIDTH);
 //		System.out.println(dimensionsCache);
 
         // For now, until the types used for levels are fixed
@@ -1200,8 +1200,8 @@ public class LevelDesignerMode extends WorldController {
 //		canvas.begin();
 //
 //		// Use the lower left corner of tiles, not the center, to start drawing the canvas
-//		for(float x = xTileToCoord(leftBorder, true); x < xTileToCoord(rightBorder, true); x += TILE_WIDTH * screenTileWidth()) {
-//			for(float y = yTileToCoord(bottomBorder, true); y < yTileToCoord(topBorder, true); y += TILE_WIDTH * screenTileHeight()) {
+//		for(float x = xTileToCoord(leftBorder, true); x < xTileToCoord(rightBorder, true); x += Constants.TILE_WIDTH * screenTileWidth()) {
+//			for(float y = yTileToCoord(bottomBorder, true); y < yTileToCoord(topBorder, true); y += Constants.TILE_WIDTH * screenTileHeight()) {
 //
 //				// Calculate the width and height of the canvas segment. If the
 //				// board doesn't extend the entire way, find the desired dimensions
@@ -1212,7 +1212,7 @@ public class LevelDesignerMode extends WorldController {
 //				canvas.draw(backgroundTexture.getTexture(), scale.x * x, scale.y * y,  width, height,
 //						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
 //
-////				canvas.draw(backgroundTexture, Color.WHITE, TILE_WIDTH * scale.x * x, TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
+////				canvas.draw(backgroundTexture, Color.WHITE, Constants.TILE_WIDTH * scale.x * x, Constants.TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
 //			}
 //		}
 ////		canvas.draw(backgroundTexture, Color.WHITE, 0, 0,canvas.getWidth(),canvas.getHeight());
@@ -1235,7 +1235,7 @@ public class LevelDesignerMode extends WorldController {
 //
 //		// Draw foreground last. The foreground indicates what is within the bounds of the game and what is outside
 ////		canvas.begin();
-////		canvas.draw(foregroundTexture, FORE_COLOR,  TILE_WIDTH * scale.x * leftBorder, TILE_WIDTH * scale.y * bottomBorder, scale.x * TILE_WIDTH * (rightBorder - leftBorder), scale.y * TILE_WIDTH * (topBorder - bottomBorder));
+////		canvas.draw(foregroundTexture, FORE_COLOR,  Constants.TILE_WIDTH * scale.x * leftBorder, Constants.TILE_WIDTH * scale.y * bottomBorder, scale.x * Constants.TILE_WIDTH * (rightBorder - leftBorder), scale.y * Constants.TILE_WIDTH * (topBorder - bottomBorder));
 ////		selector.draw(canvas);
 ////		canvas.end();
 //	}

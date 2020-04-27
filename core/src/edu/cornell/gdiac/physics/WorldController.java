@@ -16,7 +16,6 @@
  */
 package edu.cornell.gdiac.physics;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -28,12 +27,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ScreenUtils;
 import edu.cornell.gdiac.physics.host.ArrowModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.ScreenListener;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.File;
 import java.util.Iterator;
@@ -82,8 +79,22 @@ public abstract class WorldController implements Screen {
 	private static String FONT_FILE = "shared/AveriaSerifLibre.ttf";
 	/** Texture file for background image */
 	private static final String BACKG_FILE = "shared/background.png";
-	/** Texture file for host sprite */
-	private static final String HOST_FILE = "host/hostspritesheet.png";
+	/** Texture file for host sprite EAST */
+	private static final String HOST_FILE_E = "host/golemWalk_E.png";
+	/** Texture file for host sprite NORTH */
+	private static final String HOST_FILE_N = "host/golemWalk_N.png";
+	/** Texture file for host sprite NORTH EAST */
+	private static final String HOST_FILE_NE = "host/golemWalk_NE.png";
+	/** Texture file for host sprite NORTH WEST */
+	private static final String HOST_FILE_NW = "host/golemWalk_NW.png";
+	/** Texture file for host sprite SOUTH */
+	private static final String HOST_FILE_S = "host/golemWalk_S.png";
+	/** Texture file for host sprite SOUTH EAST */
+	private static final String HOST_FILE_SE = "host/golemWalk_SE.png";
+	/** Texture file for host sprite SOUTH WEST */
+	private static final String HOST_FILE_SW = "host/golemWalk_SW.png";
+	/** Texture file for host sprite WEST */
+	private static final String HOST_FILE_W = "host/golemWalk_W.png";
 	/** Texture file for spirit head sprite */
 	private static String SPIRIT_HEAD_FILE = "host/SpiritHeadSpritesheet_v01.png";
 	/** Texture file for spirit tail sprite */
@@ -91,10 +102,8 @@ public abstract class WorldController implements Screen {
 	/** Texture file for spirit body sprite */
 	private static String SPIRIT_BODY_FILE = "host/SpiritBodySpritesheet_v01.png";
 
-	/** File to texture for obstacles */
-	private static String OBSTACLE_FILE = "host/crate02.png";
 	/** File to texture for Hosts' Gauge */
-	private static String HOST_GAUGE_FILE = "host/hostgaugespritesheet.png";
+	private static String HOST_GAUGE_FILE = "host/chargeGauge.png";
 	/** Texture file for arrow sprite */
 	private static final String ARROW_FILE = "shared/arrow.png";
 	/** File to texture for Walls */
@@ -109,6 +118,13 @@ public abstract class WorldController implements Screen {
 	private static String CORNER_SAND_FILE = "shared/sand_corners_spritesheet.png";
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_FILE = "shared/spirit_pedestal.png";
+
+	/** File to texture for Energy Pillar body */
+	private static String  ENERGY_PILLAR_BODY_FILE = "shared/energyPillar_base.png";
+	/** File to texture for Energy Pillar Charge */
+	private static String ENERGY_PILLAR_BODY_CHARGE_FILE = "shared/energyPillar_lights.png";
+	/** File to texture for Energy Pillar Radius */
+	private static String ENERGY_PILLAR_RADIUS = "shared/energyRing.png";
 
 	private static int FONT_SIZE = 56;
 
@@ -125,16 +141,28 @@ public abstract class WorldController implements Screen {
 	protected TextureRegion hostTex;
 	/** The texture for the spirit */
 	protected TextureRegion spiritTex;
-	/** The texture for the obstacle */
-	protected TextureRegion obstacleTex;
 	/** The texture for host gauge */
 	protected TextureRegion hostGaugeTex;
 	/** The texture for walls */
 	protected TextureRegion wallTex;
 	/** The texture for the arrow */
 	protected Texture arrowTex;
-	/** Texture for Host SpriteSheet */
-	private static Texture hostTexture;
+	/** Texture for Host SpriteSheet EAST*/
+	private static Texture hostTextureE;
+	/** Texture for Host SpriteSheet NORTH*/
+	private static Texture hostTextureN;
+	/** Texture for Host SpriteSheet NORTH EAST*/
+	private static Texture hostTextureNE;
+	/** Texture for Host SpriteSheet NORTH WEST*/
+	private static Texture hostTextureNW;
+	/** Texture for Host SpriteSheet SOUTH */
+	private static Texture hostTextureS;
+	/** Texture for Host SpriteSheet SOUTH EAST*/
+	private static Texture hostTextureSE;
+	/** Texture for Host SpriteSheet SOUTH WEST*/
+	private static Texture hostTextureSW;
+	/** Texture for Host SpriteSheet WEST*/
+	private static Texture hostTextureW;
 	/** Texture for Host Gauge SpriteSheet */
 	private static Texture hostGaugeTexture;
 	/** Texture for Wall SpriteSheet */
@@ -155,6 +183,13 @@ public abstract class WorldController implements Screen {
 	private static Texture spiritBodyTexture;
 	/** Texture for Spirit Tail Texture */
 	private static Texture spiritTailTexture;
+	/** Texture for Energy Pillar Body Texture */
+	private static Texture energyPillarBody;
+	/** Texture for Energy Pillar Body Lights Texture */
+	private static Texture energyPillarCharge;
+	/** Texture for Energy Pillar Radius Texture */
+	private static Texture energyPillarRadius;
+
 
 	public ArrowModel arrow;
 
@@ -192,8 +227,22 @@ public abstract class WorldController implements Screen {
 		// Load the shared tiles.
 		manager.load(BACKG_FILE,Texture.class);
 		assets.add(BACKG_FILE);
-		manager.load(HOST_FILE, Texture.class);
-		assets.add(HOST_FILE);
+		manager.load(HOST_FILE_E, Texture.class);
+		assets.add(HOST_FILE_E);
+		manager.load(HOST_FILE_N, Texture.class);
+		assets.add(HOST_FILE_N);
+		manager.load(HOST_FILE_NE, Texture.class);
+		assets.add(HOST_FILE_NE);
+		manager.load(HOST_FILE_NW, Texture.class);
+		assets.add(HOST_FILE_NW);
+		manager.load(HOST_FILE_S, Texture.class);
+		assets.add(HOST_FILE_S);
+		manager.load(HOST_FILE_SE, Texture.class);
+		assets.add(HOST_FILE_SE);
+		manager.load(HOST_FILE_SW, Texture.class);
+		assets.add(HOST_FILE_SW);
+		manager.load(HOST_FILE_W, Texture.class);
+		assets.add(HOST_FILE_W);
 		manager.load(HOST_GAUGE_FILE, Texture.class);
 		assets.add(HOST_GAUGE_FILE);
 		manager.load(WALL_FILE, Texture.class);
@@ -206,8 +255,6 @@ public abstract class WorldController implements Screen {
 		assets.add(SAND_FILE);
 		manager.load(CORNER_SAND_FILE, Texture.class);
 		assets.add(CORNER_SAND_FILE);
-		manager.load(OBSTACLE_FILE, Texture.class);
-		assets.add(OBSTACLE_FILE);
 		manager.load(ARROW_FILE, Texture.class);
 		assets.add(ARROW_FILE);
 		manager.load(PEDESTAL_FILE, Texture.class);
@@ -218,6 +265,13 @@ public abstract class WorldController implements Screen {
 		assets.add(SPIRIT_HEAD_FILE);
 		manager.load(SPIRIT_TAIL_FILE, Texture.class);
 		assets.add(SPIRIT_TAIL_FILE);
+		manager.load(ENERGY_PILLAR_BODY_CHARGE_FILE, Texture.class);
+		assets.add(ENERGY_PILLAR_BODY_CHARGE_FILE);
+		manager.load(ENERGY_PILLAR_BODY_FILE, Texture.class);
+		assets.add(ENERGY_PILLAR_BODY_FILE);
+		manager.load(ENERGY_PILLAR_RADIUS, Texture.class);
+		assets.add(ENERGY_PILLAR_RADIUS);
+
 
 
 		// Load the font
@@ -245,9 +299,6 @@ public abstract class WorldController implements Screen {
 		
 		// Allocate the tiles
 		backgroundTexture = createTexture(manager,BACKG_FILE, true);
-		hostTex = createTexture(manager, HOST_FILE, true);
-		obstacleTex = createTexture(manager, OBSTACLE_FILE, true);
-		hostGaugeTex = createTexture(manager, HOST_GAUGE_FILE, true);
 		wallTex = createTexture(manager, WALL_FILE, true);
 		arrowTex = new Texture(ARROW_FILE);
 
@@ -268,7 +319,14 @@ public abstract class WorldController implements Screen {
 
 		worldAssetState = AssetState.COMPLETE;
 
-		hostTexture = manager.get(HOST_FILE, Texture.class);
+		hostTextureE = manager.get(HOST_FILE_E,Texture.class);
+		hostTextureN = manager.get(HOST_FILE_N, Texture.class);
+		hostTextureNE = manager.get(HOST_FILE_NE, Texture.class);
+		hostTextureNW = manager.get(HOST_FILE_NW, Texture.class);
+		hostTextureS = manager.get(HOST_FILE_S, Texture.class);
+		hostTextureSE = manager.get(HOST_FILE_SE, Texture.class);
+		hostTextureSW = manager.get(HOST_FILE_SW, Texture.class);
+		hostTextureW = manager.get(HOST_FILE_W, Texture.class);
 		hostGaugeTexture = manager.get(HOST_GAUGE_FILE, Texture.class);
 		wallTexture = manager.get(WALL_FILE, Texture.class);
 		waterTexture = manager.get(WATER_FILE, Texture.class);
@@ -279,9 +337,12 @@ public abstract class WorldController implements Screen {
 		spiritBodyTexture = manager.get(SPIRIT_BODY_FILE, Texture.class);
 		spiritHeadTexture = manager.get(SPIRIT_HEAD_FILE, Texture.class);
 		spiritTailTexture = manager.get(SPIRIT_TAIL_FILE, Texture.class);
+		energyPillarBody = manager.get(ENERGY_PILLAR_BODY_FILE, Texture.class);
+		energyPillarCharge = manager.get(ENERGY_PILLAR_BODY_CHARGE_FILE, Texture.class);
+		energyPillarRadius = manager.get(ENERGY_PILLAR_RADIUS, Texture.class);
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, obstacleTex, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture);
+		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture, energyPillarBody, energyPillarCharge, energyPillarCharge);
 		loader = new Loader(factory);
 	}
 	

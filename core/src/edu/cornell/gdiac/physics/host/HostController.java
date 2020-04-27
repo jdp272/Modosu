@@ -277,7 +277,7 @@ public class HostController {
         // Update the Animation of the possessed host
 
         spirit.updateAnimation();
-        possessed.updateAnimation(possessed.beenPossessed(), possessed.getLinearVelocity());
+        possessed.updateAnimation(possessed.getLinearVelocity());
         pedestal.animateStrip();
 
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
@@ -326,7 +326,7 @@ public class HostController {
             }
 
             // Updated Animation of Each Host
-            h.updateAnimation(true, h.getLinearVelocity());
+            h.updateAnimation(h.getLinearVelocity());
 
             if (h != possessed && !h.beenPossessed()) {
                 Vector2 target = h.getInstruction();

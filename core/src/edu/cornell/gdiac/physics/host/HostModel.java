@@ -19,7 +19,7 @@ import edu.cornell.gdiac.util.FilmStrip;
 
 /**
  * Avatar representing the possessable golems that roam the map
- *
+ * <p>
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
@@ -28,17 +28,70 @@ public class HostModel extends BoxObstacle {
 
     // Animation Related Variables
 
-    /** The texture filmstrip for host that has yet to be possessed */
-    FilmStrip notChargedHost;
+    /**
+     * General texture filmstrip for Host
+     */
+    FilmStrip hostStrip;
 
-    /** The texture filmstrip for host that has been possessed */
-    FilmStrip chargedHost;
+    /**
+     * The texture filmstrip for host walking East
+     */
+    FilmStrip hostStripE;
 
-    /** The texture filmstrip for the host that is the pedestal */
+    /**
+     * The texture filmstrip for host walking North
+     */
+    FilmStrip hostStripN;
+
+    /**
+     * The texture filmstrip for host walking North East
+     */
+    FilmStrip hostStripNE;
+
+    /**
+     * The texture filmstrip for host walking North West
+     */
+    FilmStrip hostStripNW;
+
+    /**
+     * The texture filmstrip for host walking South
+     */
+    FilmStrip hostStripS;
+
+    /**
+     * The texture filmstrip for host walking South East
+     */
+    FilmStrip hostStripSE;
+
+    /**
+     * The texture filmstrip for host walking South West
+     */
+    FilmStrip hostStripSW;
+
+    /**
+     * The texture filmstrip for host walking West
+     */
+    FilmStrip hostStripW;
+
+    /**
+     * The texture filmstrip for host waking up
+     */
+    FilmStrip hostWakingUp;
+
+    /**
+     * The texture for charge UI
+     */
+    FilmStrip hostChargeUI;
+
+    /**
+     * The texture filmstrip for the host that is the pedestal
+     */
     FilmStrip pedestalHost;
 
     // Default physics values
-    /** The density of this host */
+    /**
+     * The density of this host
+     */
     private static final float DEFAULT_DENSITY = 1.0f;
     /**
      * The friction of this host
@@ -57,52 +110,34 @@ public class HostModel extends BoxObstacle {
      */
     private static final int PEDESTAL_MAX_CHARGE = -1;
     /**
-     *  The current charge of a pedestal
+     * The current charge of a pedestal
      */
     private static final int PEDESTAL_CURRENT_CHARGE = -1;
 
-    /** The gauge color for unpossessed robots */
+    /**
+     * The gauge color for unpossessed robots
+     */
     private static final Color unpossessedColor = new Color(0x6B5C5CFF);
 
     // FRAMES FOR SPRITE SHEET
 
-    /** The frame number for a host that just begins facing South */
-    public static final int HOST_SOUTH_START = 0;
-    /** The frame number for a host that just ends facing South */
-    public static final int HOST_SOUTH_END = 15;
-    /** The frame number for a host that just begins facing SouthEast */
-    public static final int HOST_SOUTHEAST_START = 16;
-    /** The frame number for a host that just ends facing SouthEast */
-    public static final int HOST_SOUTHEAST_END = 31;
-    /** The frame number for a host that just begins facing East */
-    public static final int HOST_EAST_START = 32;
-    /** The frame number for a host that just ends facing East */
-    public static final int HOST_EAST_END = 47;
-    /** The frame number for a host that just begins facing NorthEast */
-    public static final int HOST_NORTHEAST_START = 48;
-    /** The frame number for a host that just ends facing NorthEast */
-    public static final int HOST_NORTHEAST_END = 63;
-    /** The frame number for a host that just begins facing North */
-    public static final int HOST_NORTH_START = 64;
-    /** The frame number for a host that just ends facing North */
-    public static final int HOST_NORTH_END = 79;
-    /** The frame number for a host that just begins facing NorthWest */
-    public static final int HOST_NORTHWEST_START = 80;
-    /** The frame number for a host that just ends facing NorthWest */
-    public static final int HOST_NORTHWEST_END = 95;
-    /** The frame number for a host that just begins facing West */
-    public static final int HOST_WEST_START = 96;
-    /** The frame number for a host that just ends facing West */
-    public static final int HOST_WEST_END = 111;
-    /** The frame number for a host that just begins facing SouthWest */
-    public static final int HOST_SOUTHWEST_START = 112;
-    /** The frame number for a host that just ends facing SouthWest */
-    public static final int HOST_SOUTHWEST_END = 127;
+    /**
+     * The frame number for a host starting frame
+     */
+    public static final int HOST_START = 0;
+    /**
+     * The frame number for a host ending frame
+     */
+    public static final int HOST_FINISH = 59;
 
     /**
-     * The texture for the host's gauge
+     * The frame number for a host charge gauge starting frame
      */
-    protected FilmStrip hostGaugeStrip;
+    public static final int HOST_CHARGE_UI_START = 0;
+    /**
+     * The frame number for a host charge gauge ending frame
+     */
+    public static final int HOST_CHARGE_UI_END = 31;
 
 
     // Attributes Specific to each HostModel
@@ -154,8 +189,8 @@ public class HostModel extends BoxObstacle {
     /**
      * drawing scales to resize the host (doesn't affect hit box)
      */
-    private float sx = 0.3f;
-    private float sy = 0.3f;
+    private float sx = 0.6f;
+    private float sy = 0.6f;
 
     /**
      * The number of frames that have elapsed since the last animation update
@@ -168,7 +203,7 @@ public class HostModel extends BoxObstacle {
      * (animation framerate is the framerate of the game divided by this value)
      * 4 seems to look pretty good
      */
-    private int framesPerUpdate = 8;
+    private int framesPerUpdate = 2;
     private int pedFramesPerUpdate = 12;
 
     /**
@@ -188,23 +223,25 @@ public class HostModel extends BoxObstacle {
      * Changes the direction the robot should be moved
      * used on contacts
      */
-    public void invertForwardI(){
+    public void invertForwardI() {
         forwardI = !forwardI;
     }
 
     /**
      * returns the instruction number the robot is on
+     *
      * @return instructionNumber
      */
-    public int getInstructionNumber(){
+    public int getInstructionNumber() {
         return instructionNumber;
     }
 
     /**
      * returns if the robot is moving
+     *
      * @return moving
      */
-    public boolean isMoving(){
+    public boolean isMoving() {
         return moving;
     }
 
@@ -229,6 +266,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Returns whether current host it a pedestal or not
+     *
      * @return true if current host is a pedestal
      */
     public boolean isPedestal() {
@@ -237,6 +275,7 @@ public class HostModel extends BoxObstacle {
 
     /**
      * Sets current host to a pedestal if pedestal is true
+     *
      * @param pedestal is true if pedestal
      */
     public void setPedestal(boolean pedestal) {
@@ -254,15 +293,6 @@ public class HostModel extends BoxObstacle {
      */
     public Vector2 getForce() {
         return force;
-    }
-
-    /**
-     * Sets the Hosts' Gauge Texture
-     * <p>
-     * This method sets the texture of the gauge
-     */
-    public void setHostGaugeTexture(FilmStrip hostGaugeStrip) {
-        this.hostGaugeStrip = hostGaugeStrip;
     }
 
     /**
@@ -356,7 +386,7 @@ public class HostModel extends BoxObstacle {
      * @param height The object width in physics units
      */
     public HostModel(float x, float y, float width, float height, int currentCharge, float maxCharge, Vector2[] ins) {
-        super(x, y, width*0.3f, height*0.5f);
+        super(x, y, width, height);
         force = new Vector2();
         this.currentCharge = currentCharge;
         this.maxCharge = maxCharge;
@@ -380,14 +410,14 @@ public class HostModel extends BoxObstacle {
      * drawing to work properly, you MUST set the drawScale. The drawScale
      * converts the physics units to pixels.
      *
-     * @param x      Initial x position of the box center
-     * @param y      Initial y position of the box center
-     * @param width  The object width in physics units
-     * @param height The object width in physics units
+     * @param x          Initial x position of the box center
+     * @param y          Initial y position of the box center
+     * @param width      The object width in physics units
+     * @param height     The object width in physics units
      * @param isPedestal Whether host is a pedestal or not
      */
     public HostModel(float x, float y, float width, float height, boolean isPedestal) {
-        super(x, y, width*0.3f, height*0.5f);
+        super(x, y, width, height);
         force = new Vector2();
         this.currentCharge = PEDESTAL_CURRENT_CHARGE;
         this.maxCharge = PEDESTAL_MAX_CHARGE;
@@ -403,6 +433,7 @@ public class HostModel extends BoxObstacle {
         isAlive = false;
         setName("pedestal");
     }
+
     /**
      * Creates the physics Body(s) for this object, adding them to the world.
      * <p>
@@ -493,7 +524,7 @@ public class HostModel extends BoxObstacle {
         return instructions[instructionNumber];
     }
 
-    public boolean beenPossessed(){
+    public boolean beenPossessed() {
         return hasBeenPossessed;
     }
 
@@ -505,9 +536,9 @@ public class HostModel extends BoxObstacle {
      * Gets the full list of instructions
      *
      * @return An array of Vector2 objects containing the instructions, or null
-     *         if there are none.
+     * if there are none.
      */
-    public Vector2[] getInstructionList(){
+    public Vector2[] getInstructionList() {
         return instructions;
     }
 
@@ -558,246 +589,159 @@ public class HostModel extends BoxObstacle {
         pedestalHost.setFrame(0);
     }
 
-    /**
-     * sets the FilmStrip for the charged host and the corresponding gauge
-     * @param strip for the charged host
-     */
-    public void setChargedHostStrip (FilmStrip strip) {
-        chargedHost = strip;
-        chargedHost.setFrame(HOST_SOUTH_START);
-        hostGaugeStrip.setFrame(HOST_SOUTH_START);
-        this.setTexture(strip);
+
+    public void setChargeStrip(FilmStrip chargeStrip, int currentCharge) {
+        this.hostChargeUI = chargeStrip;
+        System.out.println(hostChargeUI);
+        this.hostChargeUI.setFrame((int) ((currentCharge / this.maxCharge) * HOST_CHARGE_UI_END));
     }
 
     /**
-     * sets the FilmStrip for the uncharged host and the corresponding gauge
-     * @param strip for the charged host
+     * Sets all the textures by direction for the host
+     *
+     * @param walkE  the direction of the host in East
+     * @param walkN  the direction of the host in North
+     * @param walkNE the direction of the host in North East
+     * @param walkNW the direction of the host in the North West
+     * @param walkS  the direction of the host in the South
+     * @param walkSE the direction of the host in the South East
+     * @param walkSW the direction of the host in the South West
+     * @param walkW  the direction of the host in the West
      */
-    public void setNotChargedHostStrip (FilmStrip strip) {
-        notChargedHost = strip;
-        notChargedHost.setFrame(HOST_SOUTH_START);
-        hostGaugeStrip.setFrame(HOST_SOUTH_START);
-        this.setTexture(strip);
-    }
+    public void setHostStrip(FilmStrip walkE, FilmStrip walkN, FilmStrip walkNE, FilmStrip walkNW, FilmStrip walkS, FilmStrip walkSE, FilmStrip walkSW, FilmStrip walkW) {
 
-    /**
-     * Sets the animation node for the given state of the host
-     *
-     * @param  beenPossesed enumeration to identify the state of the host
-     *
-     * @param  strip the animation node for the given state of the host
-     */
-    public void setHostStateSprite (boolean beenPossesed, FilmStrip strip, Vector2 direction) {
-        if (beenPossesed) {
-            chargedHost = strip;
-            if (direction.x > 0) {
-                // NORTH EAST
-                if (direction.y > 0) {
-                    chargedHost.setFrame(HOST_NORTHEAST_START);
-                    hostGaugeStrip.setFrame(HOST_NORTHEAST_START);
-                }
-                // SOUTH EAST
-                else if (direction.y < 0) {
-                    chargedHost.setFrame(HOST_SOUTHEAST_START);
-                    hostGaugeStrip.setFrame(HOST_SOUTHEAST_START);
-                }
-                // EAST
-                else if (direction.y == 0) {
-                    chargedHost.setFrame(HOST_EAST_START);
-                    hostGaugeStrip.setFrame(HOST_EAST_START);
-                }
-            } else if (direction.x < 0) {
-                // NORTH WEST
-                if (direction.y > 0) {
-                    chargedHost.setFrame(HOST_NORTHWEST_START);
-                    hostGaugeStrip.setFrame(HOST_NORTHWEST_START);
-                }
-                // SOUTH WEST
-                else if (direction.y < 0) {
-                    chargedHost.setFrame(HOST_SOUTHWEST_START);
-                    hostGaugeStrip.setFrame(HOST_SOUTHWEST_START);
-                }
-                // WEST
-                else if (direction.y == 0) {
-                    chargedHost.setFrame(HOST_WEST_START);
-                    hostGaugeStrip.setFrame(HOST_WEST_START);
-                }
-            } else {
-                // NORTH
-                if (direction.y > 0) {
-                    chargedHost.setFrame(HOST_NORTH_START);
-                    hostGaugeStrip.setFrame(HOST_NORTH_START);
-                }
-                // SOUTH
-                else if (direction.y > 0) {
-                    chargedHost.setFrame(HOST_SOUTH_START);
-                    hostGaugeStrip.setFrame(HOST_SOUTH_START);
-                }
-            }
-        } else {
-            notChargedHost = strip;
-            if (direction.x > 0) {
-                // NORTH EAST
-                if (direction.y > 0) {
-                    chargedHost.setFrame(HOST_NORTHEAST_START);
-                    hostGaugeStrip.setFrame(HOST_NORTHEAST_START);
-                }
-                // SOUTH EAST
-                else if (direction.y < 0) {
-                    chargedHost.setFrame(HOST_SOUTHEAST_START);
-                    hostGaugeStrip.setFrame(HOST_SOUTHEAST_START);
-                }
-                // EAST
-                else if (direction.y == 0) {
-                    chargedHost.setFrame(HOST_EAST_START);
-                    hostGaugeStrip.setFrame(HOST_EAST_START);
-                }
-            } else if (direction.x < 0) {
-                // NORTH WEST
-                if (direction.y > 0) {
-                    chargedHost.setFrame(HOST_NORTHWEST_START);
-                    hostGaugeStrip.setFrame(HOST_NORTHWEST_START);
-                }
-                // SOUTH WEST
-                else if (direction.y < 0) {
-                    chargedHost.setFrame(HOST_SOUTHWEST_START);
-                    hostGaugeStrip.setFrame(HOST_SOUTHWEST_START);
-                }
-                // WEST
-                else if (direction.y == 0) {
-                    chargedHost.setFrame(HOST_WEST_START);
-                    hostGaugeStrip.setFrame(HOST_WEST_START);
-                }
-            } else {
-                // NORTH
-                if (direction.y > 0) {
-                    chargedHost.setFrame(HOST_NORTH_START);
-                    hostGaugeStrip.setFrame(HOST_NORTH_START);
-                }
-                // SOUTH
-                else if (direction.y > 0) {
-                    chargedHost.setFrame(HOST_SOUTH_START);
-                    hostGaugeStrip.setFrame(HOST_SOUTH_START);
-                }
-            }
-        }
+        hostStrip = walkS;
+        hostStrip.setFrame(0);
+
+        hostStripNE = walkNE;
+        hostStripNE.setFrame(HOST_START);
+        hostStripSE = walkSE;
+        hostStripSE.setFrame(HOST_START);
+        hostStripE = walkE;
+        hostStripE.setFrame(HOST_START);
+        hostStripNW = walkNW;
+        hostStripNW.setFrame(HOST_START);
+        hostStripSW = walkSW;
+        hostStripSW.setFrame(HOST_START);
+        hostStripW = walkW;
+        hostStripW.setFrame(HOST_START);
+        hostStripN = walkN;
+        hostStripN.setFrame(HOST_START);
+        hostStripS = walkS;
+        hostStripS.setFrame(HOST_START);
     }
 
     /**
      * Animates Host Movement
-     *
+     * <p>
      * Changes the animation based on the last pressed button.
      * This function should be called in host controller
      *
-     * @param state         the state of the host
-     * @param direction     the direction the host is travelling
+     * @param direction the direction the host is travelling
      */
-    public void updateAnimation(boolean state, Vector2 direction) {
-        FilmStrip node = null;
+    public void updateAnimation(Vector2 direction) {
         int frame = 0;
-
-        if (state) {
-            node = chargedHost;
-        } else {
-            node = notChargedHost;
+        if(hostStrip != null) {
+            frame = hostStrip.getFrame();
         }
+        if (!this.isPedestal) {
 
-        if (node != null) {
-            frame = node.getFrame();
-        }
+            // To allow framerate control of this animation
+            elapsedFrames++;
+            updateFrame = false;
+            if (elapsedFrames >= framesPerUpdate) {
+                updateFrame = true;
+                elapsedFrames = 0;
+            }
+            // I'm a little concerned about slowing all animation within the host using one thing, because
+            // if the framerate is sufficiently low it might feel unresponsive because the golem does not immediately
+            // turn in the direction you are moving. For now, because framrate is relatively high, disregard this.
+            if (updateFrame) {
 
-        // To allow framerate control of this animation
-        elapsedFrames++;
-        updateFrame = false;
-        if (elapsedFrames >= framesPerUpdate) {
-            updateFrame = true;
-            elapsedFrames = 0;
-        }
+                //Update UI for Charge
+                this.hostChargeUI.setFrame((int) ((this.currentCharge / this.maxCharge) * HOST_CHARGE_UI_END));
 
-        // I'm a little concerned about slowing all animation within the host using one thing, because
-        // if the framerate is sufficiently low it might feel unresponsive because the golem does not immediately
-        // turn in the direction you are moving. For now, because framrate is relatively high, disregard this.
-        if (updateFrame) {
-        if (direction.x > 0) {
-            // NORTH EAST
-            if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
-                if (frame < HOST_NORTHEAST_END && frame >= HOST_NORTHEAST_START) {
-                    frame++;
-                } else {
-                    frame = HOST_NORTHEAST_START;
-                }
-            }
-            // SOUTH EAST
-            else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
-                if (frame < HOST_SOUTHEAST_END && frame >= HOST_SOUTHEAST_START) {
-                    frame++;
-                } else {
-                    frame = HOST_SOUTHEAST_START;
-                }
-            }
-            // EAST
-            if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
-                if (frame < HOST_EAST_END && frame >= HOST_EAST_START) {
-                    frame++;
-                } else {
-                    frame = HOST_EAST_START;
-                }
-            }
-        } else if (direction.x < 0) {
-            // NORTH WEST
-            if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
-                if (frame < HOST_NORTHWEST_END && frame >= HOST_NORTHWEST_START) {
-                    frame++;
-                } else {
-                    frame = HOST_NORTHWEST_START;
-                }
-            }
-            // SOUTH WEST
-            else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
-                if (frame < HOST_SOUTHWEST_END && frame >= HOST_SOUTHWEST_START) {
-                    frame++;
-                } else {
-                    frame = HOST_SOUTHWEST_START;
-                }
-            }
-            // WEST
-            if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
-                if (frame < HOST_WEST_END && frame >= HOST_WEST_START) {
-                    frame++;
-                } else {
-                    frame = HOST_WEST_START;
-                }
-            }
-        } else if (direction.x == 0 || Math.abs(direction.x) < 0.1) {
-            // NORTH
-            if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
-                if (frame < HOST_NORTH_END && frame >= HOST_NORTH_START) {
-                    frame++;
-                } else {
-                    frame = HOST_NORTH_START;
-                }
-            }
-            // SOUTH
-            else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
-                if (frame < HOST_SOUTH_END && frame >= HOST_SOUTH_START) {
-                    frame++;
-                } else {
-                    frame = HOST_SOUTH_START;
-                }
-            }
-        }
-    }
+                if (direction.x > 0) {
+                    // NORTH EAST
+                    if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                        hostStrip = hostStripNE;
+                        if (frame < HOST_FINISH && frame >= HOST_START) {
+                            frame++;
+                        } else {
+                            frame = HOST_START;
+                        }
 
-        if(node != null) {
-            node.setFrame(frame);
-            hostGaugeStrip.setFrame(frame);
-        }
-
-        if(state) {
-            node = chargedHost;
-        }
-        else {
-            node = notChargedHost;
+                    }
+                    // SOUTH EAST
+                    else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                        hostStrip = hostStripSE;
+                        if (frame < HOST_FINISH && frame >= HOST_START) {
+                            frame++;
+                        } else {
+                            frame = HOST_START;
+                        }
+                    }
+                    // EAST
+                    if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
+                        hostStrip = hostStripE;
+                        if (frame < HOST_FINISH && frame >= HOST_START) {
+                            frame++;
+                        } else {
+                            frame = HOST_START;
+                        }
+                    }
+                } else if (direction.x < 0) {
+                    // NORTH WEST
+                    if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                        hostStrip = hostStripNW;
+                        if (frame < HOST_FINISH && frame >= HOST_START) {
+                            frame++;
+                        } else {
+                            frame = HOST_START;
+                        }
+                    }
+                    // SOUTH WEST
+                    else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                        hostStrip = hostStripSW;
+                        if (frame < HOST_FINISH && frame >= HOST_START) {
+                            frame++;
+                        } else {
+                            frame = HOST_START;
+                        }
+                    }
+                    // WEST
+                    if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
+                        hostStrip = hostStripW;
+                        if (frame < HOST_FINISH && frame >= HOST_START) {
+                            frame++;
+                        } else {
+                            frame = HOST_START;
+                        }
+                    }
+                } else if (direction.x == 0 || Math.abs(direction.x) < 0.1) {
+                    // NORTH
+                    if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                        hostStrip = hostStripN;
+                        if (frame < HOST_FINISH && frame >= HOST_START) {
+                            frame++;
+                        } else {
+                            frame = HOST_START;
+                        }
+                    }
+                    // SOUTH
+                    else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                        hostStrip = hostStripS;
+                        if (frame < HOST_FINISH && frame >= HOST_START) {
+                            frame++;
+                        } else {
+                            frame = HOST_START;
+                        }
+                    }
+                }
+                if(hostStrip != null) {
+                    hostStrip.setFrame(frame);
+                }
+            }
         }
     }
 
@@ -811,7 +755,7 @@ public class HostModel extends BoxObstacle {
             pedUpdateFrame = true;
             pedFrames = 0;
         }
-        if(pedUpdateFrame) {
+        if (pedUpdateFrame) {
             if (this.pedestalHost.getFrame() < this.pedestalHost.getSize() - 1) {
                 this.pedestalHost.setFrame(this.pedestalHost.getFrame() + 1);
             } else {
@@ -826,9 +770,9 @@ public class HostModel extends BoxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
-        if(this.isPedestal) {
+        if (this.isPedestal) {
             // Make pedestal clear when no longer in possession.
-            if(this.isPossessed) {
+            if (this.isPossessed) {
                 canvas.draw(pedestalHost, Color.WHITE, pedestalHost.getRegionWidth() / 2, pedestalHost.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
             } else {
                 canvas.draw(pedestalHost, Color.CLEAR, pedestalHost.getRegionWidth() / 2, pedestalHost.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
@@ -836,30 +780,30 @@ public class HostModel extends BoxObstacle {
         } else {
             // Draw the host
             float chargeProgression = currentCharge / maxCharge;
-            if (this.chargedHost != null && this.hostGaugeStrip != null) {
+            if (this.hostStrip != null && this.hostChargeUI != null) {
 
                 // If bot has already been possessed colors should change
                 if (this.hasBeenPossessed) {
                     /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
                     if (this.currentCharge < this.maxCharge) {
-                        canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
 
                         // Color changes more and more to a red or goal color here
-                        Color warningColor = new Color(chargeProgression * 5, 4 - (4.5f * chargeProgression), 4 - (9 * chargeProgression), 1);
+                        Color warningColor = new Color((104f/256f) + (chargeProgression * (151f/256f)), (241f/256f) - ((241f/256f) * chargeProgression), (233f/256f) - ((185f/256f) * chargeProgression), 1);
+
                         if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
                             // Color of the 3 flashes
                             warningColor = Color.BLACK;
                         }
-                        canvas.draw(hostGaugeStrip, warningColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-
+                        canvas.draw(hostChargeUI, warningColor, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.4f, 0.4f);
+                        canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2, hostStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
                     } else {
-                        canvas.draw(chargedHost, Color.RED, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                        canvas.draw(hostChargeUI, Color.RED, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.4f, 0.4f);
                     }
                 }
                 // When the bot hasn't been possessed the indicator color should be black
                 else {
-                    canvas.draw(chargedHost, Color.WHITE, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-                    canvas.draw(hostGaugeStrip, unpossessedColor, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.x, getAngle(), sx, sy);
+                    canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2, hostStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                    canvas.draw(hostChargeUI, Color.BLACK, hostChargeUI.getRegionWidth() / 2,hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 0.4f, 0.4f);
                 }
             }
         }
