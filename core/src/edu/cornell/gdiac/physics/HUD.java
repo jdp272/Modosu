@@ -24,7 +24,7 @@ public class HUD {
     private static int SPIRIT_LIVES = 3;
     private static String FONT_FILE = "shared/Asul.ttf";
     private static String GOLEM_INDICATOR_FILE = "shared/golemcounter.png";
-    private static String LIFE_FILE = "shared/life.png";
+    private static String LIFE_FILE = "shared/spiritlifefull.png";
     private static String PADDING = "            ";
 
     /* Declaration for new Stage */

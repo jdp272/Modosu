@@ -257,18 +257,6 @@ public class Wall extends BoxObstacle {
             canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
         }
 
-        // Draw the back edge
-        if(backEdgeFrame != NO_SIDE) {
-            wallStrip.setFrame(backEdgeFrame);
-            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,(getY() + TILE_WIDTH)*drawScale.y,getAngle(),sx,sy);
-
-            // Draw the line behind the back edge and the wall, if this is a top wall
-            if(primaryFrame != WALL_FRONT) {
-                wallStrip.setFrame(BACK_LINE);
-                canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
-            }
-        }
-
         // Draw the corners
         if(lowerLeftCornerFrame != NO_SIDE) {
             wallStrip.setFrame(lowerLeftCornerFrame);
@@ -286,7 +274,31 @@ public class Wall extends BoxObstacle {
 //            // Add a tile width so that it is drawn above
 //            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,(getY() + TILE_WIDTH)*drawScale.y,getAngle(),sx,sy);
 //        }
+    }
 
+    /**
+     * Simply draws the top of the walls, so that they can be drawn over other
+     * tiles
+     *
+     * @param canvas Drawing context
+     */
+    public void drawTop(GameCanvas canvas) {
+        if (texture == null) {
+            System.out.println("draw() called on wall with null texture");
+            return;
+        }
+
+        // Draw the back edge
+        if(backEdgeFrame != NO_SIDE) {
+            wallStrip.setFrame(backEdgeFrame);
+            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,(getY() + TILE_WIDTH)*drawScale.y,getAngle(),sx,sy);
+
+            // Draw the line behind the back edge and the wall, if this is a top wall
+            if(primaryFrame != WALL_FRONT) {
+                wallStrip.setFrame(BACK_LINE);
+                canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+            }
+        }
     }
 
 //    public void setWall(int n){

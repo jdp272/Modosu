@@ -45,7 +45,12 @@ import edu.cornell.gdiac.util.*;
  * loading screen.
  */
 public class LoadingMode implements Screen, InputProcessor {
-	// Textures necessary to support the loading screen 
+	// Textures necessary to support the loading screen
+	private static final String WAKING_GOLEM_FILE = "shared/wakinggolem.png";
+	private static final String LOADING_TEXT_FILE = "shared/loadingspritesheet.png";
+	private static final String LOADING_BACKGROUND_FILE = "shared/loading.png";
+
+	// Textures necessary to support the menu screen
 	private static final String BACKGROUND_FILE = "shared/menu.png";
 	private static final String PROGRESS_FILE = "shared/progressbar.png";
 	private static final String PLAY_BTN_FILE = "shared/start.png";
@@ -61,7 +66,7 @@ public class LoadingMode implements Screen, InputProcessor {
 
 	/** Whether sound mode is on */
 	private boolean sound;
-	
+
 	/** Background texture for start-up */
 	private Texture background;
 	/** Texture atlas to support a progress bar */
@@ -80,20 +85,13 @@ public class LoadingMode implements Screen, InputProcessor {
 	private Texture mute;
 	/** Unmute button to display active */
 	private Texture unmute;
-	
-	// statusBar is a "texture atlas." Break it up into parts.
-	/** Left cap to the status background (grey region) */
-	private TextureRegion statusBkgLeft;
-	/** Middle portion of the status background (grey region) */
-	private TextureRegion statusBkgMiddle;
-	/** Right cap to the status background (grey region) */
-	private TextureRegion statusBkgRight;
-	/** Left cap to the status forground (colored region) */
-	private TextureRegion statusFrgLeft;
-	/** Middle portion of the status forground (colored region) */
-	private TextureRegion statusFrgMiddle;
-	/** Right cap to the status forground (colored region) */
-	private TextureRegion statusFrgRight;	
+
+	/** Sprite sheet of Golem Waking Up */
+	private Texture wakingGolemTexture;
+	/** Sprite sheet of Loading Text */
+	private Texture loadingTexture;
+	/** Blank Loading Background */
+	private Texture loadingBackgroundTexture;
 
 	/** Default budget for asset loader (do nothing but load 60 fps) */
 	private static int DEFAULT_BUDGET = 15;
@@ -145,16 +143,21 @@ public class LoadingMode implements Screen, InputProcessor {
 	private Color colorMute;
 
 
-	/** Ratio of the bar width to the screen */
-	private static float BAR_WIDTH_RATIO  = 0.66f;
-	/** Ration of the bar height to the screen */
-	private static float BAR_HEIGHT_RATIO = 0.25f;	
-	/** Height of the progress bar */
-	private static int PROGRESS_HEIGHT = 30;
-	/** Width of the rounded cap on left or right */
-	private static int PROGRESS_CAP    = 15;
-	/** Width of the middle portion in texture atlas */
-	private static int PROGRESS_MIDDLE = 200;
+	/** Row length of start animation  */
+	private static int WAKING_GOLEM_ROW  = 1;
+	/** Column length of start animation */
+	private static int WAKING_GOLEM_COLUMN = 8;
+	/** Total Size of start animation */
+	private static int WAKING_GOLEM_TOTAL = 8;
+	/** Row length of start text animation */
+	private static int LOADING_TEXT_ROW_COL    = 2;
+	/** Column length of start text animation */
+	private static int LOADING_TEXT_TOTAL = 4;
+	/** Offset */
+	private static int OFFSET = 128;
+	/** 2X Offset */
+	private static int OFFSET_2X = 256;
+
 	/** Amount to scale the play button */
 	private static float BUTTON_SCALE  = 0.75f;
 
@@ -166,11 +169,9 @@ public class LoadingMode implements Screen, InputProcessor {
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
-	/** The width of the progress bar */	
-	private int width;
-	/** The y-coordinate of the center of the progress bar */
+	/** The y-coordinate of the center of the screen */
 	private int centerY;
-	/** The x-coordinate of the center of the progress bar */
+	/** The x-coordinate of the center of the screen */
 	private int centerX;
 	/** The height of the canvas window (necessary since sprite origin != screen origin) */
 	private int heightY;
@@ -253,7 +254,7 @@ public class LoadingMode implements Screen, InputProcessor {
 		this.manager = manager;
 		this.canvas  = canvas;
 		budget = millis;
-		
+
 		// Compute the dimensions from the canvas
 		resize(canvas.getWidth(),canvas.getHeight());
 
@@ -270,6 +271,11 @@ public class LoadingMode implements Screen, InputProcessor {
 
 		preLoadContent();
 
+		// Load the loading screen textures
+		wakingGolemTexture = new Texture(WAKING_GOLEM_FILE);
+		loadingTexture = new Texture(LOADING_TEXT_FILE);
+		loadingBackgroundTexture = new Texture(LOADING_BACKGROUND_FILE);
+
 		// Load the next two images immediately.
 		playButton = null;
 		lvlDesign = null;
@@ -278,6 +284,10 @@ public class LoadingMode implements Screen, InputProcessor {
 		quit = null;
 		background = new Texture(BACKGROUND_FILE);
 		statusBar  = new Texture(PROGRESS_FILE);
+
+		centerY = Gdx.graphics.getHeight()/2;
+		centerX = Gdx.graphics.getWidth()/2;
+
 		mute = null;
 		unmute = null;
 		
@@ -286,21 +296,16 @@ public class LoadingMode implements Screen, InputProcessor {
 		isPressed = false;
 		isReady = false;
 		active = false;
-
-		// Break up the status bar texture into regions
-		statusBkgLeft   = new TextureRegion(statusBar,0,0,PROGRESS_CAP,PROGRESS_HEIGHT);
-		statusBkgRight  = new TextureRegion(statusBar,statusBar.getWidth()-PROGRESS_CAP,0,PROGRESS_CAP,PROGRESS_HEIGHT);
-		statusBkgMiddle = new TextureRegion(statusBar,PROGRESS_CAP,0,PROGRESS_MIDDLE,PROGRESS_HEIGHT);
-
-		int offset = statusBar.getHeight()-PROGRESS_HEIGHT;
-		statusFrgLeft   = new TextureRegion(statusBar,0,offset,PROGRESS_CAP,PROGRESS_HEIGHT);
-		statusFrgRight  = new TextureRegion(statusBar,statusBar.getWidth()-PROGRESS_CAP,offset,PROGRESS_CAP,PROGRESS_HEIGHT);
-		statusFrgMiddle = new TextureRegion(statusBar,PROGRESS_CAP,offset,PROGRESS_MIDDLE,PROGRESS_HEIGHT);
+		updateFrame = true;
 
 		buttonPressed = pressState.NONE;
 		Gdx.input.setInputProcessor(this);
 
 		active = true;
+
+		// For the loading screen animations
+		setFilmStrip(new FilmStrip(wakingGolemTexture, WAKING_GOLEM_ROW, WAKING_GOLEM_COLUMN, WAKING_GOLEM_TOTAL),
+				new FilmStrip(loadingTexture, LOADING_TEXT_ROW_COL, LOADING_TEXT_ROW_COL, LOADING_TEXT_TOTAL));
 	}
 
 	/**
@@ -336,14 +341,9 @@ public class LoadingMode implements Screen, InputProcessor {
 	 * Called when this screen should release all resources.
 	 */
 	public void dispose() {
-		 statusBkgLeft = null;
-		 statusBkgRight = null;
-		 statusBkgMiddle = null;
-
-		 statusFrgLeft = null;
-		 statusFrgRight = null;
-		 statusFrgMiddle = null;
-
+		 loadingTexture.dispose();
+		 wakingGolemTexture.dispose();
+		 loadingBackgroundTexture.dispose();
 		 background.dispose();
 		 statusBar.dispose();
 		 playButton.dispose();
@@ -352,7 +352,7 @@ public class LoadingMode implements Screen, InputProcessor {
 		 credits.dispose();
 		 quit.dispose();
 		 unmute.dispose();
-		 mute.dispose();;
+		 mute.dispose();
 		 background = null;
 		 statusBar  = null;
 		 if (playButton != null) {
@@ -407,11 +407,15 @@ public class LoadingMode implements Screen, InputProcessor {
 	 */
 	private void draw() {
 		canvas.begin();
-		canvas.draw(background, 0, 0);
+
 		if (playButton == null) {
+			canvas.draw(loadingBackgroundTexture, 0,0);
+			updateAnimation();
 			drawProgress(canvas);
 		}
 		else {
+			canvas.draw(background, 0, 0);
+
 			canvas.draw(playButton, buttonPressed == pressState.START && isPressed ? Color.SKY : colorStart, 0, 0,
 						BUTTON_X, START_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
@@ -435,7 +439,54 @@ public class LoadingMode implements Screen, InputProcessor {
 		}
 		canvas.end();
 	}
-	
+
+	/** The texture filmstrip for the spirit body */
+	protected FilmStrip  golemWakingStrip;
+	/** The texture filmstrip for the spirit body */
+	protected FilmStrip  loadingTextStrip;
+	/** The number of frames that have elapsed since the last animation update */
+	private int elapsedFrames = 0;
+	/** The number of frames that should pass before the animation updates */
+	private int framesPerUpdate = 16;
+	/** Whether or not animation should be updated on this frame */
+	private boolean updateFrame;
+
+	private static final int FRAME_START = 0;
+
+	/**
+	 * sets all the film strips of the spirit
+	 * @param golemWakingUp filmstrip for the spirit's body
+	 */
+	public void setFilmStrip (FilmStrip golemWakingUp, FilmStrip loadingTextStrip) {
+		this.golemWakingStrip = golemWakingUp;
+		this.golemWakingStrip.setFrame(FRAME_START);
+
+		this.loadingTextStrip = loadingTextStrip;
+		this.loadingTextStrip.setFrame(FRAME_START);
+
+	}
+
+	public void updateAnimation () {
+		elapsedFrames++;
+
+		if (elapsedFrames >= framesPerUpdate) {
+			updateFrame = true;
+			elapsedFrames = 0;
+		}
+		if (updateFrame) {
+			if ((this.golemWakingStrip.getFrame() < this.golemWakingStrip.getSize() - 1)) {
+				this.golemWakingStrip.setFrame(this.golemWakingStrip.getFrame() + 1); }
+
+			if ((this.loadingTextStrip.getFrame() < this.loadingTextStrip.getSize() - 1)) {
+				this.loadingTextStrip.setFrame(this.loadingTextStrip.getFrame() + 1);
+			} else {
+				this.loadingTextStrip.setFrame(FRAME_START);
+			}
+			updateFrame = false;
+		}
+	}
+
+
 	/**
 	 * Updates the progress bar according to loading progress
 	 *
@@ -446,20 +497,9 @@ public class LoadingMode implements Screen, InputProcessor {
 	 * @param canvas The drawing context
 	 */	
 	private void drawProgress(GameCanvas canvas) {
-
-		centerY = 75;
-
-		canvas.draw(statusBkgLeft,   Color.WHITE, centerX-width/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-		canvas.draw(statusBkgRight,  Color.WHITE, centerX+width/2-scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-		canvas.draw(statusBkgMiddle, Color.WHITE, centerX-width/2+scale*PROGRESS_CAP, centerY, width-2*scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-
-		canvas.draw(statusFrgLeft,   Color.WHITE, centerX-width/2, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
 		if (progress > 0) {
-			float span = progress*(width-2*scale*PROGRESS_CAP)/2.0f;
-			canvas.draw(statusFrgRight,  Color.WHITE, centerX-width/2+scale*PROGRESS_CAP+span, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
-			canvas.draw(statusFrgMiddle, Color.WHITE, centerX-width/2+scale*PROGRESS_CAP, centerY, span, scale*PROGRESS_HEIGHT);
-		} else {
-			canvas.draw(statusFrgRight,  Color.WHITE, centerX-width/2+scale*PROGRESS_CAP, centerY, scale*PROGRESS_CAP, scale*PROGRESS_HEIGHT);
+			canvas.draw(golemWakingStrip, Color.WHITE, centerX - OFFSET, centerY - OFFSET, OFFSET_2X, OFFSET_2X);
+			canvas.draw(loadingTextStrip, Color.WHITE, centerX - OFFSET, centerY - OFFSET_2X, OFFSET_2X, OFFSET_2X);
 		}
 	}
 
@@ -524,10 +564,7 @@ public class LoadingMode implements Screen, InputProcessor {
 		float sx = ((float)width)/STANDARD_WIDTH;
 		float sy = ((float)height)/STANDARD_HEIGHT;
 		scale = Math.min(sx, sy);
-		
-		this.width = (int)(BAR_WIDTH_RATIO*width);
-		centerY = (int)(BAR_HEIGHT_RATIO*height);
-		centerX = width/2;
+
 		heightY = height;
 	}
 
