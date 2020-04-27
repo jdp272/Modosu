@@ -33,7 +33,7 @@ public class Loader {
     }
 
     /** A struct that stores data from an obstacle when read from the json */
-    public static class ObstacleData {
+    public static class WallData {
         public Vector2 origin; // Center of the box
         public Vector2 dimensions;
 
@@ -56,6 +56,21 @@ public class Loader {
         public boolean upRight;
         public boolean downLeft;
         public boolean downRight;
+    }
+
+    /** A struct that stores data from an obstacle when read from the json */
+    public static class BorderEdgeData {
+        public Vector2 origin; // Center of the box
+
+        public int frame;
+        public BorderEdge.Side side;
+    }
+
+    /** A struct that stores data from an obstacle when read from the json */
+    public static class BorderCornerData {
+        public Vector2 origin; // Center of the box
+
+        public BorderCorner.Corner corner;
     }
 
     /** A struct that stores data from sand when read from the json */
@@ -99,10 +114,12 @@ public class Loader {
         public Vector2 dimensions;
         public Vector2 lowerLeft;
 
-        public ObstacleData[] obstacleData;
+        public WallData[] wallData;
         public WaterData[] waterData;
         public SandData[] sandData;
         public HostData[] hostData;
+        public BorderEdgeData[] borderEdgeData;
+        public BorderCornerData[] borderCornerData;
         public EnergyPillarData[] energyPillarData;
 
         public PedestalData pedestalData;
@@ -167,26 +184,26 @@ public class Loader {
         levelData.dimensions = level.dimensions;
 
         // Store the obstacle data
-        levelData.obstacleData = new ObstacleData[level.obstacles.length];
-        for(int i = 0; i < level.obstacles.length; i++) {
-            ObstacleData oData = new ObstacleData();
-            oData.dimensions = level.obstacles[i].getDimension();
-            oData.origin = new Vector2(level.obstacles[i].getX(), level.obstacles[i].getY());
-            if(level.obstacles[i] instanceof Wall) {
-                oData.primaryFrame = ((Wall)level.obstacles[i]).getPrimaryFrame();
-                oData.leftFrame = ((Wall)level.obstacles[i]).getLeftFrame();
-                oData.rightFrame = ((Wall)level.obstacles[i]).getRightFrame();
-                oData.frontEdgeFrame = ((Wall)level.obstacles[i]).getFrontEdgeFrame();
-                oData.backEdgeFrame = ((Wall)level.obstacles[i]).getBackEdgeFrame();
-                oData.lowerLeftCornerFrame = ((Wall)level.obstacles[i]).getLowerLeftCornerFrame();
-                oData.lowerRightCornerFrame = ((Wall)level.obstacles[i]).getLowerRightCornerFrame();
+        levelData.wallData = new WallData[level.walls.length];
+        for(int i = 0; i < level.walls.length; i++) {
+            WallData oData = new WallData();
+            oData.dimensions = level.walls[i].getDimension();
+            oData.origin = new Vector2(level.walls[i].getX(), level.walls[i].getY());
+            if(level.walls[i] instanceof Wall) {
+                oData.primaryFrame = ((Wall)level.walls[i]).getPrimaryFrame();
+                oData.leftFrame = ((Wall)level.walls[i]).getLeftFrame();
+                oData.rightFrame = ((Wall)level.walls[i]).getRightFrame();
+                oData.frontEdgeFrame = ((Wall)level.walls[i]).getFrontEdgeFrame();
+                oData.backEdgeFrame = ((Wall)level.walls[i]).getBackEdgeFrame();
+                oData.lowerLeftCornerFrame = ((Wall)level.walls[i]).getLowerLeftCornerFrame();
+                oData.lowerRightCornerFrame = ((Wall)level.walls[i]).getLowerRightCornerFrame();
             } else {
                 oData.primaryFrame = -1;
                 oData.leftFrame = -1;
                 oData.rightFrame = -1;
             }
 
-            levelData.obstacleData[i] = oData;
+            levelData.wallData[i] = oData;
         }
 
         // Store the water data
@@ -219,6 +236,27 @@ public class Loader {
             sData.downRight = level.sand[i].getDownRightCorner();
 
             levelData.sandData[i] = sData;
+        }
+
+        // Store the border edge data
+        levelData.borderEdgeData = new BorderEdgeData[level.borderEdges.length];
+        for(int i = 0; i < level.borderEdges.length; i++) {
+            BorderEdgeData beData = new BorderEdgeData();
+            beData.origin = level.borderEdges[i].getPosition();
+            beData.side = level.borderEdges[i].getSide();
+            beData.frame = level.borderEdges[i].getFrame();
+
+            levelData.borderEdgeData[i] = beData;
+        }
+
+        // Store the border edge data
+        levelData.borderCornerData = new BorderCornerData[level.borderCorners.length];
+        for(int i = 0; i < level.borderCorners.length; i++) {
+            BorderCornerData bcData = new BorderCornerData();
+            bcData.origin = level.borderCorners[i].getPosition();
+            bcData.corner = level.borderCorners[i].getCorner();
+
+            levelData.borderCornerData[i] = bcData;
         }
 
         // Store the energy pillar data
@@ -275,23 +313,21 @@ public class Loader {
         Vector2 dimensions = levelData.dimensions;
         Vector2 lowerLeft = levelData.lowerLeft;
 
-        // Create the obstacles
-        BoxObstacle[] obstacles = new BoxObstacle[levelData.obstacleData.length];
-        ObstacleData oData; // A simple reference to the data being processed
-
-        for (int i = 0; i < levelData.obstacleData.length; i++) {
-            oData = levelData.obstacleData[i];
-            obstacles[i] = factory.makeWall(oData.origin.x, oData.origin.y,
+        // Create the walls
+        Wall[] walls = new Wall[levelData.wallData.length];
+        WallData oData; // A simple reference to the data being processed
+        for (int i = 0; i < levelData.wallData.length; i++) {
+            oData = levelData.wallData[i];
+            walls[i] = factory.makeWall(oData.origin.x, oData.origin.y,
                     oData.primaryFrame, oData.leftFrame, oData.rightFrame,
                     oData.frontEdgeFrame, oData.backEdgeFrame,
                     oData.lowerLeftCornerFrame, oData.lowerRightCornerFrame);
 
-            // obstacles[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.dimensions.y);
+            // walls[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.dimensions.y);
         }
 
         WaterTile[] water = new WaterTile[levelData.waterData.length];
         WaterData wData; // A simple reference to the data being processed
-
         for (int i = 0; i < levelData.waterData.length; i++) {
             wData = levelData.waterData[i];
             water[i] = factory.makeWater(wData.origin.x, wData.origin.y, wData.frame);
@@ -300,16 +336,28 @@ public class Loader {
 
         SandTile[] sand = new SandTile[levelData.sandData.length];
         SandData sData;
-
         for (int i = 0; i < levelData.sandData.length; i++) {
             sData = levelData.sandData[i];
             sand[i] = factory.makeSand(sData.origin.x, sData.origin.y, sData.frame);
             sand[i].setCorners(sData.upLeft, sData.upRight, sData.downLeft, sData.downRight);
         }
 
+        BorderEdge[] borderEdges = new BorderEdge[levelData.borderEdgeData.length];
+        BorderEdgeData beData;
+        for (int i = 0; i < levelData.borderEdgeData.length; i++) {
+            beData = levelData.borderEdgeData[i];
+            borderEdges[i] = factory.makeBorder(beData.origin.x, beData.origin.y, beData.side, beData.frame);
+        }
+
+        BorderCorner[] borderCorners = new BorderCorner[levelData.borderCornerData.length];
+        BorderCornerData bcData;
+        for (int i = 0; i < levelData.borderCornerData.length; i++) {
+            bcData = levelData.borderCornerData[i];
+            borderCorners[i] = factory.makeBorderCorner(bcData.origin.x, bcData.origin.y, bcData.corner);
+        }
+
         EnergyPillar[] energyPillars = new EnergyPillar[levelData.energyPillarData.length];
         EnergyPillarData epData;
-
         for(int i = 0; i < levelData.energyPillarData.length; i++) {
             epData = levelData.energyPillarData[i];
             energyPillars[i] = factory.makeEnergyPillar(epData.origin.x, epData.origin.y);
@@ -338,7 +386,7 @@ public class Loader {
         // Create the starting "host" (with no charge capacity)
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
-        return new Level(dimensions, obstacles, water, sand, energyPillars,  hosts, spirit, pedestal);
+        return new Level(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, spirit, pedestal);
     }
 
     public Level reset(int level) {

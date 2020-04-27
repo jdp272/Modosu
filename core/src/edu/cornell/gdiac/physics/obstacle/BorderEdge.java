@@ -47,8 +47,25 @@ public class BorderEdge extends BoxObstacle {
         this.cache = new Vector2();
     }
 
+    public BorderEdge(float x, float y, float width, float height, Side side, int frame, FilmStrip edgeStrip) {
+        super(x, y, width, height);
+        this.edgeStrip = edgeStrip;
+        setTexture(this.edgeStrip);
+        setSide(side);
+
+//        this.frame = frame;
+        this.edgeStrip.setFrame(frame);
+
+        this.cache = new Vector2();
+    }
+
     /**
      * @return The frame for this border edge
+     */
+    public int getFrame() { return edgeStrip.getFrame(); }
+
+    /**
+     * @return The side for this border edge
      */
     public Side getSide() { return side; }
 

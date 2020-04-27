@@ -531,6 +531,9 @@ public class LevelDesignerMode extends WorldController {
 
 
 //		try {
+//		level = new Level(new Vector2(10, 10), new Wall[0], new WaterTile[0],
+//				new SandTile[0], new BorderEdge[0], new BorderCorner[0], new EnergyPillar[0],
+//				new ArrayList<HostModel>(), factory.makeSpirit(5, 5), factory.makePedestal(5, 5));
         level = loader.loadLevel(levelToLoad);
 //		} catch (Exception e) {
 //			System.out.println(e);
@@ -550,7 +553,7 @@ public class LevelDesignerMode extends WorldController {
 		topBorder = bottomBorder + Math.max((int)(dimensions.y / TILE_WIDTH), MINIMUM_BOARD_WIDTH);
 		rightBorder = leftBorder + Math.max((int)(dimensions.x / TILE_WIDTH), MINIMUM_BOARD_WIDTH);
 
-		for(Obstacle obj : level.obstacles) {
+		for(Obstacle obj : level.walls) {
 			addNewObstacle(obj);
 		}
 		for(Obstacle obj : level.hosts) {
@@ -560,6 +563,12 @@ public class LevelDesignerMode extends WorldController {
 			addNewObstacle(obj);
 		}
 		for(Obstacle obj : level.sand) {
+			addNewObstacle(obj);
+		}
+		for(Obstacle obj : level.borderEdges) {
+			addNewObstacle(obj);
+		}
+		for(Obstacle obj : level.borderCorners) {
 			addNewObstacle(obj);
 		}
 		for (Obstacle obj : level.energyPillars) {
@@ -1491,10 +1500,12 @@ public class LevelDesignerMode extends WorldController {
         // TODO: Make this not creating new objects by updating Level to use PooledList(?)
 
         SpiritModel spirit = null;
-        ArrayList<BoxObstacle> obstacleList = new ArrayList<>();
         ArrayList<BoxObstacle> waterList = new ArrayList<>();
         ArrayList<BoxObstacle> sandList = new ArrayList<>();
         ArrayList<HostModel> hostList = new ArrayList<>();
+		ArrayList<Wall> wallList = new ArrayList<>();
+		ArrayList<BorderEdge> borderEdgeList = new ArrayList<>();
+		ArrayList<BorderCorner> borderCornerList = new ArrayList<>();
         ArrayList<EnergyPillar> energyPillarList = new ArrayList<>();
         HostModel pedestal = null;
 
@@ -1529,27 +1540,40 @@ public class LevelDesignerMode extends WorldController {
                 sandList.add((SandTile) obj);
             } else if (obj instanceof EnergyPillar) {
                 energyPillarList.add((EnergyPillar) obj);
-            } else if (obj instanceof BoxObstacle) {
-                obstacleList.add((BoxObstacle) obj);
-            }
+            } else if (obj instanceof Wall) {
+                wallList.add((Wall) obj);
+            } else if (obj instanceof BorderEdge) {
+				borderEdgeList.add((BorderEdge) obj);
+			} else if (obj instanceof BorderCorner) {
+				borderCornerList.add((BorderCorner) obj);
+			}
         }
 
 //		dimensionsCache.set((rightBorder - leftBorder) * Constants.TILE_WIDTH, (topBorder - bottomBorder) * Constants.TILE_WIDTH);
 //		System.out.println(dimensionsCache);
 
         // For now, until the types used for levels are fixed
-        BoxObstacle[] obstacleArray = new BoxObstacle[obstacleList.size()];
-        obstacleList.toArray(obstacleArray);
+        Wall[] wallArray = new Wall[wallList.size()];
+        wallList.toArray(wallArray);
+
         WaterTile[] waterArray = new WaterTile[waterList.size()];
         waterList.toArray(waterArray);
+
         SandTile[] sandArray = new SandTile[sandList.size()];
         sandList.toArray(sandArray);
+
+		BorderEdge[] borderEdgeArray = new BorderEdge[borderEdgeList.size()];
+		borderEdgeList.toArray(borderEdgeArray);
+
+		BorderCorner[] borderCornerArray = new BorderCorner[borderCornerList.size()];
+		borderCornerList.toArray(borderCornerArray);
+
         EnergyPillar[] energyPillarArray = new EnergyPillar[energyPillarList.size()];
         energyPillarList.toArray(energyPillarArray);
 
         // TODO: what if spirit is null
 
-        level.set(dimensions, obstacleArray, waterArray, sandArray, energyPillarArray, hostList, spirit, pedestal);
+        level.set(dimensions, wallArray, waterArray, sandArray, borderEdgeArray, borderCornerArray, energyPillarArray, hostList, spirit, pedestal);
         loader.saveLevel(f, level);
 
         reset();

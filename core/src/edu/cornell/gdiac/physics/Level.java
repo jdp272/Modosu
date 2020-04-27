@@ -2,10 +2,7 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.physics.host.HostModel;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
-import edu.cornell.gdiac.physics.obstacle.EnergyPillar;
-import edu.cornell.gdiac.physics.obstacle.SandTile;
-import edu.cornell.gdiac.physics.obstacle.WaterTile;
+import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
 import java.util.ArrayList;
@@ -19,7 +16,7 @@ public class Level {
      * An empty constructor for a level. Everything is null.
      */
     public Level() {
-        set(null, null, null, null, null, null, null, null);
+        set(null, null, null, null, null, null, null, null, null, null);
     }
 
     /**
@@ -27,7 +24,7 @@ public class Level {
      *
      * @param dimensions The dimensions of the rectangular board in Box2D
      *                   coordinates
-     * @param obstacles An array of the obstacles in the level
+     * @param walls An array of the walls in the level
      * @param water An array of the water tiles in the level
      * @param sand An array of the sand tiles in the level
      * @param hosts An array of the hosts in the level
@@ -35,28 +32,36 @@ public class Level {
      */
     public Level(
             Vector2 dimensions,
-            BoxObstacle[] obstacles,
+            Wall[] walls,
             WaterTile[] water,
             SandTile[] sand,
+            BorderEdge[] borderEdges,
+            BorderCorner[] borderCorners,
             EnergyPillar[] energyPillars,
             ArrayList<HostModel> hosts,
             SpiritModel start,
             HostModel pedestal
     ) {
-        set(dimensions, obstacles, water, sand, energyPillars, hosts, start, pedestal);
+        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, start, pedestal);
     }
 
     /** The dimensions of the rectangular board, in Box2D coordinates */
     public Vector2 dimensions;
 
-    /** An array of the obstacles in the level */
-    public BoxObstacle[] obstacles;
+    /** An array of the walls in the level */
+    public Wall[] walls;
 
     /** An array of the water tiles in the level */
     public WaterTile[] water;
 
     /** An array of the sand tiles in the level */
     public SandTile[] sand;
+
+    /** An array of the border edges in the level */
+    public BorderEdge[] borderEdges;
+
+    /** An array of the border corners in the level */
+    public BorderCorner[] borderCorners;
 
     /** An array of the energy pillars in the level */
     public EnergyPillar[] energyPillars;
@@ -72,18 +77,22 @@ public class Level {
 
     public void set(
             Vector2 dimensions,
-            BoxObstacle[] obstacles,
+            Wall[] walls,
             WaterTile[] water,
             SandTile[] sand,
+            BorderEdge[] borderEdges,
+            BorderCorner[] borderCorners,
             EnergyPillar[] energyPillars,
             ArrayList<HostModel> hosts,
             SpiritModel start,
             HostModel pedestal
     ) {
         this.dimensions = dimensions;
-        this.obstacles = obstacles;
+        this.walls = walls;
         this.water = water;
         this.sand = sand;
+        this.borderEdges = borderEdges;
+        this.borderCorners = borderCorners;
         this.energyPillars = energyPillars;
         this.hosts = hosts;
         this.start = start;

@@ -236,10 +236,10 @@ public class GamePlayController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-		for(Obstacle obj : level.obstacles) {
+		for(Obstacle obj : level.walls) {
 			// Set the hitbox of the wall to be dependent on its texture
 			if(obj instanceof Wall) {
-				((Wall)obj).setAltHitbox();;
+				((Wall)obj).setAltHitbox();
 			}
 			addQueue.add(obj);
 		}
@@ -247,6 +247,12 @@ public class GamePlayController extends WorldController {
 			addQueue.add(obj);
 		}
 		for(Obstacle obj : level.sand) {
+			addQueue.add(obj);
+		}
+		for(Obstacle obj : level.borderEdges) {
+			addQueue.add(obj);
+		}
+		for(Obstacle obj : level.borderCorners) {
 			addQueue.add(obj);
 		}
 		for(Obstacle obj : level.energyPillars) {
@@ -333,7 +339,7 @@ public class GamePlayController extends WorldController {
 	public void update(float delta) {
 
 		//keep everything in bounds
-		keepInBounds();
+//		keepInBounds();
 
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){

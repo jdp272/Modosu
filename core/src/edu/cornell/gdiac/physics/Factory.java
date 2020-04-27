@@ -297,6 +297,26 @@ public class Factory {
         return edge;
     }
 
+    public BorderEdge makeBorder(float x, float y, BorderEdge.Side side, int frame) {
+        BorderEdge edge = new BorderEdge(
+                x,
+                y,
+                64 / scale.x,
+                64 / scale.y,
+                side,
+                frame,
+                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLS)
+        );
+        edge.selectable = false;
+        edge.setDrawScale(scale);
+        edge.setSX(0.25f);
+        edge.setSY(0.25f);
+        edge.setBodyType(BodyDef.BodyType.StaticBody);
+        edge.setSensor(makeSensors);
+        edge.setName("edge");
+        return edge;
+    }
+
     public BorderCorner makeBorderCorner(float x, float y, BorderCorner.Corner c) {
         BorderCorner corner = new BorderCorner(
                 x,
