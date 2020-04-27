@@ -112,6 +112,10 @@ public abstract class WorldController implements Screen {
 	private static String CORNER_SAND_FILE = "shared/sand_corners_spritesheet.png";
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_FILE = "shared/spirit_pedestal.png";
+	/** File to texture for borders */
+	private static String BORDER_EDGE_FILE = "shared/forest.png";
+	/** File to texture for borders */
+	private static String BORDER_CORNER_FILE = "shared/forestcenter.png";
 
 	private static int FONT_SIZE = 56;
 
@@ -158,6 +162,10 @@ public abstract class WorldController implements Screen {
 	private static Texture spiritBodyTexture;
 	/** Texture for Spirit Tail Texture */
 	private static Texture spiritTailTexture;
+	/** Texture for border edges */
+	private static Texture borderEdgeTexture;
+	/** Texture for border corners */
+	private static Texture borderCornerTexture;
 
 	public ArrowModel arrow;
 
@@ -221,7 +229,10 @@ public abstract class WorldController implements Screen {
 		assets.add(SPIRIT_HEAD_FILE);
 		manager.load(SPIRIT_TAIL_FILE, Texture.class);
 		assets.add(SPIRIT_TAIL_FILE);
-
+		manager.load(BORDER_EDGE_FILE, Texture.class);
+		assets.add(BORDER_EDGE_FILE);
+		manager.load(BORDER_CORNER_FILE, Texture.class);
+		assets.add(BORDER_CORNER_FILE);
 
 		// Load the font
 		FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -282,9 +293,11 @@ public abstract class WorldController implements Screen {
 		spiritBodyTexture = manager.get(SPIRIT_BODY_FILE, Texture.class);
 		spiritHeadTexture = manager.get(SPIRIT_HEAD_FILE, Texture.class);
 		spiritTailTexture = manager.get(SPIRIT_TAIL_FILE, Texture.class);
+		borderEdgeTexture = manager.get(BORDER_EDGE_FILE, Texture.class);
+		borderCornerTexture = manager.get(BORDER_CORNER_FILE, Texture.class);
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, obstacleTex, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture);
+		factory = new Factory(scale, obstacleTex, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostTex, hostTexture, hostGaugeTexture, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture, borderEdgeTexture, borderCornerTexture);
 		loader = new Loader(factory);
 	}
 	

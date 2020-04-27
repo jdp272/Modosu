@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.host.HostModel;
+import edu.cornell.gdiac.physics.obstacle.BorderEdge;
 import edu.cornell.gdiac.physics.obstacle.SandTile;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.obstacle.WaterTile;
@@ -30,6 +31,8 @@ public class Factory {
     private Texture spiritBodyTexture;
     private Texture spiritHeadTexture;
     private Texture spiritTailTexture;
+    private Texture borderEdgeTexture;
+    private Texture borderCornerTexture;
 
     /** Static Variables for Sprite Sheet */
 
@@ -75,6 +78,16 @@ public class Factory {
     /** Number of total pedestals in the pedestal image filmstrip */
     private static final int PEDESTAL_SIZE = 4;
 
+    /** Number of rows in the border edge image filmstrip */
+    private static final int BORDER_EDGE_ROWS = 4;
+    /** Number of columns in the border edge image filmstrip */
+    private static final int BORDER_EDGE_COLS = 9;
+
+    /** Number of rows in the border corner image filmstrip */
+    private static final int BORDER_CORNER_ROWS = 2;
+    /** Number of columns in the border corner image filmstrip */
+    private static final int BORDER_CORNER_COLS = 2;
+
 
     /** The draw scale of objects */
     private Vector2 scale;
@@ -96,7 +109,9 @@ public class Factory {
             Texture cornerTexture,
             Texture sandTexture,
             Texture cornerSandTexture,
-            Texture pedestalTexture
+            Texture pedestalTexture,
+            Texture borderEdgeTexture,
+            Texture borderCornerTexture
     ) {
         this.scale = scale;
         this.obstacleTex = obstacleTex;
@@ -112,6 +127,8 @@ public class Factory {
         this.sandTexture = sandTexture;
         this.cornerSandTexture = cornerSandTexture;
         this.pedestalTexture = pedestalTexture;
+        this.borderEdgeTexture = borderEdgeTexture;
+        this.borderCornerTexture = borderCornerTexture;
     }
 
     public Wall makeWall(float x, float y) {
@@ -155,6 +172,24 @@ public class Factory {
         wall.setSensor(makeSensors);
         wall.setName("wall");
         return wall;
+    }
+
+    public BorderEdge makeBorder(float x, float y, BorderEdge.Side side) {
+        BorderEdge edge = new BorderEdge(
+                x,
+                y,
+                64 / scale.x,
+                64 / scale.y,
+                side,
+                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLS)
+        );
+        edge.setDrawScale(scale);
+        edge.setSX(0.25f);
+        edge.setSY(0.25f);
+        edge.setBodyType(BodyDef.BodyType.StaticBody);
+        edge.setSensor(makeSensors);
+        edge.setName("edge");
+        return edge;
     }
 
     public WaterTile makeWater(float x, float y) {
