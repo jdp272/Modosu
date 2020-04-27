@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.host.HostController;
 import edu.cornell.gdiac.physics.host.HostModel;
+import edu.cornell.gdiac.physics.obstacle.EnergyPillar;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
@@ -64,6 +65,8 @@ public class GamePlayController extends WorldController {
 	protected HostModel pedestal;
 
 	protected SpiritModel spirit;
+
+	protected EnergyPillar[] energyPillars;
 
 	private Vector2 cache;
 
@@ -197,6 +200,8 @@ public class GamePlayController extends WorldController {
 		spirit = level.start;
 		spirit.setName("spirit");
 
+		energyPillars = level.energyPillars;
+
 		possessed = pedestal;
 		spirit.setGoToCenter(true);
 
@@ -207,7 +212,7 @@ public class GamePlayController extends WorldController {
 		//level = loader.reset(lvl);
 		//parse level
 
-		hostController = new HostController(level.hosts, scale, arrowTex, pedestal, canvas);
+		hostController = new HostController(level.hosts, scale, arrowTex, pedestal, canvas, energyPillars);
 
 		// Reset the collision controller
 		collisionController.reset();
@@ -237,6 +242,9 @@ public class GamePlayController extends WorldController {
 			addQueue.add(obj);
 		}
 		for(Obstacle obj : level.sand) {
+			addQueue.add(obj);
+		}
+		for(Obstacle obj : level.energyPillars) {
 			addQueue.add(obj);
 		}
 		for(HostModel host : level.hosts) {
@@ -350,7 +358,7 @@ public class GamePlayController extends WorldController {
 
 
 		// Calls update on hostController
-		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand());
+		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand(), energyPillars);
 		if (hostController.getLaunched()){
 			if (getSound()) { SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false); }
 		}

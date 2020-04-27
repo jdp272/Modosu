@@ -1,9 +1,9 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
-
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.EnergyPillar;
 import edu.cornell.gdiac.physics.obstacle.SandTile;
 import edu.cornell.gdiac.physics.obstacle.WaterTile;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
@@ -19,7 +19,7 @@ public class Level {
      * An empty constructor for a level. Everything is null.
      */
     public Level() {
-        set(null, null, null, null, null, null, null);
+        set(null, null, null, null, null, null, null, null);
     }
 
     /**
@@ -38,11 +38,12 @@ public class Level {
             BoxObstacle[] obstacles,
             WaterTile[] water,
             SandTile[] sand,
+            EnergyPillar[] energyPillars,
             ArrayList<HostModel> hosts,
             SpiritModel start,
             HostModel pedestal
     ) {
-        set(dimensions, obstacles, water, sand, hosts, start, pedestal);
+        set(dimensions, obstacles, water, sand, energyPillars, hosts, start, pedestal);
     }
 
     /** The dimensions of the rectangular board, in Box2D coordinates */
@@ -56,6 +57,9 @@ public class Level {
 
     /** An array of the sand tiles in the level */
     public SandTile[] sand;
+
+    /** An array of the energy pillars in the level */
+    public EnergyPillar[] energyPillars;
 
     /** An array of the hosts in the level */
     public ArrayList<HostModel> hosts;
@@ -71,6 +75,7 @@ public class Level {
             BoxObstacle[] obstacles,
             WaterTile[] water,
             SandTile[] sand,
+            EnergyPillar[] energyPillars,
             ArrayList<HostModel> hosts,
             SpiritModel start,
             HostModel pedestal
@@ -79,6 +84,7 @@ public class Level {
         this.obstacles = obstacles;
         this.water = water;
         this.sand = sand;
+        this.energyPillars = energyPillars;
         this.hosts = hosts;
         this.start = start;
         this.pedestal = pedestal;

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.host.HostModel;
+import edu.cornell.gdiac.physics.obstacle.EnergyPillar;
 import edu.cornell.gdiac.physics.obstacle.SandTile;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.obstacle.WaterTile;
@@ -201,6 +202,24 @@ public class Factory {
         this.energyPillarBodyChargeTexture = energyPillarBodyChargeTexture;
         this.energyPillarBodyTexture = energyPillarBodyTexture;
         this.energyPillarRadiusTexture = energyPillarRadiusTexture;
+    }
+
+
+    public EnergyPillar makeEnergyPillar(float x, float y) {
+        EnergyPillar engPill = new EnergyPillar(
+                x,
+                y,
+                Constants.TILE_WIDTH,
+                Constants.TILE_HEIGHT
+        );
+        engPill.setEnergyPillarStrips(new FilmStrip(energyPillarBodyTexture, ENERGY_PILLAR_ROWS, ENERGY_PILLAR_COLUMNS, ENERGY_PILLAR_SIZE),
+                new FilmStrip(energyPillarBodyChargeTexture, ENERGY_PILLAR_ROWS, ENERGY_PILLAR_COLUMNS, ENERGY_PILLAR_SIZE),
+                new FilmStrip(energyPillarRadiusTexture, ENERGY_PILLAR_ROWS, ENERGY_PILLAR_COLUMNS, ENERGY_PILLAR_SIZE));
+        engPill.setDrawScale(scale);
+        engPill.setBodyType(BodyDef.BodyType.StaticBody);
+        engPill.setSensor(makeSensors);
+        engPill.setName("energyPillar");
+        return engPill;
     }
 
     public Wall makeWall(float x, float y) {

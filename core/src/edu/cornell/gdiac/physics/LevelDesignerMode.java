@@ -376,6 +376,9 @@ public class LevelDesignerMode extends WorldController {
         HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
         addObject(pedestalSpawn);
 
+        EnergyPillar energyPillarSpawn = factory.makeEnergyPillar(0.f, 0.f);
+        addObject(energyPillarSpawn);
+
         spawnList = new SpawnerList(canvas, scale);
 
         spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
@@ -407,6 +410,12 @@ public class LevelDesignerMode extends WorldController {
         spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
             public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
                 return factory.makePedestal(x, y);
+            }
+        });
+
+        spawnList.addSpawner(energyPillarSpawn, new SpawnerList.CallbackFunction() {
+            public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+                return factory.makeEnergyPillar(x,y);
             }
         });
 
@@ -519,6 +528,9 @@ public class LevelDesignerMode extends WorldController {
             addNewObstacle(obj);
         }
         for (Obstacle obj : level.sand) {
+            addNewObstacle(obj);
+        }
+        for (Obstacle obj : level.energyPillars) {
             addNewObstacle(obj);
         }
         addNewObstacle(level.pedestal);
@@ -1047,8 +1059,8 @@ public class LevelDesignerMode extends WorldController {
                 // If its a golem then increment the current charge of the golem
                 if (selection.getName() == "host") {
                     if (((HostModel) selection).getCurrentCharge() < MAX_CHARGE_CAPACITY) {
-                        System.out.println(((HostModel) selection).getCurrentCharge());
-                        ((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() + 1);
+                        ((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() + 10);
+                        ((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
                     }
                 }
             }
@@ -1065,7 +1077,8 @@ public class LevelDesignerMode extends WorldController {
                 if (selection.getName() == "host") {
                     if (((HostModel) selection).getCurrentCharge() > MIN_CHARGE_CAPACITY) {
                         System.out.println(((HostModel) selection).getCurrentCharge());
-                        ((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() - 1);
+                        ((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() - 10);
+                        ((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
                     }
                 }
             }
@@ -1131,6 +1144,7 @@ public class LevelDesignerMode extends WorldController {
         ArrayList<BoxObstacle> waterList = new ArrayList<>();
         ArrayList<BoxObstacle> sandList = new ArrayList<>();
         ArrayList<HostModel> hostList = new ArrayList<>();
+        ArrayList<EnergyPillar> energyPillarList = new ArrayList<>();
         HostModel pedestal = null;
 
         System.out.println(cache);
@@ -1162,6 +1176,8 @@ public class LevelDesignerMode extends WorldController {
                 waterList.add((WaterTile) obj);
             } else if (obj instanceof SandTile) {
                 sandList.add((SandTile) obj);
+            } else if (obj instanceof EnergyPillar) {
+                energyPillarList.add((EnergyPillar) obj);
             } else if (obj instanceof BoxObstacle) {
                 obstacleList.add((BoxObstacle) obj);
             }
@@ -1177,10 +1193,12 @@ public class LevelDesignerMode extends WorldController {
         waterList.toArray(waterArray);
         SandTile[] sandArray = new SandTile[sandList.size()];
         sandList.toArray(sandArray);
+        EnergyPillar[] energyPillarArray = new EnergyPillar[energyPillarList.size()];
+        energyPillarList.toArray(energyPillarArray);
 
         // TODO: what if spirit is null
 
-        level.set(dimensions, obstacleArray, waterArray, sandArray, hostList, spirit, pedestal);
+        level.set(dimensions, obstacleArray, waterArray, sandArray, energyPillarArray, hostList, spirit, pedestal);
         loader.saveLevel(f, level);
 
         reset();

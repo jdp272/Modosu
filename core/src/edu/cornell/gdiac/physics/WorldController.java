@@ -124,7 +124,7 @@ public abstract class WorldController implements Screen {
 	/** File to texture for Energy Pillar Charge */
 	private static String ENERGY_PILLAR_BODY_CHARGE_FILE = "shared/energyPillar_lights.png";
 	/** File to texture for Energy Pillar Radius */
-	private static String ENERGY_PILLAR_RADIUS = "shared/energyRing.png";
+	private static String ENERGY_PILLAR_RADIUS_FILE = "shared/energyRing.png";
 
 	private static int FONT_SIZE = 56;
 
@@ -269,8 +269,8 @@ public abstract class WorldController implements Screen {
 		assets.add(ENERGY_PILLAR_BODY_CHARGE_FILE);
 		manager.load(ENERGY_PILLAR_BODY_FILE, Texture.class);
 		assets.add(ENERGY_PILLAR_BODY_FILE);
-		manager.load(ENERGY_PILLAR_RADIUS, Texture.class);
-		assets.add(ENERGY_PILLAR_RADIUS);
+		manager.load(ENERGY_PILLAR_RADIUS_FILE, Texture.class);
+		assets.add(ENERGY_PILLAR_RADIUS_FILE);
 
 
 
@@ -339,10 +339,10 @@ public abstract class WorldController implements Screen {
 		spiritTailTexture = manager.get(SPIRIT_TAIL_FILE, Texture.class);
 		energyPillarBody = manager.get(ENERGY_PILLAR_BODY_FILE, Texture.class);
 		energyPillarCharge = manager.get(ENERGY_PILLAR_BODY_CHARGE_FILE, Texture.class);
-		energyPillarRadius = manager.get(ENERGY_PILLAR_RADIUS, Texture.class);
+		energyPillarRadius = manager.get(ENERGY_PILLAR_RADIUS_FILE, Texture.class);
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture, energyPillarBody, energyPillarCharge, energyPillarCharge);
+		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture, energyPillarBody, energyPillarCharge, energyPillarRadius);
 		loader = new Loader(factory);
 	}
 	

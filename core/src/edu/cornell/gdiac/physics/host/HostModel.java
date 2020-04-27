@@ -189,8 +189,8 @@ public class HostModel extends BoxObstacle {
     /**
      * drawing scales to resize the host (doesn't affect hit box)
      */
-    private float sx = 0.6f;
-    private float sy = 0.6f;
+    private float sx = 0.4f;
+    private float sy = 0.4f;
 
     /**
      * The number of frames that have elapsed since the last animation update
@@ -592,8 +592,13 @@ public class HostModel extends BoxObstacle {
 
     public void setChargeStrip(FilmStrip chargeStrip, int currentCharge) {
         this.hostChargeUI = chargeStrip;
-        System.out.println(hostChargeUI);
         this.hostChargeUI.setFrame((int) ((currentCharge / this.maxCharge) * HOST_CHARGE_UI_END));
+    }
+
+    public void setChargeStripFrame(int currentCharge) {
+        if(this.hostChargeUI != null) {
+            this.hostChargeUI.setFrame((int) ((currentCharge / this.maxCharge) * HOST_CHARGE_UI_END));
+        }
     }
 
     /**
@@ -788,22 +793,22 @@ public class HostModel extends BoxObstacle {
                     if (this.currentCharge < this.maxCharge) {
 
                         // Color changes more and more to a red or goal color here
-                        Color warningColor = new Color((104f/256f) + (chargeProgression * (151f/256f)), (241f/256f) - ((241f/256f) * chargeProgression), (233f/256f) - ((185f/256f) * chargeProgression), 1);
+                        Color warningColor = new Color((104f/256f) + (chargeProgression * (151f/256f)), (241f/256f) - ((241f/256f) * chargeProgression), ((233f/256f)) - ((185f/256f) * chargeProgression), 1);
 
                         if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
                             // Color of the 3 flashes
                             warningColor = Color.BLACK;
                         }
-                        canvas.draw(hostChargeUI, warningColor, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.4f, 0.4f);
+                        canvas.draw(hostChargeUI, warningColor, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.9f, 0.9f);
                         canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2, hostStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
                     } else {
-                        canvas.draw(hostChargeUI, Color.RED, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.4f, 0.4f);
+                        canvas.draw(hostChargeUI, Color.RED, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.9f, 0.9f);
                     }
                 }
                 // When the bot hasn't been possessed the indicator color should be black
                 else {
                     canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2, hostStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-                    canvas.draw(hostChargeUI, Color.BLACK, hostChargeUI.getRegionWidth() / 2,hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 0.4f, 0.4f);
+                    canvas.draw(hostChargeUI, Color.BLACK, hostChargeUI.getRegionWidth() / 2,hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 0.9f, 0.9f);
                 }
             }
         }
