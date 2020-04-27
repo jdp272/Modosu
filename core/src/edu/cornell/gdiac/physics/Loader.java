@@ -38,7 +38,14 @@ public class Loader {
     public static class ObstacleData {
         public Vector2 origin; // Center of the box
         public Vector2 dimensions;
-        public int frame;
+
+        public int primaryFrame;
+        public int leftFrame;
+        public int rightFrame;
+        public int frontEdgeFrame;
+        public int backEdgeFrame;
+        public int lowerLeftCornerFrame;
+        public int lowerRightCornerFrame;
     }
 
     /** A struct that stores data from water when read from the json */
@@ -162,10 +169,18 @@ public class Loader {
             ObstacleData oData = new ObstacleData();
             oData.dimensions = level.obstacles[i].getDimension();
             oData.origin = new Vector2(level.obstacles[i].getX(), level.obstacles[i].getY());
-            if(level.obstacles[i] instanceof Wall){
-                oData.frame = ((Wall)level.obstacles[i]).wall;
-            }else{
-                oData.frame = -1;
+            if(level.obstacles[i] instanceof Wall) {
+                oData.primaryFrame = ((Wall)level.obstacles[i]).getPrimaryFrame();
+                oData.leftFrame = ((Wall)level.obstacles[i]).getLeftFrame();
+                oData.rightFrame = ((Wall)level.obstacles[i]).getRightFrame();
+                oData.frontEdgeFrame = ((Wall)level.obstacles[i]).getFrontEdgeFrame();
+                oData.backEdgeFrame = ((Wall)level.obstacles[i]).getBackEdgeFrame();
+                oData.lowerLeftCornerFrame = ((Wall)level.obstacles[i]).getLowerLeftCornerFrame();
+                oData.lowerRightCornerFrame = ((Wall)level.obstacles[i]).getLowerRightCornerFrame();
+            } else {
+                oData.primaryFrame = -1;
+                oData.leftFrame = -1;
+                oData.rightFrame = -1;
             }
 
             levelData.obstacleData[i] = oData;
@@ -253,7 +268,11 @@ public class Loader {
 
         for (int i = 0; i < levelData.obstacleData.length; i++) {
             oData = levelData.obstacleData[i];
-            obstacles[i] = factory.makeWall(oData.origin.x, oData.origin.y, oData.frame);
+            obstacles[i] = factory.makeWall(oData.origin.x, oData.origin.y,
+                    oData.primaryFrame, oData.leftFrame, oData.rightFrame,
+                    oData.frontEdgeFrame, oData.backEdgeFrame,
+                    oData.lowerLeftCornerFrame, oData.lowerRightCornerFrame);
+
             // obstacles[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.dimensions.y);
         }
 

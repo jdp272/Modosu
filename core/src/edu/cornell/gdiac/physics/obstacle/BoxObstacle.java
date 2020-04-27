@@ -165,8 +165,6 @@ public class BoxObstacle extends SimpleObstacle {
 	}
 
 
-
-
 	/**
 	 * Reset the polygon vertices in the shape to match the dimension.
 	 */
@@ -236,6 +234,5 @@ public class BoxObstacle extends SimpleObstacle {
 	public void drawDebug(GameCanvas canvas) {
 		canvas.drawPhysics(shape,Color.YELLOW,getX(),getY(),getAngle(),drawScale.x,drawScale.y);
 	}
-
 
 }

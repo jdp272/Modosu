@@ -200,16 +200,12 @@ public class LevelDesignerMode extends WorldController {
 		foregroundTexture = createTexture(manager,FOREG_FILE,false);
 		footprintTexture = createTexture(manager, FOOTPRINT_FILE, false);
 
-
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
 	}
 
 	/** The new lessened gravity for this world */
 	private static final float WATER_GRAVITY = -0.25f;
-
-	/** The transparency for foreground image */
-	private static Color FORE_COLOR = new Color(0.0f, 0.2f, 0.3f, 0.2f);
 
 	/** Mouse selector to move game objects */
 	private ObstacleSelector selector;
@@ -361,7 +357,6 @@ public class LevelDesignerMode extends WorldController {
 
 		// Setup the spawner list
 		Wall boxSpawn = factory.makeWall(0.f, 0.f);
-		boxSpawn.setWallLvlDsgn(20);
 		addObject(boxSpawn);
 
 		WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
@@ -384,7 +379,6 @@ public class LevelDesignerMode extends WorldController {
 		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
 			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
 				Wall boxSpawn = factory.makeWall(x, y);
-				boxSpawn.setWallLvlDsgn(20);
 				return boxSpawn;
 			}
 		});
@@ -796,6 +790,124 @@ public class LevelDesignerMode extends WorldController {
 	}
 
 	/**
+	 * Updates the texture for wall tile at index x, y in the board based on
+	 * its surroundings (if they are wall or not)
+	 *
+	 * If the tile is not a wall, or if the tile is out of bounds, nothing
+	 * happens.
+	 *
+	 * @param x The x index in the board of the tile to update
+	 * @param y The y index in the board of the tile to update
+	 *
+	 * @return True if a wall tile was updated, false otherwise
+	 */
+	private boolean updateWallTile(int x, int y) {
+		if(x < leftBorder || y < bottomBorder || x >= rightBorder || y >= topBorder || !(board[x][y] instanceof Wall)) {
+			return false;
+		}
+
+		Obstacle above = null, below = null, left = null, right = null;
+
+		// If the walls exist
+		boolean wallAbove = false, wallBelow = false, wallLeft = false,
+				wallRight = false, wallLowerLeft = false, wallLowerRight = false;
+		// If the walls are top walls (not a front facing wall)
+		boolean belowIsTop = false, leftIsTop = false, rightIsTop = false,
+				lowerLeftIsTop = false, lowerRightIsTop = false;
+
+		// Set the adjacent tiles if they are in bounds, and if so, check if a
+		// ground border is needed
+		if(y + 1 < topBorder) {
+			above = board[x][y + 1];
+			wallAbove = above instanceof Wall;
+		}
+		if(y - 1 >= bottomBorder) {
+			below = board[x][y - 1];
+			wallBelow = below instanceof Wall;
+			if(wallBelow) {
+				belowIsTop = !((Wall)below).isFrontWall();
+			}
+		}
+		if(x - 1 >= leftBorder) {
+			left = board[x - 1][y];
+			wallLeft = left instanceof Wall;
+			if(wallLeft) {
+				leftIsTop = !((Wall)left).isFrontWall();
+			}
+		}
+		if(x + 1 < rightBorder) {
+			right = board[x + 1][y];
+			wallRight = right instanceof Wall;
+			if(wallRight) {
+				rightIsTop = !((Wall)right).isFrontWall();
+			}
+		}
+
+//		// If the corner should be drawn for each side, based on if adjacent
+//		// sand tiles have ground
+//		if (above instanceof Wall && left instanceof Wall) {
+//			upLeftCorner = !(board[x - 1][y + 1] instanceof Wall);
+//		}
+//		if (above instanceof Wall && right instanceof Wall) {
+//			upRightCorner = !(board[x + 1][y + 1] instanceof Wall);
+//		}
+		if (below instanceof Wall && left instanceof Wall) {
+			wallLowerLeft = board[x - 1][y - 1] instanceof Wall;
+			if(wallLowerLeft) {
+				lowerLeftIsTop = !((Wall)board[x - 1][y - 1]).isFrontWall();
+			}
+		}
+		if (below instanceof Wall && right instanceof Wall) {
+			wallLowerRight = board[x + 1][y - 1] instanceof Wall;
+			if(wallLowerRight) {
+				lowerRightIsTop = !((Wall)board[x + 1][y - 1]).isFrontWall();
+			}
+		}
+
+		// Switch up the alt boolean every tile
+		((Wall)board[x][y]).setFrame(wallAbove, wallBelow, wallLeft, wallRight,
+				belowIsTop, leftIsTop, rightIsTop,
+				lowerLeftIsTop, lowerRightIsTop,x + y % 2 == 0);
+
+		return true;
+	}
+
+	/**
+	 * Updates the texture for sand tile at and around (x, y) in the board.
+	 * this function calls updateSandTile
+	 *
+	 * If the tile is not a sand tile, or if the tile is out of bounds, nothing
+	 * happens.
+	 *
+	 * @param x The x index in the board of the tile center to update
+	 * @param y The y index in the board of the tile center to update
+	 */
+	private void updateWallAroundRegion(int x, int y) {
+		System.out.println("\n\n");
+
+		// Update the center tile
+		updateWallTile(x, y);
+
+		// Update adjacent tiles
+		updateWallTile(x - 1, y);
+		updateWallTile(x + 1, y);
+		updateWallTile(x, y - 1);
+		updateWallTile(x, y + 1);
+
+		// Update diagonal tiles
+		updateWallTile(x - 1, y + 1);
+		updateWallTile(x + 1, y + 1);
+		updateWallTile(x - 1, y - 1);
+		updateWallTile(x + 1, y - 1);
+
+		// Update tiles in the row two above, in case the above tile is no
+		// longer, or has become, a front wall
+		updateWallTile(x - 1, y + 2);
+		updateWallTile(x, y + 2);
+		updateWallTile(x + 1, y + 2);
+	}
+
+	/**
 	 * Processes the object deselected
 	 */
 	private void processBorderChange(CornerObstacle corner) {
@@ -846,10 +958,9 @@ public class LevelDesignerMode extends WorldController {
 		}
 
 		// Remove everything that has become out of bounds
-		// Also remove the borders to add walls there
 		for(int i = leftBorder; i < rightBorder; i++) {
 			for(int j = bottomBorder; j < topBorder; j++) {
-				if((i < leftBorder + 2 || i >= rightBorder - 1 || j < bottomBorder + 2 || j >= topBorder - 1) && board[i][j] != null) {
+				if((i < left || i >= right || j < bottom || j >= top) && board[i][j] != null) {
 					board[i][j].markRemoved(true);
 					board[i][j] = null;
 				}
@@ -865,37 +976,38 @@ public class LevelDesignerMode extends WorldController {
 		// Update terrain tiles based on the new borders and add walls
 		for(int i = leftBorder; i < rightBorder; i++) {
 			for(int j = bottomBorder; j < topBorder; j++) {
-				float xCoord = xTileToCoord(i);
-				float yCoord = yTileToCoord(j);
-
-				if(j == bottomBorder) {
-					if(board[i][j] != null) {
-						board[i][j].markRemoved(true);
-						board[i][j] = null;
-					}
-					addNewObstacle(factory.makeWall(xCoord, yCoord, i == leftBorder ? 18 : i == rightBorder - 1 ? 23 : i % 2 == 0 ? 20 : 22));
-				} else if(j == bottomBorder + 1) {
-					if(board[i][j] != null) {
-						board[i][j].markRemoved(true);
-						board[i][j] = null;
-					}
-					addNewObstacle(factory.makeWall(xCoord, yCoord, i == leftBorder ? 8 : i == rightBorder - 1 ? 9 : 1));
-				} else if(i == leftBorder || i == rightBorder - 1) {
-					if(board[i][j] != null) {
-						board[i][j].markRemoved(true);
-						board[i][j] = null;
-					}
-					addNewObstacle(factory.makeWall(xCoord, yCoord, 6));
-				} else if(j == topBorder - 1) {
-					if(board[i][j] != null) {
-						board[i][j].markRemoved(true);
-						board[i][j] = null;
-					}
-					addNewObstacle(factory.makeWall(xCoord, yCoord, i % 2 == 0 ? 20 : 22));
-				} else {
+//				float xCoord = xTileToCoord(i);
+//				float yCoord = yTileToCoord(j);
+//
+//				if(j == bottomBorder) {
+//					if(board[i][j] != null) {
+//						board[i][j].markRemoved(true);
+//						board[i][j] = null;
+//					}
+//					addNewObstacle(factory.makeWall(xCoord, yCoord, i == leftBorder ? 18 : i == rightBorder - 1 ? 23 : i % 2 == 0 ? 20 : 22));
+//				} else if(j == bottomBorder + 1) {
+//					if(board[i][j] != null) {
+//						board[i][j].markRemoved(true);
+//						board[i][j] = null;
+//					}
+//					addNewObstacle(factory.makeWall(xCoord, yCoord, i == leftBorder ? 8 : i == rightBorder - 1 ? 9 : 1));
+//				} else if(i == leftBorder || i == rightBorder - 1) {
+//					if(board[i][j] != null) {
+//						board[i][j].markRemoved(true);
+//						board[i][j] = null;
+//					}
+//					addNewObstacle(factory.makeWall(xCoord, yCoord, 6));
+//				} else if(j == topBorder - 1) {
+//					if(board[i][j] != null) {
+//						board[i][j].markRemoved(true);
+//						board[i][j] = null;
+//					}
+//					addNewObstacle(factory.makeWall(xCoord, yCoord, i % 2 == 0 ? 20 : 22));
+//				} else {
 					updateWaterTile(i, j);
 					updateSandTile(i, j);
-				}
+					updateWallTile(i, j);
+//				}
 			}
 		}
 
@@ -1007,8 +1119,11 @@ public class LevelDesignerMode extends WorldController {
 				if(board[x][y] == selector.getObstacle()) { // Note: Purposefully comparing references
 					board[x][y] = null;
 				}
-				updateWaterAroundRegion(x, y); // Update the surroundings after removing the water
-				updateSandAroundRegion(x, y); // Update the surroundings after removing the sand
+
+				// Update the surroundings after removing old obstacles
+				updateWaterAroundRegion(x, y);
+				updateSandAroundRegion(x, y);
+				updateWallAroundRegion(x, y);
 			}
 
 		}
@@ -1047,10 +1162,10 @@ public class LevelDesignerMode extends WorldController {
 					deselected.setPosition(xTileToCoord(x), yTileToCoord(y));
 					board[x][y] = deselected;
 
-					// Update water tile images
+					// Update tiles whose textures depend on the nearby ones
 					updateWaterAroundRegion(x, y);
-					// Update sand tile images
 					updateSandAroundRegion(x, y);
+					updateWallAroundRegion(x, y);
 				}
 			}
 		} else {
@@ -1113,26 +1228,26 @@ public class LevelDesignerMode extends WorldController {
 
 		updateSelector(hasPed);
 
-		if(input.didPrimary()) {
-			//change wall texture that is currently selected at mouse location
-			if(selector.isSelected()) {
-				// Get the selection, then remove it from the selector
-				Obstacle selection = selector.getObstacle();
-				if(selection.getName() == "wall") {
-					((Wall)selection).setWallLvlDsgn(((Wall)selection).wall+1);
-				}
-			}
-		}
-		if(input.didSecondary()) {
-			//change wall texture that is currently selected at mouse location
-			if(selector.isSelected()) {
-				// Get the selection, then remove it from the selector
-				Obstacle selection = selector.getObstacle();
-				if(selection.getName() == "wall") {
-					((Wall)selection).setWallLvlDsgn(((Wall)selection).wall-1);
-				}
-			}
-		}
+//		if(input.didPrimary()) {
+//			//change wall texture that is currently selected at mouse location
+//			if(selector.isSelected()) {
+//				// Get the selection, then remove it from the selector
+//				Obstacle selection = selector.getObstacle();
+//				if(selection.getName() == "wall") {
+//					((Wall)selection).setWallLvlDsgn(((Wall)selection).wall+1);
+//				}
+//			}
+//		}
+//		if(input.didSecondary()) {
+//			//change wall texture that is currently selected at mouse location
+//			if(selector.isSelected()) {
+//				// Get the selection, then remove it from the selector
+//				Obstacle selection = selector.getObstacle();
+//				if(selection.getName() == "wall") {
+//					((Wall)selection).setWallLvlDsgn(((Wall)selection).wall-1);
+//				}
+//			}
+//		}
 
 		if(input.didDelete()) {
 			// Remove what is currently selected at the mouse location

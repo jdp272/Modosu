@@ -103,7 +103,7 @@ public abstract class WorldController implements Screen {
 	/** Texture file for arrow sprite */
 	private static final String ARROW_FILE = "shared/arrow.png";
 	/** File to texture for Walls */
-	private static String WALL_FILE = "shared/wallspritesheet.png";
+	private static String WALL_FILE = "shared/wall_spritesheet_v3.png";
 	/** File to texture for Water */
 	private static String WATER_FILE = "shared/waterspritesheet.png";
 	/** File to texture for Water corners */
@@ -823,7 +823,7 @@ public abstract class WorldController implements Screen {
 			}
 		}
 		for(Obstacle obj : objects) {
-			if(obj instanceof Wall && ((Wall) obj).wall > 17) {
+			if(obj instanceof Wall) {
 				obj.draw(canvas);
 			}
 		}
@@ -833,8 +833,8 @@ public abstract class WorldController implements Screen {
 			}
 		}
 		for(Obstacle obj : objects) {
-			if(obj instanceof Wall && ((Wall) obj).wall < 18) {
-				obj.draw(canvas);
+			if(obj instanceof Wall) {
+				((Wall)obj).drawTop(canvas);
 			}
 		}
 

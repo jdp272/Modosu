@@ -14,7 +14,7 @@ public class FootPrintModel {
     public FootPrintModel(TextureRegion texture, Vector2 position) {
         this.texture = texture;
         this.position = position;
-        color = Color.GRAY;
+        color = Color.BLACK;
     }
 
     public void draw(GameCanvas canvas) {
