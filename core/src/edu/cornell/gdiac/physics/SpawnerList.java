@@ -114,6 +114,7 @@ public class SpawnerList {
         // Can't be selected or added to the game
         obj.inGame = false;
         obj.inHUD = true;
+        obj.selectable = false;
     }
 
     /**

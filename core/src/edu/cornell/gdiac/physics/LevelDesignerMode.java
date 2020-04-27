@@ -375,30 +375,24 @@ public class LevelDesignerMode extends WorldController {
 
 		// Setup the spawner list
 		Wall boxSpawn = factory.makeWall(0.f, 0.f);
-		boxSpawn.inHUD = true;
 		addObject(boxSpawn);
 
 		WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
-		waterSpawn.inHUD = true;
 		addObject(waterSpawn);
 
 		SandTile sandSpawn = factory.makeSand(0.f, 0.f);
-		sandSpawn.inHUD = true;
 		addObject(sandSpawn);
 
 		HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
-		hostSpawn.inHUD = true;
 		addObject(hostSpawn);
 
 //		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
 //		addObject(spiritSpawn);
 
 		HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
-		pedestalSpawn.inHUD = true;
 		addObject(pedestalSpawn);
 
         EnergyPillar energyPillarSpawn = factory.makeEnergyPillar(0.f, 0.f);
-        energyPillarSpawn.inHUD = true;
         addObject(energyPillarSpawn);
 
         spawnList = new SpawnerList(canvas, scale);
