@@ -296,7 +296,6 @@ public class HostController {
         pedestal.animateStrip();
 
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
-
         // When the spirit has been launched, need to decrement life of spirit
         if (spirit.hasLaunched) {
             // If you can decrement life, decrement life
@@ -310,7 +309,6 @@ public class HostController {
             }
         }
 
-
         // PORTION OF CODE THAT DEALS WITH JUMPING BACK TO LAST HOST AFTER DEATH
 
         // In the case that spirit dies return to previous possessed bot
@@ -318,7 +316,10 @@ public class HostController {
             spirit.setPosition(possessed.getPosition());
             // TODO: Replace 100 with variable whatever amount we want the host to go up by
             if(possessed != pedestal) {
-                possessed.setCurrentCharge(possessed.getCurrentCharge() + 100);
+                // possessed.setCurrentCharge(possessed.getCurrentCharge() + 100);
+                spirit.decrementNumLives();
+                spirit.setHasLaunched(false);
+                spirit.setAlive(true);
             }
 
             if(possessed == pedestal) {

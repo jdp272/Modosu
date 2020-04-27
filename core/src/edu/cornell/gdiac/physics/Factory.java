@@ -13,6 +13,7 @@ import edu.cornell.gdiac.util.FilmStrip;
 
 public class Factory {
     private static int SMALL_MAX_CHARGE = 800;
+    private static int SPIRIT_LIVES = 3;
     private static int SPIRIT_BOUNCES = 8;
     private static int DEFAULT_LIFE = 300;
 
@@ -97,14 +98,10 @@ public class Factory {
      * Number of rows in the wall image filmstrip
      */
     private static final int WALL_ROWS = 4;
-    /**
-     * Number of columns in this wall image filmstrip
-     */
-    private static final int WALL_COLUMNS = 6;
-    /**
-     * Number of total hosts in the wall image filmstrip
-     */
-    private static final int WALL_SIZE = 24;
+    /** Number of columns in this wall image filmstrip */
+    private static final int WALL_COLUMNS = 8;
+    /** Number of total hosts in the wall image filmstrip */
+    private static final int WALL_SIZE = 32;
 
     /**
      * Number of rows in the water image filmstrip
@@ -223,25 +220,46 @@ public class Factory {
     }
 
     public Wall makeWall(float x, float y) {
-        return makeWall(x, y, 20);
+        Wall wall = new Wall(
+                x,
+                y,
+                64 / scale.x,
+                64 / scale.y,
+                new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE)
+        );
+        wall.setDrawScale(scale);
+        wall.setSX(0.25f);
+        wall.setSY(0.25f);
+        wall.setBodyType(BodyDef.BodyType.StaticBody);
+        wall.setSensor(makeSensors);
+        wall.setName("wall");
+        return wall;
     }
 
-    public Wall makeWall(float x, float y, int frame) {
-        Wall box = new Wall(
+    public Wall makeWall(float x, float y, int primaryFrame, int leftFrame, int rightFrame,
+                         int frontEdgeFrame, int backEdgeFrame,
+                         int lowerLeftCornerFrame, int lowerRightCornerFrame) {
+        Wall wall = new Wall(
                 x,
                 y,
                 Constants.TILE_WIDTH,
-                Constants.TILE_HEIGHT
+                Constants.TILE_HEIGHT,
+                new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE),
+                primaryFrame,
+                leftFrame,
+                rightFrame,
+                frontEdgeFrame,
+                backEdgeFrame,
+                lowerLeftCornerFrame,
+                lowerRightCornerFrame
         );
-        box.setWallStrip(new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE));
-        box.setDrawScale(scale);
-        box.setSX(0.25f);
-        box.setSY(0.25f);
-        box.setBodyType(BodyDef.BodyType.StaticBody);
-        box.setSensor(makeSensors);
-        box.setWallFrame(frame);
-        box.setName("wall");
-        return box;
+        wall.setDrawScale(scale);
+        wall.setSX(0.25f);
+        wall.setSY(0.25f);
+        wall.setBodyType(BodyDef.BodyType.StaticBody);
+        wall.setSensor(makeSensors);
+        wall.setName("wall");
+        return wall;
     }
 
     public WaterTile makeWater(float x, float y) {
@@ -297,6 +315,7 @@ public class Factory {
                 y,
                 (spiritHeadTexture.getWidth() / (SPIRIT_COLUMNS * 12)) / scale.x,
                 (spiritHeadTexture.getHeight() / (SPIRIT_ROWS * 4)) / scale.y,
+                SPIRIT_LIVES,
                 SPIRIT_BOUNCES,
                 DEFAULT_LIFE
         );
@@ -340,9 +359,9 @@ public class Factory {
                 x,
                 y,
                 // TODO Check that this is right
-                Constants.TILE_WIDTH,
+                Constants.TILE_WIDTH * 0.9f,
                 // TODO Check that this is right
-                Constants.TILE_HEIGHT,
+                Constants.TILE_HEIGHT * 0.9f,
                 0,
                 maxCharge,
                 instructions

@@ -28,7 +28,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.physics.host.ArrowModel;
+import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.obstacle.Wall;
+import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -107,7 +110,7 @@ public abstract class WorldController implements Screen {
 	/** Texture file for arrow sprite */
 	private static final String ARROW_FILE = "shared/arrow.png";
 	/** File to texture for Walls */
-	private static String WALL_FILE = "shared/wallspritesheet.png";
+	private static String WALL_FILE = "shared/wall_spritesheet_v3.png";
 	/** File to texture for Water */
 	private static String WATER_FILE = "shared/waterspritesheet.png";
 	/** File to texture for Water corners */
@@ -403,6 +406,8 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_MENU = 6;
 	/** Exit code for going to game complete screen */
 	public static final int EXIT_GAME = 7;
+	/** Exit code for going to the credits screen */
+	public static final int EXIT_CREDITS = 8;
 
     /** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 50;
@@ -864,7 +869,24 @@ public abstract class WorldController implements Screen {
 		canvas.begin();
 
 		for(Obstacle obj : objects) {
-			obj.draw(canvas);
+			if(!(obj instanceof Wall) || !(obj instanceof HostModel)) {
+				obj.draw(canvas);
+			}
+		}
+		for(Obstacle obj : objects) {
+			if(obj instanceof Wall) {
+				obj.draw(canvas);
+			}
+		}
+		for(Obstacle obj : objects) {
+			if(obj instanceof HostModel || obj instanceof SpiritModel) {
+				obj.draw(canvas);
+			}
+		}
+		for(Obstacle obj : objects) {
+			if(obj instanceof Wall) {
+				((Wall)obj).drawTop(canvas);
+			}
 		}
 
 		canvas.end();
