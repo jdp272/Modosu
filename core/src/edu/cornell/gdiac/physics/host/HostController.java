@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.InputController;
+import edu.cornell.gdiac.physics.obstacle.EnergyPillar;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
 import java.util.ArrayList;
@@ -64,6 +65,9 @@ public class HostController {
     /** Minimum distance to target before going to next instruction, for autonomous mode */
     private static final float NEXT_INSTRUCTION_DIST = 0.5f;
 
+    /** Energy pillars in the game */
+    private EnergyPillar[] energyPillars;
+
     /** The number of ticks since we started this controller */
     private long ticks;
 
@@ -75,7 +79,7 @@ public class HostController {
     /**
      * Creates and initialize a new instance of a HostController
      */
-    public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowTexture, HostModel pedestal, GameCanvas c) {
+    public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowTexture, HostModel pedestal, GameCanvas c, EnergyPillar[] energyPillars) {
         input = InputController.getInstance();
         clickPosition = new Vector2(-1,-1);
         hosts = h;
@@ -92,6 +96,7 @@ public class HostController {
         numHosts = h.size();
         moved = false;
         canvas = c;
+        this.energyPillars = energyPillars;
     }
 
     /**
@@ -117,7 +122,9 @@ public class HostController {
      * @param dt Number of seconds since last animation frame
      * @param inSand
      */
-    public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand) {
+    public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand, EnergyPillar[] energyPillars) {
+
+
 
         // Brings the spirit to the center of the host
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
@@ -169,11 +176,19 @@ public class HostController {
 
             }
 
+            // If its possible to increment the charge of the host
             if (possessed.incCurrentCharge()) {
 
+                // If the spirit isn't outside of the host
                 if (!spirit.hasLaunched || spirit.getIsPossessing()) {
 
                     if (!possessed.isPedestal()) {
+                        float chargeProgression = (float) possessed.getCurrentCharge() / possessed.getMaxCharge();
+
+                        for(EnergyPillar ep : energyPillars) {
+                            ep.setChargeProgression(chargeProgression);
+                        }
+
                         float obstacleFactor = 1;
                         if (inSand) { obstacleFactor = .5f; }
                         possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal() * obstacleFactor);
@@ -276,7 +291,7 @@ public class HostController {
         // Update the Animation of the possessed host
 
         spirit.updateAnimation();
-        possessed.updateAnimation(possessed.beenPossessed(), possessed.getLinearVelocity());
+        possessed.updateAnimation(possessed.getLinearVelocity());
         pedestal.animateStrip();
 
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
@@ -326,7 +341,7 @@ public class HostController {
             }
 
             // Updated Animation of Each Host
-            h.updateAnimation(true, h.getLinearVelocity());
+            h.updateAnimation(h.getLinearVelocity());
 
             if (h != possessed && !h.beenPossessed()) {
                 Vector2 target = h.getInstruction();

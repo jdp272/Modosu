@@ -11,18 +11,17 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.assets.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.physics.box2d.*;
-
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.host.FootPrintModel;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
-import edu.cornell.gdiac.util.FilmStrip;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
@@ -32,7 +31,7 @@ import java.util.Arrays;
 
 /**
  * Gameplay specific controller for the ragdoll fishtank.
- *
+ * <p>
  * You will notice that asset loading is not done with static methods this time.
  * Instance asset loading makes it easier to process our game modes in a loop, which
  * is much more scalable. However, we still want the assets themselves to be static.
@@ -40,6 +39,15 @@ import java.util.Arrays;
  * place nicely with the static assets.
  */
 public class LevelDesignerMode extends WorldController {
+    /**
+     * Default maximum charge of golems
+     */
+    public static final int MAX_CHARGE_CAPACITY = 800;
+    /**
+     * Default minimum charge of golem
+     */
+    public static final int MIN_CHARGE_CAPACITY = 0;
+
 	/** Texture file for mouse crosshairs */
 	private static final String CROSS_FILE = "shared/crosshair.png";
 	/** Texture file for watery foreground */
@@ -122,13 +130,13 @@ public class LevelDesignerMode extends WorldController {
 
 	public class CornerObstacle extends BoxObstacle {
 		public CornerObstacle(TextureRegion tex, Corner corner) {
-			super(obstacleTex.getRegionWidth() / scale.x,obstacleTex.getRegionHeight() / scale.y);
+			super(Constants.TILE_WIDTH,Constants.TILE_HEIGHT);
 			this.corner = corner;
 
 			setTexture(tex);
 			setDrawScale(scale);
-			setSX(obstacleTex.getRegionWidth() / tex.getRegionWidth());
-			setSY(obstacleTex.getRegionHeight() / tex.getRegionHeight());
+			setSX(1);
+			setSY(1);
 			setBodyType(BodyDef.BodyType.StaticBody);
 			setSensor(true);
 			setName("corner");
@@ -322,59 +330,62 @@ public class LevelDesignerMode extends WorldController {
 
 //		level = loader.loadLevel(f);
 
-		setComplete(false);
-		setFailure(false);
+        setComplete(false);
+        setFailure(false);
 
-		if(loadBoard) {
+        if (loadBoard) {
 //			bottomBorder = 0;
 //			leftBorder = 0;
 
 //			initialBottomBorder = bottomBorder
 
-			// Not checking to ensure that these borders are within the array
-			// bounds because no screen should be so large that the max board
-			// size of 127x127 fits inside the screen.
+            // Not checking to ensure that these borders are within the array
+            // bounds because no screen should be so large that the max board
+            // size of 127x127 fits inside the screen.
 
-			// Populate the level once the board boundaries are set up
-			populateLevel();
-		} else {
-			// Reset the level size based on the size of the screen
-			bottomBorder = (board[0].length / 2) - (screenTileHeight() / 2);
-			leftBorder = (board.length / 2) - (screenTileWidth()  / 2);
+            // Populate the level once the board boundaries are set up
+            populateLevel();
+        } else {
+            // Reset the level size based on the size of the screen
+            bottomBorder = (board[0].length / 2) - (screenTileHeight() / 2);
+            leftBorder = (board.length / 2) - (screenTileWidth() / 2);
 
-			initialBottomBorder = bottomBorder;
-			initialLeftBorder = leftBorder;
+            initialBottomBorder = bottomBorder;
+            initialLeftBorder = leftBorder;
 
-			topBorder = bottomBorder + screenTileHeight();
-			rightBorder = leftBorder + screenTileWidth();
+            topBorder = bottomBorder + screenTileHeight();
+            rightBorder = leftBorder + screenTileWidth();
 
-			loadBoard = true;
-		}
+            loadBoard = true;
+        }
 
-		// After populateLevel(), when the borders are set from the loaded level
-		camTarget.set(scale.x * TILE_WIDTH * (rightBorder - leftBorder) / 2.f,
-				scale.y * TILE_WIDTH * (topBorder - bottomBorder) / 2.f);
+        // After populateLevel(), when the borders are set from the loaded level
+        camTarget.set(scale.x * Constants.TILE_WIDTH * (rightBorder - leftBorder) / 2.f,
+                scale.y * Constants.TILE_WIDTH * (topBorder - bottomBorder) / 2.f);
 
 		// Setup the spawner list
 		Wall boxSpawn = factory.makeWall(0.f, 0.f);
 		addObject(boxSpawn);
 
-		WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
-		addObject(waterSpawn);
+        WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
+        addObject(waterSpawn);
 
-		SandTile sandSpawn = factory.makeSand(0.f, 0.f);
-		addObject(sandSpawn);
+        SandTile sandSpawn = factory.makeSand(0.f, 0.f);
+        addObject(sandSpawn);
 
-		HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
-		addObject(hostSpawn);
+        HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
+        addObject(hostSpawn);
 
 //		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
 //		addObject(spiritSpawn);
 
-		HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
-		addObject(pedestalSpawn);
+        HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
+        addObject(pedestalSpawn);
 
-		spawnList = new SpawnerList(canvas, scale);
+        EnergyPillar energyPillarSpawn = factory.makeEnergyPillar(0.f, 0.f);
+        addObject(energyPillarSpawn);
+
+        spawnList = new SpawnerList(canvas, scale);
 
 		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
 			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
@@ -383,87 +394,91 @@ public class LevelDesignerMode extends WorldController {
 			}
 		});
 
-		spawnList.addSpawner(waterSpawn, new SpawnerList.CallbackFunction() {
-			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-				return factory.makeWater(x, y);
-			}
-		});
+        spawnList.addSpawner(waterSpawn, new SpawnerList.CallbackFunction() {
+            public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+                return factory.makeWater(x, y);
+            }
+        });
 
-		spawnList.addSpawner(sandSpawn, new SpawnerList.CallbackFunction() {
-			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-				return factory.makeSand(x, y);
-			}
-		});
+        spawnList.addSpawner(sandSpawn, new SpawnerList.CallbackFunction() {
+            public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+                return factory.makeSand(x, y);
+            }
+        });
 
-		spawnList.addSpawner(hostSpawn, new SpawnerList.CallbackFunction() {
-			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-				return factory.makeSmallHost(x, y);
-			}
-		});
+        spawnList.addSpawner(hostSpawn, new SpawnerList.CallbackFunction() {
+            public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+                return factory.makeSmallHost(x, y);
+            }
+        });
 
-		spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
-			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-				return factory.makePedestal(x, y);
-			}
-		});
+        spawnList.addSpawner(pedestalSpawn, new SpawnerList.CallbackFunction() {
+            public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+                return factory.makePedestal(x, y);
+            }
+        });
 
-		selector = new ObstacleSelector(world);
-		selector.setTexture(crosshairTexture);
-		selector.setDrawScale(scale);
+        spawnList.addSpawner(energyPillarSpawn, new SpawnerList.CallbackFunction() {
+            public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+                return factory.makeEnergyPillar(x,y);
+            }
+        });
 
+        selector = new ObstacleSelector(world);
+        selector.setTexture(crosshairTexture);
+        selector.setDrawScale(scale);
 
-		// Add the corner objects
+        // Add the corner objects
 
-		topLeft = new CornerObstacle(crosshairTexture, Corner.TOP_LEFT);
-		topLeft.inGame = false;
-		addObject(topLeft);
+        topLeft = new CornerObstacle(crosshairTexture, Corner.TOP_LEFT);
+        topLeft.inGame = false;
+        addObject(topLeft);
 
-		topRight = new CornerObstacle(crosshairTexture, Corner.TOP_RIGHT);
-		topRight.inGame = false;
-		addObject(topRight);
+        topRight = new CornerObstacle(crosshairTexture, Corner.TOP_RIGHT);
+        topRight.inGame = false;
+        addObject(topRight);
 
-		bottomLeft = new CornerObstacle(crosshairTexture, Corner.BOTTOM_LEFT);
-		bottomLeft.inGame = false;
-		addObject(bottomLeft);
+        bottomLeft = new CornerObstacle(crosshairTexture, Corner.BOTTOM_LEFT);
+        bottomLeft.inGame = false;
+        addObject(bottomLeft);
 
-		bottomRight = new CornerObstacle(crosshairTexture, Corner.BOTTOM_RIGHT);
-		bottomRight.inGame = false;
-		addObject(bottomRight);
+        bottomRight = new CornerObstacle(crosshairTexture, Corner.BOTTOM_RIGHT);
+        bottomRight.inGame = false;
+        addObject(bottomRight);
 
-		updateCornerPositions();
+        updateCornerPositions();
 
-		// Properly set the borders to use up the center of the board array, so
-		// it can be expanded in all directions
+        // Properly set the borders to use up the center of the board array, so
+        // it can be expanded in all directions
 
 //		topBorder =    (MAX_BOARD_TILES / 2) + (screenTileWidth()  / 2);
 //		bottomBorder = (MAX_BOARD_TILES / 2) - (screenTileWidth()  / 2);
 //
 //		leftBorder =   (MAX_BOARD_TILES / 2) - (screenTileHeight() / 2);
 //		rightBorder =  (MAX_BOARD_TILES / 2) + (screenTileHeight() / 2);
-	}
+    }
 
-	/**
-	 * Updates the positions of the corners, based on the game borders. This
-	 * should be called whenever the borders are changed.
-	 */
-	private void updateCornerPositions() {
-		float top = yTileToCoord(topBorder) - (TILE_WIDTH / 2.f);
-		float bottom = yTileToCoord(bottomBorder) - (TILE_WIDTH / 2.f);
+    /**
+     * Updates the positions of the corners, based on the game borders. This
+     * should be called whenever the borders are changed.
+     */
+    private void updateCornerPositions() {
+        float top = yTileToCoord(topBorder) - (Constants.TILE_WIDTH / 2.f);
+        float bottom = yTileToCoord(bottomBorder) - (Constants.TILE_WIDTH / 2.f);
 
-		float left = xTileToCoord(leftBorder) - (TILE_WIDTH / 2.f);
-		float right = xTileToCoord(rightBorder) - (TILE_WIDTH / 2.f);
+        float left = xTileToCoord(leftBorder) - (Constants.TILE_WIDTH / 2.f);
+        float right = xTileToCoord(rightBorder) - (Constants.TILE_WIDTH / 2.f);
 
-		topLeft.setPosition(left, top);
-		topRight.setPosition(right, top);
-		bottomLeft.setPosition(left, bottom);
-		bottomRight.setPosition(right, bottom);
-	}
+        topLeft.setPosition(left, top);
+        topRight.setPosition(right, top);
+        bottomLeft.setPosition(left, bottom);
+        bottomRight.setPosition(right, bottom);
+    }
 
-	/**
-	 * Lays out the game geography.
-	 */
-	private void populateLevel() {
-
+    /**
+     * Lays out the game geography.
+     */
+    private void populateLevel() {
 //		spawnList.addSpawner(spiritSpawn, new SpawnerList.CallbackFunction() {
 //			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
 //				if (lastCreated == null) {
@@ -476,72 +491,74 @@ public class LevelDesignerMode extends WorldController {
 //			}
 //		});
 
-		// TODO: Change this with GamePlayController!!
-		FileHandle levelToLoad;
+        // TODO: Change this with GamePlayController!!
+        FileHandle levelToLoad;
 //		if (currentLevel == 3) {
 //			levelToLoad = Gdx.files.local("levels/custom3.lvl");
 //		} else {
 //			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
 //		}
-
-		System.out.println(getLevelName());
-		levelToLoad = Gdx.files.local(getLevelName());
-		//levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
+        System.out.println(getLevelName());
+        levelToLoad = Gdx.files.local(getLevelName());
+        //levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
 
 
 //		try {
-		level = loader.loadLevel(levelToLoad);
+        level = loader.loadLevel(levelToLoad);
 //		} catch (Exception e) {
 //			System.out.println(e);
 //			System.out.println(levelToLoad);
 //			level = loader.loadLevel(new FileHandle("levels/custom0.lvl"));
 //		}
 
-		dimensions = level.dimensions;
-		lowerLeft.setZero();
+        dimensions = level.dimensions;
+        lowerLeft.setZero();
 
-		bottomBorder = (board[0].length / 2) - (int)((dimensions.y / TILE_WIDTH) / 2);
-		leftBorder = (board.length / 2) - (int)((dimensions.x / TILE_WIDTH) / 2);
+        bottomBorder = (board[0].length / 2) - (int) ((dimensions.y / Constants.TILE_WIDTH) / 2);
+        leftBorder = (board.length / 2) - (int) ((dimensions.x / Constants.TILE_WIDTH) / 2);
 
-		initialBottomBorder = bottomBorder;
-		initialLeftBorder = leftBorder;
+        initialBottomBorder = bottomBorder;
+        initialLeftBorder = leftBorder;
 
-		topBorder = bottomBorder + (int)(dimensions.y / TILE_WIDTH);
-		rightBorder = leftBorder + (int)(dimensions.x / TILE_WIDTH);
+        topBorder = bottomBorder + (int) (dimensions.y / Constants.TILE_WIDTH);
+        rightBorder = leftBorder + (int) (dimensions.x / Constants.TILE_WIDTH);
 
-		for(Obstacle obj : level.obstacles) {
-			addNewObstacle(obj);
-		}
-		for(Obstacle obj : level.hosts) {
-			addNewObstacle(obj);
-		}
-		for(Obstacle obj : level.water) {
-			addNewObstacle(obj);
-		}
-		for(Obstacle obj : level.sand) {
-			addNewObstacle(obj);
-		}
-		addNewObstacle(level.pedestal);
-		addNewObstacle(level.start);
-	}
+        for (Obstacle obj : level.obstacles) {
+            addNewObstacle(obj);
+        }
+        for (Obstacle obj : level.hosts) {
+            addNewObstacle(obj);
+        }
+        for (Obstacle obj : level.water) {
+            addNewObstacle(obj);
+        }
+        for (Obstacle obj : level.sand) {
+            addNewObstacle(obj);
+        }
+        for (Obstacle obj : level.energyPillars) {
+            addNewObstacle(obj);
+        }
+        addNewObstacle(level.pedestal);
+        addNewObstacle(level.start);
+    }
 
-	/**
-	 * Adds the given obstacle to the world and to the board array, if it is in
-	 * bounds and nothing is at its tile. It is also snapped to the grid
-	 *
-	 * @param obj The obstacle to add. It should not already be in the world
-	 */
-	private void addNewObstacle(Obstacle obj) {
-		int x = xCoordToTile(obj.getX());
-		int y = yCoordToTile(obj.getY());
+    /**
+     * Adds the given obstacle to the world and to the board array, if it is in
+     * bounds and nothing is at its tile. It is also snapped to the grid
+     *
+     * @param obj The obstacle to add. It should not already be in the world
+     */
+    private void addNewObstacle(Obstacle obj) {
+        int x = xCoordToTile(obj.getX());
+        int y = yCoordToTile(obj.getY());
 
-		if(x >= leftBorder && y >= bottomBorder && x < rightBorder && y < topBorder && board[x][y] == null) {
-			obj.setPosition(xTileToCoord(x), yTileToCoord(y));
+        if (x >= leftBorder && y >= bottomBorder && x < rightBorder && y < topBorder && board[x][y] == null) {
+            obj.setPosition(xTileToCoord(x), yTileToCoord(y));
 
-			board[x][y] = obj;
-			addObject(obj);
+            board[x][y] = obj;
+            addObject(obj);
 
-			// TODO: uncomment this when hasPedestal is added
+            // TODO: uncomment this when hasPedestal is added
 //			if(obj.getName() == "pedestal") {
 //				hasPedestal = true;
 //			}
@@ -1039,15 +1056,15 @@ public class LevelDesignerMode extends WorldController {
 		   Additionally, note that the mouse uses box2d coordinates, not screen
 		   coordinates
 		 */
-		float mouseX = input.getCrossHair().x + (camTarget.x - (canvas.getWidth() / 2.f)) / scale.x;
-		float mouseY = input.getCrossHair().y + (camTarget.y - (canvas.getHeight() / 2.f)) / scale.y;
+        float mouseX = input.getCrossHair().x + (camTarget.x - (canvas.getWidth() / 2.f)) / scale.x;
+        float mouseY = input.getCrossHair().y + (camTarget.y - (canvas.getHeight() / 2.f)) / scale.y;
 
 		/* Only reset selecting if the mouse is released. Prevents selecting a
 		   new object without releasing and clicking the mouse.
 		 */
-		if(!input.didTertiary()) {
-			selecting = false;
-		}
+        if (!input.didTertiary()) {
+            selecting = false;
+        }
 
 		if (lastGolem != null && input.didInstruction() && !instructionMode) {
 			instructionMode = true;
@@ -1107,9 +1124,9 @@ public class LevelDesignerMode extends WorldController {
 			selector.select(mouseX, mouseY);
 			selecting = true;
 
-			// The tile indices
-			int x = xCoordToTile(mouseX);
-			int y = yCoordToTile(mouseY);
+            // The tile indices
+            int x = xCoordToTile(mouseX);
+            int y = yCoordToTile(mouseY);
 
 			/* Remove the object from its previous location in the board. If a
 			   different object is located there (when the selected object just
@@ -1228,26 +1245,32 @@ public class LevelDesignerMode extends WorldController {
 
 		updateSelector(hasPed);
 
-//		if(input.didPrimary()) {
+		if(input.didPrimary()) {
 //			//change wall texture that is currently selected at mouse location
-//			if(selector.isSelected()) {
-//				// Get the selection, then remove it from the selector
-//				Obstacle selection = selector.getObstacle();
-//				if(selection.getName() == "wall") {
-//					((Wall)selection).setWallLvlDsgn(((Wall)selection).wall+1);
-//				}
-//			}
-//		}
-//		if(input.didSecondary()) {
+			if (selector.isSelected()) {
+				// If its a golem then increment the current charge of the golem
+				Obstacle selection = selector.getObstacle();
+				if (selection.getName() == "host") {
+					if (((HostModel) selection).getCurrentCharge() < MAX_CHARGE_CAPACITY) {
+						((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() + 10);
+						((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
+					}
+				}
+			}
+		}
+		if(input.didSecondary()) {
 //			//change wall texture that is currently selected at mouse location
-//			if(selector.isSelected()) {
+			if (selector.isSelected()) {
 //				// Get the selection, then remove it from the selector
-//				Obstacle selection = selector.getObstacle();
-//				if(selection.getName() == "wall") {
-//					((Wall)selection).setWallLvlDsgn(((Wall)selection).wall-1);
-//				}
-//			}
-//		}
+				Obstacle selection = selector.getObstacle();
+				if (selection.getName() == "host") {
+					if (((HostModel) selection).getCurrentCharge() > MIN_CHARGE_CAPACITY) {
+						((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() - 10);
+						((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
+					}
+				}
+			}
+		}
 
 		if(input.didDelete()) {
 			// Remove what is currently selected at the mouse location
@@ -1275,95 +1298,99 @@ public class LevelDesignerMode extends WorldController {
 //				}
 //			}, "Input custom level name", "custom", "");
 
-			if(hasPed) {
-				save(getLevelName());
-				System.out.println("Saving level as: " + getLevelName());
-			} else {
-				System.out.println("Did not save level: no pedestal found");
-			}
-		}
+            if (hasPed) {
+                save(getLevelName());
+                System.out.println("Saving level as: " + getLevelName());
+            } else {
+                System.out.println("Did not save level: no pedestal found");
+            }
+        }
 
-		canvas.setCamTarget(camTarget);
-		canvas.updateCamera();
+        canvas.setCamTarget(camTarget);
+        canvas.updateCamera();
 
-		// If we use sound, we must remember this.
-		SoundController.getInstance().update();
-	}
+        // If we use sound, we must remember this.
+        SoundController.getInstance().update();
+    }
 
-	/**
-	 * Saves the current set up as a level
-	 *
-	 * Requires: the level is valid, and thus has a pedestal
-	 *
-	 * @param levelName The name for the saved level
-	 */
-	private void save(String levelName) {
-		// This has to be made local instead of the default, which is "internal" and can't be
-		// modified by a jar
-		FileHandle f = Gdx.files.local(levelName);
+    /**
+     * Saves the current set up as a level
+     * <p>
+     * Requires: the level is valid, and thus has a pedestal
+     *
+     * @param levelName The name for the saved level
+     */
+    private void save(String levelName) {
+        // This has to be made local instead of the default, which is "internal" and can't be
+        // modified by a jar
+        FileHandle f = Gdx.files.local(levelName);
 
-		// TODO: Make this not creating new objects by updating Level to use PooledList(?)
+        // TODO: Make this not creating new objects by updating Level to use PooledList(?)
 
-		SpiritModel spirit = null;
-		ArrayList<BoxObstacle> obstacleList = new ArrayList<>();
-		ArrayList<BoxObstacle> waterList = new ArrayList<>();
-		ArrayList<BoxObstacle> sandList = new ArrayList<>();
-		ArrayList<HostModel> hostList = new ArrayList<>();
-		HostModel pedestal = null;
+        SpiritModel spirit = null;
+        ArrayList<BoxObstacle> obstacleList = new ArrayList<>();
+        ArrayList<BoxObstacle> waterList = new ArrayList<>();
+        ArrayList<BoxObstacle> sandList = new ArrayList<>();
+        ArrayList<HostModel> hostList = new ArrayList<>();
+        ArrayList<EnergyPillar> energyPillarList = new ArrayList<>();
+        HostModel pedestal = null;
 
-		System.out.println(cache);
+        System.out.println(cache);
 
-		for(Obstacle obj : objects) {
-			if (!obj.inGame) {
-				continue;
-			}
+        for (Obstacle obj : objects) {
+            if (!obj.inGame) {
+                continue;
+            }
 
-			// To update the position of each object, offset its position by the
-			// lower left offset. It has to be negated, because lower left is
-			// initially the offset of the ground. To move objects in the
-			// opposite direction (to be the same distance from the corner of
-			// the ground), they must move in the other direction.
-			cache.set(lowerLeft);
-			cache.scl(-1.f);
-			cache.add(obj.getPosition());
+            // To update the position of each object, offset its position by the
+            // lower left offset. It has to be negated, because lower left is
+            // initially the offset of the ground. To move objects in the
+            // opposite direction (to be the same distance from the corner of
+            // the ground), they must move in the other direction.
+            cache.set(lowerLeft);
+            cache.scl(-1.f);
+            cache.add(obj.getPosition());
 
-			obj.setPosition(cache);
+            obj.setPosition(cache);
 
-			if (obj instanceof SpiritModel) {
-				spirit = (SpiritModel) obj;
-				// Spirit is already saved in a field
-			} else if (obj instanceof HostModel && obj.getName() != "pedestal") {
-				hostList.add((HostModel) obj);
-			}
-			else if ((obj.getName()) == "pedestal") {
-				pedestal = (HostModel) obj;
-			} else if (obj instanceof WaterTile) {
-				waterList.add((WaterTile) obj);
-			} else if (obj instanceof SandTile) {
-				sandList.add((SandTile) obj);
-			} else if (obj instanceof BoxObstacle) {
-				obstacleList.add((BoxObstacle) obj);
-			}
-		}
+            if (obj instanceof SpiritModel) {
+                spirit = (SpiritModel) obj;
+                // Spirit is already saved in a field
+            } else if (obj instanceof HostModel && obj.getName() != "pedestal") {
+                hostList.add((HostModel) obj);
+            } else if ((obj.getName()) == "pedestal") {
+                pedestal = (HostModel) obj;
+            } else if (obj instanceof WaterTile) {
+                waterList.add((WaterTile) obj);
+            } else if (obj instanceof SandTile) {
+                sandList.add((SandTile) obj);
+            } else if (obj instanceof EnergyPillar) {
+                energyPillarList.add((EnergyPillar) obj);
+            } else if (obj instanceof BoxObstacle) {
+                obstacleList.add((BoxObstacle) obj);
+            }
+        }
 
-//		dimensionsCache.set((rightBorder - leftBorder) * TILE_WIDTH, (topBorder - bottomBorder) * TILE_WIDTH);
+//		dimensionsCache.set((rightBorder - leftBorder) * Constants.TILE_WIDTH, (topBorder - bottomBorder) * Constants.TILE_WIDTH);
 //		System.out.println(dimensionsCache);
 
-		// For now, until the types used for levels are fixed
-		BoxObstacle[] obstacleArray = new BoxObstacle[obstacleList.size()];
-		obstacleList.toArray(obstacleArray);
-		WaterTile[] waterArray = new WaterTile[waterList.size()];
-		waterList.toArray(waterArray);
-		SandTile[] sandArray = new SandTile[sandList.size()];
-		sandList.toArray(sandArray);
+        // For now, until the types used for levels are fixed
+        BoxObstacle[] obstacleArray = new BoxObstacle[obstacleList.size()];
+        obstacleList.toArray(obstacleArray);
+        WaterTile[] waterArray = new WaterTile[waterList.size()];
+        waterList.toArray(waterArray);
+        SandTile[] sandArray = new SandTile[sandList.size()];
+        sandList.toArray(sandArray);
+        EnergyPillar[] energyPillarArray = new EnergyPillar[energyPillarList.size()];
+        energyPillarList.toArray(energyPillarArray);
 
-		// TODO: what if spirit is null
+        // TODO: what if spirit is null
 
-		level.set(dimensions, obstacleArray, waterArray, sandArray, hostList, spirit, pedestal);
-		loader.saveLevel(f, level);
+        level.set(dimensions, obstacleArray, waterArray, sandArray, energyPillarArray, hostList, spirit, pedestal);
+        loader.saveLevel(f, level);
 
-		reset();
-	}
+        reset();
+    }
 
 //	/**
 //	 * Draw the physics objects together with foreground and background
@@ -1379,8 +1406,8 @@ public class LevelDesignerMode extends WorldController {
 //		canvas.begin();
 //
 //		// Use the lower left corner of tiles, not the center, to start drawing the canvas
-//		for(float x = xTileToCoord(leftBorder, true); x < xTileToCoord(rightBorder, true); x += TILE_WIDTH * screenTileWidth()) {
-//			for(float y = yTileToCoord(bottomBorder, true); y < yTileToCoord(topBorder, true); y += TILE_WIDTH * screenTileHeight()) {
+//		for(float x = xTileToCoord(leftBorder, true); x < xTileToCoord(rightBorder, true); x += Constants.TILE_WIDTH * screenTileWidth()) {
+//			for(float y = yTileToCoord(bottomBorder, true); y < yTileToCoord(topBorder, true); y += Constants.TILE_WIDTH * screenTileHeight()) {
 //
 //				// Calculate the width and height of the canvas segment. If the
 //				// board doesn't extend the entire way, find the desired dimensions
@@ -1391,7 +1418,7 @@ public class LevelDesignerMode extends WorldController {
 //				canvas.draw(backgroundTexture.getTexture(), scale.x * x, scale.y * y,  width, height,
 //						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
 //
-////				canvas.draw(backgroundTexture, Color.WHITE, TILE_WIDTH * scale.x * x, TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
+////				canvas.draw(backgroundTexture, Color.WHITE, Constants.TILE_WIDTH * scale.x * x, Constants.TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
 //			}
 //		}
 ////		canvas.draw(backgroundTexture, Color.WHITE, 0, 0,canvas.getWidth(),canvas.getHeight());
@@ -1414,7 +1441,7 @@ public class LevelDesignerMode extends WorldController {
 //
 //		// Draw foreground last. The foreground indicates what is within the bounds of the game and what is outside
 ////		canvas.begin();
-////		canvas.draw(foregroundTexture, FORE_COLOR,  TILE_WIDTH * scale.x * leftBorder, TILE_WIDTH * scale.y * bottomBorder, scale.x * TILE_WIDTH * (rightBorder - leftBorder), scale.y * TILE_WIDTH * (topBorder - bottomBorder));
+////		canvas.draw(foregroundTexture, FORE_COLOR,  Constants.TILE_WIDTH * scale.x * leftBorder, Constants.TILE_WIDTH * scale.y * bottomBorder, scale.x * Constants.TILE_WIDTH * (rightBorder - leftBorder), scale.y * Constants.TILE_WIDTH * (topBorder - bottomBorder));
 ////		selector.draw(canvas);
 ////		canvas.end();
 //	}
