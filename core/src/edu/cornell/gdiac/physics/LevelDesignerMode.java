@@ -366,6 +366,8 @@ public class LevelDesignerMode extends WorldController {
             topBorder = bottomBorder + screenTileHeight();
             rightBorder = leftBorder + screenTileWidth();
 
+			setBordersAndUpdateTerrain();
+
             loadBoard = true;
         }
 
@@ -1147,8 +1149,10 @@ public class LevelDesignerMode extends WorldController {
 				} else {
 					if(board[i][j] instanceof BorderEdge) {
 						edges.add((BorderEdge)board[i][j]);
+						board[i][j] = null;
 					} else if(board[i][j] instanceof BorderCorner) {
 						corners.add((BorderCorner)board[i][j]);
+						board[i][j] = null;
 					}
 					updateWaterAroundRegion(i, j);
 					updateSandAroundRegion(i, j);
