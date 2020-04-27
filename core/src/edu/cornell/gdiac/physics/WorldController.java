@@ -822,27 +822,27 @@ public abstract class WorldController implements Screen {
 		canvas.begin();
 
 		for(Obstacle obj : objects) {
-			if(!(obj instanceof Wall) && !(obj instanceof HostModel) && !obj.drawOnTop) {
+			if(!(obj instanceof Wall) && !(obj instanceof HostModel) && !obj.inHUD && !obj.selected) {
 				obj.draw(canvas);
 			}
 		}
 		for(Obstacle obj : objects) {
-			if(obj instanceof Wall && !obj.drawOnTop) {
+			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
 				obj.draw(canvas);
 			}
 		}
 		for(Obstacle obj : objects) {
-			if((obj instanceof HostModel || obj instanceof SpiritModel) && !obj.drawOnTop) {
+			if((obj instanceof HostModel || obj instanceof SpiritModel) && !obj.inHUD && !obj.selected) {
 				obj.draw(canvas);
 			}
 		}
 		for(Obstacle obj : objects) {
-			if(obj instanceof Wall && !obj.drawOnTop) {
+			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
 				((Wall)obj).drawTop(canvas);
 			}
 		}
 		for(Obstacle obj : objects) {
-			if(obj.drawOnTop) {
+			if(obj.inHUD || obj.selected) {
 				obj.draw(canvas);
 			}
 		}

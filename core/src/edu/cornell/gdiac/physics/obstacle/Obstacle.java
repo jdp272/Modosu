@@ -58,8 +58,10 @@ public abstract class Obstacle {
 	public boolean selectable = true;
 	/** Whether this obstacle should be part of the game (versus part of HUD) */
 	public boolean inGame = true;
-	/** Records if this object should be drawn on top */
-	public boolean drawOnTop = false;
+	/** Records if this object should be drawn on top, because it is in the HUD */
+	public boolean inHUD = false;
+	/** Records if this object is currently being selected */
+	public boolean selected = false;
 
 	/// Track garbage collection status
 	/** Whether the object should be removed from the world on next pass */

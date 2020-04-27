@@ -53,6 +53,9 @@ public class LevelDesignerMode extends WorldController {
 	/** The maximum width and height of the board, in tile coordinates */
 	private static final int MAX_BOARD_TILES = 127;
 
+	/** The minimum number of tiles that the board can be */
+	private static final int MINIMUM_BOARD_WIDTH = 6;
+
 	/** Texture asset for mouse crosshairs */
 	private TextureRegion crosshairTexture;
 
@@ -85,6 +88,7 @@ public class LevelDesignerMode extends WorldController {
 	private boolean selecting;
 
 	PooledList<BorderEdge> edges;
+	PooledList<BorderCorner> corners;
 
 	private enum Corner {
 		TOP_LEFT,
@@ -196,6 +200,7 @@ public class LevelDesignerMode extends WorldController {
 		levels = folder.listFiles();
 
 		edges = new PooledList<>();
+		corners = new PooledList<>();
 	}
 
 	/**
@@ -296,26 +301,26 @@ public class LevelDesignerMode extends WorldController {
 
 		// Setup the spawner list
 		Wall boxSpawn = factory.makeWall(0.f, 0.f);
-		boxSpawn.drawOnTop = true;
+		boxSpawn.inHUD = true;
 		addObject(boxSpawn);
 
 		WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
-		waterSpawn.drawOnTop = true;
+		waterSpawn.inHUD = true;
 		addObject(waterSpawn);
 
 		SandTile sandSpawn = factory.makeSand(0.f, 0.f);
-		sandSpawn.drawOnTop = true;
+		sandSpawn.inHUD = true;
 		addObject(sandSpawn);
 
 		HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
-		hostSpawn.drawOnTop = true;
+		hostSpawn.inHUD = true;
 		addObject(hostSpawn);
 
 //		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
 //		addObject(spiritSpawn);
 
 		HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
-		pedestalSpawn.drawOnTop = true;
+		pedestalSpawn.inHUD = true;
 		addObject(pedestalSpawn);
 
 //		BorderEdge edgeSpawn = factory.makeBorder(0.f, 0.f);
@@ -368,22 +373,22 @@ public class LevelDesignerMode extends WorldController {
 
 		topLeft = new CornerObstacle(crosshairTexture, Corner.TOP_LEFT);
 		topLeft.inGame = false;
-		topLeft.drawOnTop = true;
+		topLeft.inHUD = true;
 		addObject(topLeft);
 
 		topRight = new CornerObstacle(crosshairTexture, Corner.TOP_RIGHT);
 		topRight.inGame = false;
-		topRight.drawOnTop = true;
+		topRight.inHUD = true;
 		addObject(topRight);
 
 		bottomLeft = new CornerObstacle(crosshairTexture, Corner.BOTTOM_LEFT);
 		bottomLeft.inGame = false;
-		bottomLeft.drawOnTop = true;
+		bottomLeft.inHUD = true;
 		addObject(bottomLeft);
 
 		bottomRight = new CornerObstacle(crosshairTexture, Corner.BOTTOM_RIGHT);
 		bottomRight.inGame = false;
-		bottomRight.drawOnTop = true;
+		bottomRight.inHUD = true;
 		addObject(bottomRight);
 
 		updateCornerPositions();
@@ -462,8 +467,8 @@ public class LevelDesignerMode extends WorldController {
 		initialBottomBorder = bottomBorder;
 		initialLeftBorder = leftBorder;
 
-		topBorder = bottomBorder + (int)(dimensions.y / TILE_WIDTH);
-		rightBorder = leftBorder + (int)(dimensions.x / TILE_WIDTH);
+		topBorder = bottomBorder + Math.max((int)(dimensions.y / TILE_WIDTH), MINIMUM_BOARD_WIDTH);
+		rightBorder = leftBorder + Math.max((int)(dimensions.x / TILE_WIDTH), MINIMUM_BOARD_WIDTH);
 
 		for(Obstacle obj : level.obstacles) {
 			addNewObstacle(obj);
@@ -879,11 +884,11 @@ public class LevelDesignerMode extends WorldController {
 		int left   = Math.min(Math.max(x, 0), board.length - 1);
 		int right  = Math.min(Math.max(x, 1), board.length);
 
-		// Ensure the board never has size 0
-		top    = Math.max(top, bottomBorder + 1);
-		bottom = Math.min(bottom, topBorder - 1);
-		left   = Math.min(left, rightBorder - 1);
-		right  = Math.max(right, leftBorder + 1);
+		// Ensure the board always has the minimum size
+		top    = Math.max(top, bottomBorder + MINIMUM_BOARD_WIDTH);
+		bottom = Math.min(bottom, topBorder - MINIMUM_BOARD_WIDTH);
+		left   = Math.min(left, rightBorder - MINIMUM_BOARD_WIDTH);
+		right  = Math.max(right, leftBorder + MINIMUM_BOARD_WIDTH);
 
 		// In each case, reset the variables that shouldn't change
 		switch(corner.corner) {
@@ -983,7 +988,13 @@ public class LevelDesignerMode extends WorldController {
 							board[i][j].markRemoved(true);
 							board[i][j] = null;
 						}
-						addNewObstacle(factory.makeBorder(xCoord, yCoord, BorderEdge.Side.BOTTOM));
+						BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.BOTTOM);
+						if(i - leftBorder == 1) {
+							border.setNextToSide(1, BorderEdge.Side.LEFT);
+						} else if((rightBorder - 1) - i == 1) {
+							border.setNextToSide(1, BorderEdge.Side.RIGHT);
+						}
+						addNewObstacle(border);
 //					}
 				} else if(i == leftBorder) {
 //					if(board[i][j] instanceof BorderEdge) {
@@ -993,7 +1004,13 @@ public class LevelDesignerMode extends WorldController {
 							board[i][j].markRemoved(true);
 							board[i][j] = null;
 						}
-						addNewObstacle(factory.makeBorder(xCoord, yCoord, BorderEdge.Side.LEFT));
+						BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.LEFT);
+						if(j - bottomBorder == 1) {
+							border.setNextToSide(1, BorderEdge.Side.BOTTOM);
+						} else if((topBorder - 1) - j == 1) {
+							border.setNextToSide(1, BorderEdge.Side.TOP);
+						}
+						addNewObstacle(border);
 //					}
 				} else if(i == rightBorder - 1) {
 //					if(board[i][j] instanceof BorderEdge) {
@@ -1003,7 +1020,13 @@ public class LevelDesignerMode extends WorldController {
 							board[i][j].markRemoved(true);
 							board[i][j] = null;
 						}
-						addNewObstacle(factory.makeBorder(xCoord, yCoord, BorderEdge.Side.RIGHT));
+						BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.RIGHT);
+						if(i - bottomBorder == 1) {
+							border.setNextToSide(1, BorderEdge.Side.BOTTOM);
+						} else if((topBorder - 1) - i == 1) {
+							border.setNextToSide(1, BorderEdge.Side.TOP);
+						}
+						addNewObstacle(border);
 //					}
 				} else if(j == topBorder - 1) {
 //					if(board[i][j] instanceof BorderEdge) {
@@ -1013,11 +1036,19 @@ public class LevelDesignerMode extends WorldController {
 							board[i][j].markRemoved(true);
 							board[i][j] = null;
 						}
-						addNewObstacle(factory.makeBorder(xCoord, yCoord, BorderEdge.Side.TOP));
+						BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.TOP);
+						if(i - leftBorder <= 2) {
+							border.setNextToSide(i - leftBorder, BorderEdge.Side.LEFT);
+						} else if((rightBorder - 1) - i <= 2) {
+							border.setNextToSide((rightBorder - 1) - i, BorderEdge.Side.RIGHT);
+						}
+						addNewObstacle(border);
 //					}
 				} else {
 					if(board[i][j] instanceof BorderEdge) {
 						edges.add((BorderEdge)board[i][j]);
+					} else if(board[i][j] instanceof BorderCorner) {
+						corners.add((BorderCorner)board[i][j]);
 					}
 					updateWaterAroundRegion(i, j);
 					updateSandAroundRegion(i, j);
@@ -1026,8 +1057,11 @@ public class LevelDesignerMode extends WorldController {
 			}
 		}
 
-		// Remove all the edges that are still unused from the game
+		// Remove all the border pieces that are still unused from the game
 		for(BorderEdge border : edges) {
+			border.markRemoved(true);
+		}
+		for(BorderCorner border : corners) {
 			border.markRemoved(true);
 		}
 	}

@@ -112,8 +112,8 @@ public class SpawnerList {
         spawnerList.add(new Spawner(obj, new Vector2(obj.getX(), obj.getY()), func));
 
         // Can't be selected or added to the game
-        obj.selectable = false;
         obj.inGame = false;
+        obj.inHUD = true;
     }
 
     /**

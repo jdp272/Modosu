@@ -76,6 +76,59 @@ public class BorderEdge extends BoxObstacle {
         }
     }
 
+    /**
+     * A function that sets this tile to be near another side
+     *
+     * @param distance How far this edge is from that side
+     * @param nearbySide Which side this edge is near
+     */
+    public void setNextToSide(int distance, Side nearbySide) {
+        switch(this.side) {
+            case TOP:
+                if(distance == 1) {
+                    if(nearbySide == Side.LEFT) {
+                        this.edgeStrip.setFrame(5);
+                    } else if(nearbySide == Side.RIGHT) {
+                        this.edgeStrip.setFrame(7);
+                    }
+                } else if(distance == 2) {
+                    if(nearbySide == Side.LEFT) {
+                        this.edgeStrip.setFrame(6);
+                    } else if(nearbySide == Side.RIGHT) {
+                        this.edgeStrip.setFrame(8);
+                    }
+                }
+                break;
+            case BOTTOM:
+                if(distance == 1) {
+                    if(nearbySide == Side.LEFT) {
+                        this.edgeStrip.setFrame(11);
+                    } else if(nearbySide == Side.RIGHT) {
+                        this.edgeStrip.setFrame(12);
+                    }
+                }
+                break;
+            case LEFT:
+                if(distance == 1) {
+                    if(nearbySide == Side.BOTTOM) {
+                        this.edgeStrip.setFrame(21);
+                    } else if(nearbySide == Side.TOP) {
+                        this.edgeStrip.setFrame(22);
+                    }
+                }
+                break;
+            case RIGHT:
+                if(distance == 1) {
+                    if(nearbySide == Side.BOTTOM) {
+                        this.edgeStrip.setFrame(30);
+                    } else if(nearbySide == Side.TOP) {
+                        this.edgeStrip.setFrame(31);
+                    }
+                }
+                break;
+        }
+    }
+
 //    /**
 //     * @return The frame for this border edge
 //     */

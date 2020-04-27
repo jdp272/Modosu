@@ -293,6 +293,8 @@ public class ObstacleSelector implements QueryCallback  {
 			mouseJointDef.maxForce = 1000 * body.getMass();
 			mouseJoint = (MouseJoint)world.createJoint(mouseJointDef);
 			body.setAwake(true);
+
+			selection.selected = true;
 		}
 		return selection != null;
 	}
@@ -323,6 +325,8 @@ public class ObstacleSelector implements QueryCallback  {
 		if (selection != null) {
 			selection.setBodyType(BodyDef.BodyType.StaticBody);
 
+			selection.selected = false;
+
 			world.destroyJoint(mouseJoint);
 			selection = null;
 			mouseJoint = null;
@@ -347,16 +351,21 @@ public class ObstacleSelector implements QueryCallback  {
 			// Indicate that this object has been clicked
 			selection.setClicked();
 
+			// If the object was selected, or the HUD element was marked as
+			// clicked. Keep going only if object is unselectable and not in HUD
+			boolean returnVal = !(selection.selectable || selection.inHUD);
+			
 			// Don't select an object that can't be selected
 			if(!selection.selectable) {
 				selection = null;
 			} else {
 				selection.getBody().setType(BodyDef.BodyType.DynamicBody);
 			}
-			return false; // An object has been clicked, even if it's not been selected
-		}
 
-		return selection == null;
+			return returnVal;
+		} else {
+			return true;
+		}
 	}
 
 	//// Drawing code
