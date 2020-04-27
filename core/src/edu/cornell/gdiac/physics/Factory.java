@@ -16,7 +16,7 @@ public class Factory {
     private static int SMALL_MAX_CHARGE = 800;
     private static int SPIRIT_LIVES = 3;
     private static int SPIRIT_BOUNCES = 8;
-    private static int DEFAULT_LIFE = 300;
+    private static int DEFAULT_LIFE = 250;
 
     private Texture hostChargeTexture;
     private Texture hostTextureE;

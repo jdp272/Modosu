@@ -17,7 +17,7 @@ public class SpiritModel extends BoxObstacle {
     /** The factor to multiply by the input */
     private static final float SPIRIT_FRICTION = 0.0f;
     /** The restitution of the character */
-    private static final float SPIRIT_RESTITUTION = 0.8f;
+    private static final float SPIRIT_RESTITUTION = 1.0f;
 
     // Spirit constants
     private static final int SPIRIT_BOUNCES = 4;
@@ -262,6 +262,10 @@ public class SpiritModel extends BoxObstacle {
 
     public void setIsPossessing(boolean isCurrPossessing) {
         isPossessing = isCurrPossessing;
+    }
+
+    public void decCurrentLife(int amount) {
+        this.currentLife -= amount;
     }
 
     /**

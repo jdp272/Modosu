@@ -10,26 +10,40 @@ import java.util.ArrayList;
 
 public class CollisionController implements ContactListener {
 
-    /** Whether the host was bounced against a wall this frame */
+    /**
+     * Whether the host was bounced against a wall this frame
+     */
     private boolean bounced;
 
-    /** Whether the host is walking through sand this frame */
+    /**
+     * Whether the host is walking through sand this frame
+     */
     private boolean inSand;
 
-    /** Whether the is the new host's first time possession */
+    /**
+     * Whether the is the new host's first time possession
+     */
     private boolean isNewPossession;
 
-    /** What host was possessed this frame, null if no possession occurred */
+    /**
+     * What host was possessed this frame, null if no possession occurred
+     */
     private HostModel hostPossessed;
 
-    /** What host was possessed last frame, null if no possession occurred */
+    /**
+     * What host was possessed last frame, null if no possession occurred
+     */
     private HostModel prevHostPossessed;
 
     // Physics objects for the game
-    /** Reference to the hosts */
+    /**
+     * Reference to the hosts
+     */
     private ArrayList<HostModel> hostList;
 
-    /** Reference to the spirit */
+    /**
+     * Reference to the spirit
+     */
     private SpiritModel spirit;
 
     /**
@@ -74,7 +88,7 @@ public class CollisionController implements ContactListener {
 
     /**
      * Callback method for the start of a collision
-     *
+     * <p>
      * This method is called when we first get a collision between two objects.  We use
      * this method to test if it is the "right" kind of collision.  In particular, we
      * use it to test if the spirit bounced against a wall or if the spirit bounced into a host.
@@ -106,7 +120,9 @@ public class CollisionController implements ContactListener {
                 hostPossessed = r;
 
                 // A new host has been possessed that has never been possessed before
-                if (!hostPossessed.beenPossessed()) { isNewPossession = true; }
+                if (!hostPossessed.beenPossessed()) {
+                    isNewPossession = true;
+                }
 
                 // host is now possessed
                 hostPossessed.setPossessed(true);
@@ -130,12 +146,12 @@ public class CollisionController implements ContactListener {
                 }
             }
 
-            if ((( body2.getUserData() == r) || (body1.getUserData() == r )) && !r.isPossessed() ) {
+            if (((body2.getUserData() == r) || (body1.getUserData() == r)) && !r.isPossessed()) {
                 Vector2 c = contact.getWorldManifold().getPoints()[0].sub(r.getPosition());
                 Vector2 v = r.getLinearVelocity();
 
-                if((Math.signum(c.x) == Math.signum(v.x) || Math.abs(v.x) < 0.1)
-                        && (Math.signum(c.y) == Math.signum(v.y) || Math.abs(v.y) < 0.1)){
+                if ((Math.signum(c.x) == Math.signum(v.x) || Math.abs(v.x) < 0.1)
+                        && (Math.signum(c.y) == Math.signum(v.y) || Math.abs(v.y) < 0.1)) {
                     r.invertForwardI();
                     r.nextInstruction();
                 }
@@ -154,13 +170,13 @@ public class CollisionController implements ContactListener {
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
 
-        if(hostList != null) {
+        if (hostList != null) {
             for (HostModel r : hostList) {
                 if (((body2.getUserData() == r) || (body1.getUserData() == r)) && !r.isPossessed()) {
                     r.setLinearVelocity(new Vector2(0, 0));
                 }
 
-                if(r == prevHostPossessed){
+                if (r == prevHostPossessed) {
                     System.out.println(r.getLinearVelocity());
                 }
 
@@ -170,17 +186,19 @@ public class CollisionController implements ContactListener {
 
     private Vector2 cache = new Vector2();
 
-    /** Unused ContactListener method */
+    /**
+     * Unused ContactListener method
+     */
     public void postSolve(Contact contact, ContactImpulse impulse) {
     }
 
     /**
      * Handles any modifications necessary before collision resolution
-     *
+     * <p>
      * This method is called just before Box2D resolves a collision.  We use this method
      * to implement sound on contact, using the algorithms outlined similar to those in
      * Ian Parberry's "Introduction to Game Physics with Box2D".
-     *
+     * <p>
      * However, we cannot use the proper algorithms, because LibGDX does not implement
      * b2GetPointStates from Box2D.  The danger with our approximation is that we may
      * get a collision over multiple frames (instead of detecting the first frame), and
@@ -202,21 +220,21 @@ public class CollisionController implements ContactListener {
         Obstacle bd2 = (Obstacle) body2.getUserData();
 
         // Check for Collision with Pedestal
-        if((body1.getUserData() == spirit && bd2.getName() == "pedestal") ||
+        if ((body1.getUserData() == spirit && bd2.getName() == "pedestal") ||
                 (bd1.getName() == "pedestal" && body2.getUserData() == spirit) ||
-        (bd1.getName() == "host" && bd2.getName() == "pedestal") ||
-                (bd1.getName() == "pedestal" && bd2.getName() == "host")){
+                (bd1.getName() == "host" && bd2.getName() == "pedestal") ||
+                (bd1.getName() == "pedestal" && bd2.getName() == "host")) {
             contact.setEnabled(false);
         }
 
         // Check for Collision with Water
-        if((body1.getUserData() == spirit && bd2.getName() == "water") ||
-        bd1.getName() == "water" && body2.getUserData() == spirit) {
+        if ((body1.getUserData() == spirit && bd2.getName() == "water") ||
+                bd1.getName() == "water" && body2.getUserData() == spirit) {
             contact.setEnabled(false);
         }
 
         // All collisions with Sand
-        if((bd1.getName() == "sand") || bd1.getName() == "sand" ) {
+        if ((bd1.getName() == "sand") || bd1.getName() == "sand") {
             contact.setEnabled(false);
         }
 
@@ -236,14 +254,20 @@ public class CollisionController implements ContactListener {
 
         // Recognize spirit against a wall to play sound
         if (body1.getUserData() == spirit && bd2.getName() == "wall" ||
-                bd1.getName() == "wall" && body2.getUserData() == spirit) {
+                bd1.getName() == "wall" && body2.getUserData() == spirit ||
+                body1.getUserData() == spirit && bd2.getName() == "edge" ||
+                bd1.getName() == "edge" && body2.getUserData() == spirit ||
+                body1.getUserData() == spirit && bd2.getName() == "corner" ||
+                bd1.getName() == "corner" && body2.getUserData() == spirit) {
             spirit.setDidBounce(true);
             spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
             bounced = true;
         }
     }
 
-    /** Reset all the fields to reflect this current frame */
+    /**
+     * Reset all the fields to reflect this current frame
+     */
     public void clear() {
         bounced = false;
         isNewPossession = false;
@@ -251,17 +275,36 @@ public class CollisionController implements ContactListener {
     }
 
     // Getters
-    /** Getter method to return whether the possession is the first time for the host */
-    public boolean isNewPossession() { return isNewPossession; }
 
-    /** Getter method to return the possessed host */
-    public HostModel getHostPossessed() { return hostPossessed; }
+    /**
+     * Getter method to return whether the possession is the first time for the host
+     */
+    public boolean isNewPossession() {
+        return isNewPossession;
+    }
 
-    /** Getter method to return whether a possession occurred this frame */
-    public boolean isPossessed() { return hostPossessed != null; }
+    /**
+     * Getter method to return the possessed host
+     */
+    public HostModel getHostPossessed() {
+        return hostPossessed;
+    }
 
-    /** Getter method to return whether a wall bounce occurred this frame */
-    public boolean isBounced() { return bounced; }
+    /**
+     * Getter method to return whether a possession occurred this frame
+     */
+    public boolean isPossessed() {
+        return hostPossessed != null;
+    }
 
-    public boolean getInSand() { return inSand; }
+    /**
+     * Getter method to return whether a wall bounce occurred this frame
+     */
+    public boolean isBounced() {
+        return bounced;
+    }
+
+    public boolean getInSand() {
+        return inSand;
+    }
 }

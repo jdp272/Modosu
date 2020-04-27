@@ -92,6 +92,10 @@ public class InputController {
 	private boolean instructionPrevious;
 	/** If left mouse was just clicked */
 	private boolean leftJustClicked;
+	/** If up is held */
+	private boolean upHeld;
+	/** If down is held */
+	private boolean downHeld;
 	
 	/** How much did we move horizontally? */
 	private float horizontal;
@@ -286,11 +290,25 @@ public class InputController {
 	public boolean didInstruction() { return instructionPressed && !instructionPrevious; }
 
 	/**
-	 * Returns true if the left mosue button was just pressed.
+	 * Returns true if the left mouse button was just pressed.
 	 *
 	 * @return true if the left mouse button was just pressed
 	 */
 	public boolean didLeftClick() { return leftJustClicked; }
+
+	/**
+	 * Returns true if the up button is pressed.
+	 *
+	 * @return true if the up button pressed
+	 */
+	public boolean didPressUp() { return upHeld; }
+
+	/**
+	 * Returns true if the down button is pressed.
+	 *
+	 * @return true if the down button is pressed
+	 */
+	public boolean didPressDown() { return downHeld; }
 
 	/**
 	 * Creates a new input controller
@@ -357,6 +375,8 @@ public class InputController {
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
+		upHeld = Gdx.input.isKeyPressed(Input.Keys.UP);
+		downHeld = Gdx.input.isKeyPressed(Input.Keys.DOWN);
 
 		boxPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.B));
 		hostPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.G));

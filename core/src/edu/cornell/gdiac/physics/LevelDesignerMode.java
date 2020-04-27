@@ -1209,7 +1209,6 @@ public class LevelDesignerMode extends WorldController {
 			Vector2[] instructions = new Vector2[instructionListCache.size()];
 			for (int i = 0; i < instructionListCache.size(); i++) {
 				instructions[i] = instructionListCache.get(i);
-				System.out.println(instructions[i]);
 			}
 			if (instructionListCache.size() != 0) {
 				lastGolem.setInstructions(instructions);
@@ -1357,32 +1356,22 @@ public class LevelDesignerMode extends WorldController {
 
 		updateSelector(hasPed);
 
-		if(input.didPrimary()) {
-//			//change wall texture that is currently selected at mouse location
-			if (selector.isSelected()) {
-				// If its a golem then increment the current charge of the golem
-				Obstacle selection = selector.getObstacle();
-				if (selection.getName() == "host") {
-					if (((HostModel) selection).getCurrentCharge() < MAX_CHARGE_CAPACITY) {
-						((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() + 10);
-						((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
-					}
-				}
+		if (input.didPressUp() && selector.getObstacle().getName() == "host") {
+			Obstacle selection = selector.getObstacle();
+			if (((HostModel) selection).getCurrentCharge() < MAX_CHARGE_CAPACITY) {
+				((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() + 5);
+				((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
+			}
+
+		}
+		if (input.didPressDown() && selector.getObstacle().getName() == "host") {
+			Obstacle selection = selector.getObstacle();
+			if (((HostModel) selection).getCurrentCharge() > MIN_CHARGE_CAPACITY) {
+				((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() - 5);
+				((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
 			}
 		}
-		if(input.didSecondary()) {
-//			//change wall texture that is currently selected at mouse location
-			if (selector.isSelected()) {
-//				// Get the selection, then remove it from the selector
-				Obstacle selection = selector.getObstacle();
-				if (selection.getName() == "host") {
-					if (((HostModel) selection).getCurrentCharge() > MIN_CHARGE_CAPACITY) {
-						((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() - 10);
-						((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
-					}
-				}
-			}
-		}
+
 
 		if(input.didDelete()) {
 			// Remove what is currently selected at the mouse location

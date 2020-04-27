@@ -71,6 +71,8 @@ public class GamePlayController extends WorldController {
 
 	private Vector2 cache;
 
+	private final int lifePerBounce = 40;
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -445,7 +447,9 @@ public class GamePlayController extends WorldController {
 		}
 
 
-
+		if (spirit.getDidBounce()) {
+			spirit.decCurrentLife(lifePerBounce);
+		}
 
 		// Update sounds
 		SoundController.getInstance().update();

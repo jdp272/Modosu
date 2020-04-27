@@ -189,7 +189,7 @@ public class GameCanvas {
 	 * Begins the process of zooming the camera out
 	 */
 	public void zoomOut() {
-		targetZoom = 2.0f;
+		targetZoom = 1.75f;
 		zoomingOut = true;
 		zoomingIn = false;
 		zooming = true;
