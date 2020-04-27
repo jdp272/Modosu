@@ -584,6 +584,10 @@ public class HostModel extends BoxObstacle {
         body.applyForce(force, body.getLocalCenter(), true);
     }
 
+    public void setInstructions(Vector2[] instructions) {
+        this.instructions = instructions;
+    }
+
     public void setPedestalStrip(FilmStrip strip) {
         this.pedestalHost = strip;
         pedestalHost.setFrame(0);
