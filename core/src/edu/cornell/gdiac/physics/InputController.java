@@ -89,6 +89,7 @@ public class InputController {
 	private boolean savePrevious;
 	/** If the instruction button was pressed */
 	private boolean instructionPressed;
+	private boolean instructionPrevious;
 	/** If left mouse was just clicked */
 	private boolean leftJustClicked;
 	
@@ -282,7 +283,7 @@ public class InputController {
 	 *
 	 * @return true if the instruction editor button was pressed
 	 */
-	public boolean didInstruction() { return instructionPressed; }
+	public boolean didInstruction() { return instructionPressed && !instructionPrevious; }
 
 	/**
 	 * Returns true if the left mosue button was just pressed.
@@ -330,6 +331,7 @@ public class InputController {
 		deletePrevious = deletePressed;
 		savePrevious = savePressed;
 		menuPrevious = menuPressed;
+		instructionPrevious = instructionPressed;
 
 		readKeyboard(bounds, scale, false);
 
@@ -363,7 +365,8 @@ public class InputController {
 		deletePressed = (secondary && deletePressed)  || (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE));
 		savePressed = (secondary && savePressed)  || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
 		menuPressed = (secondary && menuPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
-		instructionPressed = Gdx.input.isKeyJustPressed(Input.Keys.I);
+		instructionPressed = (secondary && instructionPressed) || (Gdx.input.isKeyPressed(Input.Keys.I));
+//		instructionPressed = Gdx.input.isKeyJustPressed(Input.Keys.I);
 
 
 		// Directional controls

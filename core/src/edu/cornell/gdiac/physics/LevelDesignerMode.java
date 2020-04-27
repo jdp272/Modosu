@@ -464,7 +464,7 @@ public class LevelDesignerMode extends WorldController {
 
         bottomRight = new CornerObstacle(crosshairTexture, Corner.BOTTOM_RIGHT);
         bottomRight.inGame = false;
-		bottomLeft.inHUD = true;
+		bottomRight.inHUD = true;
         addObject(bottomRight);
 
         updateCornerPositions();
@@ -839,6 +839,15 @@ public class LevelDesignerMode extends WorldController {
 	}
 
 	/**
+	 * If the given tile is either a Wall, a BorderEdge, or a BorderCorner
+	 *
+	 * @param o The object to check
+	 */
+	public boolean isWallOrBorder(Obstacle o) {
+		return o instanceof Wall || o instanceof BorderEdge || o instanceof BorderCorner;
+	}
+
+	/**
 	 * Updates the texture for wall tile at index x, y in the board based on
 	 * its surroundings (if they are wall or not)
 	 *
@@ -872,8 +881,13 @@ public class LevelDesignerMode extends WorldController {
 		}
 		if(y - 1 >= bottomBorder) {
 			below = board[x][y - 1];
-			wallBelow = below instanceof Wall;
-			if(wallBelow) {
+			// NOTE:
+			// ONLY FOR BELOW DOES IT COUNT AS A WALL IF IT IS A BORDER!
+			// This is so that there is not a front wall next to the border,
+			// because a front wall has a smaller hitbox and would mean there
+			// would be a tunnel between the wall and the edge
+			wallBelow = isWallOrBorder(below);
+			if(below instanceof Wall) {
 				belowIsTop = !((Wall)below).isFrontWall();
 			}
 		}
@@ -1205,75 +1219,6 @@ public class LevelDesignerMode extends WorldController {
 			}
 			refreshFootprints();
 			System.out.println("Instructions saved to golem");
-			/*
-			footprints.clear();
-			for (Obstacle ob : objects) {
-				if (ob instanceof HostModel) {
-					Vector2[] list = ((HostModel)ob).getInstructionList();
-					if (list != null) {
-						for (Vector2 instr : list) {
-							FootPrintModel ft = new FootPrintModel(footprintTexture, new Vector2(instr.x * scale.x, instr.y * scale.y));
-							footprints.add(ft);
-						}
-					}
-				}
-			}
-
-			 */
-		}
-
-		if (instructionMode && input.didLeftClick()) {
-		    int instructionTileX = xCoordToTile(mouseX);
-		    int instructionTileY = yCoordToTile(mouseY);
-		    float instructionRawX = xTileToCoord(instructionTileX);
-		    float instructionRawY = yTileToCoord(instructionTileY);
-
-		    FootPrintModel fp = new FootPrintModel(footprintTexture, new Vector2(instructionRawX * scale.x,instructionRawY*scale.y));
-		    footprints.add(fp);
-		    super.setFootprints(footprints);
-			Vector2 instruction = new Vector2(instructionRawX, instructionRawY);
-			instructionListCache.add(instruction);
-			System.out.println("Instruction placed");
-		}
-
-		if (lastGolem != null && input.didInstruction() && !instructionMode) {
-			instructionMode = true;
-			instructionListCache.clear();
-			lastGolem.setInstructions(null);
-			System.out.println("Instruction Mode");
-			refreshFootprints();
-		}
-
-		else if (instructionMode && input.didInstruction()) {
-			instructionMode = false;
-			Vector2[] instructions = new Vector2[instructionListCache.size()];
-			for (int i = 0; i < instructionListCache.size(); i++) {
-				instructions[i] = instructionListCache.get(i);
-				System.out.println(instructions[i]);
-			}
-			if (instructionListCache.size() != 0) {
-				lastGolem.setInstructions(instructions);
-			}
-			else {
-				lastGolem.setInstructions(null);
-			}
-			refreshFootprints();
-			System.out.println("Instructions saved to golem");
-			/*
-			footprints.clear();
-			for (Obstacle ob : objects) {
-				if (ob instanceof HostModel) {
-					Vector2[] list = ((HostModel)ob).getInstructionList();
-					if (list != null) {
-						for (Vector2 instr : list) {
-							FootPrintModel ft = new FootPrintModel(footprintTexture, new Vector2(instr.x * scale.x, instr.y * scale.y));
-							footprints.add(ft);
-						}
-					}
-				}
-			}
-
-			 */
 		}
 
 		if (instructionMode && input.didLeftClick()) {
