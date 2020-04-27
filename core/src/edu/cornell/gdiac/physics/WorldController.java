@@ -30,6 +30,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import edu.cornell.gdiac.physics.host.ArrowModel;
+import edu.cornell.gdiac.physics.host.FootPrintModel;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.Wall;
@@ -39,6 +40,7 @@ import edu.cornell.gdiac.util.ScreenListener;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -158,6 +160,9 @@ public abstract class WorldController implements Screen {
 	private static Texture spiritBodyTexture;
 	/** Texture for Spirit Tail Texture */
 	private static Texture spiritTailTexture;
+
+	/** List of footprints for level editor */
+	private ArrayList<FootPrintModel> footprints;
 
 	public ArrowModel arrow;
 
@@ -581,6 +586,7 @@ public abstract class WorldController implements Screen {
 		currentLevel = 0;
 		dimensions = new Vector2();
 		lowerLeft = new Vector2();
+		footprints = new ArrayList<>();
 	}
 	
 	/**
@@ -709,6 +715,10 @@ public abstract class WorldController implements Screen {
 		}
 		return true;
 	}
+
+	public void setFootprints(ArrayList<FootPrintModel> list) {
+		footprints = list;
+	}
 	
 	/**
 	 * The core gameplay loop of this world.
@@ -828,7 +838,14 @@ public abstract class WorldController implements Screen {
 			}
 		}
 
+		// Draw footprints
+		for (FootPrintModel fp : footprints) {
+			fp.draw(canvas);
+		}
 		canvas.end();
+
+
+
 
 		if (debug) {
 			canvas.beginDebug();

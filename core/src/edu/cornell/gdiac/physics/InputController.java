@@ -365,6 +365,7 @@ public class InputController {
 		menuPressed = (secondary && menuPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
 		instructionPressed = Gdx.input.isKeyJustPressed(Input.Keys.I);
 
+
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
