@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
+import edu.cornell.gdiac.physics.host.FootPrintModel;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
@@ -43,6 +44,12 @@ import java.util.Arrays;
 public class LevelDesignerMode extends WorldController {
 	/** Texture file for mouse crosshairs */
 	private static final String CROSS_FILE = "shared/crosshair.png";
+	/** Texture file for watery foreground */
+	private static final String FOREG_FILE = "shared/foreground.png";
+	/** Texture file for background image */
+	private static final String BACKG_FILE = "shared/background.png";
+	/** Texture file for host footprints */
+	private static final String FOOTPRINT_FILE = "host/footprints.png";
 
 	/** Speed for changing camera position */
 	private static final float CAMERA_SPEED = 5.f;
@@ -58,6 +65,12 @@ public class LevelDesignerMode extends WorldController {
 
 	/** Texture asset for mouse crosshairs */
 	private TextureRegion crosshairTexture;
+	/** Texture asset for background image */
+	private TextureRegion backgroundTexture;
+	/** Texture asset for foreground */
+	private TextureRegion foregroundTexture;
+	/** Texture asset for footprint */
+	private TextureRegion footprintTexture;
 
 	/** The level to be loaded in reset() */
 	private int currentLevel = 0;
@@ -81,6 +94,24 @@ public class LevelDesignerMode extends WorldController {
 
 	/** The 2D array that is the board */
 	private Obstacle[][] board;
+
+	/** A reference to the last golem placed, for placing instructions */
+	private HostModel lastGolem;
+
+	/** A boolean to determine if you are currently placing instructions */
+	private boolean instructionMode;
+
+	/** A cached arraylist to represent the instruction list */
+	private ArrayList<Vector2> instructionListCache;
+
+	/** A cached vector2 to hold one instruction */
+	private Vector2 instructionCache;
+
+	/** A list of footprints for instruction visuals */
+	private ArrayList<FootPrintModel> footprints;
+
+	/** A list of the golems, for purposes of instructions */
+	private ArrayList<HostModel> golems;
 
 	/** If a selection is currently happening. Even if nothing is selected by
 	 * the object selector, this will be true until the mouse is released, and
@@ -145,6 +176,12 @@ public class LevelDesignerMode extends WorldController {
 		assetState = AssetState.LOADING;
 		manager.load(CROSS_FILE, Texture.class);
 		assets.add(CROSS_FILE);
+		manager.load(FOREG_FILE, Texture.class);
+		assets.add(FOREG_FILE);
+		manager.load(BACKG_FILE, Texture.class);
+		assets.add(BACKG_FILE);
+		manager.load(FOOTPRINT_FILE, Texture.class);
+		assets.add(FOOTPRINT_FILE);
 
 		super.preLoadContent(manager);
 	}
@@ -167,6 +204,9 @@ public class LevelDesignerMode extends WorldController {
 		}
 
 		crosshairTexture = createTexture(manager,CROSS_FILE,false);
+		backgroundTexture = createTexture(manager,BACKG_FILE,false);
+		foregroundTexture = createTexture(manager,FOREG_FILE,false);
+		footprintTexture = createTexture(manager, FOOTPRINT_FILE, false);
 
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
@@ -195,6 +235,12 @@ public class LevelDesignerMode extends WorldController {
 		cache = new Vector2();
 
 		board = new Obstacle[MAX_BOARD_TILES][MAX_BOARD_TILES];
+		lastGolem = null;
+		instructionListCache = new ArrayList<Vector2>();
+		instructionMode = false;
+		instructionCache = new Vector2();
+		footprints = new ArrayList<FootPrintModel>();
+		golems = new ArrayList<HostModel>();
 
 		File folder = new File("levels");
 		levels = folder.listFiles();
@@ -238,11 +284,32 @@ public class LevelDesignerMode extends WorldController {
 	}
 
 	/**
+	 * Refreshes the footprints on the screen to match the instructions of the golems
+	 */
+	private void refreshFootprints() {
+		footprints.clear();
+		for (Obstacle ob : objects) {
+			if (ob instanceof HostModel) {
+				Vector2[] list = ((HostModel)ob).getInstructionList();
+				if (list != null) {
+					for (Vector2 instr : list) {
+						FootPrintModel ft = new FootPrintModel(footprintTexture, new Vector2(instr.x * scale.x, instr.y * scale.y));
+						footprints.add(ft);
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Resets the status of the game so that we can play again.
 	 *
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+
+	    refreshFootprints();
+
 		Vector2 gravity = new Vector2(world.getGravity());
 
 		// The objects should be sensors
@@ -368,6 +435,7 @@ public class LevelDesignerMode extends WorldController {
 		selector = new ObstacleSelector(world);
 		selector.setTexture(crosshairTexture);
 		selector.setDrawScale(scale);
+
 
 		// Add the corner objects
 
@@ -1096,6 +1164,60 @@ public class LevelDesignerMode extends WorldController {
 			selecting = false;
 		}
 
+		if (lastGolem != null && input.didInstruction() && !instructionMode) {
+			instructionMode = true;
+			instructionListCache.clear();
+			lastGolem.setInstructions(null);
+			System.out.println("Instruction Mode");
+			refreshFootprints();
+		}
+
+		else if (instructionMode && input.didInstruction()) {
+			instructionMode = false;
+			Vector2[] instructions = new Vector2[instructionListCache.size()];
+			for (int i = 0; i < instructionListCache.size(); i++) {
+				instructions[i] = instructionListCache.get(i);
+				System.out.println(instructions[i]);
+			}
+			if (instructionListCache.size() != 0) {
+				lastGolem.setInstructions(instructions);
+			}
+			else {
+				lastGolem.setInstructions(null);
+			}
+			refreshFootprints();
+			System.out.println("Instructions saved to golem");
+			/*
+			footprints.clear();
+			for (Obstacle ob : objects) {
+				if (ob instanceof HostModel) {
+					Vector2[] list = ((HostModel)ob).getInstructionList();
+					if (list != null) {
+						for (Vector2 instr : list) {
+							FootPrintModel ft = new FootPrintModel(footprintTexture, new Vector2(instr.x * scale.x, instr.y * scale.y));
+							footprints.add(ft);
+						}
+					}
+				}
+			}
+
+			 */
+		}
+
+		if (instructionMode && input.didLeftClick()) {
+		    int instructionTileX = xCoordToTile(mouseX);
+		    int instructionTileY = yCoordToTile(mouseY);
+		    float instructionRawX = xTileToCoord(instructionTileX);
+		    float instructionRawY = yTileToCoord(instructionTileY);
+
+		    FootPrintModel fp = new FootPrintModel(footprintTexture, new Vector2(instructionRawX * scale.x,instructionRawY*scale.y));
+		    footprints.add(fp);
+		    super.setFootprints(footprints);
+			Vector2 instruction = new Vector2(instructionRawX, instructionRawY);
+			instructionListCache.add(instruction);
+			System.out.println("Instruction placed");
+		}
+
 		if (!selecting && (input.didTertiary()) && !selector.isSelected()) {
 			selector.select(mouseX, mouseY);
 			selecting = true;
@@ -1119,13 +1241,22 @@ public class LevelDesignerMode extends WorldController {
 				updateWallAroundRegion(x, y);
 			}
 
-		} else if (!input.didTertiary() && selector.isSelected()) {
+		}
+
+
+		else if (!input.didTertiary() && selector.isSelected()) {
 			Obstacle deselected = selector.deselect();
 
 			if(deselected instanceof CornerObstacle) {
 				processBorderChange((CornerObstacle)deselected);
-			} else if(deselected != null) {
+			}
 
+			else if(deselected != null) {
+
+				if (deselected instanceof HostModel) {
+					System.out.println("Golem placed");
+					lastGolem = (HostModel)deselected;
+				}
 				// The tile indices
 				int x = xCoordToTile(deselected.getX());
 				int y = yCoordToTile(deselected.getY());
@@ -1185,7 +1316,7 @@ public class LevelDesignerMode extends WorldController {
 		// Move an object if touched
 		InputController input = InputController.getInstance();
 
-		// TODO This is probably super ineffficient but it does the job
+		// TODO This is probably super inefficient but it does the job
 		boolean hasPed = false;
 		// looks for pedestal object in the game thats been placed on the board
 		for(Obstacle obj : objects) {
