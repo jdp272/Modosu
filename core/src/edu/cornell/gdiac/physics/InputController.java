@@ -87,6 +87,10 @@ public class InputController {
 	/** If the save button was pressed */
 	private boolean savePressed;
 	private boolean savePrevious;
+	/** If the instruction button was pressed */
+	private boolean instructionPressed;
+	/** If left mouse was just clicked */
+	private boolean leftJustClicked;
 	
 	/** How much did we move horizontally? */
 	private float horizontal;
@@ -272,6 +276,21 @@ public class InputController {
 	 */
 	public boolean didMenu() { return menuPressed && !menuPrevious;
 	}
+
+	/**
+	 * Returns true if the instruction editor button was pressed.
+	 *
+	 * @return true if the instruction editor button was pressed
+	 */
+	public boolean didInstruction() { return instructionPressed; }
+
+	/**
+	 * Returns true if the left mosue button was just pressed.
+	 *
+	 * @return true if the left mouse button was just pressed
+	 */
+	public boolean didLeftClick() { return leftJustClicked; }
+
 	/**
 	 * Creates a new input controller
 	 * 
@@ -344,6 +363,7 @@ public class InputController {
 		deletePressed = (secondary && deletePressed)  || (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE));
 		savePressed = (secondary && savePressed)  || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
 		menuPressed = (secondary && menuPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
+		instructionPressed = Gdx.input.isKeyJustPressed(Input.Keys.I);
 
 		// Directional controls
 		horizontal = (secondary ? horizontal : 0.0f);
@@ -364,6 +384,7 @@ public class InputController {
 		
 		// Mouse results
         tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+		leftJustClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);
 		crosshair.y += bounds.height;

@@ -85,6 +85,18 @@ public class LevelDesignerMode extends WorldController {
 	/** The 2D array that is the board */
 	private Obstacle[][] board;
 
+	/** A reference to the last golem placed, for placing instructions */
+	private HostModel lastGolem;
+
+	/** A boolean to determine if you are currently placing instructions */
+	private boolean instructionMode;
+
+	/** A cached arraylist to represent the instruction list */
+	private ArrayList<Vector2> instructionListCache;
+
+	/** A cached vector2 to hold one instruction */
+	private Vector2 instructionCache;
+
 	/** If a selection is currently happening. Even if nothing is selected by
 	 * the object selector, this will be true until the mouse is released, and
 	 * it prevent another object from being picked up */
@@ -204,6 +216,10 @@ public class LevelDesignerMode extends WorldController {
 		cache = new Vector2();
 
 		board = new Obstacle[MAX_BOARD_TILES][MAX_BOARD_TILES];
+		lastGolem = null;
+		instructionListCache = new ArrayList<Vector2>();
+		instructionMode = false;
+		instructionCache = new Vector2();
 
 		File folder = new File("levels");
 		levels = folder.listFiles();
@@ -882,6 +898,37 @@ public class LevelDesignerMode extends WorldController {
 			selecting = false;
 		}
 
+		if (lastGolem != null && input.didInstruction() && !instructionMode) {
+			instructionMode = true;
+			instructionListCache.clear();
+			System.out.println("Instruction Mode");
+		}
+
+		if (instructionMode && input.didInstruction()) {
+			Vector2[] instructions = new Vector2[instructionListCache.size()];
+			for (int i = 0; i < instructionListCache.size(); i++) {
+				instructions[i] = instructionListCache.get(i);
+				System.out.println(instructions[i]);
+			}
+			if (instructionListCache.size() != 0) {
+				lastGolem.setInstructions(instructions);
+			}
+			else {
+				lastGolem.setInstructions(null);
+			}
+			System.out.println("Instructions saved to golem");
+		}
+
+		if (instructionMode && input.didLeftClick()) {
+		    int instructionTileX = xCoordToTile(mouseX);
+		    int instructionTileY = yCoordToTile(mouseY);
+		    float instructionRawX = xTileToCoord(instructionTileX);
+		    float instructionRawY = yTileToCoord(instructionTileY);
+			Vector2 instruction = new Vector2(instructionRawX, instructionRawY);
+			instructionListCache.add(instruction);
+			System.out.println("Instruction placed");
+		}
+
 		if (!selecting && (input.didTertiary()) && !selector.isSelected()) {
 			selector.select(mouseX, mouseY);
 			selecting = true;
@@ -902,13 +949,22 @@ public class LevelDesignerMode extends WorldController {
 				updateSandAroundRegion(x, y); // Update the surroundings after removing the sand
 			}
 
-		} else if (!input.didTertiary() && selector.isSelected()) {
+		}
+
+
+		else if (!input.didTertiary() && selector.isSelected()) {
 			Obstacle deselected = selector.deselect();
 
 			if(deselected instanceof CornerObstacle) {
 				processBorderChange((CornerObstacle)deselected);
-			} else if(deselected != null) {
+			}
 
+			else if(deselected != null) {
+
+				if (deselected instanceof HostModel) {
+					System.out.println("Golem placed");
+					lastGolem = (HostModel)deselected;
+				}
 				// The tile indices
 				int x = xCoordToTile(deselected.getX());
 				int y = yCoordToTile(deselected.getY());
@@ -968,7 +1024,7 @@ public class LevelDesignerMode extends WorldController {
 		// Move an object if touched
 		InputController input = InputController.getInstance();
 
-		// TODO This is probably super ineffficient but it does the job
+		// TODO This is probably super inefficient but it does the job
 		boolean hasPed = false;
 		// looks for pedestal object in the game thats been placed on the board
 		for(Obstacle obj : objects) {

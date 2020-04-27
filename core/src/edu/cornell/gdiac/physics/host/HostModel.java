@@ -553,10 +553,15 @@ public class HostModel extends BoxObstacle {
         body.applyForce(force, body.getLocalCenter(), true);
     }
 
+    public void setInstructions(Vector2[] instructions) {
+        this.instructions = instructions;
+    }
+
     public void setPedestalStrip(FilmStrip strip) {
         this.pedestalHost = strip;
         pedestalHost.setFrame(0);
     }
+
 
     /**
      * sets the FilmStrip for the charged host and the corresponding gauge
@@ -714,9 +719,9 @@ public class HostModel extends BoxObstacle {
             elapsedFrames = 0;
         }
 
-        // I'm a little concerned about slowing all animation within the host using one thing, because
+        // I'm a little concerned about slowing all animation within the host using one check, because
         // if the framerate is sufficiently low it might feel unresponsive because the golem does not immediately
-        // turn in the direction you are moving. For now, because framrate is relatively high, disregard this.
+        // turn in the direction you are moving. For now, because framerate is relatively high, disregard this.
         if (updateFrame) {
         if (direction.x > 0) {
             // NORTH EAST
