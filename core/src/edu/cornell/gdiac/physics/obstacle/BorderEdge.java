@@ -74,7 +74,6 @@ public class BorderEdge extends BoxObstacle {
             this.edgeStrip.setFrame(27);
             break;
         }
-        System.out.println("Frame: " + edgeStrip.getFrame());
     }
 
 //    /**
@@ -164,9 +163,6 @@ public class BorderEdge extends BoxObstacle {
             System.out.println("draw() called on border edge with null texture");
             return;
         }
-
-        setTexture(edgeStrip);
-        System.out.println(edgeStrip.getFrame());
 
         canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,side.angle,sx,sy);
     }

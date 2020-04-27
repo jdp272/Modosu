@@ -296,21 +296,26 @@ public class LevelDesignerMode extends WorldController {
 
 		// Setup the spawner list
 		Wall boxSpawn = factory.makeWall(0.f, 0.f);
+		boxSpawn.drawOnTop = true;
 		addObject(boxSpawn);
 
 		WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
+		waterSpawn.drawOnTop = true;
 		addObject(waterSpawn);
 
 		SandTile sandSpawn = factory.makeSand(0.f, 0.f);
+		sandSpawn.drawOnTop = true;
 		addObject(sandSpawn);
 
 		HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
+		hostSpawn.drawOnTop = true;
 		addObject(hostSpawn);
 
 //		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
 //		addObject(spiritSpawn);
 
 		HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
+		pedestalSpawn.drawOnTop = true;
 		addObject(pedestalSpawn);
 
 //		BorderEdge edgeSpawn = factory.makeBorder(0.f, 0.f);
@@ -363,18 +368,22 @@ public class LevelDesignerMode extends WorldController {
 
 		topLeft = new CornerObstacle(crosshairTexture, Corner.TOP_LEFT);
 		topLeft.inGame = false;
+		topLeft.drawOnTop = true;
 		addObject(topLeft);
 
 		topRight = new CornerObstacle(crosshairTexture, Corner.TOP_RIGHT);
 		topRight.inGame = false;
+		topRight.drawOnTop = true;
 		addObject(topRight);
 
 		bottomLeft = new CornerObstacle(crosshairTexture, Corner.BOTTOM_LEFT);
 		bottomLeft.inGame = false;
+		bottomLeft.drawOnTop = true;
 		addObject(bottomLeft);
 
 		bottomRight = new CornerObstacle(crosshairTexture, Corner.BOTTOM_RIGHT);
 		bottomRight.inGame = false;
+		bottomRight.drawOnTop = true;
 		addObject(bottomRight);
 
 		updateCornerPositions();
@@ -941,7 +950,32 @@ public class LevelDesignerMode extends WorldController {
 				float xCoord = xTileToCoord(i);
 				float yCoord = yTileToCoord(j);
 
-				if(j == bottomBorder) {
+				// Add corners and borders
+				if(i == leftBorder && j == bottomBorder) {
+					if (board[i][j] != null) {
+						board[i][j].markRemoved(true);
+						board[i][j] = null;
+					}
+					addNewObstacle(factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.BOTTOM_LEFT));
+				} else if(i == rightBorder - 1 && j == bottomBorder) {
+					if (board[i][j] != null) {
+						board[i][j].markRemoved(true);
+						board[i][j] = null;
+					}
+					addNewObstacle(factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.BOTTOM_RIGHT));
+				} else if(i == leftBorder && j == topBorder - 1) {
+					if (board[i][j] != null) {
+						board[i][j].markRemoved(true);
+						board[i][j] = null;
+					}
+					addNewObstacle(factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.TOP_LEFT));
+				} else if(i == rightBorder - 1 && j == topBorder - 1) {
+					if (board[i][j] != null) {
+						board[i][j].markRemoved(true);
+						board[i][j] = null;
+					}
+					addNewObstacle(factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.TOP_RIGHT));
+				} else if(j == bottomBorder) {
 //					if(board[i][j] instanceof BorderEdge) {
 //						((BorderEdge)board[i][j]).setSide(BorderEdge.Side.BOTTOM);
 //					} else {

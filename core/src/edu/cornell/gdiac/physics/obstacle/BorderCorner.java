@@ -7,27 +7,27 @@ import edu.cornell.gdiac.util.FilmStrip;
 
 public class BorderCorner extends BoxObstacle {
 
+    /** The width of a tile in Box2D coordinates */
+    public static float TILE_WIDTH = 2.f;
+    /** The number of tiles that the corner takes up */
+    public static float CORNER_SCALE = 2.f;
+
     /**
      * An enum for the different possible border sides this edge can be on.
      * Angle stores the associated rotation of the texture for that side
      */
-    public enum Side {
-        TOP(0.f),
-        BOTTOM(0.f),
-        LEFT((float)(-Math.PI / 2.0)),
-        RIGHT((float)(-Math.PI / 2.0));
-
-        Side(float angle) {
-            this.angle = angle;
-        }
-        public final float angle;
+    public enum Corner {
+        TOP_LEFT,
+        TOP_RIGHT,
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT
     }
 
     /** The side that this edge goes along */
-    private Side side;
+    private Corner corner;
 
-    /** The filmstrip to be used for rendering this edge */
-    private FilmStrip edgeStrip;
+    /** The filmstrip to be used for rendering this corner */
+    private FilmStrip cornerStrip;
 
 //    /** The frame within the border edge filmstrip to be used */
 //    private int frame;
@@ -35,11 +35,11 @@ public class BorderCorner extends BoxObstacle {
     /** A cache vector for computation and for passing as a parameter */
     private Vector2 cache;
 
-    public BorderCorner(float x, float y, float width, float height, Side side, FilmStrip edgeStrip) {
+    public BorderCorner(float x, float y, float width, float height, Corner corner, FilmStrip edgeStrip) {
         super(x, y, width, height);
-        this.edgeStrip = edgeStrip;
-        setTexture(this.edgeStrip);
-        setSide(side);
+        this.cornerStrip = edgeStrip;
+        setTexture(this.cornerStrip);
+        setCorner(corner);
 
 //        this.frame = frame;
 //        this.edgeStrip.setFrame(frame);
@@ -48,33 +48,32 @@ public class BorderCorner extends BoxObstacle {
     }
 
     /**
-     * @return The frame for this border edge
+     * @return The frame for this border corner
      */
-    public Side getSide() { return side; }
+    public Corner getCorner() { return corner; }
 
     /**
      * Set the side of this border to the specified side. This also updates the
      * frame to correspond to the default image for the side
      *
-     * @param side The new side for this border edge
+     * @param corner The new side for this border edge
      */
-    public void setSide(Side side) {
-        this.side = side;
-        switch(this.side) {
-        case TOP:
-            this.edgeStrip.setFrame(0);
+    public void setCorner(Corner corner) {
+        this.corner = corner;
+        switch(this.corner) {
+        case TOP_LEFT:
+            this.cornerStrip.setFrame(0);
             break;
-        case BOTTOM:
-            this.edgeStrip.setFrame(9);
+        case TOP_RIGHT:
+            this.cornerStrip.setFrame(1);
             break;
-        case LEFT:
-            this.edgeStrip.setFrame(18);
+        case BOTTOM_LEFT:
+            this.cornerStrip.setFrame(2);
             break;
-        case RIGHT:
-            this.edgeStrip.setFrame(27);
+        case BOTTOM_RIGHT:
+            this.cornerStrip.setFrame(3);
             break;
         }
-        System.out.println("Frame: " + edgeStrip.getFrame());
     }
 
 //    /**
@@ -165,9 +164,33 @@ public class BorderCorner extends BoxObstacle {
             return;
         }
 
-        setTexture(edgeStrip);
-        System.out.println(edgeStrip.getFrame());
+        // Calculate how to position the corners. The lower left corner
+        // initially starts in the center of the corner tile.
+        float x = getX(), y = getY();
+        switch(corner) {
+        case TOP_LEFT:
+            x -= 1.5 * TILE_WIDTH;
+            y -= 0.5 * TILE_WIDTH;
+            break;
+        case TOP_RIGHT:
+            x -= 0.5 * TILE_WIDTH;
+            y -= 0.5 * TILE_WIDTH;
+            break;
+        case BOTTOM_LEFT:
+            x -= 1.5 * TILE_WIDTH;
+            y -= 1.5 * TILE_WIDTH;
+            break;
+        case BOTTOM_RIGHT:
+            x -= 0.5 * TILE_WIDTH;
+            y -= 1.5 * TILE_WIDTH;
+            break;
+        }
 
-        canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,side.angle,sx,sy);
+        x *= drawScale.x;
+        y *= drawScale.y;
+
+        canvas.draw(texture, Color.WHITE, x, y, drawScale.x * CORNER_SCALE * TILE_WIDTH, drawScale.y * CORNER_SCALE * TILE_WIDTH);
+
+//        canvas.draw(texture, Color.WHITE,origin.x + TILE_WIDTH,origin.y + TILE_WIDTH,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
     }
 }

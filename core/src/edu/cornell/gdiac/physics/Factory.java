@@ -5,10 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.host.HostModel;
-import edu.cornell.gdiac.physics.obstacle.BorderEdge;
-import edu.cornell.gdiac.physics.obstacle.SandTile;
-import edu.cornell.gdiac.physics.obstacle.Wall;
-import edu.cornell.gdiac.physics.obstacle.WaterTile;
+import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.FilmStrip;
 
@@ -183,6 +180,7 @@ public class Factory {
                 side,
                 new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLS)
         );
+        edge.selectable = false;
         edge.setDrawScale(scale);
         edge.setSX(0.25f);
         edge.setSY(0.25f);
@@ -190,6 +188,25 @@ public class Factory {
         edge.setSensor(makeSensors);
         edge.setName("edge");
         return edge;
+    }
+
+    public BorderCorner makeBorderCorner(float x, float y, BorderCorner.Corner c) {
+        BorderCorner corner = new BorderCorner(
+                x,
+                y,
+                64 / scale.x,
+                64 / scale.y,
+                c,
+                new FilmStrip(borderCornerTexture, BORDER_CORNER_ROWS, BORDER_CORNER_COLS)
+        );
+        corner.selectable = false;
+        corner.setDrawScale(scale);
+        corner.setSX(0.25f);
+        corner.setSY(0.25f);
+        corner.setBodyType(BodyDef.BodyType.StaticBody);
+        corner.setSensor(makeSensors);
+        corner.setName("corner");
+        return corner;
     }
 
     public WaterTile makeWater(float x, float y) {

@@ -31,6 +31,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import edu.cornell.gdiac.physics.host.ArrowModel;
 import edu.cornell.gdiac.physics.host.HostModel;
+import edu.cornell.gdiac.physics.obstacle.BorderEdge;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
@@ -115,7 +116,7 @@ public abstract class WorldController implements Screen {
 	/** File to texture for borders */
 	private static String BORDER_EDGE_FILE = "shared/forest.png";
 	/** File to texture for borders */
-	private static String BORDER_CORNER_FILE = "shared/forestcenter.png";
+	private static String BORDER_CORNER_FILE = "shared/forestcorners.png";
 
 	private static int FONT_SIZE = 56;
 
@@ -821,23 +822,28 @@ public abstract class WorldController implements Screen {
 		canvas.begin();
 
 		for(Obstacle obj : objects) {
-			if(!(obj instanceof Wall) || !(obj instanceof HostModel)) {
+			if(!(obj instanceof Wall) && !(obj instanceof HostModel) && !obj.drawOnTop) {
 				obj.draw(canvas);
 			}
 		}
 		for(Obstacle obj : objects) {
-			if(obj instanceof Wall) {
+			if(obj instanceof Wall && !obj.drawOnTop) {
 				obj.draw(canvas);
 			}
 		}
 		for(Obstacle obj : objects) {
-			if(obj instanceof HostModel || obj instanceof SpiritModel) {
+			if((obj instanceof HostModel || obj instanceof SpiritModel) && !obj.drawOnTop) {
 				obj.draw(canvas);
 			}
 		}
 		for(Obstacle obj : objects) {
-			if(obj instanceof Wall) {
+			if(obj instanceof Wall && !obj.drawOnTop) {
 				((Wall)obj).drawTop(canvas);
+			}
+		}
+		for(Obstacle obj : objects) {
+			if(obj.drawOnTop) {
+				obj.draw(canvas);
 			}
 		}
 
