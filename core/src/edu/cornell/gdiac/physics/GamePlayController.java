@@ -429,6 +429,18 @@ public class GamePlayController extends WorldController {
 		*/
 
 
+		// CHECK IF POSSESSED IS IN ENERGY PILLAR RADIUS
+        for(EnergyPillar ep : energyPillars) {
+            System.out.println(possessed.getPosition());
+            System.out.println(ep.getPosition());
+        	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor() + possessed.getWidth() / 2,2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor() + possessed.getHeight() / 2, 2))) <= 1)  {
+        	    possessed.setCurrentCharge((int)possessed.getMaxCharge());
+			}
+		}
+
+
+
+
 		// Update sounds
 		SoundController.getInstance().update();
 

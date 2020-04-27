@@ -1,7 +1,6 @@
 package edu.cornell.gdiac.physics.obstacle;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.util.FilmStrip;
 
@@ -30,6 +29,17 @@ public class EnergyPillar extends BoxObstacle {
 
 
     /**
+     * Gets the filmstrip of the energy pillar radius
+     * @return the fieldstrip of the energypillar
+     */
+    public float getEnergyPillarMajor() {
+        return ((this.energyPillarFieldStrip.getRegionWidth() * (this.chargeProgression / 3f)) / drawScale.x)/2f;
+    }
+    public float getEnergyPillarMinor() {
+        return ((this.energyPillarFieldStrip.getRegionHeight() * (this.chargeProgression / 3f)) / drawScale.y)/2f;
+    }
+
+    /**
      * sets the FilmStrip for the energy pillar
      *
      * @param bodyColorStrip for the energy pillar rune
@@ -52,13 +62,6 @@ public class EnergyPillar extends BoxObstacle {
         this.chargeProgression = chargeProgression;
     }
 
-    public void setEnergypillarRadiusHitBox(float chargeProgression) {
-        PolygonShape s = new PolygonShape();
-        s.setRadius(1);
-        shape = s;
-    }
-
-
     /**
      * Draws the Pillar, Radius, and Charge of Pillar
      *
@@ -73,6 +76,5 @@ public class EnergyPillar extends BoxObstacle {
         canvas.draw(energyPillarStrip, Color.WHITE, energyPillarStrip.getRegionWidth() / 2f, energyPillarStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.3f, 0.3f);
         canvas.draw(energyPillarRune, warningColor, energyPillarStrip.getRegionWidth() / 2f, energyPillarStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.3f, 0.3f);
         canvas.draw(energyPillarFieldStrip, warningColor, energyPillarFieldStrip.getRegionWidth() / 2f, energyPillarFieldStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), chargeProgression / 3, chargeProgression / 3);
-        System.out.println(energyPillarFieldStrip.getRegionWidth() * (chargeProgression / 3));
     }
 }

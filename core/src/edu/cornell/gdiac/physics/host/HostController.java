@@ -187,7 +187,6 @@ public class HostController {
 
                         for(EnergyPillar ep : energyPillars) {
                             ep.setChargeProgression(chargeProgression);
-                            ep.setEnergypillarRadiusHitBox(chargeProgression);
                         }
 
                         float obstacleFactor = 1;

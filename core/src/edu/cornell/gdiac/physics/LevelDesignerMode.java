@@ -1135,7 +1135,6 @@ public class LevelDesignerMode extends WorldController {
 				Obstacle selection = selector.getObstacle();
 				if (selection.getName() == "host") {
 					if (((HostModel) selection).getCurrentCharge() > MIN_CHARGE_CAPACITY) {
-						System.out.println(((HostModel) selection).getCurrentCharge());
 						((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() - 10);
 						((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
 					}
