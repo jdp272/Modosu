@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.host.HostController;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
 
@@ -231,6 +232,10 @@ public class GamePlayController extends WorldController {
 	 */
 	private void populateLevel() {
 		for(Obstacle obj : level.obstacles) {
+			// Set the hitbox of the wall to be dependent on its texture
+			if(obj instanceof Wall) {
+				((Wall)obj).setAltHitbox();;
+			}
 			addQueue.add(obj);
 		}
 		for(Obstacle obj : level.water) {

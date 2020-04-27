@@ -50,9 +50,9 @@ public class Factory {
     /** Number of rows in the wall image filmstrip */
     private static final int WALL_ROWS = 4;
     /** Number of columns in this wall image filmstrip */
-    private static final int WALL_COLUMNS = 6;
+    private static final int WALL_COLUMNS = 8;
     /** Number of total hosts in the wall image filmstrip */
-    private static final int WALL_SIZE = 24;
+    private static final int WALL_SIZE = 32;
 
     /** Number of rows in the water image filmstrip */
     private static final int WATER_ROWS = 4;
@@ -115,26 +115,46 @@ public class Factory {
     }
 
     public Wall makeWall(float x, float y) {
-        return makeWall(x, y, 20);
-    }
-
-    public Wall makeWall(float x, float y, int frame) {
-        Wall box = new Wall(
+        Wall wall = new Wall(
                 x,
                 y,
                 64 / scale.x,
-                64 / scale.y
+                64 / scale.y,
+                new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE)
         );
-        box.setWallStrip(new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE));
-        box.setDrawScale(scale);
-        box.setSX(0.25f);
-        box.setSY(0.25f);
-        //box.setTexture(obstacleTex);
-        box.setBodyType(BodyDef.BodyType.StaticBody);
-        box.setSensor(makeSensors);
-        box.setWall(frame);
-        box.setName("wall");
-        return box;
+        wall.setDrawScale(scale);
+        wall.setSX(0.25f);
+        wall.setSY(0.25f);
+        wall.setBodyType(BodyDef.BodyType.StaticBody);
+        wall.setSensor(makeSensors);
+        wall.setName("wall");
+        return wall;
+    }
+
+    public Wall makeWall(float x, float y, int primaryFrame, int leftFrame, int rightFrame,
+                         int frontEdgeFrame, int backEdgeFrame,
+                         int lowerLeftCornerFrame, int lowerRightCornerFrame) {
+        Wall wall = new Wall(
+                x,
+                y,
+                64 / scale.x,
+                64 / scale.y,
+                new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE),
+                primaryFrame,
+                leftFrame,
+                rightFrame,
+                frontEdgeFrame,
+                backEdgeFrame,
+                lowerLeftCornerFrame,
+                lowerRightCornerFrame
+        );
+        wall.setDrawScale(scale);
+        wall.setSX(0.25f);
+        wall.setSY(0.25f);
+        wall.setBodyType(BodyDef.BodyType.StaticBody);
+        wall.setSensor(makeSensors);
+        wall.setName("wall");
+        return wall;
     }
 
     public WaterTile makeWater(float x, float y) {

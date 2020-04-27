@@ -112,7 +112,7 @@ public class WaterTile extends BoxObstacle {
      * @param left If there is ground left of this tile
      * @param right If there is ground right of this tile
      */
-    public void  setFrame(boolean above, boolean below, boolean left, boolean right, boolean lvlDsgn) {
+    public void setFrame(boolean above, boolean below, boolean left, boolean right, boolean lvlDsgn) {
         int index = 0;
 
         if(above) {
