@@ -3,6 +3,7 @@ package edu.cornell.gdiac.physics;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -12,12 +13,8 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.files.FileHandle;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
-import edu.cornell.gdiac.physics.obstacle.SandTile;
-import edu.cornell.gdiac.physics.obstacle.Wall;
-import edu.cornell.gdiac.physics.obstacle.WaterTile;
+import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
 import java.util.ArrayList;
@@ -28,6 +25,7 @@ import java.util.ArrayList;
 public class Loader {
 
     // Fields
+
 
     public enum ImageFile {
         Robot,
@@ -72,14 +70,18 @@ public class Loader {
         public boolean downRight;
     }
 
+    /** A struct that stores data from EnergyPillar when read from the json */
+    public static class EnergyPillarData {
+        public Vector2 origin; //Center of the pillar
+        public Vector2 dimensions;
+    }
+
     /** A struct that stores data from a host when read from the json */
     public static class HostData {
         public Vector2 location;
-        public float chargeTime; // Maximum amount of charge that can be stored
-
+        public int currentCharge;
         public Vector2[] instructions;
         public boolean isPedestal;
-
         public ImageFile imageFile;
     }
 
@@ -101,6 +103,7 @@ public class Loader {
         public WaterData[] waterData;
         public SandData[] sandData;
         public HostData[] hostData;
+        public EnergyPillarData[] energyPillarData;
 
         public PedestalData pedestalData;
 
@@ -218,15 +221,25 @@ public class Loader {
             levelData.sandData[i] = sData;
         }
 
+        // Store the energy pillar data
+        levelData.energyPillarData = new EnergyPillarData[level.energyPillars.length];
+        for(int i = 0; i < level.energyPillars.length; i++) {
+            EnergyPillarData epData = new EnergyPillarData();
+            epData.dimensions = level.energyPillars[i].getDimension();
+            epData.origin = new Vector2(level.energyPillars[i].getX(), level.energyPillars[i].getY());
+
+            levelData.energyPillarData[i] = epData;
+        }
+
         // Store the host data
         levelData.hostData = new HostData[level.hosts.size()];
         for(int i = 0; i < level.hosts.size(); i++) {
             if(!level.hosts.get(i).isPedestal()) {
                 HostData hData = new HostData();
                 hData.location = new Vector2(level.hosts.get(i).getX(), level.hosts.get(i).getY());
-                hData.chargeTime = level.hosts.get(i).getMaxCharge();
                 hData.instructions = level.hosts.get(i).getInstructionList();
                 hData.isPedestal = level.hosts.get(i).isPedestal();
+                hData.currentCharge = level.hosts.get(i).getCurrentCharge();
 
                 levelData.hostData[i] = hData;
             }
@@ -294,6 +307,14 @@ public class Loader {
             sand[i].setCorners(sData.upLeft, sData.upRight, sData.downLeft, sData.downRight);
         }
 
+        EnergyPillar[] energyPillars = new EnergyPillar[levelData.energyPillarData.length];
+        EnergyPillarData epData;
+
+        for(int i = 0; i < levelData.energyPillarData.length; i++) {
+            epData = levelData.energyPillarData[i];
+            energyPillars[i] = factory.makeEnergyPillar(epData.origin.x, epData.origin.y);
+        }
+
         // Create the hosts
         ArrayList<HostModel> hosts = new ArrayList<HostModel>();
         HostData hData; // A simple reference to the data being processed
@@ -310,14 +331,14 @@ public class Loader {
              limit
 
              */
-                hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions));
+                hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions, hData.currentCharge));
 //            hosts.add(new HostModel(rData.location.x, rData.location.y, (int)Data.chargeTime), false);
         }
 
         // Create the starting "host" (with no charge capacity)
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
-        return new Level(dimensions, obstacles, water, sand, hosts, spirit, pedestal);
+        return new Level(dimensions, obstacles, water, sand, energyPillars,  hosts, spirit, pedestal);
     }
 
     public Level reset(int level) {
