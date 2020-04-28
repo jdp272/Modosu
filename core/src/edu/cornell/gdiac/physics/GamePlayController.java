@@ -356,9 +356,6 @@ public class GamePlayController extends WorldController {
 			// Play possession sound if something different is possessed this frame
 			if (possessed != collisionController.getHostPossessed()) {
 				if (getSound()) { SoundController.getInstance().play(POSSESSION_SOUND,POSSESSION_SOUND,false); }
-
-				// A new host has been possessed that has never been possessed before
-				if (collisionController.isNewPossession()) { HUD.incrementCurrHosts(); }
 			}
 
 			possessed = collisionController.getHostPossessed();
@@ -439,8 +436,8 @@ public class GamePlayController extends WorldController {
 
 		// CHECK IF POSSESSED IS IN ENERGY PILLAR RADIUS
         for(EnergyPillar ep : energyPillars) {
-            System.out.println(possessed.getPosition());
-            System.out.println(ep.getPosition());
+            //System.out.println(possessed.getPosition());
+            //System.out.println(ep.getPosition());
         	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor() + possessed.getWidth() / 2,2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor() + possessed.getHeight() / 2, 2))) <= 1)  {
         	    possessed.setCurrentCharge((int)possessed.getMaxCharge());
 			}
