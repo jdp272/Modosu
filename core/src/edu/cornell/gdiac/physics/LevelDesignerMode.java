@@ -93,8 +93,10 @@ public class LevelDesignerMode extends WorldController {
 	/** The collection of spawning objects, for making new game elements */
 	private SpawnerList spawnList;
 
-	/** The camera position */
+	/** The camera target */
 	private Vector2 camTarget;
+	/** The camera position */
+	private Vector2 camPos;
 
 	/** Intermediate vector used for arithmetic */
 	private Vector2 cache;
@@ -239,6 +241,8 @@ public class LevelDesignerMode extends WorldController {
 		renderHUD = false;
 
 		camTarget = new Vector2();
+		camPos = new Vector2();
+
 		cache = new Vector2();
 
 		board = new Obstacle[MAX_BOARD_TILES][MAX_BOARD_TILES];
@@ -375,6 +379,10 @@ public class LevelDesignerMode extends WorldController {
         camTarget.set(scale.x * Constants.TILE_WIDTH * (rightBorder - leftBorder) / 2.f,
                 scale.y * Constants.TILE_WIDTH * (topBorder - bottomBorder) / 2.f);
 
+        // Update the canvas here so that spawnerList gets the correct cam pos
+        canvas.setCamTarget(camTarget);
+        camPos.set(canvas.updateCamera());
+
 		// Setup the spawner list
 		Wall boxSpawn = factory.makeWall(0.f, 0.f);
 		addObject(boxSpawn);
@@ -397,7 +405,7 @@ public class LevelDesignerMode extends WorldController {
         EnergyPillar energyPillarSpawn = factory.makeEnergyPillar(0.f, 0.f);
         addObject(energyPillarSpawn);
 
-        spawnList = new SpawnerList(canvas, scale);
+        spawnList = new SpawnerList(canvas, scale, camPos);
 
 		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
 			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
@@ -1190,8 +1198,8 @@ public class LevelDesignerMode extends WorldController {
 		   Additionally, note that the mouse uses box2d coordinates, not screen
 		   coordinates
 		 */
-        float mouseX = input.getCrossHair().x + (camTarget.x - (canvas.getWidth() / 2.f)) / scale.x;
-        float mouseY = input.getCrossHair().y + (camTarget.y - (canvas.getHeight() / 2.f)) / scale.y;
+        float mouseX = input.getCrossHair().x + (camPos.x - (canvas.getWidth() / 2.f)) / scale.x;
+        float mouseY = input.getCrossHair().y + (camPos.y - (canvas.getHeight() / 2.f)) / scale.y;
 
 		/* Only reset selecting if the mouse is released. Prevents selecting a
 		   new object without releasing and clicking the mouse.
@@ -1305,7 +1313,7 @@ public class LevelDesignerMode extends WorldController {
 		}
 
 		// Spawn a new object if a spawner was clicked
-		Obstacle obj = spawnList.update(camTarget);
+		Obstacle obj = spawnList.update(camPos);
 
 		if(obj != null) {
 		    // If the selected object is a pedestal then check if pedestal is already in the game
@@ -1354,6 +1362,9 @@ public class LevelDesignerMode extends WorldController {
 
 		// Update the camera position
 		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
+
+		canvas.setCamTarget(camTarget);
+		camPos.set(canvas.updateCamera());
 
 		dimensions.set(TILE_WIDTH * (rightBorder - leftBorder), TILE_WIDTH * (topBorder - bottomBorder));
 		lowerLeft.set(TILE_WIDTH * (leftBorder - initialLeftBorder), TILE_WIDTH * (bottomBorder - initialBottomBorder));
@@ -1409,9 +1420,6 @@ public class LevelDesignerMode extends WorldController {
                 System.out.println("Did not save level: no pedestal found");
             }
         }
-
-        canvas.setCamTarget(camTarget);
-        canvas.updateCamera();
 
         // If we use sound, we must remember this.
         SoundController.getInstance().update();

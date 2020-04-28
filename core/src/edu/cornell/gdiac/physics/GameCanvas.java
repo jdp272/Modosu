@@ -112,6 +112,8 @@ public class GameCanvas {
 	private Vector2 vertex;
 	/** Cache object to handle raw textures */
 	private TextureRegion holder;
+	/** The current camera center returned by update camera function */
+	private Vector2 camPos;
 
 
 	/**
@@ -140,6 +142,7 @@ public class GameCanvas {
 		local  = new Affine2();
 		global = new Matrix4();
 		vertex = new Vector2();
+		camPos = new Vector2();
 	}
 		
     /**
@@ -166,7 +169,7 @@ public class GameCanvas {
 		camTarget = target;
 	}
 
-	public void updateCamera() {
+	public Vector2 updateCamera() {
 		// TODO add smoothing
 	    // This line results in the camera following directly on the player, will add smoothing later
 		smoothX = MathUtils.lerp(camera.position.x, camTarget.x, smoothFactor);
@@ -181,6 +184,8 @@ public class GameCanvas {
 		}
 
 		camera.update();
+
+		return camPos.set(camera.position.x, camera.position.y);
 	}
 
 	public void toggleZoom() {

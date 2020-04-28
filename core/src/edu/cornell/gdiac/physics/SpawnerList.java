@@ -71,10 +71,13 @@ public class SpawnerList {
     private GameCanvas canvas;
     /** The draw scale of the game */
     private Vector2 scale;
+    /** The camera position */
+    private Vector2 camPos;
 
-    public SpawnerList(GameCanvas canvas, Vector2 scale) {
+    public SpawnerList(GameCanvas canvas, Vector2 scale, Vector2 camPos) {
         this.canvas = canvas;
         this.scale = scale;
+        this.camPos = camPos;
 
         // This starts at the middle of the screen, because with the camera
         // offset, it will be the upper right corner
@@ -110,6 +113,11 @@ public class SpawnerList {
         bottom -= obj.getHeight() / 2.f;
 
         spawnerList.add(new Spawner(obj, new Vector2(obj.getX(), obj.getY()), func));
+        Spawner newSpawn = spawnerList.get(spawnerList.size() - 1);
+
+        // Set the spawn position so it moves with the camera
+        newSpawn.obstacle.setX(newSpawn.location.x + (camPos.x / scale.x));
+        newSpawn.obstacle.setY(newSpawn.location.y + (camPos.y / scale.y));
 
         // Can't be selected or added to the game
         obj.inGame = false;
@@ -131,13 +139,15 @@ public class SpawnerList {
      *         only one at most should be created.
      */
     public Obstacle update(Vector2 camTarget) {
+        this.camPos = camTarget;
+
         Obstacle returnObj = null;
         for(int i = 0; i < spawnerList.size(); i++) {
             Spawner spawner = spawnerList.get(i);
 
             // Update the spawn position so it moves with the camera
-            spawner.obstacle.setX(spawner.location.x + (camTarget.x / scale.x));
-            spawner.obstacle.setY(spawner.location.y + (camTarget.y / scale.y));
+            spawner.obstacle.setX(spawner.location.x + (camPos.x / scale.x));
+            spawner.obstacle.setY(spawner.location.y + (camPos.y / scale.y));
 
             // Assuming only one spawner can be clicked in a frame. Checking
             // returnObj == null guarantees that
