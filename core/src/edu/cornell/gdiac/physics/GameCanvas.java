@@ -79,6 +79,12 @@ public class GameCanvas {
 	/** HUD - For static items on screen */
 	private HUD hud;
 
+	/** Fields for camera smoothing */
+	private float smoothX;
+	private float smoothY;
+	// Float between 0 and 1, higher means camera tracks faster
+	private final float smoothFactor = 0.1f;
+
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
 	/** Value to cache window height (if we are currently full screen) */
@@ -163,7 +169,9 @@ public class GameCanvas {
 	public void updateCamera() {
 		// TODO add smoothing
 	    // This line results in the camera following directly on the player, will add smoothing later
-		camera.translate(camTarget.x - camera.position.x, camTarget.y - camera.position.y);
+		smoothX = MathUtils.lerp(camera.position.x, camTarget.x, smoothFactor);
+		smoothY = MathUtils.lerp(camera.position.y, camTarget.y, smoothFactor);
+		camera.translate(smoothX - camera.position.x, smoothY - camera.position.y);
 		if (zooming) {
 			camera.zoom = MathUtils.lerp(camera.zoom, targetZoom, 0.1f);
 			if (Math.abs(targetZoom - camera.zoom) <= zoomThreshold) {
