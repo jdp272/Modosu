@@ -1360,7 +1360,7 @@ public class LevelDesignerMode extends WorldController {
 
 		updateSelector(hasPed);
 
-		if (input.didPressUp() && selector.getObstacle().getName() == "host") {
+		if (input.didPressUp() && selector.isSelected() && selector.getObstacle().getName() == "host") {
 			Obstacle selection = selector.getObstacle();
 			if (((HostModel) selection).getCurrentCharge() < MAX_CHARGE_CAPACITY) {
 				((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() + 5);
@@ -1368,7 +1368,7 @@ public class LevelDesignerMode extends WorldController {
 			}
 
 		}
-		if (input.didPressDown() && selector.getObstacle().getName() == "host") {
+		if (input.didPressDown() && selector.isSelected() && selector.getObstacle().getName() == "host") {
 			Obstacle selection = selector.getObstacle();
 			if (((HostModel) selection).getCurrentCharge() > MIN_CHARGE_CAPACITY) {
 				((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() - 5);
