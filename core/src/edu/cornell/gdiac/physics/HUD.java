@@ -21,10 +21,8 @@ public class HUD {
     /* Static variables */
     private static int FONT_SIZE = 24;
     private static int FONT_COLOR_GREEN = 0xC0BAB2;
-    private static int SPIRIT_LIVES = 3;
     private static String FONT_FILE = "shared/Asul.ttf";
     private static String GOLEM_INDICATOR_FILE = "shared/golemcounter.png";
-    private static String LIFE_FILE = "shared/spiritlifefull.png";
     private static String PADDING = "            ";
 
     /* Declaration for new Stage */
@@ -40,16 +38,13 @@ public class HUD {
 
     /* Scene2D Widgets */
     private Table golemTable;
-    private static Table spiritTable;
     private static Label hostCounterLabel;
     private Texture hostCounterTexture;
-    private static Texture lifeTexture;
 
     /* Initialization */
     public HUD(PolygonSpriteBatch spriteBatch) {
         numCurrentHosts = 0;
         numTotalHosts = 0;
-        numLives = SPIRIT_LIVES;
 
         viewport = new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         stage = new Stage(viewport, spriteBatch);
@@ -75,10 +70,6 @@ public class HUD {
         stack.add(counterBackground);
         stack.add(hostCounterLabel);
 
-        /* Life Manangement */
-        Stack lifeStack = new Stack();
-        lifeTexture = new Texture(Gdx.files.internal(LIFE_FILE));
-
         /* Create golem table to add stack */
         golemTable = new Table();
         golemTable.top();
@@ -86,33 +77,11 @@ public class HUD {
         golemTable.add(stack).expandX().padTop(5).padLeft(5).left();
         // golemTable.setDebug(true);
 
-        /* Create spirit table to add stack */
-        spiritTable = new Table();
-        spiritTable.top().right();
-        spiritTable.setFillParent(true);
-        // spiritTable.setDebug(true);
-
-        for (int i = 0; i < numLives; i++) {
-            Image life = new Image(lifeTexture);
-            spiritTable.add(life).width(50).height(50).padTop(5).padRight(5).right();
-        }
-
         stage.addActor(golemTable);
-        stage.addActor(spiritTable);
     }
 
     /* Gets the Stage */
     public Stage getStage() { return stage; }
-
-    public static void setSpiritLives(int lives) {
-        numLives = lives;
-
-        spiritTable.clearChildren();
-        for (int i = 0; i < numLives; i++) {
-            Image life = new Image(lifeTexture);
-            spiritTable.add(life).width(50).height(50).padTop(5).padRight(5).right();
-        }
-    }
 
     /* Increments the number of current hosts possessed */
     public static void incrementCurrHosts() {
@@ -135,7 +104,6 @@ public class HUD {
 
     public void dispose() {
         hostCounterTexture.dispose();
-        lifeTexture.dispose();
         stage.dispose();
     }
 }

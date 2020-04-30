@@ -382,7 +382,7 @@ public class GamePlayController extends WorldController {
 
 
 		// Check lose condition
-		if ((hostController.getPossessedBlownUp() || spirit.hasNoLivesLeft()) && !isComplete() && !isFailure()) {
+		if ((hostController.getPossessedBlownUp() || !spirit.isAlive()) && !isComplete() && !isFailure()) {
 			setFailure(true);
 			if (getSound()) { SoundController.getInstance().play(FAILURE_SOUND, FAILURE_SOUND, false); }
 		}
@@ -413,7 +413,6 @@ public class GamePlayController extends WorldController {
 		else if (spirit.hasLaunched) {
 			canvas.zoomIn();
 		}
-
 
 		// Uncomment this if we want to zoom in when a shot is fired, but not when it's being aimed
 		/*
