@@ -58,6 +58,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** Music to be played during gameplay */
 	private Music gameplayMusic;
 
+	private boolean sound;
+
 	/** Stores whether to exit to level designer after a level is selected */
 	private boolean goLevelDesigner = false;
 
@@ -104,8 +106,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading.setScreenListener(this);
 		setScreen(loading);
 
-//		mainMenuMusic = Gdx.audio.newMusic(new FileHandle("shared/gameplaymusic.wav"));
-//		mainMenuMusic.play();
+		mainMenuMusic = Gdx.audio.newMusic(new FileHandle("shared/menumusic.wav"));
+		mainMenuMusic.play();
 	}
 
 	/** 
@@ -171,10 +173,11 @@ public class GDXRoot extends Game implements ScreenListener {
 				controller.setSound(sound);
 				controller.reset();
 
+				System.out.println("GAMEPLAY MUSIC");
 				setScreen(controller);
-				//gameplayMusic = Gdx.audio.newMusic(new FileHandle("shared/gameplaymusic.wav"));
-				//gameplayMusic.play();
-				//gameplayMusic.setLooping(true);
+				gameplayMusic = Gdx.audio.newMusic(new FileHandle("shared/gameplaymusic.wav"));
+				gameplayMusic.play();
+				gameplayMusic.setLooping(true);
 			}
 		}
 		else if (screen == gameOver) {
@@ -223,11 +226,14 @@ public class GDXRoot extends Game implements ScreenListener {
 				controller.setSound(sound);
 				controller.reset();
 
-//				mainMenuMusic.stop();
-//				mainMenuMusic.dispose();
-//
-//				gameplayMusic.play();
-//				gameplayMusic.setLooping(true);
+				mainMenuMusic.stop();
+				mainMenuMusic.dispose();
+
+				setScreen(controller);
+				gameplayMusic = Gdx.audio.newMusic(new FileHandle("shared/gameplaymusic.wav"));
+				gameplayMusic.play();
+				gameplayMusic.setLooping(true);
+
 				setScreen(controller);
 			}
 		}
@@ -252,7 +258,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		loading.setScreenListener(this);
 		setScreen(loading);
-//		mainMenuMusic.play();
+		mainMenuMusic.play();
 	}
 
 

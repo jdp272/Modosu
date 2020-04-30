@@ -152,14 +152,6 @@ public class GamePlayController extends WorldController {
 
 		File folder = new File("levels");
 		levels = folder.listFiles();
-
-		// This method of searching through the directory doesn't work on desktop
-		// once the project is converted into a .jar. They are "internal" files
-		// and so the f.list will return an empty list.
-
-		// FileHandle f = Gdx.files.internal("levels");
-		// levels = f.list();
-		// System.out.println(levels + "printing levels");
 	}
 
 	/**
@@ -179,19 +171,7 @@ public class GamePlayController extends WorldController {
 		System.out.println("levels/" + levels[currentLevel%levels.length].getName());
 		levelToLoad = Gdx.files.local("levels/" + levels[currentLevel%levels.length].getName());
 
-//		if (currentLevel == 3) {
-//				levelToLoad = Gdx.files.local("levels/custom3.lvl");
-//		}
-//		else {
-//			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
-//		}
-
-//		try {
 		level = loader.loadLevel(levelToLoad);
-//		}
-//		catch(Exception e) {
-//			level = loader.loadLevel(new FileHandle("levels/custom1.lvl"));
-//		}
 
 		HUD.clearHUD();
 		HUD.setNumTotalHosts(level.hosts.size());
@@ -211,9 +191,6 @@ public class GamePlayController extends WorldController {
 		System.out.println(System.getProperty("user.dir"));
 
 		spirit.setIsPossessing(true);
-
-		//level = loader.reset(lvl);
-		//parse level
 
 		hostController = new HostController(level.hosts, scale, arrowTex, pedestal, canvas, energyPillars);
 
@@ -269,64 +246,6 @@ public class GamePlayController extends WorldController {
 		collisionController.addSpirit(level.start);
 	}
 
-	/**
-	 * Keeps all hosts and spirits in bounds.
-	 */
-	public void keepInBounds(){
-
-		Vector2 pos = spirit.getPosition();
-		if(pos.x > bounds.x + bounds.width){
-			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
-			spirit.setDidBounce(true);
-			spirit.setPosition(bounds.x + bounds.width, pos.y);
-			pos.x = bounds.x + bounds.width;
-			spirit.setVX(-spirit.getVX());
-			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
-		}
-		else if(pos.x < bounds.x){
-			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
-			spirit.setDidBounce(true);
-			spirit.setPosition(bounds.x, pos.y);
-			pos.x = bounds.x;
-			spirit.setVX(-spirit.getVX());
-			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
-		}
-
-		if(pos.y > bounds.y + bounds.height){
-			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
-			spirit.setDidBounce(true);
-			spirit.setPosition(pos.x, bounds.y + bounds.height);
-			spirit.setVY(-spirit.getVY());
-			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
-		}
-		else if(pos.y < bounds.y){
-			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
-			spirit.setDidBounce(true);
-			spirit.setPosition(pos.x, bounds.y);
-			spirit.setVY(-spirit.getVY());
-			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
-		}
-
-		for(HostModel h : level.hosts){
-			pos = h.getPosition();
-			if(pos.x > bounds.x + bounds.width){
-				h.setPosition(bounds.x + bounds.width, pos.y);
-				pos.x = bounds.x + bounds.width;
-			}
-			else if(pos.x < bounds.x){
-				pos.x = bounds.x;
-				h.setPosition(bounds.x, pos.y);
-			}
-
-			if(pos.y > bounds.y + bounds.height){
-				h.setPosition(pos.x, bounds.y + bounds.height);
-			}
-			else if(pos.y < bounds.y){
-				h.setPosition(pos.x, bounds.y);
-			}
-
-		}
-	}
 
 	/**
 	 * The core gameplay loop of this world.
