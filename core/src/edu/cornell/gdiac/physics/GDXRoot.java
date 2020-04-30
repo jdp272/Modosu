@@ -108,6 +108,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		mainMenuMusic = Gdx.audio.newMusic(new FileHandle("shared/menumusic.wav"));
 		mainMenuMusic.play();
+
 	}
 
 	/** 
@@ -175,6 +176,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 				System.out.println("GAMEPLAY MUSIC");
 				setScreen(controller);
+
 				gameplayMusic = Gdx.audio.newMusic(new FileHandle("shared/gameplaymusic.wav"));
 				gameplayMusic.play();
 				gameplayMusic.setLooping(true);
@@ -240,8 +242,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	}
 
 	private void reset(boolean sound) {
-//		gameplayMusic.stop();
-//		gameplayMusic.dispose();
 
 		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1, sound);

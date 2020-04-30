@@ -933,7 +933,7 @@ public abstract class WorldController implements Screen {
 			canvas.endDebug();
 		}
 
-		if (arrow != null){
+		if (arrow != null && !failed){
 			arrow.draw(canvas);
 		}
 
