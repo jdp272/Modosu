@@ -19,7 +19,10 @@ public class CollisionController implements ContactListener {
      * Whether the host is walking through sand this frame
      */
     private boolean inSand;
-
+    /**
+     * Whether the host bounced on the bounds this frame
+     */
+    private boolean bounceOnBounds;
     /**
      * What host was possessed this frame, null if no possession occurred
      */
@@ -225,8 +228,14 @@ public class CollisionController implements ContactListener {
         }
 
         // All collisions with Sand
-        if ((bd1.getName() == "sand") || bd1.getName() == "sand") {
+        if ((bd1.getName() == "sand") || bd2.getName() == "sand") {
             contact.setEnabled(false);
+        }
+
+        // Check for Collision with Water
+        if ((body1.getUserData() == spirit && bd2.getName() == "sand") ||
+                bd1.getName() == "sand" && body2.getUserData() == spirit) {
+                inSand = true;
         }
 
         for (HostModel r : hostList) {
@@ -235,12 +244,12 @@ public class CollisionController implements ContactListener {
                 contact.setEnabled(false);
             }
 
-            // change boolean flag if in sand
-            if (((bd1.getName() == "sand" && body2.getUserData() == r) ||
-                    (body1.getUserData() == r && bd2.getName() == "sand"))) {
-                contact.setEnabled(false);
-                inSand = true;
-            }
+//            // change boolean flag if in sand
+//            if (((bd1.getName() == "sand" && body2.getUserData() == r) ||
+//                    (body1.getUserData() == r && bd2.getName() == "sand"))) {
+//                contact.setEnabled(false);
+//                inSand = true;
+//            }
         }
 
         // Recognize spirit against a wall to play sound
@@ -253,6 +262,12 @@ public class CollisionController implements ContactListener {
             spirit.setDidBounce(true);
             spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
             bounced = true;
+            if (body1.getUserData() == spirit && bd2.getName() == "edge" ||
+                    bd1.getName() == "edge" && body2.getUserData() == spirit ||
+                    body1.getUserData() == spirit && bd2.getName() == "corner" ||
+                    bd1.getName() == "corner" && body2.getUserData() == spirit) {
+                bounceOnBounds = true;
+            }
         }
     }
 
@@ -262,6 +277,7 @@ public class CollisionController implements ContactListener {
     public void clear() {
         bounced = false;
         inSand = false;
+        bounceOnBounds = false;
     }
 
     // Getters
@@ -290,4 +306,6 @@ public class CollisionController implements ContactListener {
     public boolean getInSand() {
         return inSand;
     }
+
+    public boolean getBounceOnBounds() { return bounceOnBounds; }
 }
