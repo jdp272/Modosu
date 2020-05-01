@@ -332,18 +332,18 @@ public class LoadingMode implements Screen, InputProcessor {
 
 	public void playMenuMusic() {
 		if (sound) {
-			System.out.println("playing menu");
+			//System.out.println("playing menu");
 			mainMenuMusic = Gdx.audio.newMusic(menuMusicFile);
 			mainMenuMusic.setLooping(true);
 			mainMenuMusic.play();
 		}
 		else {
-			System.out.println("would have played but no sound");
+			//System.out.println("would have played but no sound");
 		}
 	}
 
 	public void stopMenuMusic() {
-		System.out.println("disposed of main menu");
+		//System.out.println("disposed of main menu");
 		if (mainMenuMusic != null) {
 			mainMenuMusic.stop();
 		 	mainMenuMusic.dispose();
@@ -789,7 +789,7 @@ public class LoadingMode implements Screen, InputProcessor {
 					sound = !sound;
 					if (mainMenuMusic != null) {
 						if (!sound) {
-							System.out.println("SET VOLUME TO 0");
+							//System.out.println("SET VOLUME TO 0");
 							mainMenuMusic.setVolume(0);
 						}
 						else {

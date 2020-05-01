@@ -192,7 +192,7 @@ public class GamePlayController extends WorldController {
 		setMenu(false);
 
 		if (getSound()) {
-			System.out.println("playing music from reset in game");
+		//	System.out.println("playing music from reset in game");
 			playGameMusic();
 		}
 
