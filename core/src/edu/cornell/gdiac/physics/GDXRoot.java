@@ -13,17 +13,17 @@
  */
  package edu.cornell.gdiac.physics;
 
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.assets.*;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.g2d.freetype.*;
-import com.badlogic.gdx.assets.loaders.*;
-import com.badlogic.gdx.assets.loaders.resolvers.*;
-
-import com.badlogic.gdx.physics.box2d.World;
-import edu.cornell.gdiac.util.*;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import edu.cornell.gdiac.util.ScreenListener;
 
 
 /**
@@ -117,9 +117,9 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		controller.unloadContent(manager);
 		controller.dispose();
-		loading.dispose();
-		levelSelect.dispose();
-		levelDesigner.dispose();
+//		loading.dispose();
+//		levelSelect.dispose();
+//		levelDesigner.dispose();
 
 		canvas.dispose();
 		canvas = null;
@@ -269,7 +269,9 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.setCanvas(canvas);
 			controller.setSound(sound);
 			controller.reset();
+
 			//loading.dispose();
+
 			setScreen(controller);
 		}
 		else if (screen == loading && exitCode == WorldController.EXIT_DESIGN) {
@@ -304,13 +306,17 @@ public class GDXRoot extends Game implements ScreenListener {
 		else if (exitCode == WorldController.EXIT_NEXT) {
 			goLevelDesigner = false;
 			controller.reset();
+
 			//loading.dispose();
+
 			setScreen(controller);
 		}
 		else if (exitCode == WorldController.EXIT_PREV) {
 			goLevelDesigner = false;
 			controller.reset();
+
 			//loading.dispose();
+
 			setScreen(controller);
 		}
 		else if (exitCode == WorldController.EXIT_QUIT) {
