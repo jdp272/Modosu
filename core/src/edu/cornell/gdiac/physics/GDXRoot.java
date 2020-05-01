@@ -87,7 +87,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void create() {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1, true);
-		//System.out.println("playing from create in gdx");
+		System.out.println("playing from create in gdx");
 		loading.playMenuMusic();
 
 		controller = new GamePlayController();
@@ -117,9 +117,9 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		controller.unloadContent(manager);
 		controller.dispose();
-//		loading.dispose();
-//		levelSelect.dispose();
-//		levelDesigner.dispose();
+		loading.dispose();
+		levelSelect.dispose();
+		levelDesigner.dispose();
 
 		canvas.dispose();
 		canvas = null;
@@ -215,7 +215,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				setScreen(levelDesigner);
 			}
 			else {
-				//System.out.println("SHOULD HAVE STOPPED MUSIC FROM LEVEL SELECT");
+				System.out.println("SHOULD HAVE STOPPED MUSIC FROM LEVEL SELECT");
 				loading.stopMenuMusic();
 				controller.loadContent(manager);
 				controller.setScreenListener(this);
@@ -244,8 +244,11 @@ public class GDXRoot extends Game implements ScreenListener {
 		levelSelect.preLoadContent(manager);
 		gameOver.preLoadContent(manager);
 
-		//System.out.println("playing from reset in gdx.");
+		System.out.println("playing from reset in gdx.");
+
+
 		loading.playMenuMusic();
+
 		loading.setScreenListener(this);
 
 		setScreen(loading);
@@ -264,6 +267,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void exitScreen(Screen screen, int exitCode, boolean sound) {
 		if (screen == loading && exitCode == WorldController.EXIT_PLAY) {
 			goLevelDesigner = false;
+			loading.stopMenuMusic();
 			controller.loadContent(manager);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
@@ -320,7 +324,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		else if (exitCode == WorldController.EXIT_MENU) {
 			goLevelDesigner = false;
 			controller.stopGameMusic();
-			//System.out.println("stopped game in gdx from go to menu");
+			loading.stopMenuMusic();
 			reset(sound);
 		}
 		else if (exitCode == WorldController.EXIT_CREDITS) {
