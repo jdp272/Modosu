@@ -23,8 +23,10 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.assets.*;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -192,6 +194,11 @@ public class LoadingMode implements Screen, InputProcessor {
 
 	private boolean isReady;
 
+	/** Music to be played on main menu screen */
+	private Music mainMenuMusic;
+
+	private FileHandle menuMusicFile;
+
 	private static enum pressState {
 		START,
 		SELECT,
@@ -320,6 +327,27 @@ public class LoadingMode implements Screen, InputProcessor {
 	public void preLoadContent() {
 		manager.load(CLICK_SOUND, Sound.class);
 		manager.load(HOVER_SOUND, Sound.class);
+		menuMusicFile = new FileHandle("shared/menumusic.wav");
+	}
+
+	public void playMenuMusic() {
+		if (sound) {
+			//System.out.println("playing menu");
+			mainMenuMusic = Gdx.audio.newMusic(menuMusicFile);
+			mainMenuMusic.setLooping(true);
+			mainMenuMusic.play();
+		}
+		else {
+			//System.out.println("would have played but no sound");
+		}
+	}
+
+	public void stopMenuMusic() {
+		//System.out.println("disposed of main menu");
+		if (mainMenuMusic != null) {
+			mainMenuMusic.stop();
+		 	mainMenuMusic.dispose();
+		}
 	}
 
 	/**
@@ -520,6 +548,7 @@ public class LoadingMode implements Screen, InputProcessor {
 			// We are are ready, notify our listener
 			if (isReady && buttonPressed == pressState.START && listener != null) {
 				buttonPressed = pressState.NONE;
+				stopMenuMusic();
 				listener.exitScreen(this, WorldController.EXIT_PLAY, sound);
 			}
 
@@ -544,6 +573,7 @@ public class LoadingMode implements Screen, InputProcessor {
 			// Close game
 			if(isReady && buttonPressed == pressState.QUIT && listener != null) {
 				buttonPressed = pressState.NONE;
+				stopMenuMusic();
 				listener.exitScreen(this,WorldController.EXIT_QUIT, sound);
 			}
 
@@ -757,6 +787,15 @@ public class LoadingMode implements Screen, InputProcessor {
 						buttonPressed = pressState.NONE;
 					}
 					sound = !sound;
+					if (mainMenuMusic != null) {
+						if (!sound) {
+							//System.out.println("SET VOLUME TO 0");
+							mainMenuMusic.setVolume(0);
+						}
+						else {
+							mainMenuMusic.setVolume(100);
+						}
+					}
 				}
 			}
 		}
@@ -784,6 +823,8 @@ public class LoadingMode implements Screen, InputProcessor {
 	 * @return whether to hand the event to other listeners. 
 	 */	
 	public boolean mouseMoved(int screenX, int screenY) {
+
+		//System.out.println("music is currently :" + mainMenuMusic.isPlaying());
 		screenY = canvas.getHeight()-screenY;
 
 
