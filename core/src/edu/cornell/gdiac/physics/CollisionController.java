@@ -169,11 +169,6 @@ public class CollisionController implements ContactListener {
                 if (((body2.getUserData() == r) || (body1.getUserData() == r)) && !r.isPossessed()) {
                     r.setLinearVelocity(new Vector2(0, 0));
                 }
-
-                if (r == prevHostPossessed) {
-                    // System.out.println(r.getLinearVelocity());
-                }
-
             }
         }
     }
