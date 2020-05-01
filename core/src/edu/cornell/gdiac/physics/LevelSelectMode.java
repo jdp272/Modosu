@@ -351,7 +351,6 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 pressState = 0;
                 isPressed = true;
             }
-
         }
 
         if(screenX >= twoStart.x && screenX <= twoEnd.x && (page*4 + 1 < levels.length || goToDesigner)) {

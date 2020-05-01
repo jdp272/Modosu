@@ -12,6 +12,7 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
@@ -59,6 +60,11 @@ public class GamePlayController extends WorldController {
 	private static final String  WALK_SOUND = "host/walk.mp3";
 	/** The asset for the golem walking sound on sand */
 	private static final String  WALK_SAND_SOUND = "host/sandwalk.mp3";
+
+	/** Music to be played during gameplay */
+	private Music gameplayMusic;
+
+	private FileHandle gameplayMusicFile;
 
 
 	private AssetState assetState = AssetState.EMPTY;
@@ -163,13 +169,18 @@ public class GamePlayController extends WorldController {
 		levels = folder.listFiles(Constants.filenameFilter);
 		Arrays.sort(levels);
 
-		// This method of searching through the directory doesn't work on desktop
-		// once the project is converted into a .jar. They are "internal" files
-		// and so the f.list will return an empty list.
+		gameplayMusicFile = new FileHandle("shared/gameplaymusic.wav");
+		gameplayMusic = Gdx.audio.newMusic(gameplayMusicFile);
+		gameplayMusic.setLooping(true);
+	}
 
-		// FileHandle f = Gdx.files.internal("levels");
-		// levels = f.list();
-		// System.out.println(levels + "printing levels");
+	public void playGameMusic() { if (getSound() && gameplayMusic != null) { gameplayMusic.play(); } }
+
+	public void stopGameMusic() {
+		if (gameplayMusic != null) {
+			gameplayMusic.stop();
+			gameplayMusic.dispose();
+		}
 	}
 
 	/**
@@ -183,25 +194,18 @@ public class GamePlayController extends WorldController {
 		setFailure(false);
 		setMenu(false);
 
+		if (getSound()) {
+		//	System.out.println("playing music from reset in game");
+			playGameMusic();
+		}
+
 		Vector2 gravity = new Vector2(world.getGravity());
 
 		FileHandle levelToLoad;
 		System.out.println("levels/" + levels[currentLevel%levels.length].getName());
 		levelToLoad = Gdx.files.local("levels/" + levels[currentLevel%levels.length].getName());
 
-//		if (currentLevel == 3) {
-//				levelToLoad = Gdx.files.local("levels/custom3.lvl");
-//		}
-//		else {
-//			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
-//		}
-
-//		try {
 		level = loader.loadLevel(levelToLoad);
-//		}
-//		catch(Exception e) {
-//			level = loader.loadLevel(new FileHandle("levels/custom1.lvl"));
-//		}
 
 		HUD.clearHUD();
 		HUD.setNumTotalHosts(level.hosts.size());
@@ -221,9 +225,6 @@ public class GamePlayController extends WorldController {
 		System.out.println(System.getProperty("user.dir"));
 
 		spirit.setIsPossessing(true);
-
-		//level = loader.reset(lvl);
-		//parse level
 
 		hostController = new HostController(level.hosts, scale, arrowTex, pedestal, canvas, energyPillars);
 
