@@ -388,16 +388,20 @@ public class GamePlayController extends WorldController {
 		}
 		*/
 
+		Boolean isInPillar = false;
 
 		// CHECK IF POSSESSED IS IN ENERGY PILLAR RADIUS
         for(EnergyPillar ep : energyPillars) {
             //System.out.println(possessed.getPosition());
             //System.out.println(ep.getPosition());
-        	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor() + possessed.getWidth() / 2,2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor() + possessed.getHeight() / 2, 2))) <= 1)  {
-        	    possessed.setCurrentCharge((int)possessed.getMaxCharge());
+//        	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor() + possessed.getWidth() / 2,2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor() + possessed.getHeight() / 2, 2))) <= 1)  {
+        	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor(),2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor(), 2))) <= 1)  {
+        		isInPillar = true;
+        	    possessed.setCurrentCharge((int)possessed.getCurrentCharge() + 2);
 			}
 		}
 
+        possessed.setInPillar(isInPillar);
 
 		if (spirit.getDidBounce()) {
 			spirit.decCurrentLife(lifePerBounce);
