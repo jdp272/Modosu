@@ -327,7 +327,7 @@ public class LoadingMode implements Screen, InputProcessor {
 	public void preLoadContent() {
 		manager.load(CLICK_SOUND, Sound.class);
 		manager.load(HOVER_SOUND, Sound.class);
-		menuMusicFile = new FileHandle("shared/menumusic.wav");
+		menuMusicFile = Gdx.files.internal("shared/menumusic.wav");
 	}
 
 	public void playMenuMusic() {
