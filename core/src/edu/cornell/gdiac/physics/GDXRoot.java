@@ -104,7 +104,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading.setScreenListener(this);
 		setScreen(loading);
 
-//		mainMenuMusic = Gdx.audio.newMusic(new FileHandle("shared/gameplaymusic.wav"));
+//		mainMenuMusic = Gdx.audio.newMusic(new FileHandle("shared/gameplaymusic.mp3"));
 //		mainMenuMusic.play();
 	}
 
@@ -172,9 +172,9 @@ public class GDXRoot extends Game implements ScreenListener {
 				controller.reset();
 
 				setScreen(controller);
-				//gameplayMusic = Gdx.audio.newMusic(new FileHandle("shared/gameplaymusic.wav"));
-				//gameplayMusic.play();
-				//gameplayMusic.setLooping(true);
+//				gameplayMusic = Gdx.audio.newMusic(new FileHandle("shared/gameplaymusic.wav"));
+//				gameplayMusic.play();
+//				gameplayMusic.setLooping(true);
 			}
 		}
 		else if (screen == gameOver) {
@@ -225,7 +225,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 //				mainMenuMusic.stop();
 //				mainMenuMusic.dispose();
-//
+
 //				gameplayMusic.play();
 //				gameplayMusic.setLooping(true);
 				setScreen(controller);
@@ -234,8 +234,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	}
 
 	private void reset(boolean sound) {
-//		gameplayMusic.stop();
-//		gameplayMusic.dispose();
 
 		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1, sound);

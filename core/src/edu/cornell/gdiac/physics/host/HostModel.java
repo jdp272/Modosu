@@ -187,6 +187,11 @@ public class HostModel extends BoxObstacle {
     private boolean isPedestal;
 
     /**
+     * Whether the host is in a pillar or not
+     */
+    private boolean inPillar;
+
+    /**
      * drawing scales to resize the host (doesn't affect hit box)
      */
     private float sx = 0.4f;
@@ -772,6 +777,14 @@ public class HostModel extends BoxObstacle {
         }
     }
 
+    /** Set whether host is in the bounds of the energy pillar or not
+     * @param inPillar will be true if host is inside bounds of the pillar's radius
+     */
+    public void setInPillar(boolean inPillar) {
+        System.out.println(inPillar);
+        this.inPillar = inPillar;
+    }
+
     /**
      * Draws the host object.
      *
@@ -796,16 +809,21 @@ public class HostModel extends BoxObstacle {
                     if (this.currentCharge < this.maxCharge) {
 
                         // Color changes more and more to a red or goal color here
-                        Color warningColor = new Color((104f/256f) + (chargeProgression * (151f/256f)), (241f/256f) - ((241f/256f) * chargeProgression), ((233f/256f)) - ((185f/256f) * chargeProgression), 1);
+                        // Light Blue Color
+                        Color warningColor = new Color(200f/256f, 241f/256f, 238f/256f, 1);
 
-                        if (chargeProgression >= 0.86f && chargeProgression <= 0.89f || chargeProgression >= 0.91f && chargeProgression <= 0.93f || chargeProgression >= 0.95f && chargeProgression <= 0.97f) {
+                        System.out.println(this.inPillar);
+                        if(this.inPillar) {
+                           warningColor = new Color(255f/256f, 191f/256f, 124f/256f,1);
+                        }
+                        if ((chargeProgression >= 0.83f && chargeProgression <= 0.86f || chargeProgression >= 0.90f && chargeProgression <= 0.93f || chargeProgression >= 0.97f && chargeProgression <= 1f)) {
                             // Color of the 3 flashes
-                            warningColor = Color.BLACK;
+                            warningColor = new Color (chargeProgression * 255f  / 256f , chargeProgression * 155f / 256f, chargeProgression * 222f/256f, 1);
                         }
                         canvas.draw(hostChargeUI, warningColor, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.9f, 0.9f);
                         canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2, hostStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
                     } else {
-                        canvas.draw(hostChargeUI, Color.RED, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.9f, 0.9f);
+                        canvas.draw(hostStrip, Color.RED, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     }
                 }
                 // When the bot hasn't been possessed the indicator color should be black

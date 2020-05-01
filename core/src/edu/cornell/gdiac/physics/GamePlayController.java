@@ -41,8 +41,10 @@ public class GamePlayController extends WorldController {
 
 	private CollisionController collisionController;
 
-	/** The asset for the bounce sound */
-	private static final String  BOUNCE_SOUND = "host/bounce.mp3";
+	/** The asset for the bounce sound of a wall and spirit */
+	private static final String  BOUNCE_WALL_SOUND = "host/bouncewall.mp3";
+	/** The asset for the bounce sound of an edge or corner and spirit */
+	private static final String  BOUNCE_BOUND_SOUND = "host/bouncebound.mp3";
 	/** The asset for the possession sound */
 	private static final String  POSSESSION_SOUND = "host/possession.mp3";
 	/** The asset for the slingshot sound */
@@ -53,6 +55,8 @@ public class GamePlayController extends WorldController {
 	private static final String  VICTORY_SOUND = "shared/victory.mp3";
 	/** The asset for the golem walking sound */
 	private static final String  WALK_SOUND = "host/walk.mp3";
+	/** The asset for the golem walking sound on sand */
+	private static final String  WALK_SAND_SOUND = "host/sandwalk.mp3";
 
 
 	private AssetState assetState = AssetState.EMPTY;
@@ -90,8 +94,10 @@ public class GamePlayController extends WorldController {
 		}
 		assetState = AssetState.LOADING;
 
-		manager.load(BOUNCE_SOUND, Sound.class);
-		assets.add(BOUNCE_SOUND);
+		manager.load(BOUNCE_WALL_SOUND, Sound.class);
+		assets.add(BOUNCE_WALL_SOUND);
+		manager.load(BOUNCE_BOUND_SOUND, Sound.class);
+		assets.add(BOUNCE_BOUND_SOUND);
 		manager.load(POSSESSION_SOUND, Sound.class);
 		assets.add(POSSESSION_SOUND);
 		manager.load(FAILURE_SOUND, Sound.class);
@@ -102,8 +108,8 @@ public class GamePlayController extends WorldController {
 		assets.add(LAUNCH_SOUND);
 		manager.load(WALK_SOUND, Sound.class);
 		assets.add(WALK_SOUND);
-//		manager.load(EXPLOSION_SOUND, Sound.class);
-//		assets.add(EXPLOSION_SOUND);
+		manager.load(WALK_SAND_SOUND, Sound.class);
+		assets.add(WALK_SAND_SOUND);
 
 
 		super.preLoadContent(manager);
@@ -125,13 +131,14 @@ public class GamePlayController extends WorldController {
 		}
 
 		SoundController sounds = SoundController.getInstance();
-		sounds.allocate(manager, BOUNCE_SOUND);
+		sounds.allocate(manager, BOUNCE_BOUND_SOUND);
+		sounds.allocate(manager, BOUNCE_WALL_SOUND);
 		sounds.allocate(manager, POSSESSION_SOUND);
 		sounds.allocate(manager, FAILURE_SOUND);
 		sounds.allocate(manager, VICTORY_SOUND);
 		sounds.allocate(manager, LAUNCH_SOUND);
 		sounds.allocate(manager, WALK_SOUND);
-//		sounds.allocate(manager, EXPLOSION_SOUND);
+		sounds.allocate(manager, WALK_SAND_SOUND);
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
 	}
@@ -269,64 +276,6 @@ public class GamePlayController extends WorldController {
 		collisionController.addSpirit(level.start);
 	}
 
-	/**
-	 * Keeps all hosts and spirits in bounds.
-	 */
-	public void keepInBounds(){
-
-		Vector2 pos = spirit.getPosition();
-		if(pos.x > bounds.x + bounds.width){
-			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
-			spirit.setDidBounce(true);
-			spirit.setPosition(bounds.x + bounds.width, pos.y);
-			pos.x = bounds.x + bounds.width;
-			spirit.setVX(-spirit.getVX());
-			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
-		}
-		else if(pos.x < bounds.x){
-			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
-			spirit.setDidBounce(true);
-			spirit.setPosition(bounds.x, pos.y);
-			pos.x = bounds.x;
-			spirit.setVX(-spirit.getVX());
-			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
-		}
-
-		if(pos.y > bounds.y + bounds.height){
-			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
-			spirit.setDidBounce(true);
-			spirit.setPosition(pos.x, bounds.y + bounds.height);
-			spirit.setVY(-spirit.getVY());
-			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
-		}
-		else if(pos.y < bounds.y){
-			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
-			spirit.setDidBounce(true);
-			spirit.setPosition(pos.x, bounds.y);
-			spirit.setVY(-spirit.getVY());
-			spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
-		}
-
-		for(HostModel h : level.hosts){
-			pos = h.getPosition();
-			if(pos.x > bounds.x + bounds.width){
-				h.setPosition(bounds.x + bounds.width, pos.y);
-				pos.x = bounds.x + bounds.width;
-			}
-			else if(pos.x < bounds.x){
-				pos.x = bounds.x;
-				h.setPosition(bounds.x, pos.y);
-			}
-
-			if(pos.y > bounds.y + bounds.height){
-				h.setPosition(pos.x, bounds.y + bounds.height);
-			}
-			else if(pos.y < bounds.y){
-				h.setPosition(pos.x, bounds.y);
-			}
-
-		}
-	}
 
 	/**
 	 * The core gameplay loop of this world.
@@ -339,9 +288,6 @@ public class GamePlayController extends WorldController {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void update(float delta) {
-
-		//keep everything in bounds
-//		keepInBounds();
 
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){
@@ -373,11 +319,19 @@ public class GamePlayController extends WorldController {
 			if (getSound()) { SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false); }
 		}
 
+
+		// If player is still playing and moving
 		if (!isFailure() & !isComplete() & hostController.isMoving()) {
-			if (getSound()) { SoundController.getInstance().play(WALK_SOUND, WALK_SOUND, true); }
+
+			// Determine if the player is in sand
+			String walkingSound = collisionController.getInSand() ? WALK_SAND_SOUND : WALK_SOUND;
+			// If unmuted, then play the correct walking sound
+			if (getSound()) { SoundController.getInstance().play(walkingSound, walkingSound, true); }
 		}
+		// Stop playing if player is no longer moving
 		else {
-			if (getSound()) { SoundController.getInstance().stop(WALK_SOUND); }
+			SoundController.getInstance().stop(WALK_SAND_SOUND);
+			SoundController.getInstance().stop(WALK_SOUND);
 		}
 
 
@@ -394,7 +348,8 @@ public class GamePlayController extends WorldController {
 
 		// Update bouncing if applicable
 		if (collisionController.isBounced()) {
-			if (getSound()) { SoundController.getInstance().play(BOUNCE_SOUND, BOUNCE_SOUND, false); }
+			String bounceSound = collisionController.getBounceOnBounds() ? BOUNCE_BOUND_SOUND : BOUNCE_WALL_SOUND;
+			if (getSound()) { SoundController.getInstance().play(bounceSound, bounceSound, false); }
 		}
 
 		// Calculate spirit's screen coordinates from box2d coordinates
@@ -432,16 +387,20 @@ public class GamePlayController extends WorldController {
 		}
 		*/
 
+		Boolean isInPillar = false;
 
 		// CHECK IF POSSESSED IS IN ENERGY PILLAR RADIUS
         for(EnergyPillar ep : energyPillars) {
             //System.out.println(possessed.getPosition());
             //System.out.println(ep.getPosition());
-        	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor() + possessed.getWidth() / 2,2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor() + possessed.getHeight() / 2, 2))) <= 1)  {
-        	    possessed.setCurrentCharge((int)possessed.getMaxCharge());
+//        	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor() + possessed.getWidth() / 2,2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor() + possessed.getHeight() / 2, 2))) <= 1)  {
+        	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor(),2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor(), 2))) <= 1)  {
+        		isInPillar = true;
+        	    possessed.setCurrentCharge((int)possessed.getCurrentCharge() + 2);
 			}
 		}
 
+        possessed.setInPillar(isInPillar);
 
 		if (spirit.getDidBounce()) {
 			spirit.decCurrentLife(lifePerBounce);
