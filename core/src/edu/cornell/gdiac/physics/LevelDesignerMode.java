@@ -26,6 +26,7 @@ import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -254,7 +255,8 @@ public class LevelDesignerMode extends WorldController {
 		golems = new ArrayList<HostModel>();
 
 		File folder = new File("levels");
-		levels = folder.listFiles();
+		levels = folder.listFiles(Constants.filenameFilter);
+		Arrays.sort(levels);
 
 		edges = new PooledList<>();
 		corners = new PooledList<>();
