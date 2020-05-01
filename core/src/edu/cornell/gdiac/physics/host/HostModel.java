@@ -781,7 +781,7 @@ public class HostModel extends BoxObstacle {
      * @param inPillar will be true if host is inside bounds of the pillar's radius
      */
     public void setInPillar(boolean inPillar) {
-        System.out.println(inPillar);
+        //System.out.println(inPillar);
         this.inPillar = inPillar;
     }
 
@@ -812,7 +812,7 @@ public class HostModel extends BoxObstacle {
                         // Light Blue Color
                         Color warningColor = new Color(200f/256f, 241f/256f, 238f/256f, 1);
 
-                        System.out.println(this.inPillar);
+                        //System.out.println(this.inPillar);
                         if(this.inPillar) {
                            warningColor = new Color(255f/256f, 191f/256f, 124f/256f,1);
                         }
