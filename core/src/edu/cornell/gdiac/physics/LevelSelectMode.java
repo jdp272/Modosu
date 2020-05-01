@@ -25,6 +25,7 @@ import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -228,7 +229,10 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         colorPrev = colorUnhovered;
 
         File folder = new File("levels");
-        File[] levels = folder.listFiles();
+
+        File[] levels = folder.listFiles(Constants.filenameFilter);
+        Arrays.sort(levels);
+
         //need to sort levels here
         final Pattern p = Pattern.compile("^\\d+");
         Comparator<File> c = new Comparator<File>() {
@@ -264,7 +268,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         levelNames = new ArrayList<File>(Arrays.asList(levels));
         Collections.sort(levelNames, c);
 
-        pages = (int)Math.ceil(folder.listFiles().length/4.0);
+        pages = (int)Math.ceil(folder.listFiles(Constants.filenameFilter).length/4.0);
     }
 
     /**

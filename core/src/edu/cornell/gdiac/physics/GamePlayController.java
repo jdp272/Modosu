@@ -25,6 +25,8 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.util.Arrays;
 
 /**
  * Gameplay controller for Modosu.
@@ -158,7 +160,8 @@ public class GamePlayController extends WorldController {
 		cache = new Vector2();
 
 		File folder = new File("levels");
-		levels = folder.listFiles();
+		levels = folder.listFiles(Constants.filenameFilter);
+		Arrays.sort(levels);
 
 		// This method of searching through the directory doesn't work on desktop
 		// once the project is converted into a .jar. They are "internal" files
