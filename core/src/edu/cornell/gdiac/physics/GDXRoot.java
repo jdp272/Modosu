@@ -117,9 +117,9 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		controller.unloadContent(manager);
 		controller.dispose();
-		loading.dispose();
-		levelSelect.dispose();
-		levelDesigner.dispose();
+		//loading.dispose();
+		//levelSelect.dispose();
+		//levelDesigner.dispose();
 
 		canvas.dispose();
 		canvas = null;
@@ -269,7 +269,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.setCanvas(canvas);
 			controller.setSound(sound);
 			controller.reset();
-			loading.dispose();
+			//loading.dispose();
 			setScreen(controller);
 		}
 		else if (screen == loading && exitCode == WorldController.EXIT_DESIGN) {
@@ -304,13 +304,13 @@ public class GDXRoot extends Game implements ScreenListener {
 		else if (exitCode == WorldController.EXIT_NEXT) {
 			goLevelDesigner = false;
 			controller.reset();
-			loading.dispose();
+			//loading.dispose();
 			setScreen(controller);
 		}
 		else if (exitCode == WorldController.EXIT_PREV) {
 			goLevelDesigner = false;
 			controller.reset();
-			loading.dispose();
+			//loading.dispose();
 			setScreen(controller);
 		}
 		else if (exitCode == WorldController.EXIT_QUIT) {
