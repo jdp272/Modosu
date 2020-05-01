@@ -12,6 +12,7 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
@@ -57,6 +58,11 @@ public class GamePlayController extends WorldController {
 	private static final String  WALK_SOUND = "host/walk.mp3";
 	/** The asset for the golem walking sound on sand */
 	private static final String  WALK_SAND_SOUND = "host/sandwalk.mp3";
+
+	/** Music to be played during gameplay */
+	private Music gameplayMusic;
+
+	private FileHandle gameplayMusicFile;
 
 
 	private AssetState assetState = AssetState.EMPTY;
@@ -159,6 +165,19 @@ public class GamePlayController extends WorldController {
 
 		File folder = new File("levels");
 		levels = folder.listFiles();
+
+		gameplayMusicFile = new FileHandle("shared/gameplaymusic.wav");
+		gameplayMusic = Gdx.audio.newMusic(gameplayMusicFile);
+		gameplayMusic.setLooping(true);
+	}
+
+	public void playGameMusic() { if (getSound() && gameplayMusic != null) { gameplayMusic.play(); } }
+
+	public void stopGameMusic() {
+		if (gameplayMusic != null) {
+			gameplayMusic.stop();
+			gameplayMusic.dispose();
+		}
 	}
 
 	/**
@@ -171,6 +190,11 @@ public class GamePlayController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		setMenu(false);
+
+		if (getSound()) {
+			System.out.println("playing music from reset in game");
+			playGameMusic();
+		}
 
 		Vector2 gravity = new Vector2(world.getGravity());
 
