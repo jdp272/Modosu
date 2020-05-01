@@ -169,7 +169,7 @@ public class GamePlayController extends WorldController {
 		levels = folder.listFiles(Constants.filenameFilter);
 		Arrays.sort(levels);
 
-		gameplayMusicFile = new FileHandle("shared/gameplaymusic.wav");
+		gameplayMusicFile = Gdx.files.internal("shared/gameplaymusic.wav");
 		gameplayMusic = Gdx.audio.newMusic(gameplayMusicFile);
 		gameplayMusic.setLooping(true);
 	}
