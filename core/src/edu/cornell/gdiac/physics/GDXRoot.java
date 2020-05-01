@@ -117,9 +117,9 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		controller.unloadContent(manager);
 		controller.dispose();
-		//loading.dispose();
-		//levelSelect.dispose();
-		//levelDesigner.dispose();
+		loading.dispose();
+		levelSelect.dispose();
+		levelDesigner.dispose();
 
 		canvas.dispose();
 		canvas = null;
