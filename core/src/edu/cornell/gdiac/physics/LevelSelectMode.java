@@ -227,7 +227,6 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         colorPrev = colorUnhovered;
 
         File folder = new File("levels");
-
         levels = folder.listFiles(Constants.filenameFilter);
         Arrays.sort(levels);
 
