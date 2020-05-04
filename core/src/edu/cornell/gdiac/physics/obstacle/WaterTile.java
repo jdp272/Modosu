@@ -234,19 +234,19 @@ public class WaterTile extends BoxObstacle {
 
         if(upLeft) {
             cornerStrip.setFrame(0);
-            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 64.f / cornerStrip.getRegionWidth(), 64.f / cornerStrip.getRegionHeight());
+            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerStrip.getRegionWidth())+0.01f, (64.f / cornerStrip.getRegionHeight())+0.01f);
         }
         if(upRight) {
             cornerStrip.setFrame(1);
-            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 64.f / cornerStrip.getRegionWidth(), 64.f / cornerStrip.getRegionHeight());
+            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerStrip.getRegionWidth())+0.01f, (64.f / cornerStrip.getRegionHeight())+0.01f);
         }
         if(downLeft) {
             cornerStrip.setFrame(2);
-            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 64.f / cornerStrip.getRegionWidth(), 64.f / cornerStrip.getRegionHeight());
+            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerStrip.getRegionWidth())+0.01f, (64.f / cornerStrip.getRegionHeight())+0.01f);
         }
         if(downRight) {
             cornerStrip.setFrame(3);
-            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 64.f / cornerStrip.getRegionWidth(), 64.f / cornerStrip.getRegionHeight());
+            canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerStrip.getRegionWidth())+0.01f, (64.f / cornerStrip.getRegionHeight())+0.01f);
         }
     }
 }
