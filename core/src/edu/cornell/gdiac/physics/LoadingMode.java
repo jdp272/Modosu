@@ -68,8 +68,6 @@ public class LoadingMode implements Screen {
 
 	/** Background texture for start-up */
 	private Texture background;
-	/** Texture atlas to support a progress bar */
-	private Texture statusBar;
 	/** Start button to display when done */
 	private Texture playButton;
 	/** Level Design button to display when done */
@@ -284,7 +282,6 @@ public class LoadingMode implements Screen {
 		credits = null;
 		quit = null;
 		background = new Texture(BACKGROUND_FILE);
-		statusBar  = new Texture(PROGRESS_FILE);
 
 		centerY = Gdx.graphics.getHeight()/2;
 		centerX = Gdx.graphics.getWidth()/2;
@@ -348,21 +345,20 @@ public class LoadingMode implements Screen {
 		 loadingTexture.dispose();
 		 wakingGolemTexture.dispose();
 		 loadingBackgroundTexture.dispose();
-		 background.dispose();
-		 statusBar.dispose();
-		 playButton.dispose();
-		 lvlSelect.dispose();
-		 lvlDesign.dispose();
-		 credits.dispose();
-		 quit.dispose();
-		 unmute.dispose();
-		 mute.dispose();
-		 background = null;
-		 statusBar  = null;
-		 if (playButton != null) {
-			 playButton.dispose();
-			 playButton = null;
-		 }
+		 //background.dispose();
+//		 statusBar.dispose();
+//		 playButton.dispose();
+//		 lvlSelect.dispose();
+//		 lvlDesign.dispose();
+//		 credits.dispose();
+//		 quit.dispose();
+//		 unmute.dispose();
+//		 mute.dispose();
+//		 background = null;
+//		 if (playButton != null) {
+//			 playButton.dispose();
+//			 playButton = null;
+//		 }
 	}
 
 
@@ -650,7 +646,7 @@ public class LoadingMode implements Screen {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.START;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
 				isPressed = true;
 			}
 		}
@@ -658,7 +654,7 @@ public class LoadingMode implements Screen {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlSelect.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.SELECT;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
 				isPressed = true;
 			}
 		}
@@ -666,7 +662,7 @@ public class LoadingMode implements Screen {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.DESIGN;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
 				isPressed = true;
 			}
 		}
@@ -674,7 +670,7 @@ public class LoadingMode implements Screen {
 		if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
 			if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth() * scale * BUTTON_SCALE)) {
 				buttonPressed = pressState.CREDITS;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
 				isPressed = true;
 			}
 		}
@@ -682,7 +678,7 @@ public class LoadingMode implements Screen {
 		if(screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.QUIT;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
 				isPressed = true;
 			}
 		}

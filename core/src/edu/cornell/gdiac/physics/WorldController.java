@@ -147,12 +147,6 @@ public abstract class WorldController implements Screen {
 	protected BitmapFont fourFont;
 	/** Texture asset for background image */
 	private TextureRegion backgroundTexture;
-	/** The texture for robots */
-	protected TextureRegion hostTex;
-	/** The texture for the spirit */
-	protected TextureRegion spiritTex;
-	/** The texture for host gauge */
-	protected TextureRegion hostGaugeTex;
 	/** The texture for walls */
 	protected TextureRegion wallTex;
 	/** The texture for the arrow */
@@ -734,7 +728,12 @@ public abstract class WorldController implements Screen {
 	 */
 	public boolean preUpdate(float dt) {
 		InputController input = InputController.getInstance();
-		input.readInput();
+		if (this instanceof LevelDesignerMode) {
+			input.readInput(bounds, scale);
+		}
+		else{
+			input.readInput();
+		}
 		if (listener == null) {
 			return true;
 		}
@@ -754,10 +753,10 @@ public abstract class WorldController implements Screen {
 			listener.exitScreen(this, EXIT_QUIT);
 			return false;
 		} else if (input.didAdvance()) {
-			listener.exitScreen(this, EXIT_NEXT);
+			listener.exitScreenLevel(currentLevel+1);
 			return false;
 		} else if (input.didRetreat()) {
-			listener.exitScreen(this, EXIT_PREV);
+			listener.exitScreenLevel(currentLevel-1);
 			return false;
 		}
 		else if (input.didMenu()) {

@@ -50,7 +50,7 @@ public class GamePlayController extends WorldController {
 	/** The asset for the bounce sound of an edge or corner and spirit */
 	private static final String  BOUNCE_BOUND_SOUND = "host/bouncebound.mp3";
 	/** The asset for the possession sound */
-	private static final String  POSSESSION_SOUND = "host/possession.mp3";
+	private static final String  POSSESSION_SOUND = "host/possession2.wav";
 	/** The asset for the slingshot sound */
 	private static final String  LAUNCH_SOUND = "host/launch.mp3";
 	/** The asset for the failure sound */
@@ -180,7 +180,6 @@ public class GamePlayController extends WorldController {
 		setFailure(false);
 		setMenu(false);
 
-		System.out.println("is reset caleld at the beg of each level");
 		MusicController.getInstance().play("gameMusic");
 		MusicController.getInstance().setVolume(40);
 
@@ -235,7 +234,6 @@ public class GamePlayController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-		System.out.println("is populate Level called at the begining of each level?");
 		for(Obstacle obj : level.walls) {
 			// Set the hitbox of the wall to be dependent on its texture
 			if(obj instanceof Wall) {
@@ -305,7 +303,6 @@ public class GamePlayController extends WorldController {
 			pedestal.markRemoved(true);
 		}
 
-
 		// Calls update on hostController
 		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand(), energyPillars);
 		if (hostController.getLaunched()){
@@ -319,7 +316,7 @@ public class GamePlayController extends WorldController {
 			// Determine if the player is in sand
 			String walkingSound = collisionController.getInSand() ? WALK_SAND_SOUND : WALK_SOUND;
 			// If unmuted, then play the correct walking sound
-			SoundController.getInstance().play(walkingSound, walkingSound, true);
+			SoundController.getInstance().play(walkingSound, walkingSound, true, .30f);
 		}
 		// Stop playing if player is no longer moving
 		else {
@@ -342,7 +339,7 @@ public class GamePlayController extends WorldController {
 		// Update bouncing if applicable
 		if (collisionController.isBounced()) {
 			String bounceSound = collisionController.getBounceOnBounds() ? BOUNCE_BOUND_SOUND : BOUNCE_WALL_SOUND;
-			SoundController.getInstance().play(bounceSound, bounceSound, false);
+			SoundController.getInstance().play(bounceSound, bounceSound, false, .2f);
 		}
 
 		// Calculate spirit's screen coordinates from box2d coordinates

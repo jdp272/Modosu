@@ -133,6 +133,5 @@ public class MusicController {
 	public void update() {
 		if(music == null) System.out.println("music became null for some reason");
 		if (music != null) music.play();
-		System.out.println("update is called ");
 	}
 }

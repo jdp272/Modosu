@@ -113,8 +113,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		setScreen(null);
 
 		controller.unloadContent(manager);
-		controller.dispose();
 		loading.dispose();
+		controller.dispose();
 		levelSelect.dispose();
 		levelDesigner.dispose();
 
@@ -146,20 +146,10 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1);
 
-		controller = new GamePlayController();
-		levelDesigner = new LevelDesignerMode();
-		levelSelect = new LevelSelectMode();
-		gameOver = new GameOver();
-
-		controller.preLoadContent(manager);
-		levelDesigner.preLoadContent(manager);
-		levelSelect.preLoadContent(manager);
-		gameOver.preLoadContent(manager);
-
-
 		loading.setScreenListener(this);
 
 		setScreen(loading);
+
 	}
 
 
@@ -217,18 +207,17 @@ public class GDXRoot extends Game implements ScreenListener {
 		else if (exitCode == WorldController.EXIT_NEXT) {
 			goLevelDesigner = false;
 			controller.reset();
-//			loading.dispose();
 			setScreen(controller);
 		}
 		else if (exitCode == WorldController.EXIT_PREV) {
 			goLevelDesigner = false;
 			controller.reset();
-//			loading.dispose();
 			setScreen(controller);
 		}
 
 		else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
+			loading.dispose();
 			Gdx.app.exit();
 		}
 		else if (exitCode == WorldController.EXIT_MENU) {
@@ -250,7 +239,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param level The level to start the game at
 	 */
 	public void exitScreenLevel(int level) {
-
 		controller.loadContent(manager);
 		controller.setScreenListener(this);
 		controller.setCanvas(canvas);
@@ -269,25 +257,23 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreenLevel(int level, int page) {
 
-		if (screen == levelSelect){
-
-			if(goLevelDesigner) {
-				levelDesigner.loadContent(manager);
-				levelDesigner.setScreenListener(this);
-				levelDesigner.setCanvas(canvas);
-				levelDesigner.setCurrentLevel(level + (page*4));
-				if(level == -1){
-					levelDesigner.setLoadBoard(false);
-					System.out.println("TEST");
-				}
-				levelDesigner.reset();
-
-				setScreen(levelDesigner);
+		if(goLevelDesigner) {
+			levelDesigner.loadContent(manager);
+			levelDesigner.setScreenListener(this);
+			levelDesigner.setCanvas(canvas);
+			levelDesigner.setCurrentLevel(level + (page*4));
+			if(level == -1){
+				levelDesigner.setLoadBoard(false);
+				System.out.println("TEST");
 			}
-			else {
-				exitScreenLevel(level + (page*4));
-			}
+			levelDesigner.reset();
+
+			setScreen(levelDesigner);
 		}
+		else {
+			exitScreenLevel(level + (page*4));
+		}
+
 	}
 
 }
