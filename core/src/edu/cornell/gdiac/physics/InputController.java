@@ -92,10 +92,10 @@ public class InputController {
 	private boolean instructionPrevious;
 	/** If left mouse was just clicked */
 	private boolean leftJustClicked;
-	/** If left mouse was clicked last frame*/
-	private boolean leftJustClickedPrevious;
 
-	private boolean mouseReleased;
+	/** If left mouse is pressed or helde clicked */
+	private boolean mousePressed;
+	private boolean mousePressedPrevious;
 
 	/** If up is held */
 	private boolean upHeld;
@@ -110,6 +110,8 @@ public class InputController {
 	private Vector2 mousePosition;
 	/** The crosshair cache (for using as a return value) */
 	private Vector2 mousePositionCache;
+
+
 
 	/**
 	 * Returns the amount of sideways movement.
@@ -207,9 +209,7 @@ public class InputController {
 	 *
 	 * @return true if the player wants to go to the previous level.
 	 */
-	public boolean didRetreat() {
-		return prevPressed && !prevPrevious;
-	}
+	public boolean didRetreat() { return prevPressed && !prevPrevious; }
 
 	/**
 	 * Returns true if the player wants to go toggle the debug mode.
@@ -236,15 +236,14 @@ public class InputController {
 	 */
 	public boolean didZoom() { return zoomPressed; }
 
+	public boolean didIsPressed() { return mousePressed; }
+
 	/**
 	 * Returns true if the player wants to go toggle the debug mode.
 	 *
 	 * @return true if the player wants to go toggle the debug mode.
 	 */
-	public boolean didRelease() {
-		//System.out.println("did release returned: " + (!leftJustClicked && leftJustClickedPrevious));
-		return !leftJustClicked && leftJustClickedPrevious;
-	}
+	public boolean didRelease() { return mousePressedPrevious && !mousePressed; }
 
 
 	/**
@@ -294,8 +293,7 @@ public class InputController {
 	 *
 	 * @return true if the main menu button was pressed.
 	 */
-	public boolean didMenu() { if (menuPressed && !menuPrevious) System.out.println("SOHOULD GO TO MENU"); return menuPressed && !menuPrevious;
-	}
+	public boolean didMenu() { return menuPressed && !menuPrevious; }
 
 	/**
 	 * Returns true if the instruction editor button was pressed.
@@ -363,7 +361,7 @@ public class InputController {
 		savePrevious = savePressed;
 		menuPrevious = menuPressed;
 		instructionPrevious = instructionPressed;
-		leftJustClickedPrevious = leftJustClicked;
+		mousePressedPrevious = mousePressed;
 
 		readKeyboard();
 
@@ -376,14 +374,14 @@ public class InputController {
 	 */
 	private void readKeyboard() {
 
-		resetPressed = resetPressed || Gdx.input.isKeyPressed(Input.Keys.R);
-		debugPressed = debugPressed || Gdx.input.isKeyPressed(Input.Keys.H);
+		resetPressed = Gdx.input.isKeyPressed(Input.Keys.R);
+		debugPressed = Gdx.input.isKeyPressed(Input.Keys.H);
 		primePressed = primePressed || Gdx.input.isKeyPressed(Input.Keys.UP);
 		secondPressed = secondPressed || Gdx.input.isKeyPressed(Input.Keys.DOWN);
-		prevPressed = prevPressed || Gdx.input.isKeyPressed(Input.Keys.P);
-		nextPressed = nextPressed || Gdx.input.isKeyPressed(Input.Keys.N);
-		exitPressed  = exitPressed || Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
-		zoomPressed = zoomPressed || Gdx.input.isKeyJustPressed(Input.Keys.Z);
+		prevPressed =  Gdx.input.isKeyPressed(Input.Keys.P);
+		nextPressed =  Gdx.input.isKeyPressed(Input.Keys.N);
+		exitPressed  = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
 		upHeld = upHeld || Gdx.input.isKeyPressed(Input.Keys.UP);
 		downHeld = downHeld || Gdx.input.isKeyPressed(Input.Keys.DOWN);
 
@@ -393,7 +391,7 @@ public class InputController {
 		clearPressed = clearPressed || Gdx.input.isKeyPressed(Input.Keys.C);
 		deletePressed = deletePressed || Gdx.input.isKeyPressed(Input.Keys.BACKSPACE);
 		savePressed = savePressed || Gdx.input.isKeyPressed(Input.Keys.ENTER);
-		menuPressed = menuPressed || Gdx.input.isKeyPressed(Input.Keys.M);
+		menuPressed = Gdx.input.isKeyPressed(Input.Keys.M);
 		instructionPressed = instructionPressed || Gdx.input.isKeyPressed(Input.Keys.I);
 
 
@@ -416,12 +414,124 @@ public class InputController {
 
 		// Mouse results
 		tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+		if (tertiaryPressed) { mousePressed = true; }
+		else { mousePressed = false; }
+
 		leftJustClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
-		if (leftJustClicked)
-		{ System.out.println("PRESSED LEFT BUTTON ");}
+
 		mousePosition.set(Gdx.input.getX(), Gdx.input.getY());
+	}
+
+
+
+	/**
+	 * ONLY USED IN LEVEL DESIGNER
+	 * Reads the input for the player and converts the result into game logic.
+	 *
+	 * The method provides both the input bounds and the drawing scale.  It needs
+	 * the drawing scale to convert screen coordinates to world coordinates.  The
+	 * bounds are for the crosshair.  They cannot go outside of this zone.
+	 *
+	 * @param bounds The input bounds for the crosshair.
+	 * @param scale  The drawing scale
+	 */
+	public void readInput(Rectangle bounds, Vector2 scale) {
+		// Copy state from last animation frame
+		// Helps us ignore buttons that are held down
+		primePrevious  = primePressed;
+		secondPrevious = secondPressed;
+		resetPrevious  = resetPressed;
+		debugPrevious  = debugPressed;
+		exitPrevious = exitPressed;
+		nextPrevious = nextPressed;
+		prevPrevious = prevPressed;
+
+		boxPrevious = boxPressed;
+		hostPrevious = hostPressed;
+		spiritPrevious = spiritPressed;
+		clearPrevious = clearPressed;
+		deletePrevious = deletePressed;
+		savePrevious = savePressed;
+		menuPrevious = menuPressed;
+		instructionPrevious = instructionPressed;
+
+		readKeyboard(bounds, scale, false);
 
 	}
+
+	/**
+	 * ONLY USED IN LEVEL DESIGNER
+	 * Reads input from the keyboard.
+	 * This controller reads from the keyboard regardless of whether or not an X-Box
+	 * controller is connected.  However, if a controller is connected, this method
+	 * gives priority to the X-Box controller.
+	 *
+	 * @param secondary true if the keyboard should give priority to a gamepad
+	 */
+	private void readKeyboard(Rectangle bounds, Vector2 scale, boolean secondary) {
+		// Give priority to gamepad results
+		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
+		debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.H));
+		primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
+		secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Keys.DOWN));
+		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
+		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
+		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
+		upHeld = Gdx.input.isKeyPressed(Input.Keys.UP);
+		downHeld = Gdx.input.isKeyPressed(Input.Keys.DOWN);
+
+		boxPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.B));
+		hostPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.G));
+		spiritPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.Z));
+		clearPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.C));
+		deletePressed = (secondary && deletePressed)  || (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE));
+		savePressed = (secondary && savePressed)  || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
+		menuPressed = (secondary && menuPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
+		instructionPressed = (secondary && instructionPressed) || (Gdx.input.isKeyPressed(Input.Keys.I));
+//		instructionPressed = Gdx.input.isKeyJustPressed(Input.Keys.I);
+
+
+		// Directional controls
+		horizontal = (secondary ? horizontal : 0.0f);
+		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+			horizontal += 1.0f;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+			horizontal -= 1.0f;
+		}
+
+		vertical = (secondary ? vertical : 0.0f);
+		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+			vertical += 1.0f;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+			vertical -= 1.0f;
+		}
+
+		// Mouse results
+		tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+		leftJustClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
+		mousePosition.set(Gdx.input.getX(), Gdx.input.getY());
+		mousePosition.scl(1/scale.x,-1/scale.y);
+		mousePosition.y += bounds.height;
+		clampPosition(bounds);
+	}
+
+	/**
+	 * ONLY USED IN LEVEL DESIGNER
+	 * Clamp the cursor position so that it does not go outside the window
+	 *
+	 * While this is not usually a problem with mouse control, this is critical
+	 * for the gamepad controls.
+	 */
+	private void clampPosition(Rectangle bounds) {
+		mousePosition.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, mousePosition.x));
+		mousePosition.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, mousePosition.y));
+	}
+
+
+
 
 
 

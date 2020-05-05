@@ -302,11 +302,9 @@ public class LevelSelectMode extends WorldController implements Screen {
 
 
     /**
-     * Called when the screen was touched or a mouse button was pressed.
-     *
-     * This method checks to see if the play button is available and if the click
-     * is in the bounds of the play button.  If so, it signals the that the button
-     * has been pressed and is currently down. Any mouse button is accepted.
+     * This is called when the mouse was pressed. It checks to see if the button press
+     * was on a valid button region. If so, it signals the that a valid button
+     * has been pressed and is currently down.
      *
      * @param screenX the x-coordinate of the mouse on the screen
      * @param screenY the y-coordinate of the mouse on the screen
@@ -366,19 +364,14 @@ public class LevelSelectMode extends WorldController implements Screen {
 
 
     /**
-     * Called when a finger was lifted or a mouse button was released.
-     *
-     * This method checks to see if the play button is currently pressed down. If so,
-     * it signals the that the player is ready to go.
+     * This method is called when a mouse was released. It is part of the mode update to see if
+     * there was a button in the release region. If so, then the player is moved to the level selected.
      *
      * @param screenX the x-coordinate of the mouse on the screen
      * @param screenY the y-coordinate of the mouse on the screen
      *
      */
     public void updateReleased(float screenX, float screenY) {
-        System.out.println("this is my pres loc: " + screenX + ", " + screenY);
-        System.out.println(oneStart);
-        System.out.println(oneEnd);
         if (isPressed) {
             if (screenX >= oneStart.x && screenX <= oneEnd.x) {
                 if (screenY >= oneStart.y && screenY <= oneEnd.y && pressState == 0 ) {
@@ -436,7 +429,7 @@ public class LevelSelectMode extends WorldController implements Screen {
     }
 
     /**
-     * Called when the mouse was moved without any buttons being pressed.
+     * This is always called in the mode update method.
      *
      * This method checks to see if the player mouse is hovering over any level buttons.
      * If so, the color of the button should change when drawn.
@@ -447,7 +440,6 @@ public class LevelSelectMode extends WorldController implements Screen {
      */
     public void updateHover(float screenX, float screenY) {
         if (canvas != null) {
-            screenY = canvas.getHeight() - screenY;
 
             colorOne = colorUnhovered;
             colorTwo = colorUnhovered;
@@ -455,7 +447,6 @@ public class LevelSelectMode extends WorldController implements Screen {
             colorFour = colorUnhovered;
             colorNext = colorUnhovered;
             colorPrev = colorUnhovered;
-            hoverButton = false;
 
             if (screenX >= oneStart.x && screenX <= oneEnd.x) {
                 if (screenY >= oneStart.y && screenY <= oneEnd.y) {
