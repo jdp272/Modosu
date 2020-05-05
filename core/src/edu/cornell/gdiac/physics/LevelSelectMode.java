@@ -12,30 +12,24 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.controllers.Controller;
-
-
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
+
 import edu.cornell.gdiac.util.ScreenListener;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
  * Manages the level selection of Modosu
  *
  */
-public class LevelSelectMode extends WorldController implements Screen, InputProcessor {
+public class LevelSelectMode extends WorldController implements Screen {
     /** Texture file for background image */
     private static final String BACKG_FILE = "shared/levelselectbackground.png";
     private static final String ONE_FILE = "shared/1.png";
@@ -46,22 +40,11 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     private static final String CLICK_SOUND = "shared/click.mp3";
     private static final String HOVER_SOUND = "shared/hover.mp3";
 
-    private boolean sound;
-
-
-    private static int LEVEL_X_START = 170;
-    private static int LEVEL_Y = 230;
-    private static int LEVEL_BUTTON_SPACING = 200;
-
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
 
     /** Texture asset for background image */
     private TextureRegion backgroundTexture;
-    private TextureRegion oneTexture;
-    private TextureRegion twoTexture;
-    private TextureRegion threeTexture;
-    private TextureRegion fourTexture;
     private TextureRegion nextTexture;
     private TextureRegion prevTexture;
 
@@ -105,9 +88,12 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     /** Track asset loading from all instances and subclasses */
     private AssetState assetState = AssetState.EMPTY;
 
+    /** Get user input through the controller */
+    private InputController input;
+
     /** Page of levels user is on */
     private int page;
-    /** number of pages needed to display all levels available */
+    /** Number of pages needed to display all levels available */
     private int pages;
 
     public boolean goToDesigner;
@@ -130,7 +116,6 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      */
     public void preLoadContent(AssetManager manager) {
         if (assetState != AssetState.EMPTY) { return; }
-
 
         assetState = AssetState.LOADING;
         manager.load(BACKG_FILE, Texture.class);
@@ -164,30 +149,20 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
             return;
         }
         backgroundTexture = createTexture(manager,BACKG_FILE,false);
-        oneTexture = createTexture(manager,ONE_FILE,false);
-        twoTexture = createTexture(manager,TWO_FILE,false);
-        threeTexture = createTexture(manager,THREE_FILE,false);
-        fourTexture = createTexture(manager,FOUR_FILE,false);
         nextTexture = createTexture(manager,NEXT_FILE,false);
         prevTexture = createTexture(manager,NEXT_FILE, false);
         prevTexture.flip(true,false);
 
 
-        //oneStart = new Vector2(LEVEL_X_START, LEVEL_Y);
         oneStart = new Vector2(backgroundTexture.getRegionWidth()*0.13f,backgroundTexture.getRegionHeight()*0.27f);
-        //oneEnd = new Vector2(LEVEL_X_START + oneTexture.getRegionWidth(), LEVEL_Y+oneTexture.getRegionHeight());
+
         oneEnd = new Vector2(backgroundTexture.getRegionWidth()*0.21f,backgroundTexture.getRegionHeight()*0.56f);
-        //twoStart = new Vector2(oneEnd.x + LEVEL_BUTTON_SPACING, LEVEL_Y);
+
         twoStart = new Vector2( backgroundTexture.getRegionWidth()*0.35f,oneStart.y);
-        //twoEnd = new Vector2(twoStart.x+twoTexture.getRegionWidth(), LEVEL_Y+twoTexture.getRegionHeight());
         twoEnd = new Vector2(backgroundTexture.getRegionWidth()*0.42f, oneEnd.y);
-        //threeStart = new Vector2(twoEnd.x + LEVEL_BUTTON_SPACING, LEVEL_Y);
         threeStart = new Vector2( backgroundTexture.getRegionWidth()*0.57f,oneStart.y);
-        //threeEnd = new Vector2(threeStart.x+threeTexture.getRegionWidth(), LEVEL_Y+threeTexture.getRegionHeight());
         threeEnd = new Vector2(backgroundTexture.getRegionWidth()*0.65f, oneEnd.y);
-        //fourStart = new Vector2(threeEnd.x + LEVEL_BUTTON_SPACING, LEVEL_Y);
         fourStart = new Vector2( backgroundTexture.getRegionWidth()*0.79f,oneStart.y);
-        //fourEnd = new Vector2(fourStart.x+fourTexture.getRegionWidth(), LEVEL_Y+fourTexture.getRegionHeight());
         fourEnd = new Vector2(backgroundTexture.getRegionWidth()*0.87f, oneEnd.y);
         nextStart = new Vector2(fourStart.x - nextTexture.getRegionWidth(), backgroundTexture.getRegionHeight()*0.8f);
         nextEnd = new Vector2(nextStart.x+nextTexture.getRegionWidth(), nextStart.y+nextTexture.getRegionHeight());
@@ -213,8 +188,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         setComplete(false);
         setFailure(false);
 
-
-        sound = false;
+        input = InputController.getInstance();
         page = 0;
 
         colorHovered = new Color(Color.rgb565(190f,245f,253f));
@@ -245,7 +219,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
 
     /**
-     * The core update loop of this menuscreen.
+     * The core update loop of this menu screen.
      *
      * This method contains the specific update code for this mini-game. It does
      * not handle collisions, as those are managed by the parent class WorldController.
@@ -256,10 +230,20 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      */
     public void update(float dt) {
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
-            listener.exitScreen(this,WorldController.EXIT_MENU, sound);
+            listener.exitScreen(this,WorldController.EXIT_MENU);
         }
         // Update sounds
         SoundController.getInstance().update();
+
+        Vector2 pos = input.getMousePosition();
+
+        // Flip to match graphics coordinates
+        float screenY = 576-pos.y;
+        float screenX = pos.x;
+        if (input.didLeftClick()){ updatePressed(screenX, screenY); }
+        else if (input.didRelease()) { updateReleased(screenX, screenY);}
+        updateHover(screenX, screenY);
+
     }
 
 
@@ -273,10 +257,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
     public void draw(float dt) {
         canvas.begin();
         canvas.draw(backgroundTexture, 0, 0);
-//        canvas.draw(oneTexture, colorOne,0f, 0f, oneStart.x, oneStart.y,0,1,1);
-//        canvas.draw(twoTexture, colorTwo, 0f, 0f, twoStart.x, twoStart.y,0,1,1);
-//        canvas.draw(threeTexture, colorThree,0f,0f,threeStart.x, threeStart.y,0,1,1);
-//        canvas.draw(fourTexture, colorFour,0f,0f,fourStart.x, fourStart.y,0,1,1);
+
         if (page != pages-1) {
             canvas.draw(nextTexture, colorNext, 0f, 0f, nextStart.x, nextStart.y, 0, 1, 1);
         }
@@ -317,15 +298,8 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      */
     public void setScreenListener(ScreenListener listener) {
         this.listener = listener;
-        Gdx.input.setInputProcessor(this);
     }
 
-    /**
-     * Sets the ScreenListener for this mode
-     *
-     * The ScreenListener will respond to requests to quit.
-     */
-    public void setSound(boolean s) { sound = s; }
 
     /**
      * Called when the screen was touched or a mouse button was pressed.
@@ -336,18 +310,13 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      *
      * @param screenX the x-coordinate of the mouse on the screen
      * @param screenY the y-coordinate of the mouse on the screen
-     * @param pointer the button or touch finger number
-     * @return whether to hand the event to other listeners.
+     *
      */
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-
-        // Flip to match graphics coordinates
-        screenY = 576-screenY;
+    public void updatePressed(float screenX, float screenY) {
 
         if(screenX >=  oneStart.x && screenX <= oneEnd.x) {
             if (screenY >= oneStart.y && screenY <= oneEnd.y) {
-                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
                 pressState = 0;
                 isPressed = true;
             }
@@ -355,7 +324,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
         if(screenX >= twoStart.x && screenX <= twoEnd.x && (page*4 + 1 < levels.length || goToDesigner)) {
             if (screenY >= twoStart.y && screenY <= twoEnd.y) {
-                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
                 pressState = 1;
                 isPressed = true;
             }
@@ -363,7 +332,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
         if(screenX >= threeStart.x && screenX <= threeEnd.x && (page*4 + 2 < levels.length || goToDesigner)) {
             if (screenY >= threeStart.y && screenY <= threeEnd.y)  {
-                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
                 pressState = 2;
                 isPressed = true;
             }
@@ -371,7 +340,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
         if(screenX >= fourStart.x && screenX <= fourEnd.x && (page*4 + 3 < levels.length || goToDesigner)) {
             if (screenY >= fourStart.y && screenY <= fourEnd.y)  {
-                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
                 pressState = 3;
                 isPressed = true;
             }
@@ -379,7 +348,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
 
         if(screenX >= nextStart.x && screenX <= nextEnd.x && page != pages-1) {
             if (screenY >= nextStart.y && screenY <= nextEnd.y)  {
-                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
                 pressState = 4;
                 isPressed = true;
                 page++;
@@ -387,14 +356,12 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         }
         if(screenX >= prevStart.x && screenX <= prevEnd.x && page != 0) {
             if (screenY >= prevStart.y && screenY <= prevEnd.y)  {
-                if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
                 pressState = 5;
                 isPressed = true;
                 page--;
             }
         }
-
-        return false;
     }
 
 
@@ -406,44 +373,43 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      *
      * @param screenX the x-coordinate of the mouse on the screen
      * @param screenY the y-coordinate of the mouse on the screen
-     * @param pointer the button or touch finger number
-     * @return whether to hand the event to other listeners.
+     *
      */
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        // Flip to match graphics coordinates
-        screenY = 576-screenY;
-
+    public void updateReleased(float screenX, float screenY) {
+        System.out.println("this is my pres loc: " + screenX + ", " + screenY);
+        System.out.println(oneStart);
+        System.out.println(oneEnd);
         if (isPressed) {
             if (screenX >= oneStart.x && screenX <= oneEnd.x) {
                 if (screenY >= oneStart.y && screenY <= oneEnd.y && pressState == 0 ) {
-                    listener.exitScreenLevel(0, sound, page);
+                    listener.exitScreenLevel(0, page);
                 }
 
             }
             if (screenX >= twoStart.x && screenX <= twoEnd.x) {
                 if (screenY >= twoStart.y && screenY <= twoEnd.y && pressState == 1) {
                     if(page * 4 + 1 < levels.length) {
-                        listener.exitScreenLevel(1, sound, page);
+                        listener.exitScreenLevel(1, page);
                     }else{
-                        listener.exitScreenLevel(-1, sound, page);
+                        listener.exitScreenLevel(-1, page);
                     }
                 }
             }
             if (screenX >= threeStart.x && screenX <= threeEnd.x) {
                 if (screenY >= threeStart.y && screenY <= threeEnd.y && pressState == 2) {
                     if(page * 4 + 2 < levels.length) {
-                        listener.exitScreenLevel(2, sound, page);
+                        listener.exitScreenLevel(2, page);
                     }else{
-                        listener.exitScreenLevel(-1, sound, page);
+                        listener.exitScreenLevel(-1, page);
                     }
                 }
             }
             if (screenX >= fourStart.x && screenX <= fourEnd.x) {
                 if (screenY >= fourStart.y && screenY <= fourEnd.y && pressState == 3) {
                     if(page * 4 + 3 < levels.length) {
-                        listener.exitScreenLevel(3, sound, page);
+                        listener.exitScreenLevel(3, page);
                     }else{
-                        listener.exitScreenLevel(-1, sound, page);
+                        listener.exitScreenLevel(-1, page);
                     }
                 }
 
@@ -467,7 +433,6 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
         colorPrev = colorUnhovered;
         hoverButton = false;
         isPressed = false;
-        return false;
     }
 
     /**
@@ -478,9 +443,9 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
      *
      * @param screenX the x-coordinate of the mouse on the screen
      * @param screenY the y-coordinate of the mouse on the screen
-     * @return whether to hand the event to other listeners.
+     *
      */
-    public boolean mouseMoved(int screenX, int screenY) {
+    public void updateHover(float screenX, float screenY) {
         if (canvas != null) {
             screenY = canvas.getHeight() - screenY;
 
@@ -496,7 +461,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 if (screenY >= oneStart.y && screenY <= oneEnd.y) {
                     colorOne = colorHovered;
                     if (!hoverButton) {
-                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
                         hoverButton = true;
                     }
                 }
@@ -509,7 +474,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 if (screenY >= twoStart.y && screenY <= twoEnd.y) {
                     colorTwo = colorHovered;
                     if (!hoverButton) {
-                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
                         hoverButton = true;
                     }
                 }
@@ -522,7 +487,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 if (screenY >= threeStart.y && screenY <= threeEnd.y) {
                     colorThree = colorHovered;
                     if (!hoverButton) {
-                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
                         hoverButton = true;
                     }
                 }
@@ -535,7 +500,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 if (screenY >= fourStart.y && screenY <= fourEnd.y) {
                     colorFour = colorHovered;
                     if (!hoverButton) {
-                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
                         hoverButton = true;
                     }
                 }
@@ -548,7 +513,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 if (screenY >= nextStart.y && screenY <= nextEnd.y) {
                     colorNext = colorHovered;
                     if (!hoverButton) {
-                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
                         hoverButton = true;
                     }
                 }
@@ -561,7 +526,7 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                 if (screenY >= prevStart.y && screenY <= prevEnd.y) {
                     colorPrev = colorHovered;
                     if (!hoverButton) {
-                        if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
                         hoverButton = true;
                     }
                 }
@@ -570,60 +535,6 @@ public class LevelSelectMode extends WorldController implements Screen, InputPro
                     hoverButton = false;
                 }
             }
-
         }
-        return true;
     }
-
-
-    // UNSUPPORTED METHODS FROM InputProcessor
-
-
-
-
-
-    /**
-     * Called when a key is pressed (UNSUPPORTED)
-     *
-     * @param keycode the key pressed
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean keyDown(int keycode) { return true; }
-
-    /**
-     * Called when a key is typed (UNSUPPORTED)
-     *
-     * @param character the key typed
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean keyTyped(char character) { return true; }
-
-    /**
-     * Called when a key is released.
-     *
-     * We allow key commands to start the game this time.
-     *
-     * @param keycode the key released
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean keyUp(int keycode) { return true; }
-
-    /**
-     * Called when the mouse wheel was scrolled. (UNSUPPORTED)
-     *
-     * @param amount the amount of scroll from the wheel
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean scrolled(int amount) { return true; }
-
-    /**
-     * Called when the mouse or finger was dragged. (UNSUPPORTED)
-     *
-     * @param screenX the x-coordinate of the mouse on the screen
-     * @param screenY the y-coordinate of the mouse on the screen
-     * @param pointer the button or touch finger number
-     * @return whether to hand the event to other listeners.
-     */
-    public boolean touchDragged(int screenX, int screenY, int pointer) { return true; }
-
 }

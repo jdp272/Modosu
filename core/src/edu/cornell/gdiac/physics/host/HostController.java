@@ -40,6 +40,7 @@ public class HostController {
     /** Spirit position in screen coordinates */
     private Vector2 spiritCenter;
 
+    /** Get user input through the controller */
     private InputController input;
 
     // Cache variables

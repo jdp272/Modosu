@@ -98,7 +98,7 @@ public class Credits extends WorldController implements Screen {
 
         /** Checks if any buttons are clicked */
         if (backButtonClicked) {
-            listener.exitScreen(this, EXIT_MENU, getSound());
+            listener.exitScreen(this, EXIT_MENU);
             backButtonClicked = false;
             dispose();
         }

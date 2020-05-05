@@ -51,6 +51,8 @@ import com.badlogic.gdx.utils.*;
  */
 public class SoundController {
 
+	public boolean isUnmuted() { return isUnmuted; }
+
 	/**
 	 * Inner class to track and active sound instance
 	 * 
@@ -101,7 +103,9 @@ public class SoundController {
 	private IdentityMap<String,ActiveSound> actives;
 	/** Support class for garbage collection */
 	private Array<String> collection;
-	
+
+	/** State of the sound controller */
+	private boolean isUnmuted;
 	
 	/** The number of animation frames before a key can be reused */
 	private long cooldown;
@@ -123,6 +127,7 @@ public class SoundController {
 		timeLimit = DEFAULT_LIMIT;
 		frameLimit = DEFAULT_FRAME;
 		current = 0;
+		isUnmuted = true;
 	}
 
 	/**
@@ -139,96 +144,6 @@ public class SoundController {
 		return controller;
 	}
 	
-	/// Properties
-	/**
-	 * Returns the number of frames before a key can be reused
-	 * 
-	 * If a key was used very recently, then an attempt to use the key
-	 * again means that the sound will be stopped and restarted. This
-	 * can cause undesirable artifacts.  So we limit how fast a key
-	 * can be reused.
-	 * 
-	 * @return the number of frames before a key can be reused
-	 */
-	public long getCoolDown() {
-		return cooldown;
-	}
-
-	/**
-	 * Sets the number of frames before a key can be reused
-	 * 
-	 * If a key was used very recently, then an attempt to use the key
-	 * again means that the sound will be stopped and restarted. This
-	 * can cause undesirable artifacts.  So we limit how fast a key
-	 * can be reused.
-	 * 
-	 * param value	the number of frames before a key can be reused
-	 */
-	public void setCoolDown(long value) {
-		cooldown = value;
-	}
-	
-	/**
-	 * Returns the maximum amount of animation frames a sound can run
-	 * 
-	 * Eventually we want to garbage collect sound instances.  Since we cannot
-	 * do this, we set an upper bound on all sound effects (default is 2
-	 * seconds) and garbage collect when time is up.
-	 * 
-	 * Sounds on a loop with NEVER be garbage collected.  They must be stopped
-	 * manually via stop().
-	 * 
-	 * @return the maximum amount of animation frames a sound can run
-	 */
-	public long getTimeLimit() {
-		return timeLimit;
-	}
-
-	/**
-	 * Sets the maximum amount of animation frames a sound can run
-	 * 
-	 * Eventually we want to garbage collect sound instances.  Since we cannot
-	 * do this, we set an upper bound on all sound effects (default is 2
-	 * seconds) and garbage collect when time is up.
-	 * 
-	 * Sounds on a loop with NEVER be garbage collected.  They must be stopped
-	 * manually via stop().
-	 * 
-	 * @param value the maximum amount of animation frames a sound can run
-	 */
-	public void setTimeLimit(long value) {
-		timeLimit = value;
-	}
-	
-	/**
-	 * Returns the maximum amount of sounds per animation frame
-	 * 
-	 * Because of Box2d limitations in LibGDX, you might get a lot of simultaneous
-	 * sounds if you try to play sounds on collision.  This in turn can cause
-	 * distortions.  We fix that by putting an upper bound on the number of 
-	 * simultaneous sounds per animation frame.  If you exceed the number, then
-	 * you should wait another frame before playing a sound.
-	 * 
-	 * @return the maximum amount of sounds per animation frame
-	 */
-	public int getFrameLimit() {
-		return frameLimit;
-	}
-	
-	/**
-	 * Sets the maximum amount of sounds per animation frame
-	 * 
-	 * Because of Box2d limitations in LibGDX, you might get a lot of simultaneous
-	 * sounds if you try to play sounds on collision.  This in turn can cause
-	 * distortions.  We fix that by putting an upper bound on the number of 
-	 * simultaneous sounds per animation frame.  If you exceed the number, then
-	 * you should wait another frame before playing a sound.
-	 * 
-	 * @param value the maximum amount of sounds per animation frame
-	 */
-	public void setFrameLimit(int value) {
-		frameLimit = value;
-	}
 
 	/// Sound Management
 	/**
@@ -268,6 +183,8 @@ public class SoundController {
 		return play(key,filename,loop,1.0f);
 	}
 
+	public void setUnmuted(boolean value) { isUnmuted = value; }
+
 	/**
 	 * Plays the an instance of the given sound
 	 * 
@@ -289,35 +206,38 @@ public class SoundController {
 	 * @return True if the sound was successfully played
 	 */
 	public boolean play(String key, String filename, boolean loop, float volume) {
-		// Get the sound for the file
-		if (!soundbank.containsKey(filename) || current >= frameLimit) {
-			return false;
-		}
-
-		// If there is a sound for this key, stop it
-		Sound sound = soundbank.get(filename);
-		if (actives.containsKey(key)) {
-			ActiveSound snd = actives.get(key);
-			if (!snd.loop && snd.lifespan > cooldown) {
-				// This is a workaround for the OS X sound bug
-				//snd.sound.stop(snd.id);
-				snd.sound.setVolume(snd.id, 0.0f); 
-			} else {
-				return true;
+		if (isUnmuted){
+			// Get the sound for the file
+			if (!soundbank.containsKey(filename) || current >= frameLimit) {
+				return false;
 			}
+
+			// If there is a sound for this key, stop it
+			Sound sound = soundbank.get(filename);
+			if (actives.containsKey(key)) {
+				ActiveSound snd = actives.get(key);
+				if (!snd.loop && snd.lifespan > cooldown) {
+					// This is a workaround for the OS X sound bug
+					//snd.sound.stop(snd.id);
+					snd.sound.setVolume(snd.id, 0.0f);
+				} else {
+					return true;
+				}
+			}
+
+			// Play the new sound and add it
+			long id = sound.play(volume);
+			if (id == -1) {
+				return false;
+			} else if (loop) {
+				sound.setLooping(id, true);
+			}
+
+			actives.put(key,new ActiveSound(sound,id,loop));
+			current++;
+			return true;
 		}
-		
-		// Play the new sound and add it
-		long id = sound.play(volume);
-		if (id == -1) {
-			return false;
-		} else if (loop) {
-			sound.setLooping(id, true);
-		}
-		
-		actives.put(key,new ActiveSound(sound,id,loop));
-		current++;
-		return true;
+		return false;
 	}
 	
 	/**
