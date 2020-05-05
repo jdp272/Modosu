@@ -25,8 +25,8 @@ public class InputController {
 
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
-	
-	/** 
+
+	/**
 	 * Return the singleton instance of the input controller
 	 *
 	 * @return the singleton instance of the input controller
@@ -37,7 +37,7 @@ public class InputController {
 		}
 		return theController;
 	}
-	
+
 	// Fields to manage buttons
 	/** Whether the reset button was pressed. */
 	private boolean resetPressed;
@@ -92,57 +92,60 @@ public class InputController {
 	private boolean instructionPrevious;
 	/** If left mouse was just clicked */
 	private boolean leftJustClicked;
+	/** If left mouse was clicked last frame*/
+	private boolean leftJustClickedPrevious;
+
+	private boolean mouseReleased;
+
 	/** If up is held */
 	private boolean upHeld;
 	/** If down is held */
 	private boolean downHeld;
-	
+
 	/** How much did we move horizontally? */
 	private float horizontal;
 	/** How much did we move vertically? */
 	private float vertical;
-	/** The crosshair position (for raddoll) */
-	private Vector2 crosshair;
+	/** The mouse position  */
+	private Vector2 mousePosition;
 	/** The crosshair cache (for using as a return value) */
-	private Vector2 crosscache;
-	/** For the gamepad crosshair control */
-	private float momentum;
-	
+	private Vector2 mousePositionCache;
+
 	/**
-	 * Returns the amount of sideways movement. 
+	 * Returns the amount of sideways movement.
 	 *
 	 * -1 = left, 1 = right, 0 = still
 	 *
-	 * @return the amount of sideways movement. 
+	 * @return the amount of sideways movement.
 	 */
 	public float getHorizontal() {
 		return horizontal;
 	}
-	
+
 	/**
-	 * Returns the amount of vertical movement. 
+	 * Returns the amount of vertical movement.
 	 *
 	 * -1 = down, 1 = up, 0 = still
 	 *
-	 * @return the amount of vertical movement. 
+	 * @return the amount of vertical movement.
 	 */
 	public float getVertical() {
 		return vertical;
 	}
-	
+
 	/**
-	 * Returns the current position of the crosshairs on the screen.
+	 * Returns the current position of the mouse on the screen.
 	 *
-	 * This value does not return the actual reference to the crosshairs position.
-	 * That way this method can be called multiple times without any fair that 
+	 * This value does not return the actual reference to the mouse position.
+	 * That way this method can be called multiple times without any fair that
 	 * the position has been corrupted.  However, it does return the same object
 	 * each time.  So if you modify the object, the object will be reset in a
 	 * subsequent call to this getter.
 	 *
-	 * @return the current position of the crosshairs on the screen.
+	 * @return the current position of the mouse on the screen.
 	 */
-	public Vector2 getCrossHair() {
-		return crosscache.set(crosshair);
+	public Vector2 getMousePosition() {
+		return mousePositionCache.set(mousePosition);
 	}
 
 	/**
@@ -198,7 +201,7 @@ public class InputController {
 	public boolean didAdvance() {
 		return nextPressed && !nextPrevious;
 	}
-	
+
 	/**
 	 * Returns true if the player wants to go to the previous level.
 	 *
@@ -207,7 +210,7 @@ public class InputController {
 	public boolean didRetreat() {
 		return prevPressed && !prevPrevious;
 	}
-	
+
 	/**
 	 * Returns true if the player wants to go toggle the debug mode.
 	 *
@@ -216,7 +219,7 @@ public class InputController {
 	public boolean didDebug() {
 		return debugPressed && !debugPrevious;
 	}
-	
+
 	/**
 	 * Returns true if the exit button was pressed.
 	 *
@@ -232,7 +235,19 @@ public class InputController {
 	 * @return true if the zoom button was pressed.
 	 */
 	public boolean didZoom() { return zoomPressed; }
-    /**
+
+	/**
+	 * Returns true if the player wants to go toggle the debug mode.
+	 *
+	 * @return true if the player wants to go toggle the debug mode.
+	 */
+	public boolean didRelease() {
+		//System.out.println("did release returned: " + (!leftJustClicked && leftJustClickedPrevious));
+		return !leftJustClicked && leftJustClickedPrevious;
+	}
+
+
+	/**
 	 * Returns true if the new box button was pressed.
 	 *
 	 * @return true if the new box button was pressed.
@@ -279,7 +294,7 @@ public class InputController {
 	 *
 	 * @return true if the main menu button was pressed.
 	 */
-	public boolean didMenu() { return menuPressed && !menuPrevious;
+	public boolean didMenu() { if (menuPressed && !menuPrevious) System.out.println("SOHOULD GO TO MENU"); return menuPressed && !menuPrevious;
 	}
 
 	/**
@@ -312,13 +327,13 @@ public class InputController {
 
 	/**
 	 * Creates a new input controller
-	 * 
+	 *
 	 * The input controller attempts to connect to the X-Box controller at device 0,
 	 * if it exists.  Otherwise, it falls back to the keyboard control.
 	 */
 	public InputController() {
-		crosshair = new Vector2();
-		crosscache = new Vector2();
+		mousePosition = new Vector2();
+		mousePositionCache = new Vector2();
 	}
 
 	/**
@@ -328,10 +343,8 @@ public class InputController {
 	 * the drawing scale to convert screen coordinates to world coordinates.  The
 	 * bounds are for the crosshair.  They cannot go outside of this zone.
 	 *
-	 * @param bounds The input bounds for the crosshair.  
-	 * @param scale  The drawing scale
 	 */
-	public void readInput(Rectangle bounds, Vector2 scale) {
+	public void readInput() {
 		// Copy state from last animation frame
 		// Helps us ignore buttons that are held down
 		primePrevious  = primePressed;
@@ -350,81 +363,66 @@ public class InputController {
 		savePrevious = savePressed;
 		menuPrevious = menuPressed;
 		instructionPrevious = instructionPressed;
+		leftJustClickedPrevious = leftJustClicked;
 
-		readKeyboard(bounds, scale, false);
+		readKeyboard();
 
 	}
 
-
 	/**
-	 * Reads input from the keyboard.
 	 *
-	 * This controller reads from the keyboard regardless of whether or not an X-Box
-	 * controller is connected.  However, if a controller is connected, this method
-	 * gives priority to the X-Box controller.
+	 * This controller reads input from the keyboard.
 	 *
-	 * @param secondary true if the keyboard should give priority to a gamepad
 	 */
-	private void readKeyboard(Rectangle bounds, Vector2 scale, boolean secondary) {
-		// Give priority to gamepad results
-		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
-		debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.H));
-		primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
-		secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Keys.DOWN));
-		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
-		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
-		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
-		upHeld = Gdx.input.isKeyPressed(Input.Keys.UP);
-		downHeld = Gdx.input.isKeyPressed(Input.Keys.DOWN);
+	private void readKeyboard() {
 
-		boxPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.B));
-		hostPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.G));
-		spiritPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.Z));
-		clearPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.C));
-		deletePressed = (secondary && deletePressed)  || (Gdx.input.isKeyPressed(Input.Keys.BACKSPACE));
-		savePressed = (secondary && savePressed)  || (Gdx.input.isKeyPressed(Input.Keys.ENTER));
-		menuPressed = (secondary && menuPressed) || (Gdx.input.isKeyPressed(Input.Keys.M));
-		instructionPressed = (secondary && instructionPressed) || (Gdx.input.isKeyPressed(Input.Keys.I));
-//		instructionPressed = Gdx.input.isKeyJustPressed(Input.Keys.I);
+		resetPressed = resetPressed || Gdx.input.isKeyPressed(Input.Keys.R);
+		debugPressed = debugPressed || Gdx.input.isKeyPressed(Input.Keys.H);
+		primePressed = primePressed || Gdx.input.isKeyPressed(Input.Keys.UP);
+		secondPressed = secondPressed || Gdx.input.isKeyPressed(Input.Keys.DOWN);
+		prevPressed = prevPressed || Gdx.input.isKeyPressed(Input.Keys.P);
+		nextPressed = nextPressed || Gdx.input.isKeyPressed(Input.Keys.N);
+		exitPressed  = exitPressed || Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+		zoomPressed = zoomPressed || Gdx.input.isKeyJustPressed(Input.Keys.Z);
+		upHeld = upHeld || Gdx.input.isKeyPressed(Input.Keys.UP);
+		downHeld = downHeld || Gdx.input.isKeyPressed(Input.Keys.DOWN);
+
+		boxPressed = clearPressed  || Gdx.input.isKeyPressed(Input.Keys.B);
+		hostPressed = clearPressed  || Gdx.input.isKeyPressed(Input.Keys.G);
+		spiritPressed = clearPressed  || Gdx.input.isKeyPressed(Input.Keys.Z);
+		clearPressed = clearPressed || Gdx.input.isKeyPressed(Input.Keys.C);
+		deletePressed = deletePressed || Gdx.input.isKeyPressed(Input.Keys.BACKSPACE);
+		savePressed = savePressed || Gdx.input.isKeyPressed(Input.Keys.ENTER);
+		menuPressed = menuPressed || Gdx.input.isKeyPressed(Input.Keys.M);
+		instructionPressed = instructionPressed || Gdx.input.isKeyPressed(Input.Keys.I);
 
 
 		// Directional controls
-		horizontal = (secondary ? horizontal : 0.0f);
+		horizontal = 0.0f;
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
 			horizontal += 1.0f;
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
 			horizontal -= 1.0f;
 		}
-		
-		vertical = (secondary ? vertical : 0.0f);
+
+		vertical = 0.0f;
 		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
 			vertical += 1.0f;
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.S)) {
 			vertical -= 1.0f;
 		}
-		
+
 		// Mouse results
-        tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+		tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		leftJustClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
-		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
-		crosshair.scl(1/scale.x,-1/scale.y);
-		crosshair.y += bounds.height;
-		clampPosition(bounds);
+		if (leftJustClicked)
+		{ System.out.println("PRESSED LEFT BUTTON ");}
+		mousePosition.set(Gdx.input.getX(), Gdx.input.getY());
+
 	}
-	
-	/**
-	 * Clamp the cursor position so that it does not go outside the window
-	 *
-	 * While this is not usually a problem with mouse control, this is critical 
-	 * for the gamepad controls.
-	 */
-	private void clampPosition(Rectangle bounds) {
-		crosshair.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, crosshair.x));
-		crosshair.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, crosshair.y));
-	}
+
 
 
 }

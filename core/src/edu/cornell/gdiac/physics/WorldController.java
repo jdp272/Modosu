@@ -209,9 +209,6 @@ public abstract class WorldController implements Screen {
 
 	public ArrowModel arrow;
 
-	/** Whether sound mode is on */
-	private boolean sound;
-
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
 
@@ -220,9 +217,6 @@ public abstract class WorldController implements Screen {
 	/** Offset of the lower left corner. Allows for the ground to be offset */
 	protected Vector2 lowerLeft;
 
-	public void setSound(boolean s) { sound = s; }
-
-	public boolean getSound() { return sound; }
 	/**
 	 *
 	 * Preloads the assets for this controller.
@@ -740,7 +734,7 @@ public abstract class WorldController implements Screen {
 	 */
 	public boolean preUpdate(float dt) {
 		InputController input = InputController.getInstance();
-		input.readInput(bounds, scale);
+		input.readInput();
 		if (listener == null) {
 			return true;
 		}
@@ -757,18 +751,18 @@ public abstract class WorldController implements Screen {
 		
 		// Now it is time to maybe switch screens.
 		if (input.didExit()) {
-			listener.exitScreen(this, EXIT_QUIT, sound);
+			listener.exitScreen(this, EXIT_QUIT);
 			return false;
 		} else if (input.didAdvance()) {
-			listener.exitScreen(this, EXIT_NEXT, sound);
+			listener.exitScreen(this, EXIT_NEXT);
 			return false;
 		} else if (input.didRetreat()) {
-			listener.exitScreen(this, EXIT_PREV, sound);
+			listener.exitScreen(this, EXIT_PREV);
 			return false;
 		}
 		else if (input.didMenu()) {
 			setMenu(true);
-			listener.exitScreen(this, EXIT_MENU, sound);
+			listener.exitScreen(this, EXIT_MENU);
 		}
 		else if (countdown > 0) {
 			countdown--;
@@ -778,11 +772,11 @@ public abstract class WorldController implements Screen {
 			// GameOver.screenShotPixmap = ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			if (failed) {
 				GameOver.setFail(true);
-				listener.exitScreen(this, EXIT_GAME, sound);
+				listener.exitScreen(this, EXIT_GAME);
 			} else if (complete) {
 				// TODO: go to the next level
 				GameOver.setFail(false);
-				listener.exitScreen(this, EXIT_GAME, sound);
+				listener.exitScreen(this, EXIT_GAME);
 				return false;
 			}
 		}

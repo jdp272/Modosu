@@ -23,7 +23,6 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.files.FileHandle;
@@ -31,6 +30,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.*;
 
+import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.util.*;
 
 /**
@@ -46,7 +46,7 @@ import edu.cornell.gdiac.util.*;
  * the application.  That is why we try to have as few resources as possible for this
  * loading screen.
  */
-public class LoadingMode implements Screen, InputProcessor {
+public class LoadingMode implements Screen {
 	// Textures necessary to support the loading screen
 	private static final String WAKING_GOLEM_FILE = "shared/wakinggolem.png";
 	private static final String LOADING_TEXT_FILE = "shared/loadingspritesheet.png";
@@ -65,9 +65,6 @@ public class LoadingMode implements Screen, InputProcessor {
 
 	private static final String CLICK_SOUND = "shared/click.mp3";
 	private static final String HOVER_SOUND = "shared/hover.mp3";
-
-	/** Whether sound mode is on */
-	private boolean sound;
 
 	/** Background texture for start-up */
 	private Texture background;
@@ -171,6 +168,8 @@ public class LoadingMode implements Screen, InputProcessor {
 	/** Listener that will update the player mode when we are done */
 	private ScreenListener listener;
 
+	private InputController input;
+
 	/** The y-coordinate of the center of the screen */
 	private int centerY;
 	/** The x-coordinate of the center of the screen */
@@ -193,11 +192,6 @@ public class LoadingMode implements Screen, InputProcessor {
 	private pressState buttonPressed;
 
 	private boolean isReady;
-
-	/** Music to be played on main menu screen */
-	private Music mainMenuMusic;
-
-	private FileHandle menuMusicFile;
 
 	private static enum pressState {
 		START,
@@ -243,7 +237,7 @@ public class LoadingMode implements Screen, InputProcessor {
 	 * @param manager The AssetManager to load in the background
 	 */
 	public LoadingMode(GameCanvas canvas, AssetManager manager) {
-		this(canvas, manager,DEFAULT_BUDGET, true);
+		this(canvas, manager,DEFAULT_BUDGET);
 	}
 
 	/**
@@ -257,7 +251,7 @@ public class LoadingMode implements Screen, InputProcessor {
 	 * @param manager The AssetManager to load in the background
 	 * @param millis The loading budget in milliseconds
 	 */
-	public LoadingMode(GameCanvas canvas, AssetManager manager, int millis, boolean sound) {
+	public LoadingMode(GameCanvas canvas, AssetManager manager, int millis) {
 		this.manager = manager;
 		this.canvas  = canvas;
 		budget = millis;
@@ -265,7 +259,7 @@ public class LoadingMode implements Screen, InputProcessor {
 		// Compute the dimensions from the canvas
 		resize(canvas.getWidth(),canvas.getHeight());
 
-		this.sound = sound;
+		input = InputController.getInstance();
 
 		colorHovered = new Color(Color.DARK_GRAY);
 		colorUnhovered = new Color(Color.WHITE);
@@ -306,7 +300,6 @@ public class LoadingMode implements Screen, InputProcessor {
 		updateFrame = true;
 
 		buttonPressed = pressState.NONE;
-		Gdx.input.setInputProcessor(this);
 
 		active = true;
 
@@ -327,39 +320,10 @@ public class LoadingMode implements Screen, InputProcessor {
 	public void preLoadContent() {
 		manager.load(CLICK_SOUND, Sound.class);
 		manager.load(HOVER_SOUND, Sound.class);
-		menuMusicFile = Gdx.files.internal("shared/menumusic.wav");
+		MusicController.getInstance().add("menuMusic", "shared/menumusic.wav");
+		MusicController.getInstance().add("gameMusic", "shared/gameplaymusic.wav");
 	}
 
-	public void playMenuMusic() {
-		if (sound) {
-			mainMenuMusic = Gdx.audio.newMusic(menuMusicFile);
-			mainMenuMusic.setLooping(true);
-			mainMenuMusic.play();
-		}
-		else {
-			System.out.println("would have played but no sound");
-		}
-	}
-
-	public void stopMenuMusic() {
-		System.out.println("disposed of main menu");
-		if (mainMenuMusic != null) {
-			mainMenuMusic.stop();
-		 	mainMenuMusic.dispose();
-		}
-		else{
-			System.out.println("tried to dispose but it was null");
-		}
-	}
-
-	public boolean isPlaying() {
-		if (mainMenuMusic == null) {
-			return false;
-		}
-		else {
-			return mainMenuMusic.isPlaying();
-		}
-	}
 
 	/**
 	 * Loads the assets for this controller.
@@ -374,6 +338,7 @@ public class LoadingMode implements Screen, InputProcessor {
 		SoundController sounds = SoundController.getInstance();
 		sounds.allocate(manager, CLICK_SOUND);
 		sounds.allocate(manager, HOVER_SOUND);
+		MusicController.getInstance().play("menuMusic");
 	}
 	
 	/**
@@ -399,6 +364,7 @@ public class LoadingMode implements Screen, InputProcessor {
 			 playButton = null;
 		 }
 	}
+
 
 	/**
 	 * Update the status of this player mode.
@@ -432,6 +398,22 @@ public class LoadingMode implements Screen, InputProcessor {
 
 				loadContent();
 			}
+		}
+		else {
+			input.readInput();
+			Vector2 pos = input.getMousePosition();
+
+			// Flip to match graphics coordinates
+			float screenY = heightY - pos.y;
+			float screenX = pos.x;
+			if (input.didLeftClick()) {
+				updatePressed(screenX, screenY);
+			}
+			else if (input.didRelease()) {
+
+				updateReleased(screenX, screenY);
+			}
+			updateHover(screenX, screenY);
 		}
 		// Update sounds
 		SoundController.getInstance().update();
@@ -469,7 +451,7 @@ public class LoadingMode implements Screen, InputProcessor {
 
 			canvas.draw(quit, buttonPressed == pressState.QUIT && isPressed ? Color.SKY : colorQuit, 0, 0,
 					QUIT_X, QUIT_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-			if (sound) {
+			if (SoundController.getInstance().isUnmuted()) {
 				canvas.draw(unmute, buttonPressed == pressState.MUTE && isPressed ? Color.SKY : colorMute, 0,0, MUTE_X, MUTE_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 			}
 			else {
@@ -559,35 +541,32 @@ public class LoadingMode implements Screen, InputProcessor {
 			// We are are ready, notify our listener
 			if (isReady && buttonPressed == pressState.START && listener != null) {
 				buttonPressed = pressState.NONE;
-				stopMenuMusic();
-				listener.exitScreen(this, WorldController.EXIT_PLAY, sound);
+				listener.exitScreen(this, WorldController.EXIT_PLAY);
 			}
 
 			// Go to level design mode
 			if (isReady && buttonPressed == pressState.DESIGN && listener != null) {
 				buttonPressed = pressState.NONE;
-				listener.exitScreen(this,WorldController.EXIT_DESIGN, sound);
+				listener.exitScreen(this,WorldController.EXIT_DESIGN);
 			}
 
 			// Go to level select mode
 			if(isReady && buttonPressed == pressState.SELECT && listener != null) {
 				buttonPressed = pressState.NONE;
-				listener.exitScreen(this,WorldController.EXIT_SELECT, sound);
+				listener.exitScreen(this,WorldController.EXIT_SELECT);
 			}
 
 			// Go to credits mode
 			if (isReady && buttonPressed == pressState.CREDITS && listener != null) {
 				buttonPressed = pressState.NONE;
-				listener.exitScreen(this, WorldController.EXIT_CREDITS, sound);
+				listener.exitScreen(this, WorldController.EXIT_CREDITS);
 			}
 
 			// Close game
 			if(isReady && buttonPressed == pressState.QUIT && listener != null) {
 				buttonPressed = pressState.NONE;
-				stopMenuMusic();
-				listener.exitScreen(this,WorldController.EXIT_QUIT, sound);
+				listener.exitScreen(this,WorldController.EXIT_QUIT);
 			}
-
 		}
 	}
 
@@ -665,19 +644,13 @@ public class LoadingMode implements Screen, InputProcessor {
 	 *
 	 * @param screenX the x-coordinate of the mouse on the screen
 	 * @param screenY the y-coordinate of the mouse on the screen
-	 * @param pointer the button or touch finger number
-	 * @return whether to hand the event to other listeners. 
 	 */
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if (playButton == null) { return false; }
-		
-		// Flip to match graphics coordinates
-		screenY = heightY-screenY;
+	public void updatePressed(float screenX, float screenY) {
 
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.START;
-				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 				isPressed = true;
 			}
 		}
@@ -685,7 +658,7 @@ public class LoadingMode implements Screen, InputProcessor {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlSelect.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.SELECT;
-				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 				isPressed = true;
 			}
 		}
@@ -693,7 +666,7 @@ public class LoadingMode implements Screen, InputProcessor {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.DESIGN;
-				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 				isPressed = true;
 			}
 		}
@@ -701,7 +674,7 @@ public class LoadingMode implements Screen, InputProcessor {
 		if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
 			if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth() * scale * BUTTON_SCALE)) {
 				buttonPressed = pressState.CREDITS;
-				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 				isPressed = true;
 			}
 		}
@@ -709,19 +682,18 @@ public class LoadingMode implements Screen, InputProcessor {
 		if(screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.QUIT;
-				if (sound) { SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false); }
+				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
 				isPressed = true;
 			}
 		}
 
 		if (screenX >= MUTE_X && screenX <= MUTE_X + (mute.getWidth()*scale*BUTTON_SCALE) ) {
-				if (screenY >= MUTE_Y && screenY <= MUTE_Y + (mute.getHeight()*scale*BUTTON_SCALE) ) {
-					isPressed = true;
-					buttonPressed = pressState.MUTE;
-				}
+			if (screenY >= MUTE_Y && screenY <= MUTE_Y + (mute.getHeight()*scale*BUTTON_SCALE) ) {
+				isPressed = true;
+				buttonPressed = pressState.MUTE;
+			}
 		}
 
-		return false;
 	}
 	
 	/** 
@@ -732,13 +704,8 @@ public class LoadingMode implements Screen, InputProcessor {
 	 *
 	 * @param screenX the x-coordinate of the mouse on the screen
 	 * @param screenY the y-coordinate of the mouse on the screen
-	 * @param pointer the button or touch finger number
-	 * @return whether to hand the event to other listeners. 
 	 */	
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// Flip to match graphics coordinates
-		screenY = heightY-screenY;
-
+	public void updateReleased(float screenX, float screenY) {
 		if (isPressed) {
 			if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
 				if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {
@@ -797,16 +764,9 @@ public class LoadingMode implements Screen, InputProcessor {
 						isReady = false;
 						buttonPressed = pressState.NONE;
 					}
-					sound = !sound;
-					if (mainMenuMusic != null) {
-						if (!sound) {
-							System.out.println("SET VOLUME TO 0");
-							mainMenuMusic.setVolume(0);
-						}
-						else {
-							mainMenuMusic.setVolume(100);
-						}
-					}
+
+					MusicController.getInstance().setUnmuted(!MusicController.getInstance().isUnmuted());
+					SoundController.getInstance().setUnmuted(!SoundController.getInstance().isUnmuted());
 				}
 			}
 		}
@@ -820,7 +780,6 @@ public class LoadingMode implements Screen, InputProcessor {
 		hoverButton = false;
 
 		isPressed = false;
-		return true;
 	}
 
 	
@@ -831,20 +790,15 @@ public class LoadingMode implements Screen, InputProcessor {
 	 *
 	 * @param screenX the x-coordinate of the mouse on the screen
 	 * @param screenY the y-coordinate of the mouse on the screen
-	 * @return whether to hand the event to other listeners. 
+	 *
 	 */	
-	public boolean mouseMoved(int screenX, int screenY) {
-
-		//System.out.println("music is currently :" + mainMenuMusic.isPlaying());
-		screenY = canvas.getHeight()-screenY;
-
-
+	public void updateHover(float screenX, float screenY) {
 		if (active && playButton != null){
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE)) {
 					colorStart = colorHovered;
 					if (!hoverButton) {
-						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -858,7 +812,7 @@ public class LoadingMode implements Screen, InputProcessor {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X+(lvlSelect.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlSelect = colorHovered;
 					if (!hoverButton) {
-						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -872,7 +826,7 @@ public class LoadingMode implements Screen, InputProcessor {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlDesign = colorHovered;
 					if (!hoverButton) {
-						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -886,7 +840,7 @@ public class LoadingMode implements Screen, InputProcessor {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth()*scale*BUTTON_SCALE)) {
 					colorCredits = colorHovered;
 					if (!hoverButton) {
-						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -899,14 +853,14 @@ public class LoadingMode implements Screen, InputProcessor {
 				if (screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE)) {
 					colorQuit = colorHovered;
 					if (!hoverButton) {
-						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
 				else if (screenX >= MUTE_X && screenX <= MUTE_X + (mute.getWidth()*scale*BUTTON_SCALE)) {
 					colorMute = colorHovered;
 					if (!hoverButton) {
-						if (sound) { SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume); }
+						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -926,60 +880,7 @@ public class LoadingMode implements Screen, InputProcessor {
 				colorQuit = colorUnhovered;
 				colorMute = colorUnhovered;
 				hoverButton = false;
-
 			}
 		}
-
-		return true;
 	}
-	// UNSUPPORTED METHODS FROM InputProcessor
-
-	/**
-	 * Called when a key is pressed (UNSUPPORTED)
-	 *
-	 * @param keycode the key pressed
-	 * @return whether to hand the event to other listeners.
-	 */
-	public boolean keyDown(int keycode) {
-		return true;
-	}
-
-	/**
-	 * Called when a key is typed (UNSUPPORTED)
-	 *
-	 * @param character the key typed
-	 * @return whether to hand the event to other listeners.
-	 */
-	public boolean keyTyped(char character) {
-		return true;
-	}
-
-	/**
-	 * Called when a key is released.
-	 *
-	 * We allow key commands to start the game this time.
-	 *
-	 * @param keycode the key released
-	 * @return whether to hand the event to other listeners.
-	 */
-	public boolean keyUp(int keycode) { return true; }
-
-	/** 
-	 * Called when the mouse wheel was scrolled. (UNSUPPORTED)
-	 *
-	 * @param amount the amount of scroll from the wheel
-	 * @return whether to hand the event to other listeners. 
-	 */	
-	public boolean scrolled(int amount) { return true; }
-
-	/** 
-	 * Called when the mouse or finger was dragged. (UNSUPPORTED)
-	 *
-	 * @param screenX the x-coordinate of the mouse on the screen
-	 * @param screenY the y-coordinate of the mouse on the screen
-	 * @param pointer the button or touch finger number
-	 * @return whether to hand the event to other listeners. 
-	 */		
-	public boolean touchDragged(int screenX, int screenY, int pointer) { return true; }
-
 }
