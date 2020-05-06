@@ -203,7 +203,7 @@ public abstract class WorldController implements Screen {
 
 	public ArrowModel arrow;
 
-	public Pause pause;
+	public Pause pauseScreen;
 
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
@@ -484,8 +484,9 @@ public abstract class WorldController implements Screen {
 	/** list of level files*/
 	protected File[] levels;
 
+
 	/** Input if paused was pressed */
-	private boolean pressedPaused = false;
+	private boolean pressedPause = false;
 	/** Whether game is currently paused */
 	private boolean isPaused = false;
 
@@ -676,7 +677,7 @@ public abstract class WorldController implements Screen {
 		spiritDrawLayer = new PooledList<>();
 		miscDrawLayer = new PooledList<>();
 
-		pause = new Pause();
+		pauseScreen = new Pause();
 	}
 	
 	/**
@@ -696,8 +697,8 @@ public abstract class WorldController implements Screen {
 		world  = null;
 		canvas = null;
 
-		pause.dispose();
-		pause = null;
+		pauseScreen.dispose();
+		pauseScreen = null;
 	}
 
 	/**
@@ -781,7 +782,7 @@ public abstract class WorldController implements Screen {
 		}
 
 		if (input.didPause()) {
-			pressedPaused = true;
+			pressedPause = true;
 			return false;
 		}
 
@@ -1047,10 +1048,10 @@ public abstract class WorldController implements Screen {
 		if (active) {
 			updateGP = preUpdate(delta);
 
-			if (pressedPaused) {
+			if (pressedPause) {
 				isPaused = true;
-				pause.pauseGame();
-				pressedPaused = false;
+				pauseScreen.pauseGame();
+				pressedPause = false;
 			}
 
 			if (updateGP && !isPaused) {
@@ -1063,8 +1064,8 @@ public abstract class WorldController implements Screen {
 			/** IF GAME IS CURRENTLY PAUSED */
 			if (isPaused) {
 				pause();
-				pause.getStage().act(delta);
-				pause.getStage().draw();
+				pauseScreen.getStage().act(delta);
+				pauseScreen.getStage().draw();
 			}
 		}
 	}
@@ -1077,19 +1078,20 @@ public abstract class WorldController implements Screen {
 	 */
 	public void pause() {
 		// TODO Auto-generated method stub
-		if (pause.getMenuClicked()) {
+
+		if (pauseScreen.getMenuClicked()) {
 			isPaused = false;
 			setMenu(true);
 			listener.exitScreen(this, EXIT_MENU);
-			pause.reset();
+			pauseScreen.reset();
 		}
-		if (pause.getRetryClicked()) {
+		if (pauseScreen.getRetryClicked()) {
 			isPaused = false;
-			pause.reset();
+			pauseScreen.reset();
 			reset();
 		}
-		if (pause.getPlayClicked()) {
-			pause.resumeGame();
+		if (pauseScreen.getPlayClicked()) {
+			pauseScreen.resumeGame();
 			isPaused = false;
 		}
 	}
