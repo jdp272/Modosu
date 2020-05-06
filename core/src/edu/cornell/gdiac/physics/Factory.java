@@ -347,7 +347,7 @@ public class Factory {
                 Constants.TILE_WIDTH,
               Constants.TILE_HEIGHT
         );
-        water.setWaterStrip(new FilmStrip(waterTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
+        water.setTerrainStrip(new FilmStrip(waterTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
         water.setCornerStrip(new FilmStrip(cornerTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
         water.setDrawScale(scale);
         water.setSX(0.26f);
@@ -370,7 +370,7 @@ public class Factory {
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT
         );
-        sand.setSandtrip(new FilmStrip(sandTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
+        sand.setTerrainStrip(new FilmStrip(sandTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
         sand.setCornerStrip(new FilmStrip(cornerSandTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
         sand.setDrawScale(scale);
         sand.setSX(0.26f);
