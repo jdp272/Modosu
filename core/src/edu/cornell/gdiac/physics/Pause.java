@@ -254,6 +254,5 @@ public class Pause {
         skin.dispose();
         textureAtlas.dispose();
     }
-
 }
 

@@ -484,6 +484,7 @@ public abstract class WorldController implements Screen {
 	/** list of level files*/
 	protected File[] levels;
 
+
 	/** Input if paused was pressed */
 	private boolean pressedPause = false;
 	/** Whether game is currently paused */
