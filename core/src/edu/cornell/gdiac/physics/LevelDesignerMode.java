@@ -537,15 +537,14 @@ public class LevelDesignerMode extends WorldController {
 
 		dimensions = level.dimensions;
 		lowerLeft.setZero();
-
-		System.out.println("dimensions: " + dimensions + ", lowerLeft: " + lowerLeft);
 		board.reset((int)(dimensions.x / Constants.TILE_WIDTH), (int)(dimensions.y / Constants.TILE_HEIGHT));
 
 		dimensions.x = board.getWidth();
 		dimensions.y = board.getHeight();
 		lowerLeft.x = board.getLeftOffset();
 		lowerLeft.y = board.getBottomOffset();
-		System.out.println("dimensions: " + dimensions + ", lowerLeft: " + lowerLeft);
+
+//		System.out.println("dimensions: " + dimensions + ", lowerLeft: " + lowerLeft);
 
 		for(Obstacle obj : level.walls) {
 			if(board.addNewObstacle(obj)) {
@@ -901,8 +900,6 @@ public class LevelDesignerMode extends WorldController {
 	 * orientations. Also updates each terrain tile (water, sand, and wall)
 	 */
 	private void setBordersAndUpdateTerrain() {
-//		board.setBordersAndUpdateTerrain(factory);
-
 		// Update terrain tiles based on the new borders and add walls
 		for(int i = board.getLeftBorder(); i < board.getRightBorder(); i++) {
 			for(int j = board.getBottomBorder(); j < board.getTopBorder(); j++) {
@@ -935,96 +932,56 @@ public class LevelDesignerMode extends WorldController {
 					board.addNewObstacle(border);
 					addObject(border);
 				} else if(j == board.getBottomBorder()) {
-//					if(board[i][j] instanceof BorderEdge) {
-//						((BorderEdge)board[i][j]).setSide(BorderEdge.Side.BOTTOM);
-//					} else {
-						board.set(null, i, j);
-						BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.BOTTOM);
+					board.set(null, i, j);
+					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.BOTTOM);
 
-						// Indicate that the edge is next to the left or right side
-						if(i - board.getLeftBorder() == 1) {
-							border.setNextToSide(1, BorderEdge.Side.LEFT);
-						} else if((board.getRightBorder() - 1) - i == 1) {
-							border.setNextToSide(1, BorderEdge.Side.RIGHT);
-						}
-						board.addNewObstacle(border);
-						addObject(border);
-//					}
+					// Indicate that the edge is next to the left or right side
+					if(i - board.getLeftBorder() == 1) {
+						border.setNextToSide(1, BorderEdge.Side.LEFT);
+					} else if((board.getRightBorder() - 1) - i == 1) {
+						border.setNextToSide(1, BorderEdge.Side.RIGHT);
+					}
+					board.addNewObstacle(border);
+					addObject(border);
 				} else if(i == board.getLeftBorder()) {
-//					if(board[i][j] instanceof BorderEdge) {
-//						((BorderEdge)board[i][j]).setSide(BorderEdge.Side.LEFT);
-//					} else {
-						board.set(null, i, j);
-						BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.LEFT);
-						if(j - board.getBottomBorder() == 1) {
-							border.setNextToSide(1, BorderEdge.Side.BOTTOM);
-						} else if((board.getTopBorder() - 1) - j == 1) {
-							border.setNextToSide(1, BorderEdge.Side.TOP);
-						}
-						board.addNewObstacle(border);
-						addObject(border);
-//					}
+					board.set(null, i, j);
+					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.LEFT);
+					if(j - board.getBottomBorder() == 1) {
+						border.setNextToSide(1, BorderEdge.Side.BOTTOM);
+					} else if((board.getTopBorder() - 1) - j == 1) {
+						border.setNextToSide(1, BorderEdge.Side.TOP);
+					}
+					board.addNewObstacle(border);
+					addObject(border);
 				} else if(i == board.getRightBorder() - 1) {
-//					if(board[i][j] instanceof BorderEdge) {
-//						((BorderEdge)board[i][j]).setSide(BorderEdge.Side.RIGHT);
-//					} else {
-						board.set(null, i, j);
-						BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.RIGHT);
-						if(i - board.getBottomBorder() == 1) {
-							border.setNextToSide(1, BorderEdge.Side.BOTTOM);
-						} else if((board.getTopBorder() - 1) - i == 1) {
-							border.setNextToSide(1, BorderEdge.Side.TOP);
-						}
-						board.addNewObstacle(border);
-						addObject(border);
-//					}
+					board.set(null, i, j);
+					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.RIGHT);
+					if(i - board.getBottomBorder() == 1) {
+						border.setNextToSide(1, BorderEdge.Side.BOTTOM);
+					} else if((board.getTopBorder() - 1) - i == 1) {
+						border.setNextToSide(1, BorderEdge.Side.TOP);
+					}
+					board.addNewObstacle(border);
+					addObject(border);
 				} else if(j == board.getTopBorder() - 1) {
-//					if(board[i][j] instanceof BorderEdge) {
-//						((BorderEdge)board[i][j]).setSide(BorderEdge.Side.TOP);
-//					} else {
-						board.set(null, i, j);
-						BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.TOP);
-						if(i - board.getLeftBorder() <= 2) {
-							border.setNextToSide(i - board.getLeftBorder(), BorderEdge.Side.LEFT);
-						} else if((board.getRightBorder() - 1) - i <= 2) {
-							border.setNextToSide((board.getRightBorder() - 1) - i, BorderEdge.Side.RIGHT);
-						}
-						board.addNewObstacle(border);
-						addObject(border);
-//					}
+					board.set(null, i, j);
+					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.TOP);
+					if(i - board.getLeftBorder() <= 2) {
+						border.setNextToSide(i - board.getLeftBorder(), BorderEdge.Side.LEFT);
+					} else if((board.getRightBorder() - 1) - i <= 2) {
+						border.setNextToSide((board.getRightBorder() - 1) - i, BorderEdge.Side.RIGHT);
+					}
+					board.addNewObstacle(border);
+					addObject(border);
 				} else {
 					if(board.get(i, j) instanceof BorderEdge || board.get(i, j) instanceof BorderCorner) {
 						board.set(null, i, j);
 					}
 					updateTerrainAroundRegion(i, j);
 					updateWallAroundRegion(i, j);
-//					if(board[i][j] instanceof BorderEdge) {
-//						edges.add((BorderEdge)board[i][j]);
-//						board[i][j] = null;
-//					} else if(board[i][j] instanceof BorderCorner) {
-//						corners.add((BorderCorner)board[i][j]);
-//						board[i][j] = null;
-//					}
-//					updateTerrainAroundRegion(i, j);
-//					updateWallAroundRegion(i, j);
-//					if(board[i][j] instanceof BorderEdge) {
-//						edges.add((BorderEdge)board[i][j]);
-//						board[i][j] = null;
-//					} else if(board[i][j] instanceof BorderCorner) {
-//						corners.add((BorderCorner)board[i][j]);
-//						board[i][j] = null;
-//					}
 				}
 			}
 		}
-
-//		// Remove all the border pieces that are still unused from the game
-//		for(BorderEdge border : edges) {
-//			border.markRemoved(true);
-//		}
-//		for(BorderCorner border : corners) {
-//			border.markRemoved(true);
-//		}
 	}
 
 	/**
