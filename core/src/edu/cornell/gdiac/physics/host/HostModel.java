@@ -786,7 +786,7 @@ public class HostModel extends BoxObstacle {
     }
 
     /**
-     * Draws the host object.
+     * Draws the host object, but not the charge UI bar.
      *
      * @param canvas Drawing context
      */
@@ -807,20 +807,6 @@ public class HostModel extends BoxObstacle {
                 if (this.hasBeenPossessed) {
                     /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
                     if (this.currentCharge < this.maxCharge) {
-
-                        // Color changes more and more to a red or goal color here
-                        // Light Blue Color
-                        Color warningColor = new Color(200f/256f, 241f/256f, 238f/256f, 1);
-
-                        //System.out.println(this.inPillar);
-                        if(this.inPillar) {
-                           warningColor = new Color(255f/256f, 191f/256f, 124f/256f,1);
-                        }
-                        if ((chargeProgression >= 0.83f && chargeProgression <= 0.86f || chargeProgression >= 0.90f && chargeProgression <= 0.93f || chargeProgression >= 0.97f && chargeProgression <= 1f)) {
-                            // Color of the 3 flashes
-                            warningColor = new Color (chargeProgression * 255f  / 256f , chargeProgression * 155f / 256f, chargeProgression * 222f/256f, 1);
-                        }
-                        canvas.draw(hostChargeUI, warningColor, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.9f, 0.9f);
                         canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2, hostStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
                     } else {
                         canvas.draw(hostStrip, Color.RED, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
@@ -829,6 +815,44 @@ public class HostModel extends BoxObstacle {
                 // When the bot hasn't been possessed the indicator color should be black
                 else {
                     canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2, hostStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                }
+            }
+        }
+    }
+
+    /**
+     * Draws the host charge UI bar.
+     *
+     * @param canvas Drawing context
+     */
+    public void drawCharge(GameCanvas canvas) {
+        if (!this.isPedestal) {
+            // Draw the host
+            float chargeProgression = currentCharge / maxCharge;
+            if (this.hostStrip != null && this.hostChargeUI != null) {
+
+                // If bot has already been possessed colors should change
+                if (this.hasBeenPossessed) {
+                    /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
+                    if (this.currentCharge < this.maxCharge) {
+
+                        // Color changes more and more to a red or goal color here
+                        // Light Blue Color
+                        Color warningColor = new Color(200f/256f, 241f/256f, 238f/256f, 1);
+
+                        //System.out.println(this.inPillar);
+                        if(this.inPillar) {
+                            warningColor = new Color(255f/256f, 191f/256f, 124f/256f,1);
+                        }
+                        if ((chargeProgression >= 0.83f && chargeProgression <= 0.86f || chargeProgression >= 0.90f && chargeProgression <= 0.93f || chargeProgression >= 0.97f && chargeProgression <= 1f)) {
+                            // Color of the 3 flashes
+                            warningColor = new Color (chargeProgression * 255f  / 256f , chargeProgression * 155f / 256f, chargeProgression * 222f/256f, 1);
+                        }
+                        canvas.draw(hostChargeUI, warningColor, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.9f, 0.9f);
+                    }
+                }
+                // When the bot hasn't been possessed the indicator color should be black
+                else {
                     canvas.draw(hostChargeUI, Color.BLACK, hostChargeUI.getRegionWidth() / 2,hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 0.9f, 0.9f);
                 }
             }
