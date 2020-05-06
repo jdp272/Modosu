@@ -203,6 +203,9 @@ public abstract class WorldController implements Screen {
 
 	public ArrowModel arrow;
 
+
+	public Pause pause;
+
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
 
@@ -480,6 +483,9 @@ public abstract class WorldController implements Screen {
 	/** list of level files*/
 	protected File[] levels;
 
+
+	boolean GAME_PAUSED = false;
+
 	/**
 	 * Returns true if debug mode is active.
 	 *
@@ -666,6 +672,8 @@ public abstract class WorldController implements Screen {
 		hostDrawLayer = new PooledList<>();
 		spiritDrawLayer = new PooledList<>();
 		miscDrawLayer = new PooledList<>();
+
+		pause = new Pause();
 	}
 	
 	/**
@@ -684,6 +692,9 @@ public abstract class WorldController implements Screen {
 		scale  = null;
 		world  = null;
 		canvas = null;
+
+		pause.dispose();
+		pause = null;
 	}
 
 	/**
@@ -764,6 +775,11 @@ public abstract class WorldController implements Screen {
 		// Handle resets
 		if (input.didReset()) {
 			reset();
+		}
+
+		if (input.didPause()) {
+			GAME_PAUSED = true;
+			return false;
 		}
 		
 		// Now it is time to maybe switch screens.
@@ -1021,11 +1037,17 @@ public abstract class WorldController implements Screen {
 	 */
 	public void render(float delta) {
 		if (active) {
-			if (preUpdate(delta)) {
+			if (preUpdate(delta) || !GAME_PAUSED) {
 				update(delta); // This is the one that must be defined.
 				postUpdate(delta);
+			} else {
+				pause.pauseGame();
+				//pause.getStage().draw();
 			}
+
 			draw(delta);
+			pause.getStage().act(delta);
+			pause.getStage().draw();
 		}
 	}
 
@@ -1037,6 +1059,7 @@ public abstract class WorldController implements Screen {
 	 */
 	public void pause() {
 		// TODO Auto-generated method stub
+
 	}
 
 	/**
