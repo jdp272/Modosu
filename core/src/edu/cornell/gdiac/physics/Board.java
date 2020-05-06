@@ -272,7 +272,28 @@ public class Board {
      * @return True if the obstacle was added
      */
     public boolean set(Obstacle obj, int x, int y) {
+        return set(obj,x, y, true);
+    }
+
+    /**
+     * Sets the given location in the board to the given object. If the
+     * location is out of bounds, nothing happens. If another object is there,
+     * it is automatically removed from the world. Borders may optionally be
+     * not-overridable if the overrideBorder boolean is set to true
+     *
+     * @param obj The obstacle to add
+     * @param x The x index of the board to set
+     * @param y The y index of the board to set
+     * @param overrideBorder If borders should be overridden. Defaults to false
+     *
+     * @return True if the obstacle was added
+     */
+    public boolean set(Obstacle obj, int x, int y, boolean overrideBorder) {
         if(x < leftBorder || x >= rightBorder || y < bottomBorder || y >= topBorder) {
+            return false;
+        } else if(!overrideBorder && (x == leftBorder || x == rightBorder - 1|| y == bottomBorder || y == topBorder - 1)) {
+            // Manual case to check borders. Don't override borders unless
+            // overrideBorder is true
             return false;
         } else {
             if(board[x][y] != null) {

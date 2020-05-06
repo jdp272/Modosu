@@ -1092,7 +1092,7 @@ public class LevelDesignerMode extends WorldController {
 
 				// TODO: remove destroyed bodies from the pooled list, if we do that
 
-				if(board.set(deselected, x, y)) {
+				if(board.set(deselected, x, y, false)) {
 					// If the new object was deselected, move to the tile center
 					deselected.setPosition(xTileToCoord(x), yTileToCoord(y));
 
