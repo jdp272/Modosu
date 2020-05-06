@@ -230,8 +230,24 @@ public class Wall extends BoxObstacle {
 
     @Override
     public void draw(GameCanvas canvas) {
+        // Note that this function only draws the front of the wall
+        drawWall(canvas, true);
+    }
+
+    /**
+     * Draws the wall, depending on if the wall is a top wall or a front wall
+     *
+     * @param canvas The drawing context
+     * @param front If front, it draws the front elements of the wall. Otherwise
+     *              the top parts of the wall are drawn
+     */
+    public void drawWall(GameCanvas canvas, boolean front) {
         if(texture == null) {
             System.out.println("draw() called on wall with null texture");
+            return;
+        }
+
+        if(isFrontWall() != front) {
             return;
         }
 
@@ -287,6 +303,9 @@ public class Wall extends BoxObstacle {
             System.out.println("draw() called on wall with null texture");
             return;
         }
+
+        // Draw the top of the wall
+        drawWall(canvas, false);
 
         // Draw the back edge
         if(backEdgeFrame != NO_SIDE) {

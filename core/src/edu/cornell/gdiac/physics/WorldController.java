@@ -215,6 +215,19 @@ public abstract class WorldController implements Screen {
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
 
+	// These are all lists which are filled each draw frame, in order to draw
+	// all game objects in the correct order
+	/** Objects drawn above everything else (HUD elements, selected objects) */
+	private PooledList<Obstacle> topDrawLayer;
+	/** Wall objects to be drawn */
+	private PooledList<Wall> wallDrawLayer;
+	/** Host objects to be drawn */
+	private PooledList<HostModel> hostDrawLayer;
+	/** Spirit objects to be drawn */
+	private PooledList<SpiritModel> spiritDrawLayer;
+	/** Misc objects to be drawn underneath */
+	private PooledList<Obstacle> miscDrawLayer;
+
 	/** The dimensions of the board */
 	protected Vector2 dimensions;
 	/** Offset of the lower left corner. Allows for the ground to be offset */
@@ -660,6 +673,11 @@ public abstract class WorldController implements Screen {
 		dimensions = new Vector2();
 		lowerLeft = new Vector2();
 		footprints = new ArrayList<>();
+		topDrawLayer = new PooledList<>();
+		wallDrawLayer = new PooledList<>();
+		hostDrawLayer = new PooledList<>();
+		spiritDrawLayer = new PooledList<>();
+		miscDrawLayer = new PooledList<>();
 	}
 	
 	/**
@@ -859,6 +877,14 @@ public abstract class WorldController implements Screen {
 	public void draw(float delta) {
 		canvas.clear();
 
+		// Clear the lists so they can be repopulated
+		miscDrawLayer.clear();
+		wallDrawLayer.clear();
+		hostDrawLayer.clear();
+		spiritDrawLayer.clear();
+		topDrawLayer.clear();
+
+
 		canvas.begin();
 
 //		System.out.println("Drawing");
@@ -888,33 +914,69 @@ public abstract class WorldController implements Screen {
 //		canvas.draw(backgroundTexture, Color.WHITE, 0, 0,canvas.getWidth(),canvas.getHeight());
 		canvas.end();
 
-		canvas.begin();
-
-		for(Obstacle obj : objects) {
-			if(!(obj instanceof Wall) && !(obj instanceof HostModel) && !obj.inHUD && !obj.selected) {
-				obj.draw(canvas);
-			}
-		}
-		for(Obstacle obj : objects) {
-			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
-				obj.draw(canvas);
-			}
-		}
-		for(Obstacle obj : objects) {
-			if((obj instanceof HostModel || obj instanceof SpiritModel) && !obj.inHUD && !obj.selected) {
-				obj.draw(canvas);
-			}
-		}
-		for(Obstacle obj : objects) {
-			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
-				((Wall)obj).drawTop(canvas);
-			}
-		}
 		for(Obstacle obj : objects) {
 			if(obj.inHUD || obj.selected) {
-				obj.draw(canvas);
+				topDrawLayer.add(obj);
+			} else if(obj instanceof Wall) {
+				wallDrawLayer.add((Wall)obj);
+			} else if(obj instanceof HostModel) {
+				hostDrawLayer.add((HostModel)obj);
+			} else if(obj instanceof SpiritModel) {
+				spiritDrawLayer.add((SpiritModel)obj);
+			} else {
+				miscDrawLayer.add(obj);
 			}
 		}
+
+		canvas.begin();
+
+		for(Obstacle obj : miscDrawLayer) {
+			obj.draw(canvas);
+		}
+		for(Wall wall : wallDrawLayer) {
+			wall.draw(canvas);
+		}
+		for(HostModel host : hostDrawLayer) {
+			host.draw(canvas);
+		}
+		for(SpiritModel spirit : spiritDrawLayer) {
+			spirit.draw(canvas);
+		}
+		for(Wall wall : wallDrawLayer) {
+			wall.drawTop(canvas);
+		}
+		for(HostModel host : hostDrawLayer) {
+			host.drawCharge(canvas);
+		}
+		for(Obstacle obj : topDrawLayer) {
+			obj.draw(canvas);
+		}
+
+//		for(Obstacle obj : objects) {
+//			if(!(obj instanceof Wall) && !(obj instanceof HostModel) && !obj.inHUD && !obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if((obj instanceof HostModel || obj instanceof SpiritModel) && !obj.inHUD && !obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
+//				((Wall)obj).drawTop(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if(obj.inHUD || obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
 
 		// Draw footprints
 		for (FootPrintModel fp : footprints) {
