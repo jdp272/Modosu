@@ -86,9 +86,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void create() {
 		canvas  = new GameCanvas();
-		loading = new LoadingMode(canvas,manager,1, true);
-		//System.out.println("playing from create in gdx");
-		loading.playMenuMusic();
+		loading = new LoadingMode(canvas,manager,1);
 
 		controller = new GamePlayController();
 		levelDesigner = new LevelDesignerMode();
@@ -103,7 +101,6 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		loading.setScreenListener(this);
 		setScreen(loading);
-
 	}
 
 	/** 
@@ -116,10 +113,10 @@ public class GDXRoot extends Game implements ScreenListener {
 		setScreen(null);
 
 		controller.unloadContent(manager);
+		loading.dispose();
 		controller.dispose();
-//		loading.dispose();
-//		levelSelect.dispose();
-//		levelDesigner.dispose();
+		levelSelect.dispose();
+		levelDesigner.dispose();
 
 		canvas.dispose();
 		canvas = null;
@@ -144,111 +141,15 @@ public class GDXRoot extends Game implements ScreenListener {
 		super.resize(width,height);
 	}
 
-	/**
-	 * The given screen has made a request to exit its player mode
-	 * and enter the game mode on a specific level.
-	 *
-	 * @param level The level to start the game at
-	 */
-	public void exitScreenLevel(int level, boolean sound) {
-		if (screen == levelSelect){
-			levelSelect.dispose();
-			levelSelect = null;
-
-			if (goLevelDesigner) {
-				levelDesigner.loadContent(manager);
-				levelDesigner.setScreenListener(this);
-				levelDesigner.setCanvas(canvas);
-				levelDesigner.setCurrentLevel(level);
-				levelDesigner.reset();
-
-				setScreen(levelDesigner);
-			}
-			else {
-				controller.loadContent(manager);
-				controller.setScreenListener(this);
-				controller.setCanvas(canvas);
-				controller.setCurrentLevel(level);
-				controller.setSound(sound);
-				controller.reset();
-
-				setScreen(controller);
-
-			}
-		}
-		else if (screen == gameOver) {
-			gameOver.dispose();
-			controller.loadContent(manager);
-			controller.setScreenListener(this);
-			controller.setCanvas(canvas);
-			controller.setCurrentLevel(level);
-			controller.setSound(sound);
-			controller.reset();
-
-			setScreen(controller);
-		}
-	}
-
-	/**
-	 * The given screen has made a request to exit its player mode
-	 * and enter the game mode on a specific level.
-	 *
-	 * @param level The level to start the game at
-	 */
-	public void exitScreenLevel(int level, boolean sound, int page) {
-		if (screen == levelSelect){
-			levelSelect.dispose();
-			levelSelect = null;
-
-			if(goLevelDesigner) {
-				levelDesigner.loadContent(manager);
-				levelDesigner.setScreenListener(this);
-				levelDesigner.setCanvas(canvas);
-				levelDesigner.setCurrentLevel(level + (page*4));
-				if(level == -1){
-					levelDesigner.setLoadBoard(false);
-					System.out.println("TEST");
-				}
-				levelDesigner.reset();
-				levelDesigner.setSound(sound);
-
-				setScreen(levelDesigner);
-			}
-			else {
-				//System.out.println("SHOULD HAVE STOPPED MUSIC FROM LEVEL SELECT");
-				loading.stopMenuMusic();
-				controller.loadContent(manager);
-				controller.setScreenListener(this);
-				controller.setCanvas(canvas);
-				controller.setCurrentLevel(level + (page*4));
-				controller.setSound(sound);
-				controller.reset();
-
-				setScreen(controller);
-			}
-		}
-	}
-
-	private void reset(boolean sound) {
+	private void reset() {
 
 		canvas  = new GameCanvas();
-		loading = new LoadingMode(canvas,manager,1, sound);
+		loading = new LoadingMode(canvas,manager,1);
 
-		controller = new GamePlayController();
-		levelDesigner = new LevelDesignerMode();
-		levelSelect = new LevelSelectMode();
-		gameOver = new GameOver();
-
-		controller.preLoadContent(manager);
-		levelDesigner.preLoadContent(manager);
-		levelSelect.preLoadContent(manager);
-		gameOver.preLoadContent(manager);
-
-		//System.out.println("playing from reset in gdx.");
-		loading.playMenuMusic();
 		loading.setScreenListener(this);
 
 		setScreen(loading);
+
 	}
 
 
@@ -261,41 +162,43 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param screen   The screen requesting to exit
 	 * @param exitCode The state of the screen upon exit
 	 */
-	public void exitScreen(Screen screen, int exitCode, boolean sound) {
+	public void exitScreen(Screen screen, int exitCode) {
+		// Going to gameplay mode from main menu through start
 		if (screen == loading && exitCode == WorldController.EXIT_PLAY) {
 			goLevelDesigner = false;
+
 			controller.loadContent(manager);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
-			controller.setSound(sound);
 			controller.reset();
-//			loading.dispose();
+
 			setScreen(controller);
 		}
+
+		// Going to designer mode from main menu
 		else if (screen == loading && exitCode == WorldController.EXIT_DESIGN) {
 			goLevelDesigner = true;
 			levelSelect.goToDesigner = true;
 			levelSelect.loadContent(manager);
 			levelSelect.setScreenListener(this);
 			levelSelect.setCanvas(canvas);
-			levelSelect.setSound(sound);
 			levelSelect.reset();
 			setScreen(levelSelect);
 		}
+		// Going to level select mode from main menu
 		else if (screen == loading && exitCode == WorldController.EXIT_SELECT) {
 			goLevelDesigner = false;
 			levelSelect.goToDesigner = false;
 			levelSelect.loadContent(manager);
 			levelSelect.setScreenListener(this);
 			levelSelect.setCanvas(canvas);
-			levelSelect.setSound(sound);
 			levelSelect.reset();
 			setScreen(levelSelect);
 		}
+
 		else if (exitCode == WorldController.EXIT_GAME) {
 			goLevelDesigner = false;
 			gameOver.loadContent(manager);
-			gameOver.setSound(sound);
 			gameOver.setScreenListener(this);
 			gameOver.setCanvas(canvas);
 			gameOver.reset();
@@ -304,30 +207,73 @@ public class GDXRoot extends Game implements ScreenListener {
 		else if (exitCode == WorldController.EXIT_NEXT) {
 			goLevelDesigner = false;
 			controller.reset();
-//			loading.dispose();
 			setScreen(controller);
 		}
 		else if (exitCode == WorldController.EXIT_PREV) {
 			goLevelDesigner = false;
 			controller.reset();
-//			loading.dispose();
 			setScreen(controller);
 		}
+
 		else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
+			loading.dispose();
 			Gdx.app.exit();
 		}
 		else if (exitCode == WorldController.EXIT_MENU) {
 			goLevelDesigner = false;
-			controller.stopGameMusic();
-			//System.out.println("stopped game in gdx from go to menu");
-			reset(sound);
+			reset();
 		}
 		else if (exitCode == WorldController.EXIT_CREDITS) {
 			goLevelDesigner = false;
-			credits.setSound(sound);
 			credits.setScreenListener(this);
 			setScreen(credits);
 		}
 	}
+
+
+	/**
+	 * The given screen has made a request to exit its player mode
+	 * and enter the game mode on a specific level. ONLY CALLED FROM GAME OVER
+	 *
+	 * @param level The level to start the game at
+	 */
+	public void exitScreenLevel(int level) {
+		controller.loadContent(manager);
+		controller.setScreenListener(this);
+		controller.setCanvas(canvas);
+		controller.setCurrentLevel(level);
+		controller.reset();
+
+		setScreen(controller);
+
+	}
+
+	/**
+	 * The given screen has made a request to exit its player mode
+	 * and enter the game mode on a specific level.
+	 *
+	 * @param level The level to start the game at
+	 */
+	public void exitScreenLevel(int level, int page) {
+
+		if(goLevelDesigner) {
+			levelDesigner.loadContent(manager);
+			levelDesigner.setScreenListener(this);
+			levelDesigner.setCanvas(canvas);
+			levelDesigner.setCurrentLevel(level + (page*4));
+			if(level == -1){
+				levelDesigner.setLoadBoard(false);
+				System.out.println("TEST");
+			}
+			levelDesigner.reset();
+
+			setScreen(levelDesigner);
+		}
+		else {
+			exitScreenLevel(level + (page*4));
+		}
+
+	}
+
 }

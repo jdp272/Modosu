@@ -13,33 +13,48 @@ import java.util.ArrayList;
 
 public class HostController {
 
-    /** List of all the hosts */
+    /**
+     * List of all the hosts
+     */
     private ArrayList<HostModel> hosts;
-    /** The initial click position of the cursor */
-    private Vector2 clickPosition;
-    /** The vector created by the shot */
-    private Vector2 shootVector;
-    /** The texture for the arrow created by the shot */
+    /**
+     * The texture for the arrow created by the shot
+     */
     private Texture arrowText;
-    /** The arrow created by the shot */
+    /**
+     * The arrow created by the shot
+     */
     private ArrowModel arrow;
 
     private HostModel pedestal;
 
-    /** The draw scale of the game */
+    /**
+     * The draw scale of the game
+     */
     private Vector2 scale;
 
-    /** Whether the possessed host has blown up */
+    /**
+     * Whether the possessed host has blown up
+     */
     private boolean possessedBlownUp;
 
-    /** Whether a successful launch occurred this frame */
+    /**
+     * Whether a successful launch occurred this frame
+     */
     private boolean launched;
-    /** Whether player moved host this frame */
+    /**
+     * Whether player moved host this frame
+     */
     private boolean moved;
 
-    /** Spirit position in screen coordinates */
+    /**
+     * Spirit position in screen coordinates
+     */
     private Vector2 spiritCenter;
 
+    /**
+     * Get user input through the controller
+     */
     private InputController input;
 
     // Cache variables
@@ -50,28 +65,44 @@ public class HostController {
 
     private Vector2 spiritCache;
 
-    /** Constant to change the speed of golem movement */
+    /**
+     * Constant to change the speed of golem movement
+     */
     private static final float HOST_MOVEMENT_SPEED = 5f;
 
-    /** Minimum speed for shot spirit */
+    /**
+     * Minimum speed for shot spirit
+     */
     private static final float MINIMUM_SHOT_SPEED = 10f;
 
-    /** Maximum speed for shot spirit */
+    /**
+     * Maximum speed for shot spirit
+     */
     private static final float MAXIMUM_SHOT_SPEED = 20f;
 
-    /** Multiplier for velocity of spirit when shot */
+    /**
+     * Multiplier for velocity of spirit when shot
+     */
     private static final float SHOOTING_MULTIPLIER = 2f;
 
-    /** Minimum distance to target before going to next instruction, for autonomous mode */
+    /**
+     * Minimum distance to target before going to next instruction, for autonomous mode
+     */
     private static final float NEXT_INSTRUCTION_DIST = 0.5f;
 
-    /** Energy pillars in the game */
+    /**
+     * Energy pillars in the game
+     */
     private EnergyPillar[] energyPillars;
 
-    /** The number of ticks since we started this controller */
+    /**
+     * The number of ticks since we started this controller
+     */
     private long ticks;
 
-    /** The number of hosts on this level */
+    /**
+     * The number of hosts on this level
+     */
     private int numHosts;
 
     private GameCanvas canvas;
@@ -81,14 +112,12 @@ public class HostController {
      */
     public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowTexture, HostModel pedestal, GameCanvas c, EnergyPillar[] energyPillars) {
         input = InputController.getInstance();
-        clickPosition = new Vector2(-1,-1);
         hosts = h;
         arrowText = arrowTexture;
-        shootVector = new Vector2(0,0);
         possessedBlownUp = false;
         launched = false;
         this.scale = scale;
-        spiritCenter = new Vector2(c.getWidth()/2, c.getHeight()/2);
+        spiritCenter = new Vector2(c.getWidth() / 2, c.getHeight() / 2);
         mousePosCache = new Vector2();
         velocityCache = new Vector2();
         spiritCache = new Vector2();
@@ -101,7 +130,7 @@ public class HostController {
 
     /**
      * Resets the status of the host.
-     *
+     * <p>
      * This method disposes of the host and creates a new one.
      */
     public void reset() {
@@ -113,18 +142,16 @@ public class HostController {
 
     /**
      * The core gameplay loop of this world.
-     *
+     * <p>
      * This method contains the specific update code for this mini-game. It does
      * not handle collisions, as those are managed by the parent class WorldController.
      * This method is called after input is read, but before collisions are resolved.
      * The very last thing that it should do is apply forces to the appropriate objects.
      *
-     * @param dt Number of seconds since last animation frame
+     * @param dt     Number of seconds since last animation frame
      * @param inSand
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand, EnergyPillar[] energyPillars) {
-
-
 
         // Brings the spirit to the center of the host
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
@@ -138,8 +165,8 @@ public class HostController {
             float spiritY = spirit.getPosition().y;
 
             // Close enough to be considered on the center
-            if ( ((posX-1) <= spiritX  && spiritX < (posX+1) ) &&
-                    ((posY-1) <= spiritY  && (spiritY < (posY+1))) ) {
+            if (((posX - 1) <= spiritX && spiritX < (posX + 1)) &&
+                    ((posY - 1) <= spiritY && (spiritY < (posY + 1)))) {
                 // Set spirit on center,
                 spirit.setPosition(possessed.getPosition());
                 // Stop going towards center
@@ -150,7 +177,7 @@ public class HostController {
         }
 
         //tentative fix for the start of the game where the spirit is going to center
-        else if (spirit.getGoToCenter() && spirit.getIsPossessing()){
+        else if (spirit.getGoToCenter() && spirit.getIsPossessing()) {
             spirit.setGoToCenter(false);
             spirit.setIsPossessing(true);
         }
@@ -185,12 +212,14 @@ public class HostController {
                     if (!possessed.isPedestal()) {
                         float chargeProgression = (float) possessed.getCurrentCharge() / possessed.getMaxCharge();
 
-                        for(EnergyPillar ep : energyPillars) {
+                        for (EnergyPillar ep : energyPillars) {
                             ep.setChargeProgression(chargeProgression);
                         }
 
                         float obstacleFactor = 1;
-                        if (inSand) { obstacleFactor = .5f; }
+                        if (inSand) {
+                            obstacleFactor = .5f;
+                        }
                         possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal() * obstacleFactor);
                         possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical() * obstacleFactor);
 
@@ -203,90 +232,82 @@ public class HostController {
                         spirit.setPosition(possessed.getPosition());
                     }
 
-                    // Shooting the spirit
-                    if (input.didTertiary() && clickPosition.x == -1 && clickPosition.y == -1) {
-                        // Clicked Mouse
-                        clickPosition = clickPosition.set(Gdx.input.getX(), Gdx.input.getY());
+                    Vector2 mousePos = mousePosCache.set(Gdx.input.getX(), canvas.getHeight() - Gdx.input.getY());
+                    Vector2 shootVector = spiritCache.set(spiritCenter).sub(mousePos);
+
+                    float vx = SHOOTING_MULTIPLIER * shootVector.x / scale.x;
+                    float vy = SHOOTING_MULTIPLIER * shootVector.y / scale.y;
+
+                    float magnitude = Math.abs(vx * vx + vy * vy);
+
+                    // Spirit Controller that deals with shooting the spirit
+
+                    // Player input is pressed, so makes a new arrow
+                    if (input.didLeftClick()) {
                         arrow = new ArrowModel(arrowText, spiritCache.set(spirit.getPosition().scl(scale.x, scale.y)));
                     }
 
-                    // Arrow has been created, either held down or release
-                    else if(clickPosition.x != 1 && clickPosition.y != -1) {
-                        // Calculate the new velocity vector
-                        Vector2 mousePos = mousePosCache.set(Gdx.input.getX(), canvas.getHeight()- Gdx.input.getY());
-                        Vector2 shootVector = spiritCache.set(spiritCenter).sub(mousePos);
+                    // Arrow has been created, and mouse is held down so update the arrow
+                    else if (input.didIsPressed()) {
+                        // Set where the spirit currently is for starting draw location
+                        arrow.setCurrLoc(velocityCache.set(spirit.getPosition().scl(scale.x, scale.y)));
+                        // Set the velocity represented by the arrow
+                        arrow.setVelocityRepresented(shootVector, magnitude > MINIMUM_SHOT_SPEED);
+                    }
+                    // Mouse has been released so shoot and get rid of arrow
+                    else if (input.didRelease()) {
+                        arrow = null;
 
-                        float vx = SHOOTING_MULTIPLIER * shootVector.x / scale.x;
-                        float vy = SHOOTING_MULTIPLIER * shootVector.y / scale.y;
+                        // Only shoot if the shooting speed is large enough
+                        if (magnitude > MINIMUM_SHOT_SPEED) {
 
-                        float magnitude = Math.abs(vx * vx + vy * vy);
+                            // Re-center the spirit for maximum accuracy and in case spirit is off center
+                            spirit.setPosition(possessed.getPosition());
 
-                        // Released Mouse -- Shoot
-                        if (!input.didTertiary()) {
-                            // Arrow should disappear when released
-                            arrow = null;
-
-                            clickPosition.x = -1;
-                            clickPosition.y = -1;
-
-                            // Only shoot if the shooting speed is large enough
-                            if (magnitude > MINIMUM_SHOT_SPEED) {
-
-                                // Re-center the spirit for maximum accuracy and in case spirit is off center
-                                spirit.setPosition(possessed.getPosition());
-
-                                // Cap the speed of the shot
-                                if (magnitude > MAXIMUM_SHOT_SPEED) {
-                                    float angle = (float) Math.atan2(vy, vx);
-                                    vx = MAXIMUM_SHOT_SPEED * (float) Math.cos(angle);
-                                    vy = MAXIMUM_SHOT_SPEED * (float) Math.sin(angle);
-                                }
-
-                                // Set the spirit's velocity
-                                spirit.setVX(vx);
-                                spirit.setVY(vy);
-
-                                // Upon Release of Spirit, possessed host and spirit are no longer possessed/possessing
-                                spirit.setHasLaunched(true);
-                                spirit.setIsPossessing(false);
-                                spirit.setGoToCenter(false);
-
-                                possessed.setPossessed(false);
-
-                                launched = true;
+                            // Cap the speed of the shot
+                            if (magnitude > MAXIMUM_SHOT_SPEED) {
+                                float angle = (float) Math.atan2(vy, vx);
+                                vx = MAXIMUM_SHOT_SPEED * (float) Math.cos(angle);
+                                vy = MAXIMUM_SHOT_SPEED * (float) Math.sin(angle);
                             }
-                        }
-                        // Holding down mouse -- Redirecting
-                        else {
-                            // Set where the spirit currently is for starting draw location
-                            arrow.setCurrLoc(velocityCache.set(spirit.getPosition().scl(scale.x, scale.y)));
-                            // Set the velocity represented by the arrow
-                            arrow.setVelocityRepresented(shootVector, magnitude > MINIMUM_SHOT_SPEED);
+
+                            // Set the spirit's velocity
+                            spirit.setVX(vx);
+                            spirit.setVY(vy);
+
+                            // Upon Release of Spirit, possessed host and spirit are no longer possessed/possessing
+                            spirit.setHasLaunched(true);
+                            spirit.setIsPossessing(false);
+                            spirit.setGoToCenter(false);
+
+                            possessed.setPossessed(false);
+
+                            launched = true;
                         }
                     }
-
-                    else {
-
-                    }
+                    // No arrow exists, no player mouse input either
+                    else { }
                 }
-                else {
-                    possessed.setVX(0);
-                    possessed.setVY(0);
-                }
+
             }
-
-                // Host is at max charge
-                else {
-                    possessedBlownUp = true;
-                    possessed.setVX(0);
-                    possessed.setVY(0);
-                }
-
-            // Case when Host's currentCharge exceed maxCharge
-            if (possessed.getCurrentCharge() > possessed.getMaxCharge()) {
-                possessedBlownUp = true;
+            else {
+                possessed.setVX(0);
+                possessed.setVY(0);
             }
         }
+
+        // Host is at max charge
+        else {
+            possessedBlownUp = true;
+            possessed.setVX(0);
+            possessed.setVY(0);
+        }
+
+        // Case when Host's currentCharge exceed maxCharge
+        if (possessed.getCurrentCharge() > possessed.getMaxCharge()) {
+            possessedBlownUp = true;
+        }
+
 
         // Update the Animation of the possessed host
 
@@ -301,8 +322,7 @@ public class HostController {
             if (spirit.decCurrentLife()) {
                 // Spirit isn't dead yet
                 spirit.setAlive(true);
-            }
-            else {
+            } else {
                 // Because you can't decrement anymore, spirit is dead
                 spirit.setAlive(false);
             }
@@ -314,14 +334,14 @@ public class HostController {
         if ((!spirit.isAlive() && !possessedBlownUp) || (possessed == pedestal && !spirit.isAlive())) {
             spirit.setPosition(possessed.getPosition());
             // TODO: Replace 100 with variable whatever amount we want the host to go up by
-            if(possessed != pedestal) {
+            if (possessed != pedestal) {
                 // possessed.setCurrentCharge(possessed.getCurrentCharge() + 100);
                 spirit.decrementNumLives();
                 spirit.setHasLaunched(false);
                 spirit.setAlive(true);
             }
 
-            if(possessed == pedestal) {
+            if (possessed == pedestal) {
                 possessed.setPossessed(true);
                 spirit.setCurrentLife(spirit.getDefaultLife());
                 spirit.setHasLaunched(false);
@@ -356,8 +376,7 @@ public class HostController {
                     h.nextInstruction();
 
                     // Otherwise, move towards the target
-                }
-                else {
+                } else {
                     double angle = Math.atan2(y, x);
 
                     h.setVX(HOST_MOVEMENT_SPEED * (float) Math.cos(angle));
@@ -367,9 +386,13 @@ public class HostController {
         }
     }
 
-    public ArrowModel getArrow() { return arrow; }
+    public ArrowModel getArrow() {
+        return arrow;
+    }
 
-    public boolean getPossessedBlownUp() { return possessedBlownUp; }
+    public boolean getPossessedBlownUp() {
+        return possessedBlownUp;
+    }
 
     public boolean checkAllPossessed() {
         int counter = 0;
@@ -385,11 +408,12 @@ public class HostController {
         if (launched) {
             launched = false;
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public boolean isMoving() { return moved; }
+    public boolean isMoving() {
+        return moved;
+    }
 }

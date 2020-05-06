@@ -1004,8 +1004,8 @@ public class LevelDesignerMode extends WorldController {
 		   Additionally, note that the mouse uses box2d coordinates, not screen
 		   coordinates
 		 */
-        float mouseX = input.getCrossHair().x + (camPos.x - (canvas.getWidth() / 2.f)) / scale.x;
-        float mouseY = input.getCrossHair().y + (camPos.y - (canvas.getHeight() / 2.f)) / scale.y;
+        float mouseX = input.getMousePosition().x + (camPos.x - (canvas.getWidth() / 2.f)) / scale.x;
+        float mouseY = input.getMousePosition().y + (camPos.y - (canvas.getHeight() / 2.f)) / scale.y;
 
 		/* Only reset selecting if the mouse is released. Prevents selecting a
 		   new object without releasing and clicking the mouse.

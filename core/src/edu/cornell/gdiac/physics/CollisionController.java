@@ -171,11 +171,6 @@ public class CollisionController implements ContactListener {
                 if (((body2.getUserData() == r) || (body1.getUserData() == r)) && !r.isPossessed()) {
                     r.setLinearVelocity(new Vector2(0, 0));
                 }
-
-                if (r == prevHostPossessed) {
-                    // System.out.println(r.getLinearVelocity());
-                }
-
             }
         }
     }
@@ -234,7 +229,7 @@ public class CollisionController implements ContactListener {
             contact.setEnabled(false);
         }
 
-        // Check for Collision with Water
+        // Check for Collision with Sand
         if ((body1.getUserData() == spirit && bd2.getName() == "sand") ||
                 bd1.getName() == "sand" && body2.getUserData() == spirit) {
                 inSand = true;
@@ -246,12 +241,8 @@ public class CollisionController implements ContactListener {
                 contact.setEnabled(false);
             }
 
-//            // change boolean flag if in sand
-//            if (((bd1.getName() == "sand" && body2.getUserData() == r) ||
-//                    (body1.getUserData() == r && bd2.getName() == "sand"))) {
-//                contact.setEnabled(false);
-//                inSand = true;
-//            }
+            // TODO : change boolean flag if in sand NEED TO MAKE HITBOXES MOREO PRECISE
+
         }
 
         // Recognize spirit against a wall to play sound
@@ -261,9 +252,9 @@ public class CollisionController implements ContactListener {
                 bd1.getName() == "edge" && body2.getUserData() == spirit ||
                 body1.getUserData() == spirit && bd2.getName() == "corner" ||
                 bd1.getName() == "corner" && body2.getUserData() == spirit) {
-            spirit.setDidBounce(true);
-            spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
-            bounced = true;
+                spirit.setDidBounce(true);
+                spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
+                bounced = true;
             if (body1.getUserData() == spirit && bd2.getName() == "edge" ||
                     bd1.getName() == "edge" && body2.getUserData() == spirit ||
                     body1.getUserData() == spirit && bd2.getName() == "corner" ||
@@ -310,4 +301,6 @@ public class CollisionController implements ContactListener {
     }
 
     public boolean getBounceOnBounds() { return bounceOnBounds; }
+
+//    public boolean getAgainstObstacle() { return againstObstacle; }
 }

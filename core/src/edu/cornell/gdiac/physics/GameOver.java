@@ -282,16 +282,16 @@ public class GameOver extends WorldController implements Screen {
 
         /** Checks if any buttons are clicked */
         if (menuButtonClicked) {
-            listener.exitScreen(this, EXIT_MENU, getSound());
+            listener.exitScreen(this, EXIT_MENU);
             dispose();
         }
         else if (retryButtonClicked) {
-            listener.exitScreen(this, EXIT_NEXT, getSound());
+            listener.exitScreen(this, EXIT_NEXT);
             dispose();
         }
         else if (nextButtonClicked) {
             incrementCurrentLevel();
-            listener.exitScreenLevel(currentLevel, getSound());
+            listener.exitScreenLevel(currentLevel);
         }
     }
 
