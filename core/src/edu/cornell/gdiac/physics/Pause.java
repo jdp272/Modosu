@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -17,6 +18,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import edu.cornell.gdiac.util.MusicController;
+import edu.cornell.gdiac.util.SoundController;
+
 
 public class Pause {
 
@@ -120,12 +124,13 @@ public class Pause {
         Slider.SliderStyle sliderStyle = new Slider.SliderStyle();
         sliderStyle.background = skin.getDrawable(sBAR);
         sliderStyle.knob = skin.getDrawable(sKNOB);
-        musicSlider = new Slider(0, 100, 0.1f, false, sliderStyle);
+        musicSlider = new Slider(0, 100, 1f, false, sliderStyle);
         musicSlider.setValue(50);
         musicSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 System.out.println("MUSIC SLIDED: " + musicSlider.getValue());
+                MusicController.getInstance().setVolume((int) musicSlider.getValue());
             }
         });
 
@@ -139,7 +144,7 @@ public class Pause {
         table.add(sfxLabel).colspan(1).padLeft(40); // .colspan(columnNum);
 
         /** SFX Slider */
-        sfxSlider = new Slider(0, 100, 0.1f, false, sliderStyle);
+        sfxSlider = new Slider(0, 100, 1f, false, sliderStyle);
         sfxSlider.setValue(50);
         sfxSlider.addListener(new ChangeListener() {
             @Override
@@ -205,6 +210,7 @@ public class Pause {
     /** Occurs when game is first paused */
     public void pauseGame() {
         System.out.println("Paused");
+
         retryButtonClicked = false;
         menuButtonClicked = false;
         playButtonClicked = false;

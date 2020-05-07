@@ -784,19 +784,22 @@ public abstract class WorldController implements Screen {
 			pressedPaused = true;
 			return false;
 		}
-		
+
 		// Now it is time to maybe switch screens.
 		if (input.didExit()) {
+			isPaused = false;
 			listener.exitScreen(this, EXIT_QUIT);
 			return false;
 		} else if (input.didAdvance()) {
+			isPaused = false;
 			listener.exitScreenLevel(currentLevel+1);
 			return false;
 		} else if (input.didRetreat()) {
+			isPaused = false;
 			listener.exitScreenLevel(currentLevel-1);
 			return false;
-		}
-		else if (input.didMenu()) {
+		} else if (input.didMenu()) {
+			isPaused = false;
 			setMenu(true);
 			listener.exitScreen(this, EXIT_MENU);
 		}
@@ -808,10 +811,12 @@ public abstract class WorldController implements Screen {
 			// GameOver.screenShotPixmap = ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			if (failed) {
 				GameOver.setFail(true);
+				isPaused = false;
 				listener.exitScreen(this, EXIT_GAME);
 			} else if (complete) {
 				// TODO: go to the next level
 				GameOver.setFail(false);
+				isPaused = false;
 				listener.exitScreen(this, EXIT_GAME);
 				return false;
 			}
@@ -1073,16 +1078,19 @@ public abstract class WorldController implements Screen {
 	public void pause() {
 		// TODO Auto-generated method stub
 		if (pause.getMenuClicked()) {
+			isPaused = false;
 			setMenu(true);
 			listener.exitScreen(this, EXIT_MENU);
 			pause.reset();
 		}
 		if (pause.getRetryClicked()) {
+			isPaused = false;
 			pause.reset();
 			reset();
 		}
 		if (pause.getPlayClicked()) {
 			pause.resumeGame();
+			isPaused = false;
 		}
 	}
 
