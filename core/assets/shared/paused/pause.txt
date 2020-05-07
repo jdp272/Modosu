@@ -1,0 +1,47 @@
+pause.png
+size: 896, 365
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+background
+  rotate: false
+  xy: 0, 0
+  size: 519, 365
+  orig: 519, 365
+  offset: 0, 0
+  index: -1
+bar
+  rotate: false
+  xy: 519, 0
+  size: 200, 10
+  orig: 200, 10
+  offset: 0, 0
+  index: -1
+knob
+  rotate: false
+  xy: 719, 0
+  size: 8, 17
+  orig: 8, 17
+  offset: 0, 0
+  index: -1
+menu
+  rotate: false
+  xy: 727, 0
+  size: 48, 42
+  orig: 48, 42
+  offset: 0, 0
+  index: -1
+play
+  rotate: false
+  xy: 775, 0
+  size: 64, 57
+  orig: 64, 57
+  offset: 0, 0
+  index: -1
+retry
+  rotate: false
+  xy: 839, 0
+  size: 57, 57
+  orig: 57, 57
+  offset: 0, 0
+  index: -1

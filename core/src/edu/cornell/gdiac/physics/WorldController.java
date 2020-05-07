@@ -203,7 +203,6 @@ public abstract class WorldController implements Screen {
 
 	public ArrowModel arrow;
 
-
 	public Pause pause;
 
 	/** Whether to render the HUD */
@@ -479,12 +478,27 @@ public abstract class WorldController implements Screen {
 	public boolean menu;
 	/** Current level */
 	protected static int currentLevel;
+	/** Whether to update Gameplay controller */
+	private	boolean updateGP;
 
 	/** list of level files*/
 	protected File[] levels;
 
+	/** Input if paused was pressed */
+	private boolean pressedPaused = false;
+	/** Whether game is currently paused */
+	private static boolean isPaused = false;
 
-	boolean GAME_PAUSED = false;
+	/**
+	 * Sets whether pause is active.
+	 *
+	 * If true, then
+	 *
+	 * @param paused whether pause is active
+	 */
+	public static void setIsPaused(boolean paused) {
+		isPaused = paused;
+	}
 
 	/**
 	 * Returns true if debug mode is active.
@@ -778,7 +792,7 @@ public abstract class WorldController implements Screen {
 		}
 
 		if (input.didPause()) {
-			GAME_PAUSED = true;
+			pressedPaused = true;
 			return false;
 		}
 		
@@ -1037,17 +1051,27 @@ public abstract class WorldController implements Screen {
 	 */
 	public void render(float delta) {
 		if (active) {
-			if (preUpdate(delta) || !GAME_PAUSED) {
+			updateGP = preUpdate(delta);
+
+			if (pressedPaused) {
+				isPaused = true;
+				pause.pauseGame();
+				pressedPaused = false;
+			}
+
+			if (updateGP && !isPaused) {
 				update(delta); // This is the one that must be defined.
 				postUpdate(delta);
-			} else {
-				pause.pauseGame();
-				//pause.getStage().draw();
 			}
 
 			draw(delta);
-			pause.getStage().act(delta);
-			pause.getStage().draw();
+
+			/** IF CURRENTLY PAUSED */
+			if (isPaused) {
+				pause();
+				pause.getStage().act(delta);
+				pause.getStage().draw();
+			}
 		}
 	}
 
@@ -1059,7 +1083,15 @@ public abstract class WorldController implements Screen {
 	 */
 	public void pause() {
 		// TODO Auto-generated method stub
-
+		if (pause.getMenuClicked()) {
+			setMenu(true);
+			listener.exitScreen(this, EXIT_MENU);
+			pause.reset();
+		}
+		if (pause.getRetryClicked()) {
+			pause.reset();
+			reset();
+		}
 	}
 
 	/**
