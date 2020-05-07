@@ -205,6 +205,7 @@ public abstract class WorldController implements Screen {
 
 	public Pause pauseScreen;
 
+
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
 
@@ -484,11 +485,10 @@ public abstract class WorldController implements Screen {
 	/** list of level files*/
 	protected File[] levels;
 
-
 	/** Input if paused was pressed */
 	private boolean pressedPause = false;
 	/** Whether game is currently paused */
-	private boolean isPaused = false;
+	private static boolean isPaused = false;
 
 	/**
 	 * Returns true if debug mode is active.
@@ -1067,6 +1067,7 @@ public abstract class WorldController implements Screen {
 				pauseScreen.getStage().act(delta);
 				pauseScreen.getStage().draw();
 			}
+
 		}
 	}
 
@@ -1078,7 +1079,6 @@ public abstract class WorldController implements Screen {
 	 */
 	public void pause() {
 		// TODO Auto-generated method stub
-
 		if (pauseScreen.getMenuClicked()) {
 			isPaused = false;
 			setMenu(true);
