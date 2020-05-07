@@ -489,7 +489,6 @@ public abstract class WorldController implements Screen {
 	/** Whether game is currently paused */
 	private boolean isPaused = false;
 
-
 	/**
 	 * Returns true if debug mode is active.
 	 *
@@ -1060,6 +1059,8 @@ public abstract class WorldController implements Screen {
 				postUpdate(delta);
 			}
 
+			draw(delta);
+
 			/** IF GAME IS CURRENTLY PAUSED */
 			if (isPaused) {
 				pause();
@@ -1077,7 +1078,6 @@ public abstract class WorldController implements Screen {
 	 */
 	public void pause() {
 		// TODO Auto-generated method stub
-
 		if (pauseScreen.getMenuClicked()) {
 			isPaused = false;
 			setMenu(true);
