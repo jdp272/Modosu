@@ -121,6 +121,10 @@ public class MusicController {
 		}
 	}
 
+	public float getVolume() {
+		return music.getVolume();
+	}
+
 	public void setVolume(int i) {
 		if (music != null) {
 			music.setVolume((float)i/100f);
