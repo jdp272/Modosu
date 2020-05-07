@@ -63,6 +63,7 @@ public class Pause {
     private boolean isPaused;
     private boolean retryButtonClicked;
     private boolean menuButtonClicked;
+    private boolean playButtonClicked;
     private float pauseHeight;
     private float pauseWidth;
 
@@ -80,6 +81,7 @@ public class Pause {
         isPaused = false;
         retryButtonClicked = false;
         menuButtonClicked = false;
+        playButtonClicked = false;
 
         pauseHeight = skin.getDrawable(sBACKGROUND).getMinHeight();
         pauseWidth = skin.getDrawable(sBACKGROUND).getMinWidth();
@@ -123,8 +125,7 @@ public class Pause {
         musicSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("MUSIC SLIDED");
-                // musicSlider.getValue();
+                System.out.println("MUSIC SLIDED: " + musicSlider.getValue());
             }
         });
 
@@ -143,7 +144,8 @@ public class Pause {
         sfxSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("SFX SLIDED");
+
+                System.out.println("SFX SLIDED: " + sfxSlider.getValue());
             }
         });
 
@@ -190,7 +192,7 @@ public class Pause {
 
         play.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                resumeGame();
+                playButtonClicked = true;
             }
         });
 
@@ -205,6 +207,7 @@ public class Pause {
         System.out.println("Paused");
         retryButtonClicked = false;
         menuButtonClicked = false;
+        playButtonClicked = false;
 
         isPaused = true;
         group.addActor(table);
@@ -218,9 +221,14 @@ public class Pause {
         return menuButtonClicked;
     }
 
-    /** Returns whether retry icon was clicked */
+
     public boolean getRetryClicked() {
         return retryButtonClicked;
+    }
+
+    /** Returns whether play icon was clicked */
+    public boolean getPlayClicked() {
+        return playButtonClicked;
     }
 
     /** When game is resumed */
@@ -228,14 +236,14 @@ public class Pause {
         if ( isPaused ){
             isPaused = false;
             group.remove();
-            WorldController.setIsPaused(false);
+            reset();
         }
     }
 
     public void reset() {
-        WorldController.setIsPaused(false);
         retryButtonClicked = false;
         menuButtonClicked = false;
+        playButtonClicked = false;
     }
 
     public void dispose() {
