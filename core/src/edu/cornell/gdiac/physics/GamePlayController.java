@@ -181,7 +181,7 @@ public class GamePlayController extends WorldController {
 		setMenu(false);
 
 		MusicController.getInstance().play("gameMusic");
-		MusicController.getInstance().setVolume(40);
+		// MusicController.getInstance().setVolume(40);
 
 
 		Vector2 gravity = new Vector2(world.getGravity());
