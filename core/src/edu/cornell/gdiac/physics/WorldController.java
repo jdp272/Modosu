@@ -1077,7 +1077,6 @@ public abstract class WorldController implements Screen {
 	 */
 	public void pause() {
 		// TODO Auto-generated method stub
-
 		if (pauseScreen.getMenuClicked()) {
 			isPaused = false;
 			setMenu(true);

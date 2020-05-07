@@ -21,7 +21,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.util.MusicController;
 import edu.cornell.gdiac.util.SoundController;
 
-
 public class Pause {
 
     /**  Scene 2D Elements */
