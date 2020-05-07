@@ -488,7 +488,7 @@ public abstract class WorldController implements Screen {
 	/** Input if paused was pressed */
 	private boolean pressedPause = false;
 	/** Whether game is currently paused */
-	private static boolean isPaused = false;
+	private boolean isPaused = false;
 
 	/**
 	 * Returns true if debug mode is active.
@@ -1090,6 +1090,7 @@ public abstract class WorldController implements Screen {
 			pauseScreen.reset();
 			reset();
 		}
+
 		if (pauseScreen.getPlayClicked()) {
 			pauseScreen.resumeGame();
 			isPaused = false;
