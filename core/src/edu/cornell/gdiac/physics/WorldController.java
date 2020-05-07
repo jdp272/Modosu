@@ -1079,6 +1079,7 @@ public abstract class WorldController implements Screen {
 	 */
 	public void pause() {
 		// TODO Auto-generated method stub
+
 		if (pauseScreen.getMenuClicked()) {
 			isPaused = false;
 			setMenu(true);
@@ -1090,7 +1091,6 @@ public abstract class WorldController implements Screen {
 			pauseScreen.reset();
 			reset();
 		}
-
 		if (pauseScreen.getPlayClicked()) {
 			pauseScreen.resumeGame();
 			isPaused = false;
