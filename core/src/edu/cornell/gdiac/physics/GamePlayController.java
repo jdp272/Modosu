@@ -362,6 +362,7 @@ public class GamePlayController extends WorldController {
 			SoundController.getInstance().play(FAILURE_SOUND, FAILURE_SOUND, false);
 		}
 
+		HUD.update(delta);
 
 		// Get arrow and draw if applicable
 		arrow = hostController.getArrow();
