@@ -781,7 +781,6 @@ public class HostModel extends BoxObstacle {
      * @param inPillar will be true if host is inside bounds of the pillar's radius
      */
     public void setInPillar(boolean inPillar) {
-        //System.out.println(inPillar);
         this.inPillar = inPillar;
     }
 

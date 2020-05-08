@@ -205,7 +205,6 @@ public abstract class WorldController implements Screen {
 
 	public Pause pauseScreen;
 
-
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
 
@@ -969,6 +968,32 @@ public abstract class WorldController implements Screen {
 		for(Obstacle obj : topDrawLayer) {
 			obj.draw(canvas);
 		}
+
+//		for(Obstacle obj : objects) {
+//			if(!(obj instanceof Wall) && !(obj instanceof HostModel) && !obj.inHUD && !obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if((obj instanceof HostModel || obj instanceof SpiritModel) && !obj.inHUD && !obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
+//				((Wall)obj).drawTop(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if(obj.inHUD || obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
 
 //		for(Obstacle obj : objects) {
 //			if(!(obj instanceof Wall) && !(obj instanceof HostModel) && !obj.inHUD && !obj.selected) {
