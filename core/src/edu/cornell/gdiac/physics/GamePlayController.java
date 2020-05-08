@@ -279,6 +279,7 @@ public class GamePlayController extends WorldController {
 	public void update(float delta) {
 
 		MusicController.getInstance().update();
+		HUD.update(delta);
 
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){
