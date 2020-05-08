@@ -85,6 +85,7 @@ public class HUD {
     private static Label hostCounterLabel;
     private Texture hostCounterTexture;
 
+
     /** Scene 2D Widgets for Pause */
     private Skin skin;
     private Group group;
@@ -291,6 +292,10 @@ public class HUD {
 
     /** Gets the Stage */
     public static Stage getStage() { return stage; }
+
+    public static void setInputProcessor() {
+        Gdx.input.setInputProcessor(stage);
+    }
 
     /** Updates the Timer */
     public static void update(float dt) {
