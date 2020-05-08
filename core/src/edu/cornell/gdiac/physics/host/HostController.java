@@ -286,26 +286,25 @@ public class HostController {
                         }
                     }
                     // No arrow exists, no player mouse input either
-                    else { }
+                    else {
+                    }
+                } else {
+                    possessed.setVX(0);
+                    possessed.setVY(0);
                 }
-
             }
+
+            // Host is at max charge
             else {
+                possessedBlownUp = true;
                 possessed.setVX(0);
                 possessed.setVY(0);
             }
-        }
 
-        // Host is at max charge
-        else {
-            possessedBlownUp = true;
-            possessed.setVX(0);
-            possessed.setVY(0);
-        }
-
-        // Case when Host's currentCharge exceed maxCharge
-        if (possessed.getCurrentCharge() > possessed.getMaxCharge()) {
-            possessedBlownUp = true;
+            // Case when Host's currentCharge exceed maxCharge
+            if (possessed.getCurrentCharge() > possessed.getMaxCharge()) {
+                possessedBlownUp = true;
+            }
         }
 
 
