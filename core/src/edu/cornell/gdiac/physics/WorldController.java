@@ -205,7 +205,6 @@ public abstract class WorldController implements Screen {
 
 	public Pause pauseScreen;
 
-
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
 
@@ -1067,7 +1066,6 @@ public abstract class WorldController implements Screen {
 				pauseScreen.getStage().act(delta);
 				pauseScreen.getStage().draw();
 			}
-
 		}
 	}
 
@@ -1079,7 +1077,6 @@ public abstract class WorldController implements Screen {
 	 */
 	public void pause() {
 		// TODO Auto-generated method stub
-
 		if (pauseScreen.getMenuClicked()) {
 			isPaused = false;
 			setMenu(true);

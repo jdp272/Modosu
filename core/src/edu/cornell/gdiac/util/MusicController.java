@@ -115,6 +115,7 @@ public class MusicController {
 		}
 	}
 
+
 	/**
 	 * Sets the volume of the music controller. All sounds are defaulted to this volume.
 	 * @param v	The sound volume in the range [0,1]
