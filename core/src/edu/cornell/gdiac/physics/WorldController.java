@@ -203,6 +203,8 @@ public abstract class WorldController implements Screen {
 
 	public ArrowModel arrow;
 
+	public Pause pauseScreen;
+
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
 
@@ -476,9 +478,16 @@ public abstract class WorldController implements Screen {
 	public boolean menu;
 	/** Current level */
 	protected static int currentLevel;
+	/** Whether to update Gameplay controller */
+	private	boolean updateGP;
 
 	/** list of level files*/
 	protected File[] levels;
+
+	/** Input if paused was pressed */
+	private boolean pressedPause = false;
+	/** Whether game is currently paused */
+	private boolean isPaused = false;
 
 	/**
 	 * Returns true if debug mode is active.
@@ -666,6 +675,8 @@ public abstract class WorldController implements Screen {
 		hostDrawLayer = new PooledList<>();
 		spiritDrawLayer = new PooledList<>();
 		miscDrawLayer = new PooledList<>();
+
+		pauseScreen = new Pause();
 	}
 	
 	/**
@@ -684,6 +695,9 @@ public abstract class WorldController implements Screen {
 		scale  = null;
 		world  = null;
 		canvas = null;
+
+		pauseScreen.dispose();
+		pauseScreen = null;
 	}
 
 	/**
@@ -765,19 +779,27 @@ public abstract class WorldController implements Screen {
 		if (input.didReset()) {
 			reset();
 		}
-		
+
+		if (input.didPause()) {
+			pressedPause = true;
+			return false;
+		}
+
 		// Now it is time to maybe switch screens.
 		if (input.didExit()) {
+			isPaused = false;
 			listener.exitScreen(this, EXIT_QUIT);
 			return false;
 		} else if (input.didAdvance()) {
+			isPaused = false;
 			listener.exitScreenLevel(currentLevel+1);
 			return false;
 		} else if (input.didRetreat()) {
+			isPaused = false;
 			listener.exitScreenLevel(currentLevel-1);
 			return false;
-		}
-		else if (input.didMenu()) {
+		} else if (input.didMenu()) {
+			isPaused = false;
 			setMenu(true);
 			listener.exitScreen(this, EXIT_MENU);
 		}
@@ -789,10 +811,12 @@ public abstract class WorldController implements Screen {
 			// GameOver.screenShotPixmap = ScreenUtils.getFrameBufferPixmap(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 			if (failed) {
 				GameOver.setFail(true);
+				isPaused = false;
 				listener.exitScreen(this, EXIT_GAME);
 			} else if (complete) {
 				// TODO: go to the next level
 				GameOver.setFail(false);
+				isPaused = false;
 				listener.exitScreen(this, EXIT_GAME);
 				return false;
 			}
@@ -971,6 +995,32 @@ public abstract class WorldController implements Screen {
 //			}
 //		}
 
+//		for(Obstacle obj : objects) {
+//			if(!(obj instanceof Wall) && !(obj instanceof HostModel) && !obj.inHUD && !obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if((obj instanceof HostModel || obj instanceof SpiritModel) && !obj.inHUD && !obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
+//				((Wall)obj).drawTop(canvas);
+//			}
+//		}
+//		for(Obstacle obj : objects) {
+//			if(obj.inHUD || obj.selected) {
+//				obj.draw(canvas);
+//			}
+//		}
+
 		// Draw footprints
 		for (FootPrintModel fp : footprints) {
 			fp.draw(canvas);
@@ -1021,11 +1071,27 @@ public abstract class WorldController implements Screen {
 	 */
 	public void render(float delta) {
 		if (active) {
-			if (preUpdate(delta)) {
+			updateGP = preUpdate(delta);
+
+			if (pressedPause) {
+				isPaused = true;
+				pauseScreen.pauseGame();
+				pressedPause = false;
+			}
+
+			if (updateGP && !isPaused) {
 				update(delta); // This is the one that must be defined.
 				postUpdate(delta);
 			}
+
 			draw(delta);
+
+			/** IF GAME IS CURRENTLY PAUSED */
+			if (isPaused) {
+				pause();
+				pauseScreen.getStage().act(delta);
+				pauseScreen.getStage().draw();
+			}
 		}
 	}
 
@@ -1037,6 +1103,21 @@ public abstract class WorldController implements Screen {
 	 */
 	public void pause() {
 		// TODO Auto-generated method stub
+		if (pauseScreen.getMenuClicked()) {
+			isPaused = false;
+			setMenu(true);
+			listener.exitScreen(this, EXIT_MENU);
+			pauseScreen.reset();
+		}
+		if (pauseScreen.getRetryClicked()) {
+			isPaused = false;
+			pauseScreen.reset();
+			reset();
+		}
+		if (pauseScreen.getPlayClicked()) {
+			pauseScreen.resumeGame();
+			isPaused = false;
+		}
 	}
 
 	/**
@@ -1072,5 +1153,4 @@ public abstract class WorldController implements Screen {
 	public void setScreenListener(ScreenListener listener) {
 		this.listener = listener;
 	}
-
 }

@@ -286,26 +286,25 @@ public class HostController {
                         }
                     }
                     // No arrow exists, no player mouse input either
-                    else { }
+                    else {
+                    }
+                } else {
+                    possessed.setVX(0);
+                    possessed.setVY(0);
                 }
-
             }
+
+            // Host is at max charge
             else {
+                possessedBlownUp = true;
                 possessed.setVX(0);
                 possessed.setVY(0);
             }
-        }
 
-        // Host is at max charge
-        else {
-            possessedBlownUp = true;
-            possessed.setVX(0);
-            possessed.setVY(0);
-        }
-
-        // Case when Host's currentCharge exceed maxCharge
-        if (possessed.getCurrentCharge() > possessed.getMaxCharge()) {
-            possessedBlownUp = true;
+            // Case when Host's currentCharge exceed maxCharge
+            if (possessed.getCurrentCharge() > possessed.getMaxCharge()) {
+                possessedBlownUp = true;
+            }
         }
 
 
@@ -327,29 +326,6 @@ public class HostController {
                 spirit.setAlive(false);
             }
         }
-
-        // PORTION OF CODE THAT DEALS WITH JUMPING BACK TO LAST HOST AFTER DEATH
-
-        // In the case that spirit dies return to previous possessed bot
-        if ((!spirit.isAlive() && !possessedBlownUp) || (possessed == pedestal && !spirit.isAlive())) {
-            spirit.setPosition(possessed.getPosition());
-            // TODO: Replace 100 with variable whatever amount we want the host to go up by
-            if (possessed != pedestal) {
-                // possessed.setCurrentCharge(possessed.getCurrentCharge() + 100);
-                spirit.decrementNumLives();
-                spirit.setHasLaunched(false);
-                spirit.setAlive(true);
-            }
-
-            if (possessed == pedestal) {
-                possessed.setPossessed(true);
-                spirit.setCurrentLife(spirit.getDefaultLife());
-                spirit.setHasLaunched(false);
-                spirit.setAlive(true);
-                spirit.setGoToCenter(true);
-            }
-        }
-
 
         //update other robots
         for (HostModel h : hosts) {

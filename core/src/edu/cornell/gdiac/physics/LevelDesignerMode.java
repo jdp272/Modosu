@@ -1246,7 +1246,7 @@ public class LevelDesignerMode extends WorldController {
         ArrayList<EnergyPillar> energyPillarList = new ArrayList<>();
         HostModel pedestal = null;
 
-        System.out.println(cache);
+        //System.out.println(cache);
 
         for (Obstacle obj : objects) {
             if (!obj.inGame) {

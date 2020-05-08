@@ -181,7 +181,7 @@ public class GamePlayController extends WorldController {
 		setMenu(false);
 
 		MusicController.getInstance().play("gameMusic");
-		MusicController.getInstance().setVolume(40);
+		// MusicController.getInstance().setVolume(40);
 
 
 		Vector2 gravity = new Vector2(world.getGravity());
@@ -326,7 +326,7 @@ public class GamePlayController extends WorldController {
 
 
 		// Check lose condition
-		if ((hostController.getPossessedBlownUp() || spirit.hasNoLivesLeft()) && !isComplete() && !isFailure()) {
+		if ((hostController.getPossessedBlownUp() || !spirit.isAlive()) && !isComplete() && !isFailure()) {
 			setFailure(true);
 			SoundController.getInstance().play(FAILURE_SOUND, FAILURE_SOUND, false);
 		}
@@ -358,7 +358,6 @@ public class GamePlayController extends WorldController {
 		else if (spirit.hasLaunched) {
 			canvas.zoomIn();
 		}
-
 
 		// Uncomment this if we want to zoom in when a shot is fired, but not when it's being aimed
 		/*
