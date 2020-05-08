@@ -511,7 +511,7 @@ public class InputController {
 
 		// Mouse results
 		tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
-		leftJustClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
+		leftJustClicked = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		mousePosition.set(Gdx.input.getX(), Gdx.input.getY());
 		mousePosition.scl(1/scale.x,-1/scale.y);
 		mousePosition.y += bounds.height;
