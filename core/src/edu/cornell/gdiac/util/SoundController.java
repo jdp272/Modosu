@@ -152,7 +152,7 @@ public class SoundController {
 	 * Sets the volume of the sound controller. All sounds are defaulted to this volume.
 	 * @param v	The sound volume in the range [0,1]
 	 */
-	public void setVolume(float v) { soundVolume = v;}
+	public void setVolume(float v) { soundVolume = v/100; }
 	
 
 	/// Sound Management

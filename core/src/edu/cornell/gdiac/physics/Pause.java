@@ -146,8 +146,8 @@ public class Pause {
         sfxSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-
                 System.out.println("SFX SLIDED: " + sfxSlider.getValue());
+                SoundController.getInstance().setVolume((int) sfxSlider.getValue());
             }
         });
 

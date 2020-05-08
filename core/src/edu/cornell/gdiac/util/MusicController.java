@@ -120,7 +120,7 @@ public class MusicController {
 	 * @param v	The sound volume in the range [0,1]
 	 */
 	public void setVolume(float v) {
-		if (music != null) { music.setVolume(v); }
+		if (music != null) { music.setVolume(v/100); }
 	}
 
 	public void update() {
