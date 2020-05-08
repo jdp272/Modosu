@@ -71,7 +71,7 @@ public class SoundController {
 		public boolean loop;
 		/** How long this sound has been running */
 		public long lifespan;
-		
+
 		/**
 		 * Creates a new active sound with the given values
 		 * 
@@ -116,6 +116,9 @@ public class SoundController {
 	/** The number of sounds we have played this animation frame */
 	private int current;
 
+	/** The default volume of sounds for this controller */
+	private float soundVolume;
+
 	/** 
 	 * Creates a new SoundController with the default settings.
 	 */
@@ -128,6 +131,7 @@ public class SoundController {
 		frameLimit = DEFAULT_FRAME;
 		current = 0;
 		isUnmuted = true;
+		soundVolume = .40f;
 	}
 
 	/**
@@ -143,6 +147,12 @@ public class SoundController {
 		}
 		return controller;
 	}
+
+	/**
+	 * Sets the volume of the sound controller. All sounds are defaulted to this volume.
+	 * @param v	The sound volume in the range [0,1]
+	 */
+	public void setVolume(float v) { soundVolume = v;}
 	
 
 	/// Sound Management
@@ -180,7 +190,7 @@ public class SoundController {
 	 * @return True if the sound was successfully played
 	 */
 	public boolean play(String key, String filename, boolean loop) {
-		return play(key,filename,loop,1.0f);
+		return play(key,filename,loop,soundVolume);
 	}
 
 	public void setUnmuted(boolean value) { isUnmuted = value; }
