@@ -96,8 +96,6 @@ public class HUD {
     private Label sfxLabel;
     private TextureAtlas textureAtlas;
 
-
-
     /** Initialization */
     public HUD() {
         viewport = new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
@@ -381,7 +379,6 @@ public class HUD {
         numTotalHosts = 0;
         numCurrentHosts = 0;
         pauseButtonClicked = false;
-
         timeLabel.setText(String.format(TIMER_PADDING + "%d:%02d", minutes, seconds));
     }
 
