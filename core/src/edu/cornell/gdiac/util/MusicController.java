@@ -18,18 +18,12 @@
  */
 package edu.cornell.gdiac.util;
 
-import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IdentityMap;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.FileHandler;
+
 
 /**
  * A singleton class for controlling sound effects in LibGDX
@@ -43,22 +37,22 @@ public class MusicController {
 	private Music music;
 	private String musicName;
 
-	/** The singleton Sound controller instance */
+	/** The singleton Music controller instance */
 	private static MusicController controller;
 
 	/**
-	 * Creates a new SoundController with the default settings.
+	 * Creates a new Music with the default settings.
 	 */
 	private MusicController() {
 		isUnmuted = true;
 	}
 
 	/**
-	 * Returns the single instance for the SoundController
+	 * Returns the single instance for the MusicController
 	 *
-	 * The first time this is called, it will construct the SoundController.
+	 * The first time this is called, it will construct the MusicController.
 	 *
-	 * @return the single instance for the SoundController
+	 * @return the single instance for the MusicController
 	 */
 	public static MusicController getInstance() {
 		if (controller == null) {
@@ -97,7 +91,7 @@ public class MusicController {
 		if (isUnmuted) {
 			if (music != null){
 				if (this.musicName.equals(musicName)) {
-					System.out.println("not changing song cause same one is called");
+					//System.out.println("not changing song cause same one is called");
 					return;
 				}
 				music.dispose();
@@ -105,7 +99,7 @@ public class MusicController {
 			music = Gdx.audio.newMusic(fileNames.get(musicName));
 			this.musicName = musicName;
 			music.setLooping(true);
-			System.out.println("new music is successlfully playing");
+			//System.out.println("new music is successlfully playing");
 			music.play();
 		}
 	}
@@ -121,13 +115,12 @@ public class MusicController {
 		}
 	}
 
-	public void setVolume(int i) {
-		if (music != null) {
-			music.setVolume((float)i/100f);
-		}
-		else{
-			System.out.println("CANNOT SET VOLUME OF NULL MUSIC THIS LINE SHOULD NOT BE SEEN");
-		}
+	/**
+	 * Sets the volume of the music controller. All sounds are defaulted to this volume.
+	 * @param v	The sound volume in the range [0,1]
+	 */
+	public void setVolume(float v) {
+		if (music != null) { music.setVolume(v); }
 	}
 
 	public void update() {
