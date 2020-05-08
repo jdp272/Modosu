@@ -7,11 +7,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import edu.cornell.gdiac.util.SoundController;
@@ -27,7 +27,7 @@ public class HUD {
     private static String TIMER_PADDING = "                                      ";
 
     /** Declaration for new Stage */
-    private Stage stage;
+    private static Stage stage;
     private Viewport viewport;
 
     /** Golem & Time Tracking Variables */
@@ -37,6 +37,7 @@ public class HUD {
     private static int worldTimer;
     private static int minutes;
     private static int seconds;
+    private static boolean pauseButtonClicked;
 
     /** Scene2D Widgets */
     private Table table;
@@ -47,8 +48,10 @@ public class HUD {
 
     /** Initialization */
     public HUD(PolygonSpriteBatch spriteBatch) {
-        numCurrentHosts = 0;
-        numTotalHosts = 0;
+        numCurrentHosts = 0; numTotalHosts = 0;
+        minutes = 0; seconds = 0;
+        timeCount = 0; worldTimer = 0;
+        pauseButtonClicked = false;
 
         viewport = new FitViewport(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         stage = new Stage(viewport, spriteBatch);
@@ -85,11 +88,32 @@ public class HUD {
         table.add(stack).expandX().padTop(5).padLeft(5).left();
         // golemTable.setDebug(true);
 
+
+        /** Pause Button */
+        Button.ButtonStyle pauseStyle = new Button.ButtonStyle();
+        pauseStyle.up = new TextureRegionDrawable(new Texture(Gdx.files.internal("shared/pauseButton.png")));
+        Button pause = new Button(pauseStyle);
+
+        pause.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("CLICKED PAUSED");
+                pauseButtonClicked = true;
+            }
+        });
+
+        table.add(pause).width(60).height(60).padTop(5).padRight(10).right();
+
         stage.addActor(table);
+
+        Gdx.input.setInputProcessor(stage);
     }
 
     /** Gets the Stage */
     public Stage getStage() { return stage; }
+
+    public static void setInputProcessor() {
+        Gdx.input.setInputProcessor(stage);
+    }
 
     /** Updates the Timer */
     public static void update(float dt) {
@@ -102,9 +126,17 @@ public class HUD {
             timeLabel.setText(String.format(TIMER_PADDING + "%d:%02d", minutes, seconds));
             timeCount = 0;
         }
-
     }
 
+    /** Returns whether the pause button has been clicked */
+    public static boolean getPauseClicked() {
+        if (pauseButtonClicked) {
+            pauseButtonClicked = false;
+            return true;
+        }
+
+        return false;
+    }
     /** Increments the number of current hosts possessed */
     public static void incrementCurrHosts() {
         if (numCurrentHosts < numTotalHosts) {
@@ -127,7 +159,7 @@ public class HUD {
         worldTimer = 0;
         numTotalHosts = 0;
         numCurrentHosts = 0;
-
+        pauseButtonClicked = false;
         timeLabel.setText(String.format(TIMER_PADDING + "%d:%02d", minutes, seconds));
     }
 

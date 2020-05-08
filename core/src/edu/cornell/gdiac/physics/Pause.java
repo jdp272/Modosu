@@ -224,7 +224,7 @@ public class Pause {
         return menuButtonClicked;
     }
 
-
+    /** Returns whether retry icon was clicked */
     public boolean getRetryClicked() {
         return retryButtonClicked;
     }
