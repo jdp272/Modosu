@@ -99,13 +99,13 @@ public class LoadingMode implements Screen {
 	/** Standard button-x (for scaling) */
 	private static int BUTTON_X  = 175;
 	/** Start button-y (for scaling) */
-	private static int START_Y = 250;
+	private static int START_Y = 260;
 	/** Level Select button-y (for scaling) */
 	private static int LEVEL_SELECT_Y = 200;
 	/** Level Design button-y (for scaling) */
-	private static int LEVEL_Y = 150;
+	private static int LEVEL_Y = 140;
 	/** Credit button-y (for scaling) */
-	private static int CREDITS_Y = 110;
+	private static int CREDITS_Y = 90;
 	/** Quit button-y (for scaling) */
 	private static int QUIT_Y = 525;
 	/** Quit button-x (for scaling) */
@@ -259,7 +259,7 @@ public class LoadingMode implements Screen {
 
 		input = InputController.getInstance();
 
-		colorHovered = new Color(Color.DARK_GRAY);
+		colorHovered = new Color(Color.SKY);
 		colorUnhovered = new Color(Color.WHITE);
 		colorStart = colorUnhovered;
 		colorLvlDesign = colorUnhovered;

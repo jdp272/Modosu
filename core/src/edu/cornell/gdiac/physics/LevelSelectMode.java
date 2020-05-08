@@ -13,6 +13,7 @@ package edu.cornell.gdiac.physics;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
@@ -39,6 +40,11 @@ public class LevelSelectMode extends WorldController implements Screen {
     private static final String NEXT_FILE = "shared/next.png";
     private static final String CLICK_SOUND = "shared/click.mp3";
     private static final String HOVER_SOUND = "shared/hover.mp3";
+
+    private static final String FONT_FILE = "shared/Asul.ttf";
+    private static final int FONT_SIZE = 42;
+
+    private BitmapFont levelFont;
 
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
@@ -131,6 +137,14 @@ public class LevelSelectMode extends WorldController implements Screen {
         manager.load(NEXT_FILE, Texture.class);
         assets.add(NEXT_FILE);
 
+        // Load the font
+        FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        size2Params.fontFileName = FONT_FILE;
+        size2Params.fontParameters.size = FONT_SIZE;
+        manager.load(FONT_FILE, BitmapFont.class, size2Params);
+        assets.add(FONT_FILE);
+
+
         super.preLoadContent(manager);
     }
 
@@ -153,17 +167,16 @@ public class LevelSelectMode extends WorldController implements Screen {
         prevTexture = createTexture(manager,NEXT_FILE, false);
         prevTexture.flip(true,false);
 
+        levelFont = manager.get(FONT_FILE,BitmapFont.class);
 
-        oneStart = new Vector2(backgroundTexture.getRegionWidth()*0.13f,backgroundTexture.getRegionHeight()*0.27f);
-
-        oneEnd = new Vector2(backgroundTexture.getRegionWidth()*0.21f,backgroundTexture.getRegionHeight()*0.56f);
-
-        twoStart = new Vector2( backgroundTexture.getRegionWidth()*0.35f,oneStart.y);
-        twoEnd = new Vector2(backgroundTexture.getRegionWidth()*0.42f, oneEnd.y);
-        threeStart = new Vector2( backgroundTexture.getRegionWidth()*0.57f,oneStart.y);
+        oneStart = new Vector2(backgroundTexture.getRegionWidth()*0.14f,backgroundTexture.getRegionHeight()*0.30f);
+        oneEnd = new Vector2(backgroundTexture.getRegionWidth()*0.22f,backgroundTexture.getRegionHeight()*0.59f);
+        twoStart = new Vector2( backgroundTexture.getRegionWidth()*0.34f,oneStart.y);
+        twoEnd = new Vector2(backgroundTexture.getRegionWidth()*0.41f, oneEnd.y);
+        threeStart = new Vector2( backgroundTexture.getRegionWidth()*0.59f,oneStart.y);
         threeEnd = new Vector2(backgroundTexture.getRegionWidth()*0.65f, oneEnd.y);
-        fourStart = new Vector2( backgroundTexture.getRegionWidth()*0.79f,oneStart.y);
-        fourEnd = new Vector2(backgroundTexture.getRegionWidth()*0.87f, oneEnd.y);
+        fourStart = new Vector2( backgroundTexture.getRegionWidth()*0.80f,oneStart.y);
+        fourEnd = new Vector2(backgroundTexture.getRegionWidth()*0.88f, oneEnd.y);
         nextStart = new Vector2(fourStart.x - nextTexture.getRegionWidth(), backgroundTexture.getRegionHeight()*0.8f);
         nextEnd = new Vector2(nextStart.x+nextTexture.getRegionWidth(), nextStart.y+nextTexture.getRegionHeight());
         prevStart = new Vector2(oneEnd.x , backgroundTexture.getRegionHeight()*0.8f);
@@ -264,30 +277,30 @@ public class LevelSelectMode extends WorldController implements Screen {
         if(page != 0) {
             canvas.draw(prevTexture, colorPrev, 0f, 0f, prevStart.x, prevStart.y, 0, 1, 1);
         }
-        displayFont.setColor(colorOne);
+        levelFont.setColor(colorOne);
         String name = levels[page * 4].getName();
         Vector2 center = new Vector2((oneEnd.x+oneStart.x)/2,(oneEnd.y+oneStart.y)/2);
-        canvas.drawText(name.substring(0,name.length()-4), displayFont, center.x, center.y);
+        canvas.drawText(name.substring(0,name.length()-4), levelFont, center.x, center.y);
 
         if (page*4 + 1 < levels.length) {
             center.x = (twoEnd.x+twoStart.x)/2;
-            displayFont.setColor(colorTwo);
+            levelFont.setColor(colorTwo);
             name = levels[page * 4 + 1].getName();
-            canvas.drawText(name.substring(0, name.length() - 4), displayFont, center.x, center.y);
+            canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y);
         }
         if (page*4 + 2 < levels.length) {
             center.x = (threeEnd.x+threeStart.x)/2;
-            displayFont.setColor(colorThree);
+            levelFont.setColor(colorThree);
             name = levels[page * 4 + 2].getName();
-            canvas.drawText(name.substring(0, name.length() - 4), displayFont, center.x, center.y);
+            canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y);
         }
         if (page*4 + 3 < levels.length) {
             center.x = (fourEnd.x+fourStart.x)/2;
-            displayFont.setColor(colorFour);
+            levelFont.setColor(colorFour);
             name = levels[page * 4 + 3].getName();
-            canvas.drawText(name.substring(0, name.length() - 4), displayFont, center.x, center.y);
+            canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y);
         }
-        displayFont.setColor(colorUnhovered);
+        levelFont.setColor(colorUnhovered);
         canvas.end();
     }
 
