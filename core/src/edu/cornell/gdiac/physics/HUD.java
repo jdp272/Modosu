@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -29,6 +30,7 @@ public class HUD {
     /** Declaration for new Stage */
     private static Stage stage;
     private Viewport viewport;
+    private static InputMultiplexer inputMultiplexer;
 
     /** Golem & Time Tracking Variables */
     private static int numCurrentHosts;
@@ -105,14 +107,16 @@ public class HUD {
 
         stage.addActor(table);
 
-        Gdx.input.setInputProcessor(stage);
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(stage);
+        System.out.println("HUD");
     }
 
     /** Gets the Stage */
     public Stage getStage() { return stage; }
 
-    public static void setInputProcessor() {
-        Gdx.input.setInputProcessor(stage);
+    public static void addInputProcessor(Stage stage) {
+        inputMultiplexer.addProcessor(stage);
     }
 
     /** Updates the Timer */
