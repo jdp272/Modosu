@@ -11,6 +11,7 @@
  */
 package edu.cornell.gdiac.physics.obstacle;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -41,12 +42,25 @@ public class BoxObstacle extends SimpleObstacle {
 	protected float sy;
 
 
-	public void setSX(float s){
-		this.sx = s;
-	}
+//	public void setSX(float s){
+//		this.sx = s;
+//	}
+//
+//	public void setSY(float s){
+//		this.sy = s;
+//	}
 
-	public void setSY(float s){
-		this.sy = s;
+	/**
+	 * Updates the scaling values for this obstacle so that it is drawn at the
+	 * correct size, regardless of the image size. This function should be
+	 * called before drawing
+	 *
+	 * @param tex The texture to scale based on. Usually should be the default
+	 *            texture region of the obstacle
+	 */
+	protected void setScaling(TextureRegion tex) {
+		this.sx = getWidth() * drawScale.x / tex.getRegionWidth();
+		this.sy = getHeight() * drawScale.y / tex.getRegionHeight();
 	}
 
 	/** 
@@ -218,9 +232,10 @@ public class BoxObstacle extends SimpleObstacle {
 	 * @param canvas Drawing context
 	 */
 	public void draw(GameCanvas canvas) {
-		if (texture != null) {
-			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
-		}
+		if (texture == null) return;
+
+		setScaling(texture);
+		canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
 	}
 
 	

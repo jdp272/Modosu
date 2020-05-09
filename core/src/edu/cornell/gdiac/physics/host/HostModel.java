@@ -793,8 +793,10 @@ public class HostModel extends BoxObstacle {
         if (this.isPedestal) {
             // Make pedestal clear when no longer in possession.
             if (this.isPossessed) {
+                setScaling(pedestalHost);
                 canvas.draw(pedestalHost, Color.WHITE, pedestalHost.getRegionWidth() / 2, pedestalHost.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
             } else {
+                setScaling(pedestalHost);
                 canvas.draw(pedestalHost, Color.CLEAR, pedestalHost.getRegionWidth() / 2, pedestalHost.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
             }
         } else {
@@ -806,13 +808,16 @@ public class HostModel extends BoxObstacle {
                 if (this.hasBeenPossessed) {
                     /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
                     if (this.currentCharge < this.maxCharge) {
+                        setScaling(hostStrip);
                         canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2, hostStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
                     } else {
+                        setScaling(hostStrip);
                         canvas.draw(hostStrip, Color.RED, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     }
                 }
                 // When the bot hasn't been possessed the indicator color should be black
                 else {
+                    setScaling(hostStrip);
                     canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2, hostStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                 }
             }
@@ -847,11 +852,13 @@ public class HostModel extends BoxObstacle {
                             // Color of the 3 flashes
                             warningColor = new Color (chargeProgression * 255f  / 256f , chargeProgression * 155f / 256f, chargeProgression * 222f/256f, 1);
                         }
+                        setScaling(hostChargeUI);
                         canvas.draw(hostChargeUI, warningColor, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.9f, 0.9f);
                     }
                 }
                 // When the bot hasn't been possessed the indicator color should be black
                 else {
+                    setScaling(hostChargeUI);
                     canvas.draw(hostChargeUI, Color.BLACK, hostChargeUI.getRegionWidth() / 2,hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 0.9f, 0.9f);
                 }
             }

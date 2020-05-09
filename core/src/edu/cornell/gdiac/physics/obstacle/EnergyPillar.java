@@ -70,8 +70,11 @@ public class EnergyPillar extends BoxObstacle {
     public void draw(GameCanvas canvas) {
         Color warningColor = new Color(200f/256f, 241f/256f, 238f/256f, 1);
 
+//        setScaling(energyPillarStrip);
         canvas.draw(energyPillarStrip, Color.WHITE, energyPillarStrip.getRegionWidth() / 2f, energyPillarStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.3f, 0.3f);
+//        setScaling(energyPillarRune);
         canvas.draw(energyPillarRune, warningColor, energyPillarStrip.getRegionWidth() / 2f, energyPillarStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.3f, 0.3f);
+//        setScaling(energyPillarFieldStrip);
         canvas.draw(energyPillarFieldStrip, warningColor, energyPillarFieldStrip.getRegionWidth() / 2f, energyPillarFieldStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), chargeProgression / 3, chargeProgression / 3);
     }
 }

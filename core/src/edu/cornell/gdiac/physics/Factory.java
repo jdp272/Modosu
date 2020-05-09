@@ -244,8 +244,8 @@ public class Factory {
                 new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE)
         );
         wall.setDrawScale(scale);
-        wall.setSX(0.26f);
-        wall.setSY(0.26f);
+//        wall.setSX(0.25f);
+//        wall.setSY(0.25f);
         wall.setBodyType(BodyDef.BodyType.StaticBody);
         wall.setSensor(makeSensors);
         wall.setName("wall");
@@ -270,8 +270,8 @@ public class Factory {
                 lowerRightCornerFrame
         );
         wall.setDrawScale(scale);
-        wall.setSX(0.26f);
-        wall.setSY(0.26f);
+//        wall.setSX(0.25f);
+//        wall.setSY(0.25f);
         wall.setBodyType(BodyDef.BodyType.StaticBody);
         wall.setSensor(makeSensors);
         wall.setName("wall");
@@ -289,8 +289,8 @@ public class Factory {
         );
         edge.selectable = false;
         edge.setDrawScale(scale);
-        edge.setSX(0.25f);
-        edge.setSY(0.25f);
+//        edge.setSX(0.25f);
+//        edge.setSY(0.25f);
         edge.setBodyType(BodyDef.BodyType.StaticBody);
         edge.setSensor(makeSensors);
         edge.setName("edge");
@@ -309,8 +309,8 @@ public class Factory {
         );
         edge.selectable = false;
         edge.setDrawScale(scale);
-        edge.setSX(0.25f);
-        edge.setSY(0.25f);
+//        edge.setSX(0.25f);
+//        edge.setSY(0.25f);
         edge.setBodyType(BodyDef.BodyType.StaticBody);
         edge.setSensor(makeSensors);
         edge.setName("edge");
@@ -328,8 +328,8 @@ public class Factory {
         );
         corner.selectable = false;
         corner.setDrawScale(scale);
-        corner.setSX(0.25f);
-        corner.setSY(0.25f);
+//        corner.setSX(0.25f);
+//        corner.setSY(0.25f);
         corner.setBodyType(BodyDef.BodyType.StaticBody);
         corner.setSensor(makeSensors);
         corner.setName("corner");
@@ -350,8 +350,8 @@ public class Factory {
         water.setTerrainStrip(new FilmStrip(waterTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
         water.setCornerStrip(new FilmStrip(cornerTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
         water.setDrawScale(scale);
-        water.setSX(0.26f);
-        water.setSY(0.26f);
+//        water.setSX(0.26f);
+//        water.setSY(0.26f);
         water.setFrame(frame);
         water.setBodyType(BodyDef.BodyType.StaticBody);
         water.setSensor(makeSensors);
@@ -373,8 +373,8 @@ public class Factory {
         sand.setTerrainStrip(new FilmStrip(sandTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
         sand.setCornerStrip(new FilmStrip(cornerSandTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
         sand.setDrawScale(scale);
-        sand.setSX(0.26f);
-        sand.setSY(0.26f);
+//        sand.setSX(0.26f);
+//        sand.setSY(0.26f);
         sand.setFrame(frame);
         sand.setBodyType(BodyDef.BodyType.KinematicBody);
         sand.setSensor(makeSensors);

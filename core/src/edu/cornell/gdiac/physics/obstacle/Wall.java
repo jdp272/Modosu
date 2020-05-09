@@ -305,49 +305,53 @@ public class Wall extends BoxObstacle {
             return;
         }
 
+        // Draw nothing if this wall isn't the kind that should be drawn
         if(isFrontWall() != front) {
             return;
         }
 
+        // Update the scaling so the box is drawn correctly
+        setScaling(wallStrip);
+
         // Draw the primary frame
         wallStrip.setFrame(primaryFrame);
+
+//        canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
+
         canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
 
         // Draw the left side
         if(leftFrame != NO_SIDE) {
             wallStrip.setFrame(leftFrame);
+//            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
             canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
         }
 
         // Draw the right side
         if(rightFrame != NO_SIDE) {
             wallStrip.setFrame(rightFrame);
+//            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
             canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
         }
 
         // Draw the front edge
         if(frontEdgeFrame != NO_SIDE) {
             wallStrip.setFrame(frontEdgeFrame);
+//            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
             canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
         }
 
         // Draw the corners
         if(lowerLeftCornerFrame != NO_SIDE) {
             wallStrip.setFrame(lowerLeftCornerFrame);
+//            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
             canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
         }
         if(lowerRightCornerFrame != NO_SIDE) {
             wallStrip.setFrame(lowerRightCornerFrame);
+//            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
             canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
         }
-
-        // Draw the back side
-//        if(backFrame != NO_SIDE) {
-//            wallStrip.setFrame(backFrame);
-//
-//            // Add a tile width so that it is drawn above
-//            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,(getY() + TILE_WIDTH)*drawScale.y,getAngle(),sx,sy);
-//        }
     }
 
     /**
@@ -384,11 +388,13 @@ public class Wall extends BoxObstacle {
         // Draw the back edge
         if(backEdgeFrame != NO_SIDE) {
             wallStrip.setFrame(backEdgeFrame);
+//            canvas.draw(texture, Color.WHITE,(int)origin.x,(int)origin.y,getX()*drawScale.x,(getY() + TILE_WIDTH)*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
             canvas.draw(texture, Color.WHITE,(int)origin.x,(int)origin.y,getX()*drawScale.x,(getY() + TILE_WIDTH)*drawScale.y,getAngle(),sx,sy);
 
             // Draw the line behind the back edge and the wall, if this is a top wall
             if(primaryFrame != WALL_FRONT) {
                 wallStrip.setFrame(BACK_LINE);
+//                canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
                 canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
             }
         }

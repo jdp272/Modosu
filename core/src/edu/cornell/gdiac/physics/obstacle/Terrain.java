@@ -243,6 +243,8 @@ public abstract class Terrain extends BoxObstacle {
     public void draw(GameCanvas canvas) {
         super.draw(canvas);
 
+        setScaling(cornerStrip);
+
         if(upLeft) {
             cornerStrip.setFrame(0);
             canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerStrip.getRegionWidth())+0.01f, (64.f / cornerStrip.getRegionHeight())+0.01f);

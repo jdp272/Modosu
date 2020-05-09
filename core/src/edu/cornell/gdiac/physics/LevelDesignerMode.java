@@ -142,8 +142,8 @@ public class LevelDesignerMode extends WorldController {
 
 			setTexture(tex);
 			setDrawScale(scale);
-			setSX(1);
-			setSY(1);
+//			setSX(1);
+//			setSY(1);
 			setBodyType(BodyDef.BodyType.StaticBody);
 			setSensor(true);
 			setName("corner");
