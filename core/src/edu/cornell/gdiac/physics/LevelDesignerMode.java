@@ -842,7 +842,7 @@ public class LevelDesignerMode extends WorldController {
 		// Switch up the alt boolean every tile
 		((Wall)board.get(x, y)).setFrame(wallAbove, wallBelow, wallLeft, wallRight,
 				belowIsTop, leftIsTop, rightIsTop,
-				lowerLeftIsTop, lowerRightIsTop,x + y % 2 == 0);
+				lowerLeftIsTop, lowerRightIsTop, x, y);
 
 		return true;
 	}
@@ -1116,7 +1116,8 @@ public class LevelDesignerMode extends WorldController {
 		    // If the selected object is a pedestal then check if pedestal is already in the game
 			if((obj.getName() == "pedestal" && !hasPed) || obj.getName() != "pedestal") {
 				addObject(obj);
-				selector.select(mouseX, mouseY);
+//				selector.select(mouseX, mouseY);
+				selector.select(obj);
 				selecting = true;
 			}
 		}

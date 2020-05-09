@@ -113,7 +113,7 @@ public abstract class WorldController implements Screen {
 	/** Texture file for arrow sprite */
 	private static final String ARROW_FILE = "shared/arrow.png";
 	/** File to texture for Walls */
-	private static String WALL_FILE = "shared/wall_spritesheet_v3.png";
+	private static String WALL_FILE = "shared/wallSpritesheet_v04.png";
 	/** File to texture for Water */
 	private static String WATER_FILE = "shared/waterspritesheet.png";
 	/** File to texture for Water corners */
@@ -951,7 +951,7 @@ public abstract class WorldController implements Screen {
 			obj.draw(canvas);
 		}
 		for(Wall wall : wallDrawLayer) {
-			wall.draw(canvas);
+			wall.drawFront(canvas);
 		}
 		for(HostModel host : hostDrawLayer) {
 			host.draw(canvas);

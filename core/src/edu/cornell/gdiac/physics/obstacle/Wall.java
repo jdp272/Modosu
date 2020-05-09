@@ -6,6 +6,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.util.FilmStrip;
 
+import java.util.Arrays;
+
 public class Wall extends BoxObstacle {
 
     /*
@@ -37,8 +39,11 @@ public class Wall extends BoxObstacle {
     private static int NO_SIDE = 0;
 
     private static int WALL_FRONT = 24;
+    private static int[] WALL_FRONT_ALT = { 27, 28, 29, 30, 31 };
+
     private static int WALL_TOP_A = 16;
     private static int WALL_TOP_B = 17;
+    private static int[] WALL_TOP_ALT = { 5, 6, 7, 13, 14, 15 };
 
     private static int WALL_LEFT_FRONT  = 25;
     private static int WALL_RIGHT_FRONT = 26;
@@ -47,14 +52,17 @@ public class Wall extends BoxObstacle {
     private static int WALL_RIGHT_TOP   = 19;
 
     private static int FRONT_EDGE = 22;
-    private static int BACK_EDGE  = 8;
     private static int BACK_LINE  = 23;
+    private static int BACK_EDGE  = 8;
+    private static int[] BACK_EDGE_ALT = { 2, 3, 4, 10, 11, 12 };
 
     private static int LOWER_LEFT_CORNER =  20;
     private static int LOWER_RIGHT_CORNER = 21;
 
     /** The texture strip for the wall */
     protected FilmStrip wallStrip;
+
+    private boolean isFrontWall;
 
     /** If the hitbox should update with the wall texture */
     private boolean updateHitbox;
@@ -90,6 +98,8 @@ public class Wall extends BoxObstacle {
         this.backEdgeFrame = backEdgeFrame;
         this.lowerLeftCornerFrame = lowerLeftCornerFrame;
         this.lowerRightCornerFrame = lowerRightCornerFrame;
+
+        updateFrontWall();
 
         this.cache = new Vector2();
     }
@@ -132,7 +142,19 @@ public class Wall extends BoxObstacle {
     /**
      * @return Whether this wall is a front wall
      */
-    public boolean isFrontWall() { return primaryFrame == WALL_FRONT; }
+    public boolean isFrontWall() {
+        return isFrontWall;
+    }
+
+    /**
+     * Updates the front wall boolean internally, based on primaryFrame
+     */
+    private void updateFrontWall() {
+        isFrontWall = (primaryFrame == WALL_FRONT);
+        for(int i = 0; i < WALL_FRONT_ALT.length; i++) {
+            if (primaryFrame == WALL_FRONT_ALT[i]) isFrontWall = true;
+        }
+    }
 
     /**
      * Sets the hitbox of this wall to be dependent on its texture.
@@ -145,7 +167,7 @@ public class Wall extends BoxObstacle {
      */
     public void setAltHitbox() {
         // Change the hitbox only if this is a front wall
-        if (primaryFrame == WALL_FRONT) {
+        if (isFrontWall()) {
             PolygonShape s = new PolygonShape();
             s.setAsBox(getWidth() / 2, getHeight() / 4, cache.set(0, getHeight() / 4), 0);
             shape = s;
@@ -165,42 +187,63 @@ public class Wall extends BoxObstacle {
      * @param rightIsTop If there is a wall to the right, and it not a front wall
      * @param lowerLeftIsTop If there is a wall down and to the left, and it is not a front wall
      * @param lowerRightIsTop If there is a wall down and to the right, and it is not a front wall
-     * @param alt If the position has an alternate texture, this indicates if it
-     *            should be used instead of the primary one
+     * @param x The x coordinate of this tile
+     * @param y The y coordinate of this tile
+     *
      */
     public void setFrame(boolean above, boolean below, boolean left, boolean right,
                          boolean belowIsTop, boolean leftIsTop, boolean rightIsTop,
                          boolean lowerLeftIsTop, boolean lowerRightIsTop,
-                         boolean alt) {
+                         int x, int y) {
+
+        // x + 1 and y + 1 ensure that that term continues to change even when
+        // either is 0
+        int pseudoRandomNum = (x * x) + (y * y) + ((x + 1) * (y + 1));
+        int index;
 
         // Draw the ceiling only if a wall is below this one
         if(below) {
-            primaryFrame = alt ? WALL_TOP_B : WALL_TOP_A;
+            index = pseudoRandomNum % (2 * WALL_TOP_ALT.length);
+
+            if(index >= WALL_TOP_ALT.length) {
+                primaryFrame = ((x + y) % 2 == 0 ? WALL_TOP_A : WALL_TOP_B);
+            } else {
+                primaryFrame = WALL_TOP_ALT[index];
+            }
+
             if(!belowIsTop) {
                 frontEdgeFrame = FRONT_EDGE;
             } else {
                 frontEdgeFrame = NO_SIDE;
             }
         } else {
-            primaryFrame = WALL_FRONT;
+            index = pseudoRandomNum % (2 * WALL_FRONT_ALT.length);
+            if(index >= WALL_FRONT_ALT.length) {
+                primaryFrame = WALL_FRONT;
+            } else {
+                primaryFrame = WALL_FRONT_ALT[index];
+            }
+
             frontEdgeFrame = NO_SIDE;
         }
 
+        updateFrontWall();
+
         // Draw the left and right borders if there is no wall to that side,
         // or if it is a front wall and this wall is not
-        if(leftIsTop || (primaryFrame == WALL_FRONT && left)) {
+        if(leftIsTop || (isFrontWall() && left)) {
             leftFrame = NO_SIDE;
         } else {
-            if(primaryFrame == WALL_FRONT) {
+            if(isFrontWall()) {
                 leftFrame = WALL_LEFT_FRONT;
             } else {
                 leftFrame = WALL_LEFT_TOP;
             }
         }
-        if(rightIsTop || (primaryFrame == WALL_FRONT && right)) {
+        if(rightIsTop || (isFrontWall() && right)) {
             rightFrame = NO_SIDE;
         } else {
-            if(primaryFrame == WALL_FRONT) {
+            if(isFrontWall()) {
                 rightFrame = WALL_RIGHT_FRONT;
             } else {
                 rightFrame = WALL_RIGHT_TOP;
@@ -209,7 +252,12 @@ public class Wall extends BoxObstacle {
 
         // Draw the back rim only if there is no wall behind this one
         if(!above) {
-            backEdgeFrame = BACK_EDGE;
+            index = pseudoRandomNum % (2 * BACK_EDGE_ALT.length);
+            if(index >= BACK_EDGE_ALT.length) {
+                backEdgeFrame = BACK_EDGE;
+            } else {
+                backEdgeFrame = BACK_EDGE_ALT[index];
+            }
         } else {
             backEdgeFrame = NO_SIDE;
         }
@@ -232,6 +280,7 @@ public class Wall extends BoxObstacle {
     public void draw(GameCanvas canvas) {
         // Note that this function only draws the front of the wall
         drawWall(canvas, true);
+        drawWall(canvas, false);
     }
 
     /**
@@ -290,6 +339,22 @@ public class Wall extends BoxObstacle {
 //            // Add a tile width so that it is drawn above
 //            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,(getY() + TILE_WIDTH)*drawScale.y,getAngle(),sx,sy);
 //        }
+    }
+
+    /**
+     * Simply draws the front of the walls, so that they will be drawn under
+     * other tiles
+     *
+     * @param canvas Drawing context
+     */
+    public void drawFront(GameCanvas canvas) {
+        if (texture == null) {
+            System.out.println("draw() called on wall with null texture");
+            return;
+        }
+
+        // Draw the front of the wall
+        drawWall(canvas, true);
     }
 
     /**
