@@ -293,10 +293,6 @@ public class HUD {
     /** Gets the Stage */
     public static Stage getStage() { return stage; }
 
-    public static void setInputProcessor() {
-        Gdx.input.setInputProcessor(stage);
-    }
-
     /** Updates the Timer */
     public static void update(float dt) {
         timeCount += dt;
