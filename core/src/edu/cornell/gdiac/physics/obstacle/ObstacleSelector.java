@@ -310,15 +310,28 @@ public class ObstacleSelector implements QueryCallback  {
 	 * @return true if a physics body was selected at the given position.
 	 */
 	public boolean select(Obstacle obj) {
-		if(obj == null) return false;
+		selection = obj;
 
-		float x = obj.getX();
-		float y = obj.getY();
-
-		pointer.x = x-pointer.width/2.0f;
-		pointer.y = y-pointer.height/2.0f;
-		world.QueryAABB(this, pointer.x,pointer.y,pointer.x+pointer.width,pointer.y+pointer.height);
+		//world.QueryAABB(this, pointer.x,pointer.y,pointer.x+pointer.width,pointer.y+pointer.height);
 		if (selection != null) {
+
+			float x = obj.getX();
+			float y = obj.getY();
+
+			pointer.x = x-pointer.width/2.0f;
+			pointer.y = y-pointer.height/2.0f;
+
+			// Replacing the world querying
+			selection.setClicked();
+
+			// Don't select an object that can't be selected
+			if(!selection.selectable) {
+				selection = null;
+				return false;
+			} else {
+				selection.getBody().setType(BodyDef.BodyType.DynamicBody);
+			}
+
 			Body body = selection.getBody();
 			mouseJointDef.bodyA = ground;
 			mouseJointDef.bodyB = body;
