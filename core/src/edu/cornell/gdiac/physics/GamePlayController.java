@@ -12,7 +12,6 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
@@ -21,13 +20,13 @@ import edu.cornell.gdiac.physics.host.HostController;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.EnergyPillar;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.obstacle.OscWall;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.MusicController;
 import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.Arrays;
 
 /**
@@ -76,6 +75,8 @@ public class GamePlayController extends WorldController {
 	protected SpiritModel spirit;
 
 	protected EnergyPillar[] energyPillars;
+
+	protected OscWall[] oscWalls;
 
 	private Vector2 cache;
 
@@ -204,6 +205,8 @@ public class GamePlayController extends WorldController {
 
 		energyPillars = level.energyPillars;
 
+		oscWalls = level.oscWalls;
+
 		possessed = pedestal;
 		spirit.setGoToCenter(true);
 
@@ -256,6 +259,9 @@ public class GamePlayController extends WorldController {
 		for(Obstacle obj : level.energyPillars) {
 			addQueue.add(obj);
 		}
+		for(Obstacle obj : level.oscWalls) {
+			addQueue.add(obj);
+		}
 		for(HostModel host : level.hosts) {
 			addQueue.add(host);
 		}
@@ -279,6 +285,10 @@ public class GamePlayController extends WorldController {
 	public void update(float delta) {
 
 		MusicController.getInstance().update();
+
+		for(OscWall ow : oscWalls) {
+			ow.updateAnimation();
+		}
 
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){

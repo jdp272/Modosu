@@ -5,10 +5,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.*;
-import edu.cornell.gdiac.physics.obstacle.EnergyPillar;
-import edu.cornell.gdiac.physics.obstacle.SandTile;
-import edu.cornell.gdiac.physics.obstacle.Wall;
-import edu.cornell.gdiac.physics.obstacle.WaterTile;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.FilmStrip;
 
@@ -41,6 +37,10 @@ public class Factory {
     private Texture energyPillarBodyTexture;
     private Texture energyPillarBodyChargeTexture;
     private Texture energyPillarRadiusTexture;
+    private Texture oscWallVertTexture;
+    private Texture oscWallVertGaugeTexture;
+    private Texture oscWallHorzTexture;
+    private Texture oscWallHorzGaugeTexture;
 
     /** Static Variables for Sprite Sheet */
 
@@ -71,6 +71,7 @@ public class Factory {
      */
     private static final int SPIRIT_SIZE = 140;
 
+
     /**
      * Number of rows in the host image filmstrip
      */
@@ -83,6 +84,7 @@ public class Factory {
      * Number of total hosts in the host image filmstrip
      */
     private static final int HOST_SIZE = 60;
+
 
     /**
      * Number of rows in the charge image filmstrip
@@ -97,6 +99,7 @@ public class Factory {
      */
     private static final int CHARGE_SIZE = 32;
 
+
     /**
      * Number of rows in the wall image filmstrip
      */
@@ -105,6 +108,7 @@ public class Factory {
     private static final int WALL_COLUMNS = 8;
     /** Number of total hosts in the wall image filmstrip */
     private static final int WALL_SIZE = 32;
+
 
     /**
      * Number of rows in the water image filmstrip
@@ -119,6 +123,7 @@ public class Factory {
      */
     private static final int WATER_SIZE = 16;
 
+
     /**
      * Number of rows in the water corner image filmstrip
      */
@@ -131,6 +136,7 @@ public class Factory {
      * Number of total hosts in the water corner image filmstrip
      */
     private static final int WATER_CORNER_SIZE = 4;
+
 
     /**
      * Number of rows in the pedestal image filmstrip
@@ -145,15 +151,23 @@ public class Factory {
      */
     private static final int PEDESTAL_SIZE = 4;
 
+
     /** Number of rows in the border edge image filmstrip */
     private static final int BORDER_EDGE_ROWS = 4;
     /** Number of columns in the border edge image filmstrip */
     private static final int BORDER_EDGE_COLS = 9;
-
     /** Number of rows in the border corner image filmstrip */
     private static final int BORDER_CORNER_ROWS = 2;
     /** Number of columns in the border corner image filmstrip */
     private static final int BORDER_CORNER_COLS = 2;
+
+
+    /** Number of rows in the oscwall image filmstrip */
+    private static final int OSC_WALL_VERT_ROWS = 6;
+    /** Number of cols in the oscwall image filmstrip */
+    private static final int OSC_WALL_VERT_COLS = 10;
+    /** Number of total frames in the oscwall image filmstrip */
+    private static final int OSC_WALL_SIZE = 60;
 
 
     /** The draw scale of objects */
@@ -189,7 +203,12 @@ public class Factory {
             Texture borderCornerTexture,
             Texture energyPillarBodyTexture,
             Texture energyPillarBodyChargeTexture,
-            Texture energyPillarRadiusTexture
+            Texture energyPillarRadiusTexture,
+            Texture oscWallVertTexture,
+            Texture oscWallVertGaugeTexture,
+            Texture oscWallHorzTexture,
+            Texture oscWallHorzGaugeTexture
+
     ) {
         this.scale = scale;
         this.spiritBodyTexture = spiritBodyTexture;
@@ -215,6 +234,10 @@ public class Factory {
         this.energyPillarBodyChargeTexture = energyPillarBodyChargeTexture;
         this.energyPillarBodyTexture = energyPillarBodyTexture;
         this.energyPillarRadiusTexture = energyPillarRadiusTexture;
+        this.oscWallVertTexture = oscWallVertTexture;
+        this.oscWallVertGaugeTexture = oscWallVertGaugeTexture;
+        this.oscWallHorzTexture = oscWallHorzTexture;
+        this.oscWallHorzGaugeTexture = oscWallHorzGaugeTexture;
     }
 
 
@@ -380,6 +403,28 @@ public class Factory {
         sand.setSensor(makeSensors);
         sand.setName("sand");
         return sand;
+    }
+
+    public OscWall makeOscWall(float x, float y) {
+        return makeOscWall(x,y,false, false);
+    }
+
+    public OscWall makeOscWall(float x, float y, boolean isVert, boolean isGoingUp) {
+        OscWall oscWall = new OscWall(
+                x,
+                y,
+                Constants.TILE_WIDTH,
+                Constants.TILE_HEIGHT
+        );
+        oscWall.setOscWallStrips(new FilmStrip(oscWallHorzTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE), new FilmStrip(oscWallHorzGaugeTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE), new FilmStrip(oscWallVertTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE), new FilmStrip(oscWallVertGaugeTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE));
+        oscWall.setMainStrip(isVert, isGoingUp);
+        oscWall.setVert(isVert);
+        oscWall.setGoingUp(isGoingUp);
+        oscWall.setDrawScale(scale);
+        oscWall.setBodyType(BodyDef.BodyType.KinematicBody);
+        oscWall.setSensor(makeSensors);
+        oscWall.setName("oscWall");
+        return oscWall;
     }
 
 

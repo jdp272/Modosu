@@ -30,7 +30,6 @@ import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.physics.host.ArrowModel;
 import edu.cornell.gdiac.physics.host.FootPrintModel;
 import edu.cornell.gdiac.physics.host.HostModel;
-import edu.cornell.gdiac.physics.obstacle.BorderEdge;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
@@ -136,6 +135,16 @@ public abstract class WorldController implements Screen {
 	/** File to texture for Energy Pillar Radius */
 	private static String ENERGY_PILLAR_RADIUS_FILE = "shared/energyRing.png";
 
+	/** File to texture for OscWall Horz */
+	public static String OSC_WALL_HORZ_FILE = "shared/horizontalGateSpritesheet.png";
+	/** File to texture for OscWall Horz Gauge */
+	public static String OSC_WALL_HORZ_GAUGE_FILE = "shared/horizontalGateLightSpritesheet.png";
+
+	/** File to texture for OscWall Horz */
+	public static String OSC_WALL_VERT_FILE = "shared/horizontalGateSpritesheet.png";
+	/** File to texture for OscWall Horz Gauge */
+	public static String OSC_WALL_VERT_GAUGE_FILE = "shared/horizontalGateLightSpritesheet.png";
+
 	private static int FONT_SIZE = 56;
 
 	/** The font for giving messages to the player */
@@ -197,6 +206,14 @@ public abstract class WorldController implements Screen {
 	private static Texture energyPillarCharge;
 	/** Texture for Energy Pillar Radius Texture */
 	private static Texture energyPillarRadius;
+	/** Texture for Osc Wall Horz */
+	private static Texture oscWallHorz;
+	/** Texture for Osc Wall Gauge Horz */
+	private static Texture oscWallGaugeHorz;
+	/** Texture for Osc Wall Vert */
+	private static Texture oscWallVert;
+	/** Texture for Osc Wall Vert Gauge */
+	private static Texture oscWallVertGauge;
 
 	/** List of footprints for level editor */
 	private ArrayList<FootPrintModel> footprints;
@@ -294,6 +311,14 @@ public abstract class WorldController implements Screen {
 		assets.add(ENERGY_PILLAR_BODY_FILE);
 		manager.load(ENERGY_PILLAR_RADIUS_FILE, Texture.class);
 		assets.add(ENERGY_PILLAR_RADIUS_FILE);
+		manager.load(OSC_WALL_HORZ_FILE, Texture.class);
+		assets.add(OSC_WALL_HORZ_FILE);
+		manager.load(OSC_WALL_HORZ_GAUGE_FILE, Texture.class);
+		assets.add(OSC_WALL_HORZ_GAUGE_FILE);
+		manager.load(OSC_WALL_VERT_FILE, Texture.class);
+		assets.add(OSC_WALL_VERT_FILE);
+		manager.load(OSC_WALL_VERT_GAUGE_FILE, Texture.class);
+		assets.add(OSC_WALL_VERT_GAUGE_FILE);
 
 		// Load the font
 		FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -363,9 +388,14 @@ public abstract class WorldController implements Screen {
 		energyPillarBody = manager.get(ENERGY_PILLAR_BODY_FILE, Texture.class);
 		energyPillarCharge = manager.get(ENERGY_PILLAR_BODY_CHARGE_FILE, Texture.class);
 		energyPillarRadius = manager.get(ENERGY_PILLAR_RADIUS_FILE, Texture.class);
+		oscWallHorz = manager.get(OSC_WALL_HORZ_FILE, Texture.class);
+		oscWallGaugeHorz = manager.get(OSC_WALL_HORZ_GAUGE_FILE, Texture.class);
+		oscWallVert = manager.get(OSC_WALL_VERT_FILE, Texture.class);
+		oscWallVertGauge = manager.get(OSC_WALL_VERT_GAUGE_FILE, Texture.class);
+
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture, borderEdgeTexture, borderCornerTexture, energyPillarBody, energyPillarCharge, energyPillarRadius);
+		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture, borderEdgeTexture, borderCornerTexture, energyPillarBody, energyPillarCharge, energyPillarRadius, oscWallVert, oscWallVertGauge, oscWallHorz, oscWallGaugeHorz);
 		loader = new Loader(factory);
 	}
 	

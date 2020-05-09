@@ -16,7 +16,7 @@ public class Level {
      * An empty constructor for a level. Everything is null.
      */
     public Level() {
-        set(null, null, null, null, null, null, null, null, null, null);
+        set(null, null, null, null, null, null, null, null, null, null, null);
     }
 
     /**
@@ -38,11 +38,12 @@ public class Level {
             BorderEdge[] borderEdges,
             BorderCorner[] borderCorners,
             EnergyPillar[] energyPillars,
+            OscWall[] oscWalls,
             ArrayList<HostModel> hosts,
             SpiritModel start,
             HostModel pedestal
     ) {
-        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, start, pedestal);
+        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, oscWalls, hosts, start, pedestal);
     }
 
     /** The dimensions of the rectangular board, in Box2D coordinates */
@@ -66,6 +67,9 @@ public class Level {
     /** An array of the energy pillars in the level */
     public EnergyPillar[] energyPillars;
 
+    /** An array of the oscillating walls in the level */
+    public OscWall[] oscWalls;
+
     /** An array of the hosts in the level */
     public ArrayList<HostModel> hosts;
 
@@ -83,6 +87,7 @@ public class Level {
             BorderEdge[] borderEdges,
             BorderCorner[] borderCorners,
             EnergyPillar[] energyPillars,
+            OscWall[] oscWalls,
             ArrayList<HostModel> hosts,
             SpiritModel start,
             HostModel pedestal
@@ -94,6 +99,7 @@ public class Level {
         this.borderEdges = borderEdges;
         this.borderCorners = borderCorners;
         this.energyPillars = energyPillars;
+        this.oscWalls = oscWalls;
         this.hosts = hosts;
         this.start = start;
         this.pedestal = pedestal;

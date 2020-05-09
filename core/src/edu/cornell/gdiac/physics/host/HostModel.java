@@ -761,7 +761,7 @@ public class HostModel extends BoxObstacle {
     /**
      * Strip animation for pedestal
      */
-    public void animateStrip() {
+    public void animatePedestal() {
         pedFrames++;
         pedUpdateFrame = false;
         if (pedFrames >= pedFramesPerUpdate) {
@@ -793,9 +793,9 @@ public class HostModel extends BoxObstacle {
         if (this.isPedestal) {
             // Make pedestal clear when no longer in possession.
             if (this.isPossessed) {
-                canvas.draw(pedestalHost, Color.WHITE, pedestalHost.getRegionWidth() / 2, pedestalHost.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+                canvas.draw(pedestalHost, Color.WHITE, pedestalHost.getRegionWidth() / 2f, pedestalHost.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
             } else {
-                canvas.draw(pedestalHost, Color.CLEAR, pedestalHost.getRegionWidth() / 2, pedestalHost.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+                canvas.draw(pedestalHost, Color.CLEAR, pedestalHost.getRegionWidth() / 2f, pedestalHost.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
             }
         } else {
             // Draw the host
@@ -806,14 +806,14 @@ public class HostModel extends BoxObstacle {
                 if (this.hasBeenPossessed) {
                     /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
                     if (this.currentCharge < this.maxCharge) {
-                        canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2, hostStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
+                        canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
                     } else {
-                        canvas.draw(hostStrip, Color.RED, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                        canvas.draw(hostStrip, Color.RED, hostChargeUI.getRegionWidth() / 2f, hostChargeUI.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     }
                 }
                 // When the bot hasn't been possessed the indicator color should be black
                 else {
-                    canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2, hostStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                    canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                 }
             }
         }

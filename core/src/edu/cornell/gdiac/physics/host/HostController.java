@@ -312,7 +312,7 @@ public class HostController {
 
         spirit.updateAnimation();
         possessed.updateAnimation(possessed.getLinearVelocity());
-        pedestal.animateStrip();
+        pedestal.animatePedestal();
 
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
         // When the spirit has been launched, need to decrement life of spirit
