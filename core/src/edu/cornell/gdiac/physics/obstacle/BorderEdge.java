@@ -244,4 +244,27 @@ public class BorderEdge extends BoxObstacle {
         setScaling(texture);
         canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,side.angle,sx,sy);
     }
+
+    /**
+     * Draw the edge if it is a top edge. Otherwise, nothing happens
+     *
+     * @param canvas The canvas for drawing
+     */
+    public void drawTop(GameCanvas canvas) {
+        if(side == Side.TOP) {
+            draw(canvas);
+        }
+    }
+
+
+    /**
+     * Draw the edge if it is not a top edge. Otherwise, nothing happens
+     *
+     * @param canvas The canvas for drawing
+     */
+    public void drawNotTop(GameCanvas canvas) {
+        if(side != Side.TOP) {
+            draw(canvas);
+        }
+    }
 }
