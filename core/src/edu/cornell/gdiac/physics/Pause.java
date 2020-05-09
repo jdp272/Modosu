@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -199,6 +200,10 @@ public class Pause {
         });
 
         table.add(play).width(ICON_SIZE_SMALL).width(ICON_SIZE_SMALL).padLeft(30);
+
+        System.out.println("PAUSE");
+
+        HUD.addInputProcessor(stage);
     }
 
     /** Gets the Stage */
@@ -216,7 +221,6 @@ public class Pause {
         group.addActor(table);
         stage.addActor(group);
 
-        Gdx.input.setInputProcessor(stage);
     }
 
     /** Returns whether menu icon was clicked */
