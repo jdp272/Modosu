@@ -239,13 +239,11 @@ public class Factory {
         Wall wall = new Wall(
                 x,
                 y,
-                64 / scale.x,
-                64 / scale.y,
+                Constants.TILE_WIDTH,
+                Constants.TILE_HEIGHT,
                 new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE)
         );
         wall.setDrawScale(scale);
-//        wall.setSX(0.25f);
-//        wall.setSY(0.25f);
         wall.setBodyType(BodyDef.BodyType.StaticBody);
         wall.setSensor(makeSensors);
         wall.setName("wall");
@@ -270,8 +268,6 @@ public class Factory {
                 lowerRightCornerFrame
         );
         wall.setDrawScale(scale);
-//        wall.setSX(0.25f);
-//        wall.setSY(0.25f);
         wall.setBodyType(BodyDef.BodyType.StaticBody);
         wall.setSensor(makeSensors);
         wall.setName("wall");
@@ -282,15 +278,13 @@ public class Factory {
         BorderEdge edge = new BorderEdge(
                 x,
                 y,
-                64 / scale.x,
-                64 / scale.y,
+                Constants.TILE_WIDTH,
+                Constants.TILE_HEIGHT,
                 side,
                 new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLS)
         );
         edge.selectable = false;
         edge.setDrawScale(scale);
-//        edge.setSX(0.25f);
-//        edge.setSY(0.25f);
         edge.setBodyType(BodyDef.BodyType.StaticBody);
         edge.setSensor(makeSensors);
         edge.setName("edge");
@@ -301,16 +295,14 @@ public class Factory {
         BorderEdge edge = new BorderEdge(
                 x,
                 y,
-                64 / scale.x,
-                64 / scale.y,
+                Constants.TILE_WIDTH,
+                Constants.TILE_HEIGHT,
                 side,
                 frame,
                 new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLS)
         );
         edge.selectable = false;
         edge.setDrawScale(scale);
-//        edge.setSX(0.25f);
-//        edge.setSY(0.25f);
         edge.setBodyType(BodyDef.BodyType.StaticBody);
         edge.setSensor(makeSensors);
         edge.setName("edge");
@@ -321,15 +313,13 @@ public class Factory {
         BorderCorner corner = new BorderCorner(
                 x,
                 y,
-                64 / scale.x,
-                64 / scale.y,
+                Constants.TILE_WIDTH,
+                Constants.TILE_HEIGHT,
                 c,
                 new FilmStrip(borderCornerTexture, BORDER_CORNER_ROWS, BORDER_CORNER_COLS)
         );
         corner.selectable = false;
         corner.setDrawScale(scale);
-//        corner.setSX(0.25f);
-//        corner.setSY(0.25f);
         corner.setBodyType(BodyDef.BodyType.StaticBody);
         corner.setSensor(makeSensors);
         corner.setName("corner");
@@ -345,13 +335,11 @@ public class Factory {
                 x,
                 y,
                 Constants.TILE_WIDTH,
-              Constants.TILE_HEIGHT
+                Constants.TILE_HEIGHT
         );
         water.setTerrainStrip(new FilmStrip(waterTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
         water.setCornerStrip(new FilmStrip(cornerTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
         water.setDrawScale(scale);
-//        water.setSX(0.26f);
-//        water.setSY(0.26f);
         water.setFrame(frame);
         water.setBodyType(BodyDef.BodyType.StaticBody);
         water.setSensor(makeSensors);
@@ -373,8 +361,6 @@ public class Factory {
         sand.setTerrainStrip(new FilmStrip(sandTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
         sand.setCornerStrip(new FilmStrip(cornerSandTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
         sand.setDrawScale(scale);
-//        sand.setSX(0.26f);
-//        sand.setSY(0.26f);
         sand.setFrame(frame);
         sand.setBodyType(BodyDef.BodyType.KinematicBody);
         sand.setSensor(makeSensors);
