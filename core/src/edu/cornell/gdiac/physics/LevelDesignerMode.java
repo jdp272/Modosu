@@ -1014,15 +1014,14 @@ public class LevelDesignerMode extends WorldController {
             selecting = false;
         }
 
+        // Process instructions
 		if (lastGolem != null && input.didInstruction() && !instructionMode) {
 			instructionMode = true;
 			instructionListCache.clear();
 			lastGolem.setInstructions(null);
 			System.out.println("Instruction Mode");
 			refreshFootprints();
-		}
-
-		else if (instructionMode && input.didInstruction()) {
+		} else if (instructionMode && input.didInstruction()) {
 			instructionMode = false;
 			Vector2[] instructions = new Vector2[instructionListCache.size()];
 			for (int i = 0; i < instructionListCache.size(); i++) {
@@ -1039,17 +1038,30 @@ public class LevelDesignerMode extends WorldController {
 		}
 
 		if (instructionMode && input.didLeftClick()) {
-		    int instructionTileX = xCoordToTile(mouseX);
-		    int instructionTileY = yCoordToTile(mouseY);
-		    float instructionRawX = xTileToCoord(instructionTileX);
-		    float instructionRawY = yTileToCoord(instructionTileY);
+			int instructionTileX = xCoordToTile(mouseX);
+			int instructionTileY = yCoordToTile(mouseY);
+			float instructionRawX = xTileToCoord(instructionTileX);
+			float instructionRawY = yTileToCoord(instructionTileY);
 
-		    FootPrintModel fp = new FootPrintModel(footprintTexture, new Vector2(instructionRawX * scale.x,instructionRawY*scale.y));
-		    footprints.add(fp);
-		    super.setFootprints(footprints);
+			FootPrintModel fp = new FootPrintModel(footprintTexture, new Vector2(instructionRawX * scale.x,instructionRawY*scale.y));
+			footprints.add(fp);
+			super.setFootprints(footprints);
 			Vector2 instruction = new Vector2(instructionRawX, instructionRawY);
 			instructionListCache.add(instruction);
 			System.out.println("Instruction placed");
+		}
+
+		// Spawn a new object if a spawner was clicked
+		Obstacle spawnedObj = spawnList.update(camPos);
+
+		if(spawnedObj != null) {
+			// If the selected object is a pedestal then check if pedestal is already in the game
+			if((spawnedObj.getName() == "pedestal" && !hasPed) || spawnedObj.getName() != "pedestal") {
+				addObject(spawnedObj);
+//				selector.select(mouseX, mouseY);
+				selector.select(spawnedObj);
+				selecting = true;
+			}
 		}
 
 		if (!selecting && (input.didTertiary()) && !selector.isSelected()) {
@@ -1107,19 +1119,6 @@ public class LevelDesignerMode extends WorldController {
 			}
 		} else {
 			selector.moveTo(mouseX, mouseY);
-		}
-
-		// Spawn a new object if a spawner was clicked
-		Obstacle obj = spawnList.update(camPos);
-
-		if(obj != null) {
-		    // If the selected object is a pedestal then check if pedestal is already in the game
-			if((obj.getName() == "pedestal" && !hasPed) || obj.getName() != "pedestal") {
-				addObject(obj);
-//				selector.select(mouseX, mouseY);
-				selector.select(obj);
-				selecting = true;
-			}
 		}
 
 

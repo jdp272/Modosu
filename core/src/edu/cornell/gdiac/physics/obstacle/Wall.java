@@ -7,6 +7,7 @@ import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.util.FilmStrip;
 
 import java.util.Arrays;
+import java.util.Random;
 
 public class Wall extends BoxObstacle {
 
@@ -75,6 +76,10 @@ public class Wall extends BoxObstacle {
     private int lowerLeftCornerFrame;
     private int lowerRightCornerFrame;
 
+    // For generating random numbers for the art variants
+    private final int seed;
+    private Random random;
+
     /** A cache vector for computation and for passing as a parameter */
     private Vector2 cache;
 
@@ -88,6 +93,9 @@ public class Wall extends BoxObstacle {
                 int frontEdgeFrame, int backEdgeFrame,
                 int lowerLeftCornerFrame, int lowerRightCornerFrame) {
         super(x, y, width, height);
+        seed = (int)(Math.random() * 1000);
+        random = new Random(seed);
+
         this.wallStrip = wallStrip;
         setTexture(this.wallStrip);
 
@@ -198,12 +206,13 @@ public class Wall extends BoxObstacle {
 
         // x + 1 and y + 1 ensure that that term continues to change even when
         // either is 0
-        int pseudoRandomNum = (x * x) + (y * y) + ((x + 1) * (y + 1));
+
+        random.setSeed(seed);
         int index;
 
         // Draw the ceiling only if a wall is below this one
         if(below) {
-            index = pseudoRandomNum % (2 * WALL_TOP_ALT.length);
+            index = random.nextInt(2 * WALL_TOP_ALT.length);
 
             if(index >= WALL_TOP_ALT.length) {
                 primaryFrame = ((x + y) % 2 == 0 ? WALL_TOP_A : WALL_TOP_B);
@@ -217,7 +226,7 @@ public class Wall extends BoxObstacle {
                 frontEdgeFrame = NO_SIDE;
             }
         } else {
-            index = pseudoRandomNum % (2 * WALL_FRONT_ALT.length);
+            index = random.nextInt(2 * WALL_FRONT_ALT.length);
             if(index >= WALL_FRONT_ALT.length) {
                 primaryFrame = WALL_FRONT;
             } else {
@@ -252,7 +261,7 @@ public class Wall extends BoxObstacle {
 
         // Draw the back rim only if there is no wall behind this one
         if(!above) {
-            index = pseudoRandomNum % (2 * BACK_EDGE_ALT.length);
+            index = random.nextInt(2 * BACK_EDGE_ALT.length);
             if(index >= BACK_EDGE_ALT.length) {
                 backEdgeFrame = BACK_EDGE;
             } else {
