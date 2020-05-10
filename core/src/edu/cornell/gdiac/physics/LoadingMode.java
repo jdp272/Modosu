@@ -317,8 +317,10 @@ public class LoadingMode implements Screen {
 	public void preLoadContent() {
 		manager.load(CLICK_SOUND, Sound.class);
 		manager.load(HOVER_SOUND, Sound.class);
-		MusicController.getInstance().addMusic("menuMusic", "shared/menumusic.wav");
-		MusicController.getInstance().addMusic("gameMusic", "shared/gameplaymusic.mp3");
+		if(MusicController.getInstance().isEmpty()){
+			MusicController.getInstance().addMusic("menuMusic", "shared/menumusic.wav");
+			MusicController.getInstance().addMusic("gameMusic", "shared/gameplaymusic.mp3");
+		}
 	}
 
 
@@ -396,6 +398,8 @@ public class LoadingMode implements Screen {
 			}
 		}
 		else {
+			MusicController.getInstance().update();
+			//DO WALKER WHITES SUGGESTION!!!!!! MAY
 			input.readInput();
 			Vector2 pos = input.getMousePosition();
 

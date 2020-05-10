@@ -186,8 +186,11 @@ public class GamePlayController extends WorldController {
 		Vector2 gravity = new Vector2(world.getGravity());
 
 		FileHandle levelToLoad;
-		System.out.println("levels/" + levels[currentLevel%levels.length].getName());
-		levelToLoad = Gdx.files.local("levels/" + levels[currentLevel%levels.length].getName());
+
+		int levelIndex = ((currentLevel%levels.length) + levels.length) % levels.length;
+
+		System.out.println("levels/" + levels[levelIndex].getName());
+		levelToLoad = Gdx.files.local("levels/" + levels[levelIndex].getName());
 
 		level = loader.loadLevel(levelToLoad);
 

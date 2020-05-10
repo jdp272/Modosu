@@ -51,7 +51,9 @@ public class MusicController {
 	private boolean crossFading;
 
 	/** Only null if changing muMusic to change from */
-	private Music musicPrev;
+	private float minimumThreshold;
+
+	private float maximumThreshold;
 
 	private Music musicNext;
 
@@ -61,9 +63,8 @@ public class MusicController {
 	private MusicController() {
 		isUnmuted = true;
 		crossFading = false;
-		musicPrev = null;
 		musicNext = null;
-		musicVolume = .50f;
+		musicVolume = 1f;
 	}
 
 	/**
@@ -78,6 +79,10 @@ public class MusicController {
 			controller = new MusicController();
 		}
 		return controller;
+	}
+
+	public boolean isEmpty(){
+		return musicHolder.isEmpty();
 	}
 
 	/// Music Management
@@ -130,11 +135,18 @@ public class MusicController {
 				return;
 			}
 			else {
-				stop(musicName);
+				crossFading = true;
+				System.out.println("set crossfading to true");
+
 				Music musicToPlay = musicHolder.get(musicNameToPlay);
 				if (musicToPlay != null) {
 					musicName = musicNameToPlay;
-					music = musicToPlay;
+					musicNext = musicToPlay;
+
+					musicNext.setVolume(.10f);
+					maximumThreshold = music.getVolume();
+					minimumThreshold = .10f*music.getVolume();
+					musicNext.play();
 				}
 			}
 		}
@@ -170,20 +182,41 @@ public class MusicController {
 	 * @param v	The sound volume in the range [0,1]
 	 */
 	public void setVolume(float v) {
-		if (music != null) { music.setVolume(v); }
+		if (music != null) { music.setVolume(v); System.out.println("SET VOLUME TO " + v);}
 	}
 
 	public void update() {
+		//if (music != null) { music.setVolume(music.getVolume()); }
+		//if (musicNext != null) { musicNext.setVolume(musicNext.getVolume()); }
+
 		if (!crossFading) {
+			if (!(music != null && musicNext == null)) { throw new OutOfMemoryError(); }
+			System.out.println(music.getVolume());
 			if (music == null) {
 				System.out.println("No music should be playing.");
 			}
 
-		if (music != null) music.play();
+			if (music != null) music.play();
+			//System.out.println("not crossfading");
 		}
-		//region deals with decrementing volume of crossfading tracks
-		else{
 
+		//region deals with decrementing volume of crossfading tracks
+		else {
+			musicNext.play();
+			music.setVolume(music.getVolume() - (.02f * music.getVolume()));
+			musicNext.setVolume(musicNext.getVolume() + (.02f*musicNext.getVolume()));
+
+			System.out.println("this is curr: " + music.getVolume());
+			System.out.println("this is next: " + musicNext.getVolume());
+			if (music.getVolume() < minimumThreshold || musicNext.getVolume() > maximumThreshold) {
+				crossFading = false;
+				music.stop();
+				music = musicNext;
+				music.setVolume(maximumThreshold);
+				music.play();
+				musicNext = null;
+				System.out.println("set crossfading to false");
+			}
 		}
 	}
 }
