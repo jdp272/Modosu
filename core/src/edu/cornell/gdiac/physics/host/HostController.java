@@ -65,6 +65,8 @@ public class HostController {
 
     private Vector2 spiritCache;
 
+    private Vector2 lastPosition;
+
     /**
      * Constant to change the speed of golem movement
      */
@@ -223,9 +225,13 @@ public class HostController {
                         possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal() * obstacleFactor);
                         possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical() * obstacleFactor);
 
-                        if (input.getVertical() != 0 || input.getHorizontal() != 0) {
+
+
+
+                        if (possessed.getPosition() != this.lastPosition) {
                             moved = true;
                         }
+
                     }
 
                     if ((input.getVertical() != 0 || input.getHorizontal() != 0) && (!spirit.getGoToCenter())) {
@@ -305,6 +311,7 @@ public class HostController {
             if (possessed.getCurrentCharge() > possessed.getMaxCharge()) {
                 possessedBlownUp = true;
             }
+
         }
 
 
@@ -339,6 +346,7 @@ public class HostController {
             // Updated Animation of Each Host
             h.updateAnimation(h.getLinearVelocity());
 
+
             if (h != possessed && !h.beenPossessed()) {
                 Vector2 target = h.getInstruction();
                 Vector2 current = h.getPosition();
@@ -360,6 +368,10 @@ public class HostController {
                 }
             }
         }
+        System.out.println(this.lastPosition);
+        System.out.println(possessed.getPosition());
+        //Update the Last Position at the end of the update cycle
+        this.lastPosition = possessed.getPosition();
     }
 
     public ArrowModel getArrow() {
