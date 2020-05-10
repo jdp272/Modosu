@@ -317,8 +317,8 @@ public class LoadingMode implements Screen {
 	public void preLoadContent() {
 		manager.load(CLICK_SOUND, Sound.class);
 		manager.load(HOVER_SOUND, Sound.class);
-		MusicController.getInstance().add("menuMusic", "shared/menumusic.wav");
-		MusicController.getInstance().add("gameMusic", "shared/gameplaymusic.wav");
+		MusicController.getInstance().addMusic("menuMusic", "shared/menumusic.wav");
+		MusicController.getInstance().addMusic("gameMusic", "shared/gameplaymusic.mp3");
 	}
 
 

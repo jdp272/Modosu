@@ -32,19 +32,38 @@ import java.util.HashMap;
  */
 public class MusicController {
 
-	private HashMap<String, FileHandle> fileNames = new HashMap<>();
+	private HashMap<String, Music> musicHolder = new HashMap<>();
+
+	/** The unmuted state of this Music controller. */
 	private boolean isUnmuted;
+	/** The music of the music that is currently playing */
 	private Music music;
+	/** The name of the music that is currently playing. */
 	private String musicName;
+
+	/** The default volume of sounds for this controller */
+	private float musicVolume;
 
 	/** The singleton Music controller instance */
 	private static MusicController controller;
+
+	/** Whether crossFading mode is active */
+	private boolean crossFading;
+
+	/** Only null if changing muMusic to change from */
+	private Music musicPrev;
+
+	private Music musicNext;
 
 	/**
 	 * Creates a new Music with the default settings.
 	 */
 	private MusicController() {
 		isUnmuted = true;
+		crossFading = false;
+		musicPrev = null;
+		musicNext = null;
+		musicVolume = .50f;
 	}
 
 	/**
@@ -66,13 +85,24 @@ public class MusicController {
 	 *
 	 * @param filename The filename for the sound asset
 	 */
-	public void add(String musicName, String filename) {
-		fileNames.put(musicName, Gdx.files.internal(filename));
+	public void addMusic(String musicName, String filename) {
+		System.out.println("added: " + musicName);
+		musicHolder.put(musicName, Gdx.audio.newMusic(Gdx.files.internal(filename)));
 	}
 
+	/**
+	 * Removes the existing music from this MusicController if present.
+	 *
+	 * @param musicName The name of the music to remove
+	 */
+	public void removeMusic(String musicName) { musicHolder.remove(musicName); }
 
 	/// Properties
-	/**ADDDDDDD COMMMENTTT
+
+	/**
+	 * Sets this MusicController's unmuted state.
+	 *
+	 * @param value Whether this MusicController is unmuted
 	 */
 	public void setUnmuted(boolean value) {
 		System.out.println("just set music unmuted to be: " + value);
@@ -85,23 +115,43 @@ public class MusicController {
 		}
 	}
 
+	 /** Returns true if this MusicController is unmuted.
+	 *
+	 * * @returns true if this MusicController is unmuted
+	 */
 	public boolean isUnmuted() { return isUnmuted; }
 
-	public void play(String musicName){
-		if (isUnmuted) {
-			if (music != null){
-				if (this.musicName.equals(musicName)) {
-					//System.out.println("not changing song cause same one is called");
-					return;
-				}
-				music.dispose();
+
+	public void play(String musicNameToPlay){
+		// Some music is currently playing
+		if (music != null){
+			if (musicName.equals(musicNameToPlay)) {
+				System.out.println("not changing song cause same one is called");
+				return;
 			}
-			music = Gdx.audio.newMusic(fileNames.get(musicName));
-			this.musicName = musicName;
-			music.setLooping(true);
-			//System.out.println("new music is successlfully playing");
-			music.play();
+			else {
+				stop(musicName);
+				Music musicToPlay = musicHolder.get(musicNameToPlay);
+				if (musicToPlay != null) {
+					musicName = musicNameToPlay;
+					music = musicToPlay;
+				}
+			}
 		}
+		// No music is currently playing
+		else {
+			Music musicToPlay = musicHolder.get(musicNameToPlay);
+			if (musicToPlay != null) {
+				musicName = musicNameToPlay;
+				music = musicToPlay;
+			}
+			else {
+				System.out.println("The music you're trying to play isnt in the holder.");
+			}
+		}
+		music.setVolume( isUnmuted() ? musicVolume : 0f);
+		music.setLooping(true);
+		music.play();
 	}
 
 	public boolean isPlaying() {
@@ -120,11 +170,20 @@ public class MusicController {
 	 * @param v	The sound volume in the range [0,1]
 	 */
 	public void setVolume(float v) {
-		if (music != null) { music.setVolume(v/100); }
+		if (music != null) { music.setVolume(v); }
 	}
 
 	public void update() {
-		if(music == null) System.out.println("music became null for some reason");
+		if (!crossFading) {
+			if (music == null) {
+				System.out.println("No music should be playing.");
+			}
+
 		if (music != null) music.play();
+		}
+		//region deals with decrementing volume of crossfading tracks
+		else{
+
+		}
 	}
 }
