@@ -308,6 +308,7 @@ public class HostController {
         }
 
 
+
         // Update the Animation of the possessed host
 
         spirit.updateAnimation();
