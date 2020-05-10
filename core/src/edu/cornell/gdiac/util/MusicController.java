@@ -144,12 +144,13 @@ public class MusicController {
 				// If while cross fading, another change happens
 				if (crossFading && musicNameToPlay != null){
 					crossFading = false;
-					System.out.println("will be broken");
+					System.out.println("MUSIC WILL BE BROKEN!!");
 					music.stop();
 					musicNext.stop();
+					music = null;
+					musicNext = null;
 				}
 				else {
-					System.out.println("Crossfade is true");
 					crossFading = true;
 
 					if (musicToPlay != null) {
@@ -183,9 +184,12 @@ public class MusicController {
 			}
 		}
 
-		music.setVolume( isUnmuted() ? musicVolume : 0f);
-		music.setLooping(true);
-		music.play();
+		if (music != null) {
+			music.setVolume( isUnmuted() ? musicVolume : 0f);
+			music.setLooping(true);
+			music.play();
+		}
+
 	}
 
 	/** Returns true if this MusicController is playing music.
@@ -217,23 +221,26 @@ public class MusicController {
 	/** Update function for this Music Controller. */
 	public void update() {
 		// Normal update where music is just playing
-		if (!crossFading) { musicNext = null; music.play(); }
+		if (music != null) {
+			if (!crossFading) {
+				musicNext = null; music.play(); }
 
-		// Cross fade update
-		else {
-			// Update cross fade volumes
-			music.setVolume(music.getVolume() - (.015f * music.getVolume()));
-			musicNext.setVolume(musicNext.getVolume() + (.015f * musicNext.getVolume()));
+			// Cross fade update
+			else {
+				// Update cross fade volumes
+				music.setVolume(music.getVolume() - (.015f * music.getVolume()));
+				musicNext.setVolume(musicNext.getVolume() + (.015f * musicNext.getVolume()));
 
-			// Condition to stop cross fade
-			if (music.getVolume() < minimumThreshold || musicNext.getVolume() >= maximumThreshold) {
-				crossFading = false;
-				music.stop();
-				music = musicNext;
+				// Condition to stop cross fade
+				if (music.getVolume() < minimumThreshold || musicNext.getVolume() >= maximumThreshold) {
+					crossFading = false;
+					music.stop();
+					music = musicNext;
 
-				music.setVolume(maximumThreshold);
-				music.play();
-				System.out.println("Cross fade is false;");
+					music.setVolume(maximumThreshold);
+					music.play();
+					System.out.println("Cross fade is false;");
+				}
 			}
 		}
 	}
