@@ -215,7 +215,7 @@ public class LevelSelectMode extends WorldController implements Screen {
 
         input = InputController.getInstance();
         page = 0;
-
+        renderHUD = false;
         colorHovered = new Color(Color.rgb565(190f,245f,253f));
         colorUnhovered = new Color(Color.WHITE);
         colorOne = colorUnhovered;

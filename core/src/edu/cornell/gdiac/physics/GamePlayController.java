@@ -178,7 +178,6 @@ public class GamePlayController extends WorldController {
 		File folder = new File("levels");
 		levels = new ArrayList(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
 		Collections.sort(levels);
-
 	}
 
 
@@ -223,8 +222,9 @@ public class GamePlayController extends WorldController {
 
 		level = loader.loadLevel(levelToLoad);
 
-		HUD.clearHUD();
-		HUD.setNumTotalHosts(level.hosts.size());
+		hud.clearHUD();
+		Gdx.input.setInputProcessor(hud.getStage());
+		hud.setNumTotalHosts(level.hosts.size());
 
 		dimensions.set(level.dimensions);
 		System.out.println("dimensions: " + dimensions);
@@ -314,7 +314,7 @@ public class GamePlayController extends WorldController {
 
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){
-			HUD.incrementCurrHosts();
+			hud.incrementCurrHosts();
 			setComplete(true);
 			SoundController.getInstance().play(VICTORY_SOUND,VICTORY_SOUND,false);
 		}
