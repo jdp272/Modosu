@@ -128,6 +128,7 @@ public class HostController {
         moved = false;
         canvas = c;
         this.energyPillars = energyPillars;
+        this.lastPosition = new Vector2(pedestal.getPosition());
     }
 
     /**
@@ -154,6 +155,7 @@ public class HostController {
      * @param inSand
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand, EnergyPillar[] energyPillars) {
+        ticks++;
 
         // Brings the spirit to the center of the host
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
@@ -218,21 +220,30 @@ public class HostController {
                             ep.setChargeProgression(chargeProgression);
                         }
 
+                        if(ticks % 30 == 0) {
+                            this.lastPosition = new Vector2(possessed.getPosition());
+                        }
+
                         float obstacleFactor = 1;
                         if (inSand) {
                             obstacleFactor = .5f;
                         }
                         possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal() * obstacleFactor);
                         possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical() * obstacleFactor);
+                        if((Math.abs(this.lastPosition.dst2(possessed.getPosition())) > 0.000000000001f)) {
+                            System.out.println("=================");
+                            System.out.println("ASDASDASDSA");
+                            this.moved = true;
+                        }
 
 
-
-
-                        if (possessed.getPosition() != this.lastPosition) {
-                            moved = true;
+                        if(this.moved) {
+                            possessed.updateAnimation(possessed.getLinearVelocity());
                         }
 
                     }
+
+
 
                     if ((input.getVertical() != 0 || input.getHorizontal() != 0) && (!spirit.getGoToCenter())) {
                         spirit.setPosition(possessed.getPosition());
@@ -318,7 +329,6 @@ public class HostController {
         // Update the Animation of the possessed host
 
         spirit.updateAnimation();
-        possessed.updateAnimation(possessed.getLinearVelocity());
         pedestal.animatePedestal();
 
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
@@ -368,10 +378,6 @@ public class HostController {
                 }
             }
         }
-        System.out.println(this.lastPosition);
-        System.out.println(possessed.getPosition());
-        //Update the Last Position at the end of the update cycle
-        this.lastPosition = possessed.getPosition();
     }
 
     public ArrowModel getArrow() {
