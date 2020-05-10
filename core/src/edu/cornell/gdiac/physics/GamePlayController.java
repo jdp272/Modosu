@@ -307,9 +307,8 @@ public class GamePlayController extends WorldController {
 
 		// Calls update on hostController
 		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand(), energyPillars);
-		if (hostController.getLaunched()){
-			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
-		}
+
+		if (hostController.getLaunched()){ SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false); }
 
 
 		// If player is still playing and moving
