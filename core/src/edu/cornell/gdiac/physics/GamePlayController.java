@@ -30,7 +30,9 @@ import edu.cornell.gdiac.util.SoundController;
 import javax.print.DocFlavor;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Gameplay controller for Modosu.
@@ -172,8 +174,8 @@ public class GamePlayController extends WorldController {
 
 		// TODO Change level loading here
 		File folder = new File("levels");
-		levels = folder.listFiles(Constants.filenameFilter);
-		Arrays.sort(levels);
+		levels = new ArrayList(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+		Collections.sort(levels);
 
 	}
 
@@ -190,16 +192,18 @@ public class GamePlayController extends WorldController {
 		setFailure(false);
 		setMenu(false);
 
+		System.out.println("just called play game music");
 		MusicController.getInstance().play("gameMusic");
 		// MusicController.getInstance().setVolume(40);
-
-        // Reset camera panning target
 
 		Vector2 gravity = new Vector2(world.getGravity());
 
 		FileHandle levelToLoad;
-		System.out.println("levels/" + levels[currentLevel%levels.length].getName());
-		levelToLoad = Gdx.files.local("levels/" + levels[currentLevel%levels.length].getName());
+
+		int levelIndex = ((currentLevel%levels.size()) + levels.size()) % levels.size();
+
+		System.out.println("levels/" + levels.get(levelIndex).getName());
+		levelToLoad = Gdx.files.local("levels/" + levels.get(levelIndex).getName());
 
 		level = loader.loadLevel(levelToLoad);
 
@@ -292,8 +296,6 @@ public class GamePlayController extends WorldController {
 	 */
 	public void update(float delta) {
 
-		MusicController.getInstance().update();
-
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){
 			HUD.incrementCurrHosts();
@@ -319,9 +321,8 @@ public class GamePlayController extends WorldController {
 
 		// Calls update on hostController
 		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand(), energyPillars);
-		if (hostController.getLaunched()){
-			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
-		}
+
+		if (hostController.getLaunched()){ SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false); }
 
 
 		// If player is still playing and moving

@@ -122,12 +122,12 @@ public class Pause {
         sliderStyle.background = skin.getDrawable(sBAR);
         sliderStyle.knob = skin.getDrawable(sKNOB);
         musicSlider = new Slider(0, 100, 1f, false, sliderStyle);
-        musicSlider.setValue(50);
+        musicSlider.setValue(100);
         musicSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("MUSIC SLIDED: " + musicSlider.getValue());
-                MusicController.getInstance().setVolume((int) musicSlider.getValue());
+                //System.out.println("MUSIC SLIDED: " + musicSlider.getValue());
+                MusicController.getInstance().setVolume(musicSlider.getValue()/100f);
             }
         });
 
@@ -142,12 +142,12 @@ public class Pause {
 
         /** SFX Slider */
         sfxSlider = new Slider(0, 100, 1f, false, sliderStyle);
-        sfxSlider.setValue(50);
+        sfxSlider.setValue(100);
         sfxSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("SFX SLIDED: " + sfxSlider.getValue());
-                SoundController.getInstance().setVolume((int) sfxSlider.getValue());
+                //System.out.println("SFX SLIDED: " + sfxSlider.getValue());
+                SoundController.getInstance().setVolume(sfxSlider.getValue()/100f);
             }
         });
 
