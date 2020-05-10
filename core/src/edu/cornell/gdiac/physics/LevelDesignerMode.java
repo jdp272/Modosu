@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 
 /**
@@ -81,6 +82,10 @@ public class LevelDesignerMode extends WorldController {
 	private int currentLevel = 0;
 	/** A boolean indicating if the board should be reloaded from the file */
 	private boolean loadBoard = true;
+
+	private boolean fromCustom = false;
+
+	private boolean newLevel = false;
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
@@ -195,6 +200,8 @@ public class LevelDesignerMode extends WorldController {
 
 	public void setLoadBoard(boolean b){ loadBoard = b;}
 
+	public void setFromCustom(boolean b){ fromCustom = b;}
+
 	/**
 	 * Loads the assets for this controller.
 	 *
@@ -250,10 +257,13 @@ public class LevelDesignerMode extends WorldController {
 		instructionCache = new Vector2();
 		footprints = new ArrayList<FootPrintModel>();
 		golems = new ArrayList<HostModel>();
+		if(!loadBoard){
+			level = new Level();
+		}
 
 		File folder = new File("levels");
-		levels = folder.listFiles(Constants.filenameFilter);
-		Arrays.sort(levels);
+		levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+		Collections.sort(levels);
 
 		edges = new PooledList<>();
 		corners = new PooledList<>();
@@ -265,7 +275,13 @@ public class LevelDesignerMode extends WorldController {
 	 * @return A string representing the level name
 	 */
 	public String getLevelName() {
-		return "levels/" + levels[currentLevel%levels.length].getName();
+		if(!fromCustom) {
+			return "levels/" + levels.get(currentLevel % levels.size()).getName();
+		}else if(newLevel) {
+			return "Custom/c" + levels.get(currentLevel % levels.size()).getName();
+		}else{
+			return "Custom/" + levels.get(currentLevel % levels.size()).getName();
+		}
 	}
 
 	/**
@@ -317,6 +333,20 @@ public class LevelDesignerMode extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		if(currentLevel == -1){
+			newLevel = true;
+		}else{
+			newLevel = false;
+		}
+		if(fromCustom || newLevel){
+			File folder = new File("Custom");
+			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+			Collections.sort(levels);
+		}else{
+			File folder = new File("levels");
+			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+			Collections.sort(levels);
+		}
 
 	    refreshFootprints();
 
@@ -344,6 +374,8 @@ public class LevelDesignerMode extends WorldController {
         setComplete(false);
         setFailure(false);
 
+
+
         if (loadBoard) {
 //			bottomBorder = 0;
 //			leftBorder = 0;
@@ -359,10 +391,11 @@ public class LevelDesignerMode extends WorldController {
         } else {
             // Reset the level size based on the size of the screen
 			board.reset(screenTileWidth(), screenTileHeight());
+			level = new Level();
+			currentLevel = levels.size();
 
 			setBordersAndUpdateTerrain();
-
-            loadBoard = true;
+			loadBoard = true;
         }
 
         // After populateLevel(), when the borders are set from the loaded level
@@ -500,40 +533,22 @@ public class LevelDesignerMode extends WorldController {
      * Lays out the game geography.
      */
     private void populateLevel() {
-//		spawnList.addSpawner(spiritSpawn, new SpawnerList.CallbackFunction() {
-//			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-//				if (lastCreated == null) {
-//					return factory.makeSpirit(x, y);
-//				}
-//				lastCreated.setX(x);
-//				lastCreated.setY(y);
-//
-//				return null;
-//			}
-//		});
 
         // TODO: Change this with GamePlayController!!
         FileHandle levelToLoad;
-//		if (currentLevel == 3) {
-//			levelToLoad = Gdx.files.local("levels/custom3.lvl");
-//		} else {
-//			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
-//		}
+
         System.out.println(getLevelName());
-        levelToLoad = Gdx.files.local(getLevelName());
+
+		if(fromCustom || newLevel) {
+			levelToLoad = Gdx.files.local(getLevelName());
+		}else{
+			levelToLoad = Gdx.files.internal(getLevelName());
+		}
         //levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
 
 
-//		try {
-//		level = new Level(new Vector2(10, 10), new Wall[0], new WaterTile[0],
-//				new SandTile[0], new BorderEdge[0], new BorderCorner[0], new EnergyPillar[0],
-//				new ArrayList<HostModel>(), factory.makeSpirit(5, 5), factory.makePedestal(5, 5));
-        level = loader.loadLevel(levelToLoad);
-//		} catch (Exception e) {
-//			System.out.println(e);
-//			System.out.println(levelToLoad);
-//			level = loader.loadLevel(new FileHandle("levels/custom0.lvl"));
-//		}
+       level = loader.loadLevel(levelToLoad);
+
 
 		dimensions = level.dimensions;
 		lowerLeft.setZero();
@@ -1232,7 +1247,12 @@ public class LevelDesignerMode extends WorldController {
     private void save(String levelName) {
         // This has to be made local instead of the default, which is "internal" and can't be
         // modified by a jar
-        FileHandle f = Gdx.files.local(levelName);
+        FileHandle f;
+        if(fromCustom || newLevel) {
+			f = Gdx.files.local(levelName);
+		}else{
+        	f = Gdx.files.internal(levelName);
+		}
 
         // TODO: Make this not creating new objects by updating Level to use PooledList(?)
 

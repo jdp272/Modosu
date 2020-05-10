@@ -58,4 +58,6 @@ public interface ScreenListener {
 	 * @param page what page the user is on
 	 */
 	public void exitScreenLevel(int level, int page);
+
+    public void exitScreenLevel(int i, int page, boolean onCustom);
 }
