@@ -77,7 +77,7 @@ public class GameCanvas {
 	private OrthographicCamera camera;
 
 	/** HUD - For static items on screen */
-	private HUD hud;
+//	private HUD hud;
 
 	/** Fields for camera smoothing */
 	private float smoothX;
@@ -134,8 +134,8 @@ public class GameCanvas {
 		spriteBatch.setProjectionMatrix(camera.combined);
 		debugRender.setProjectionMatrix(camera.combined);
 
-		// Create stage for HUD
-		hud = new HUD(spriteBatch);
+//		// Create stage for HUD
+//		hud = new HUD(spriteBatch);
 
 		// Initialize the cache objects
 		holder = new TextureRegion();
@@ -153,7 +153,7 @@ public class GameCanvas {
 			Gdx.app.error("GameCanvas", "Cannot dispose while drawing active", new IllegalStateException());
 			return;
 		}
-		hud.dispose();
+//		hud.dispose();
 		spriteBatch.dispose();
     	spriteBatch = null;
     	local  = null;
@@ -464,15 +464,6 @@ public class GameCanvas {
     	spriteBatch.end();
     	active = DrawPass.INACTIVE;
     }
-
-	/**
-	 * Draws the HUD
-	 */
-    public void drawHUD(float delta) {
-		spriteBatch.setProjectionMatrix(hud.getStage().getCamera().combined); //set the spriteBatch to draw what our stageViewport sees
-		hud.getStage().act(delta); //act the Hud
-		hud.getStage().draw(); //draw the Hud
-	}
 
 	/**
 	 * Draws the tinted texture at the given position.
