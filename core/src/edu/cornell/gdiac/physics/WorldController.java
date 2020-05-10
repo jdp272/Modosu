@@ -484,7 +484,7 @@ public abstract class WorldController implements Screen {
 	private	boolean updateGP;
 
 	/** list of level files*/
-	protected File[] levels;
+	protected ArrayList<File> levels;
 
 	/** Input if paused was pressed */
 	private boolean pressedPause = false;

@@ -28,7 +28,9 @@ import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Gameplay controller for Modosu.
@@ -162,8 +164,8 @@ public class GamePlayController extends WorldController {
 		cache = new Vector2();
 
 		File folder = new File("levels");
-		levels = folder.listFiles(Constants.filenameFilter);
-		Arrays.sort(levels);
+		levels = new ArrayList(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+		Collections.sort(levels);
 
 	}
 
@@ -187,8 +189,8 @@ public class GamePlayController extends WorldController {
 		Vector2 gravity = new Vector2(world.getGravity());
 
 		FileHandle levelToLoad;
-		System.out.println("levels/" + levels[currentLevel%levels.length].getName());
-		levelToLoad = Gdx.files.local("levels/" + levels[currentLevel%levels.length].getName());
+		System.out.println("levels/" + levels.get(currentLevel % levels.size()).getName());
+		levelToLoad = Gdx.files.local("levels/" + levels.get(currentLevel % levels.size()).getName());
 
 		level = loader.loadLevel(levelToLoad);
 
