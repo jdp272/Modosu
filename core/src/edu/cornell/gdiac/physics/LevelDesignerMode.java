@@ -538,7 +538,12 @@ public class LevelDesignerMode extends WorldController {
         FileHandle levelToLoad;
 
         System.out.println(getLevelName());
-        levelToLoad = Gdx.files.local(getLevelName());
+
+		if(fromCustom || newLevel) {
+			levelToLoad = Gdx.files.local(getLevelName());
+		}else{
+			levelToLoad = Gdx.files.internal(getLevelName());
+		}
         //levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
 
 
@@ -1242,7 +1247,12 @@ public class LevelDesignerMode extends WorldController {
     private void save(String levelName) {
         // This has to be made local instead of the default, which is "internal" and can't be
         // modified by a jar
-        FileHandle f = Gdx.files.local(levelName);
+        FileHandle f;
+        if(fromCustom || newLevel) {
+			f = Gdx.files.local(levelName);
+		}else{
+        	f = Gdx.files.internal(levelName);
+		}
 
         // TODO: Make this not creating new objects by updating Level to use PooledList(?)
 
