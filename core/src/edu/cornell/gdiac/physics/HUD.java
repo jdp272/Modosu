@@ -148,7 +148,7 @@ public class HUD {
         pause.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 pauseButtonClicked = true;
-                System.out.println("CLICKED PAUSED: " + pauseButtonClicked);
+                System.out.println("CLICKED PAUSED");
             }
         });
 
@@ -385,7 +385,7 @@ public class HUD {
 
     /** Disposes the elements used */
     public void dispose() {
-        // stage.dispose();
+        stage = null;
         textureAtlas.dispose();
         hostCounterTexture.dispose();
     }

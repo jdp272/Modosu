@@ -689,8 +689,6 @@ public abstract class WorldController implements Screen {
 
 
 		hud = new HUD();
-//		pauseScreen = new Pause(inputMultiplexer);
-//		Gdx.input.setInputProcessor(inputMultiplexer);
 	}
 	
 	/**
@@ -703,17 +701,14 @@ public abstract class WorldController implements Screen {
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
+		hud.dispose();
 		objects = null;
 		addQueue = null;
 		bounds = null;
 		scale  = null;
 		world  = null;
 		canvas = null;
-
-		hud.dispose();
 		hud = null;
-//		pauseScreen.dispose();
-//		pauseScreen = null;
 	}
 
 	/**
@@ -1089,16 +1084,16 @@ public abstract class WorldController implements Screen {
 	 */
 	public void render(float delta) {
 		if (active) {
-
 			updateGP = preUpdate(delta);
 
+			/** If it was the first time the player pressed pause */
 			if (pressedPause) {
 				isPaused = true;
 				hud.pauseGame();
 				pressedPause = false;
-
 			}
 
+			/** If the game isnt paused or switching screens, continue updating GP */
 			if (updateGP && !isPaused) {
 				update(delta); // This is the one that must be defined.
 				postUpdate(delta);
@@ -1106,12 +1101,13 @@ public abstract class WorldController implements Screen {
 
 			draw(delta);
 
+			/** Draw the HUD (on top of the environment */
 			if (renderHUD) {
 				hud.getStage().act(delta);
 				hud.getStage().draw();
 			}
 
-			/** IF GAME IS CURRENTLY PAUSED */
+			/** If the game is currently paused */
 			if (isPaused) {
 				pause();
 			}
