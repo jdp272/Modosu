@@ -176,6 +176,7 @@ public class GamePlayController extends WorldController {
 
 		// TODO Change level loading here
 		File folder = new File("levels");
+
 		levels = new ArrayList(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
 		Collections.sort(levels);
 	}

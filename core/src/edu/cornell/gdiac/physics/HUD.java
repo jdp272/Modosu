@@ -85,7 +85,6 @@ public class HUD {
     private static Label hostCounterLabel;
     private Texture hostCounterTexture;
 
-
     /** Scene 2D Widgets for Pause */
     private Skin skin;
     private Group group;
@@ -380,6 +379,7 @@ public class HUD {
         numTotalHosts = 0;
         numCurrentHosts = 0;
         pauseButtonClicked = false;
+
         timeLabel.setText(String.format(TIMER_PADDING + "%d:%02d", minutes, seconds));
     }
 
