@@ -34,8 +34,10 @@ import edu.cornell.gdiac.physics.obstacle.BorderEdge;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+import edu.cornell.gdiac.util.MusicController;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.ScreenListener;
+import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -1105,6 +1107,7 @@ public abstract class WorldController implements Screen {
 				pauseScreen.getStage().act(delta);
 				pauseScreen.getStage().draw();
 			}
+			MusicController.getInstance().update();
 		}
 	}
 

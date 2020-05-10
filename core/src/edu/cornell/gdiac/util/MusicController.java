@@ -75,15 +75,17 @@ public class MusicController {
 	 * @return the single instance for the MusicController
 	 */
 	public static MusicController getInstance() {
-		if (controller == null) {
-			controller = new MusicController();
-		}
+		if (controller == null) { controller = new MusicController(); }
 		return controller;
 	}
 
-	public boolean isEmpty(){
-		return musicHolder.isEmpty();
-	}
+	/**
+	 * Returns whether this Music Controller has music stored inside of it.
+	 *
+	 *
+	 * @return Whether this Music Controller has music
+	 */
+	public boolean isEmpty(){ return musicHolder.isEmpty(); }
 
 	/// Music Management
 	/**
@@ -102,7 +104,7 @@ public class MusicController {
 	 */
 	public void removeMusic(String musicName) { musicHolder.remove(musicName); }
 
-	/// Properties
+	/// Getters and Setters
 
 	/**
 	 * Sets this MusicController's unmuted state.
@@ -110,19 +112,21 @@ public class MusicController {
 	 * @param value Whether this MusicController is unmuted
 	 */
 	public void setUnmuted(boolean value) {
-		System.out.println("just set music unmuted to be: " + value);
 		isUnmuted = value;
+
+		// If just got muted and currently playing
 		if (!isUnmuted && isPlaying()) {
 			setVolume(0);
 		}
-		if (isPlaying() && isUnmuted() && music.getVolume() == 0f) {
-			setVolume(40);
+		// If current playing and unmuted, but music is still silent
+		if (music.isPlaying() && isUnmuted && music.getVolume() == 0f) {
+			setVolume(musicVolume);
 		}
 	}
 
 	 /** Returns true if this MusicController is unmuted.
 	 *
-	 * * @returns true if this MusicController is unmuted
+	 * * @returns Whether this MusicController is unmuted
 	 */
 	public boolean isUnmuted() { return isUnmuted; }
 
@@ -135,18 +139,35 @@ public class MusicController {
 				return;
 			}
 			else {
-				crossFading = true;
-				System.out.println("set crossfading to true");
-
 				Music musicToPlay = musicHolder.get(musicNameToPlay);
-				if (musicToPlay != null) {
-					musicName = musicNameToPlay;
-					musicNext = musicToPlay;
 
-					musicNext.setVolume(.10f);
-					maximumThreshold = music.getVolume();
-					minimumThreshold = .10f*music.getVolume();
-					musicNext.play();
+				// If while cross fading, another change happens
+				if (crossFading && musicNameToPlay != null){
+					crossFading = false;
+					System.out.println("will be broken");
+					music.stop();
+					musicNext.stop();
+				}
+				else {
+					System.out.println("Crossfade is true");
+					crossFading = true;
+
+					if (musicToPlay != null) {
+						musicName = musicNameToPlay;
+						musicNext = musicToPlay;
+
+						// Incoming song is at 10% of current volume
+						musicNext.setVolume(.10f * musicVolume);
+
+						// New song will start and stop increasing when reaches current volume
+						maximumThreshold = music.getVolume();
+
+						// Will stop old one when it is less than 10% of the current volume
+						minimumThreshold = .10f * maximumThreshold;
+
+						// Start playing new track
+						musicNext.play();
+					}
 				}
 			}
 		}
@@ -161,13 +182,18 @@ public class MusicController {
 				System.out.println("The music you're trying to play isnt in the holder.");
 			}
 		}
+
 		music.setVolume( isUnmuted() ? musicVolume : 0f);
 		music.setLooping(true);
 		music.play();
 	}
 
+	/** Returns true if this MusicController is playing music.
+	 *
+	 * @returns Whether this MusicController is playing
+	 */
 	public boolean isPlaying() {
-		if (music != null) { return music.isPlaying(); }
+		if (music != null ) { return music.isPlaying(); }
 		return false;
 	}
 
@@ -182,40 +208,32 @@ public class MusicController {
 	 * @param v	The sound volume in the range [0,1]
 	 */
 	public void setVolume(float v) {
-		if (music != null) { music.setVolume(v); System.out.println("SET VOLUME TO " + v);}
+		if (music != null) {
+			musicVolume = v;
+			music.setVolume(v);
+		}
 	}
 
+	/** Update function for this Music Controller. */
 	public void update() {
-		//if (music != null) { music.setVolume(music.getVolume()); }
-		//if (musicNext != null) { musicNext.setVolume(musicNext.getVolume()); }
+		// Normal update where music is just playing
+		if (!crossFading) { musicNext = null; music.play(); }
 
-		if (!crossFading) {
-			if (!(music != null && musicNext == null)) { throw new OutOfMemoryError(); }
-			System.out.println(music.getVolume());
-			if (music == null) {
-				System.out.println("No music should be playing.");
-			}
-
-			if (music != null) music.play();
-			//System.out.println("not crossfading");
-		}
-
-		//region deals with decrementing volume of crossfading tracks
+		// Cross fade update
 		else {
-			musicNext.play();
-			music.setVolume(music.getVolume() - (.02f * music.getVolume()));
-			musicNext.setVolume(musicNext.getVolume() + (.02f*musicNext.getVolume()));
+			// Update cross fade volumes
+			music.setVolume(music.getVolume() - (.015f * music.getVolume()));
+			musicNext.setVolume(musicNext.getVolume() + (.015f * musicNext.getVolume()));
 
-			System.out.println("this is curr: " + music.getVolume());
-			System.out.println("this is next: " + musicNext.getVolume());
-			if (music.getVolume() < minimumThreshold || musicNext.getVolume() > maximumThreshold) {
+			// Condition to stop cross fade
+			if (music.getVolume() < minimumThreshold || musicNext.getVolume() >= maximumThreshold) {
 				crossFading = false;
 				music.stop();
 				music = musicNext;
+
 				music.setVolume(maximumThreshold);
 				music.play();
-				musicNext = null;
-				System.out.println("set crossfading to false");
+				System.out.println("Cross fade is false;");
 			}
 		}
 	}
