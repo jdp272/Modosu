@@ -492,6 +492,8 @@ public abstract class WorldController implements Screen {
 	private boolean pressedPause = false;
 	/** Whether game is currently paused */
 	private boolean isPaused = false;
+	/** Whether game was just paused */
+	protected boolean wasPaused = false;
 
 
 	/**
@@ -792,6 +794,7 @@ public abstract class WorldController implements Screen {
 		}
 
 		if (input.didPause() || HUD.getPauseClicked()) {
+			arrow = null;
 			pressedPause = true;
 			return false;
 		}
@@ -1047,9 +1050,6 @@ public abstract class WorldController implements Screen {
 		}
 		canvas.end();
 
-
-
-
 		if (debug) {
 			canvas.beginDebug();
 			for(Obstacle obj : objects) {
@@ -1061,11 +1061,6 @@ public abstract class WorldController implements Screen {
 		if (arrow != null && !failed){
 			arrow.draw(canvas);
 		}
-
-		// Sets the stage to draw the HUD
-//		if(renderHUD) {
-//			canvas.drawHUD(delta);
-//		}
 	}
 	
 	/**
@@ -1098,6 +1093,7 @@ public abstract class WorldController implements Screen {
 				isPaused = true;
 				hud.pauseGame();
 				pressedPause = false;
+
 			}
 
 			if (updateGP && !isPaused) {
@@ -1142,6 +1138,7 @@ public abstract class WorldController implements Screen {
 		if (hud.getPlayClicked()) {
 			hud.resumeGame();
 			isPaused = false;
+			wasPaused = true;
 		}
 	}
 

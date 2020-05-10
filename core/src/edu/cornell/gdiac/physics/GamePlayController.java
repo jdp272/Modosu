@@ -305,7 +305,8 @@ public class GamePlayController extends WorldController {
 		}
 
 		// Calls update on hostController
-		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand(), energyPillars);
+		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand(), energyPillars, wasPaused);
+
 		if (hostController.getLaunched()){
 			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
 		}
@@ -379,7 +380,6 @@ public class GamePlayController extends WorldController {
 		*/
 
 		Boolean isInPillar = false;
-
 		// CHECK IF POSSESSED IS IN ENERGY PILLAR RADIUS
         for(EnergyPillar ep : energyPillars) {
             //System.out.println(possessed.getPosition());
@@ -399,6 +399,9 @@ public class GamePlayController extends WorldController {
 
 		// Update sounds
 		SoundController.getInstance().update();
+
+		// Not paused anymore
+		wasPaused = false;
 
 		// Clear collision controller
 		collisionController.clear();
