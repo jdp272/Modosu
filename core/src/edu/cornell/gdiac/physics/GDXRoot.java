@@ -241,6 +241,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param level The level to start the game at
 	 */
 	public void exitScreenLevel(int level) {
+		System.out.println(level);
 		controller.loadContent(manager);
 		controller.setScreenListener(this);
 		controller.setCanvas(canvas);

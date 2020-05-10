@@ -501,7 +501,7 @@ public class HostModel extends BoxObstacle {
      */
     public boolean incCurrentCharge() {
         if (this.isPossessed && !this.isPedestal) {
-            if (this.currentCharge == this.maxCharge) {
+            if (currentCharge >= this.maxCharge) {
                 return false;
             } else {
                 this.currentCharge++;
@@ -511,6 +511,7 @@ public class HostModel extends BoxObstacle {
         } else {
             return true;
         }
+
     }
 
     /**

@@ -182,15 +182,17 @@ public class GamePlayController extends WorldController {
 		setFailure(false);
 		setMenu(false);
 
+		System.out.println("just called play game music");
 		MusicController.getInstance().play("gameMusic");
-		// MusicController.getInstance().setVolume(40);
-
 
 		Vector2 gravity = new Vector2(world.getGravity());
 
 		FileHandle levelToLoad;
-		System.out.println("levels/" + levels.get(currentLevel % levels.size()).getName());
-		levelToLoad = Gdx.files.local("levels/" + levels.get(currentLevel % levels.size()).getName());
+
+		int levelIndex = ((currentLevel%levels.size()) + levels.size()) % levels.size();
+
+		System.out.println("levels/" + levels.get(levelIndex).getName());
+		levelToLoad = Gdx.files.local("levels/" + levels.get(levelIndex).getName());
 
 		level = loader.loadLevel(levelToLoad);
 
@@ -280,8 +282,6 @@ public class GamePlayController extends WorldController {
 	 */
 	public void update(float delta) {
 
-		MusicController.getInstance().update();
-
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){
 			HUD.incrementCurrHosts();
@@ -307,9 +307,8 @@ public class GamePlayController extends WorldController {
 
 		// Calls update on hostController
 		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand(), energyPillars);
-		if (hostController.getLaunched()){
-			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
-		}
+
+		if (hostController.getLaunched()){ SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false); }
 
 
 		// If player is still playing and moving
