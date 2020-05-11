@@ -1,18 +1,18 @@
 pause.png
-size: 640, 465
+size: 587, 448
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 background
   rotate: false
-  xy: 0, 100
-  size: 519, 365
-  orig: 519, 365
+  xy: 0, 95
+  size: 587, 353
+  orig: 587, 353
   offset: 0, 0
   index: -1
 bar
   rotate: false
-  xy: 240, 0
+  xy: 241, 0
   size: 200, 10
   orig: 200, 10
   offset: 0, 0
@@ -27,8 +27,8 @@ knob
 menu
   rotate: false
   xy: 129, 0
-  size: 111, 96
-  orig: 111, 96
+  size: 112, 95
+  orig: 112, 95
   offset: 0, 0
   index: -1
 play
@@ -43,12 +43,5 @@ retry
   xy: 8, 0
   size: 57, 57
   orig: 57, 57
-  offset: 0, 0
-  index: -1
-tutorial
-  rotate: false
-  xy: 440, 0
-  size: 200, 100
-  orig: 200, 100
   offset: 0, 0
   index: -1
