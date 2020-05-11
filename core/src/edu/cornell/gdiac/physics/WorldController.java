@@ -487,6 +487,7 @@ public abstract class WorldController implements Screen {
 	/** Whether to update Gameplay controller */
 	private	boolean updateGP;
 
+
 	/** list of level files*/
 	protected ArrayList<File> levels;
 
@@ -496,7 +497,6 @@ public abstract class WorldController implements Screen {
 	private boolean isPaused = false;
 	/** Whether game was just paused */
 	protected boolean wasPaused = false;
-
 
 	/**
 	 * Returns true if debug mode is active.
@@ -1088,18 +1088,19 @@ public abstract class WorldController implements Screen {
 
 			/** If it was the first time the player pressed pause */
 			if (pressedPause) {
+				System.out.println("PRESSED PAUSE");
 				isPaused = true;
 				hud.pauseGame();
 				pressedPause = false;
 			}
+
+			draw(delta);
 
 			/** If the game isnt paused or switching screens, continue updating GP */
 			if (updateGP && !isPaused) {
 				update(delta); // This is the one that must be defined.
 				postUpdate(delta);
 			}
-
-			draw(delta);
 
 			/** Draw the HUD (on top of the environment */
 			if (renderHUD) {
