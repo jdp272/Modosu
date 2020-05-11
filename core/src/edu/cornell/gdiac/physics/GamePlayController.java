@@ -372,8 +372,8 @@ public class GamePlayController extends WorldController {
 
 		// Check to hid tutorial
 		if (!tutorial.didCompleteTutorial()) {
-			tutorial.updateTutorial(delta);
 			tutorial.drawTutorial(delta);
+			tutorial.updateTutorial(delta);
 		}
 
 		// Get arrow and draw if applicable
