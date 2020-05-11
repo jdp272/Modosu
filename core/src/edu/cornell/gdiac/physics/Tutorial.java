@@ -128,6 +128,7 @@ public class Tutorial {
 
         if (countdown == 0) {
             completedTutoral = true;
+            dispose();
         } else {
             counter = counter + dt;
             if (counter >= 1) {

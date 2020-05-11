@@ -173,9 +173,7 @@ public class GamePlayController extends WorldController {
 		world.setContactListener(collisionController);
 
 		// Initialize vectors
-
         cache = new Vector2();
-		cache = new Vector2();
 
 		// TODO Change level loading here
 		File folder = new File("levels");
@@ -374,8 +372,8 @@ public class GamePlayController extends WorldController {
 
 		// Check to hid tutorial
 		if (!tutorial.didCompleteTutorial()) {
-			tutorial.updateTutorial(delta);
 			tutorial.drawTutorial(delta);
+			tutorial.updateTutorial(delta);
 		}
 
 		// Get arrow and draw if applicable

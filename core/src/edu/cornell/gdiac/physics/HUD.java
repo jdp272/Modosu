@@ -206,7 +206,7 @@ public class HUD {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //System.out.println("MUSIC SLIDED: " + musicSlider.getValue());
-                MusicController.getInstance().setVolume((int) musicSlider.getValue());
+                MusicController.getInstance().setVolume(musicSlider.getValue()/100f);
             }
         });
 
@@ -226,7 +226,7 @@ public class HUD {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 // System.out.println("SFX SLIDED: " + sfxSlider.getValue());
-                SoundController.getInstance().setVolume((int) sfxSlider.getValue());
+                SoundController.getInstance().setVolume(sfxSlider.getValue()/100f);
             }
         });
 
