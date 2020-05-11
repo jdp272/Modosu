@@ -645,6 +645,7 @@ public class HostModel extends BoxObstacle {
         hostStripS.setFrame(HOST_START);
     }
 
+    private float threshold = 0.5f;
     /**
      * Animates Host Movement
      * <p>
@@ -675,9 +676,9 @@ public class HostModel extends BoxObstacle {
                 //Update UI for Charge
                 this.hostChargeUI.setFrame((int) ((this.currentCharge / this.maxCharge) * HOST_CHARGE_UI_END));
 
-                if (direction.x > 0) {
+                if (direction.x > threshold) {
                     // NORTH EAST
-                    if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                    if (direction.y > threshold) {
                         hostStrip = hostStripNE;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -687,7 +688,7 @@ public class HostModel extends BoxObstacle {
 
                     }
                     // SOUTH EAST
-                    else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                    else if (direction.y < -threshold) {
                         hostStrip = hostStripSE;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -696,7 +697,7 @@ public class HostModel extends BoxObstacle {
                         }
                     }
                     // EAST
-                    if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
+                    if (Math.abs(direction.y) < threshold) {
                         hostStrip = hostStripE;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -704,9 +705,9 @@ public class HostModel extends BoxObstacle {
                             frame = HOST_START;
                         }
                     }
-                } else if (direction.x < 0) {
+                } else if (direction.x < -threshold) {
                     // NORTH WEST
-                    if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                    if (direction.y > threshold) {
                         hostStrip = hostStripNW;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -715,7 +716,7 @@ public class HostModel extends BoxObstacle {
                         }
                     }
                     // SOUTH WEST
-                    else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                    else if (direction.y < -threshold) {
                         hostStrip = hostStripSW;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -724,7 +725,7 @@ public class HostModel extends BoxObstacle {
                         }
                     }
                     // WEST
-                    if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
+                    if (Math.abs(direction.y) < threshold) {
                         hostStrip = hostStripW;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -732,9 +733,9 @@ public class HostModel extends BoxObstacle {
                             frame = HOST_START;
                         }
                     }
-                } else if (direction.x == 0 || Math.abs(direction.x) < 0.1) {
+                } else if (Math.abs(direction.x) < threshold) {
                     // NORTH
-                    if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                    if (direction.y > threshold) {
                         hostStrip = hostStripN;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -743,7 +744,7 @@ public class HostModel extends BoxObstacle {
                         }
                     }
                     // SOUTH
-                    else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                    else if (direction.y < -threshold) {
                         hostStrip = hostStripS;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;

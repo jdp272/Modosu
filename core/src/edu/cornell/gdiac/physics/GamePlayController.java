@@ -89,6 +89,8 @@ public class GamePlayController extends WorldController {
 
 	private final float panSpeed = 10f;
 
+	public boolean inCustom;
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -187,6 +189,15 @@ public class GamePlayController extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		if(inCustom){
+			File folder = new File("Custom");
+			levels = new ArrayList(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+			Collections.sort(levels);
+		}else{
+			File folder = new File("levels");
+			levels = new ArrayList(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+			Collections.sort(levels);
+		}
 		// Reset game conditions to represent a new game
 		setComplete(false);
 		setFailure(false);
@@ -202,8 +213,13 @@ public class GamePlayController extends WorldController {
 
 		int levelIndex = ((currentLevel%levels.size()) + levels.size()) % levels.size();
 
-		System.out.println("levels/" + levels.get(levelIndex).getName());
-		levelToLoad = Gdx.files.local("levels/" + levels.get(levelIndex).getName());
+		if(inCustom){
+			System.out.println("Custom/" + levels.get(levelIndex).getName());
+			levelToLoad = Gdx.files.local("Custom/" + levels.get(levelIndex).getName());
+		}else {
+			System.out.println("levels/" + levels.get(levelIndex).getName());
+			levelToLoad = Gdx.files.local("levels/" + levels.get(levelIndex).getName());
+		}
 
 		level = loader.loadLevel(levelToLoad);
 

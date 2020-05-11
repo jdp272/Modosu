@@ -246,6 +246,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controller.setScreenListener(this);
 		controller.setCanvas(canvas);
 		controller.setCurrentLevel(level);
+		controller.inCustom = false;
 		controller.reset();
 
 		setScreen(controller);
@@ -296,12 +297,21 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelDesigner.setCurrentLevel(-1);
 			}
 			levelDesigner.setFromCustom(custom);
+
 			levelDesigner.reset();
 
 			setScreen(levelDesigner);
 		}
 		else {
-			exitScreenLevel(level + (page*4));
+			System.out.println(level + (page*4));
+			controller.loadContent(manager);
+			controller.setScreenListener(this);
+			controller.setCanvas(canvas);
+			controller.setCurrentLevel(level + (page*4));
+			controller.inCustom = custom;
+			controller.reset();
+
+			setScreen(controller);
 		}
 
 	}
