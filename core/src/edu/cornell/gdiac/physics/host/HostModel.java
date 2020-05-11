@@ -138,6 +138,16 @@ public class HostModel extends BoxObstacle {
      */
     FilmStrip pedestalHost;
 
+    /**
+     * The texture filmstrip for the animation for a new possession
+     */
+    FilmStrip newPossessionStrip;
+
+    /**
+     * The texture filmstrip for the animation for any possession
+     */
+    FilmStrip genPossessionStrip;
+
     // Default physics values
     /**
      * The density of this host
@@ -173,6 +183,12 @@ public class HostModel extends BoxObstacle {
      * The color of the glyphs for unpossessed golems
      */
     private static final Color unpossessedGlyphColor = Color.valueOf("#938282");
+
+    /**
+     * The color of the glyphs for possessed golems
+     */
+    private static final Color possessedColor = Color.valueOf("#c8f1ee");
+
 
 
     // FRAMES FOR SPRITE SHEET
@@ -935,6 +951,14 @@ public class HostModel extends BoxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
+        float chargeProgression = (float) currentCharge / maxCharge;
+        /**
+         * The Warning Color
+         */
+        Color warningColor = new Color(64f/256f + Math.min(191/256f, 272/256f * Math.max(0, chargeProgression - 0.3f)),
+                198f/256f - Math.min(75f/256f,(75f/256f * chargeProgression)),
+                232f/256f - Math.min(84f/256f,(84f/256f * Math.max(0, chargeProgression - 0.5f))), 1);
+
         if (this.isPedestal) {
             // Make pedestal clear when no longer in possession.
             if (this.isPossessed) {
@@ -944,7 +968,6 @@ public class HostModel extends BoxObstacle {
             }
         } else {
             // Draw the host
-            float chargeProgression = currentCharge / maxCharge;
             if (this.hostStrip != null && this.hostChargeUI != null) {
 
                 // If bot has already been possessed colors should change
@@ -952,18 +975,19 @@ public class HostModel extends BoxObstacle {
                     /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
                     if (this.currentCharge < this.maxCharge) {
                         canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-                        canvas.draw(glyphStrip, Color.WHITE, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                        canvas.draw(glyphStrip, warningColor, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                         canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                        // WHEN GOLEM DIES
                     } else {
                         canvas.draw(hostStrip, Color.RED, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-                        canvas.draw(glyphStrip, Color.WHITE, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                        canvas.draw(glyphStrip, Color.RED, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                         canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     }
                 }
                 // When the bot hasn't been possessed the indicator color should be black
                 else {
                     canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-                    canvas.draw(glyphStrip, Color.WHITE, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                    canvas.draw(glyphStrip, unpossessedGlyphColor, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                 }
             }
@@ -976,9 +1000,16 @@ public class HostModel extends BoxObstacle {
      * @param canvas Drawing context
      */
     public void drawCharge(GameCanvas canvas) {
+        /**
+         * The Warning Color
+         */
+        float chargeProgression = (float) currentCharge / maxCharge;
+        Color warningColor = new Color(64f/256f + Math.min(191/256f, 272/256f * Math.max(0, chargeProgression - 0.3f)),
+                198f/256f - Math.min(75f/256f,(75f/256f * chargeProgression)),
+                232f/256f - Math.min(84f/256f,(84f/256f * Math.max(0, chargeProgression - 0.5f))), 1);
+
         if (!this.isPedestal) {
             // Draw the host
-            float chargeProgression = currentCharge / maxCharge;
             if (this.hostStrip != null && this.hostChargeUI != null) {
 
                 // If bot has already been possessed colors should change
@@ -988,15 +1019,13 @@ public class HostModel extends BoxObstacle {
 
                         // Color changes more and more to a red or goal color here
                         // Light Blue Color
-                        Color warningColor = new Color(200f/256f, 241f/256f, 238f/256f, 1);
 
-                        //System.out.println(this.inPillar);
                         if(this.inPillar) {
                             warningColor = new Color(255f/256f, 191f/256f, 124f/256f,1);
                         }
                         if ((chargeProgression >= 0.83f && chargeProgression <= 0.86f || chargeProgression >= 0.90f && chargeProgression <= 0.93f || chargeProgression >= 0.97f && chargeProgression <= 1f)) {
                             // Color of the 3 flashes
-                            warningColor = new Color (chargeProgression * 255f  / 256f , chargeProgression * 155f / 256f, chargeProgression * 222f/256f, 1);
+                            warningColor = new Color (chargeProgression * 255f  / 256f , chargeProgression * 123 / 256f, chargeProgression * 148f/256f, 1);
                         }
                         setScaling(hostChargeUI);
                         canvas.draw(hostChargeUI, warningColor, hostChargeUI.getRegionWidth() / 2f, hostChargeUI.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.9f, 0.9f);
