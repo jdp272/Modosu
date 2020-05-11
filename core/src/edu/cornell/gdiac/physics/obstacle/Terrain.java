@@ -9,12 +9,12 @@ import edu.cornell.gdiac.util.FilmStrip;
 public abstract class Terrain extends BoxObstacle {
 
     /** The textures for the terrain */
-    private FilmStrip terrainStrip;
+    protected FilmStrip terrainStrip;
     /** The textures for the corner layover that goes over the tile */
     private FilmStrip cornerStrip;
 
     /** The frame in the main terrain film strip for this tile */
-    private int frame;
+    protected int frame;
 
     private boolean upLeft;
     private boolean upRight;

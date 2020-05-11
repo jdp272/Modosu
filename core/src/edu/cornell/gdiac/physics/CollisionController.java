@@ -230,8 +230,8 @@ public class CollisionController implements ContactListener {
         }
 
         // Check for Collision with Sand
-        if ((body1.getUserData() == spirit && bd2.getName() == "sand") ||
-                bd1.getName() == "sand" && body2.getUserData() == spirit) {
+        if ((body1.getUserData() == prevHostPossessed && bd2.getName() == "sand") ||
+                bd1.getName() == "sand" && body2.getUserData() == prevHostPossessed) {
                 inSand = true;
         }
 
