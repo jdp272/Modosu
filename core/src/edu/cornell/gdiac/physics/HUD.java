@@ -54,9 +54,9 @@ public class HUD {
     private static final int ICON_SIZE_BIG = 60;
     private static final int FONT_TITLE_SIZE = 50;
     private static final int FONT_SUBTITLE_SIZE = 48;
-    private static final String TITLE_TXT = "paused";
-    private static final String MUSIC_TXT = "music";
-    private static final String SFX_TXT = "sound fx";
+    private static final String TITLE_TXT = "";
+    private static final String MUSIC_TXT = "";
+    private static final String SFX_TXT = "";
 
     /** Golem & Time Tracking Variables */
     private static int numCurrentHosts;
@@ -180,28 +180,22 @@ public class HUD {
         pauseTable.setHeight(pauseHeight);
         pauseTable.setWidth(pauseWidth);
         pauseTable.setBackground(skin.getDrawable(sBACKGROUND));
-        pauseTable.setPosition(Gdx.graphics.getWidth()/2 - pauseWidth/2 ,Gdx.graphics.getHeight()/2 - pauseHeight/2);
+        pauseTable.setPosition(Gdx.graphics.getWidth()/2 - pauseWidth/2 + 40,Gdx.graphics.getHeight()/2 - pauseHeight/2);
+        pauseTable.padRight(80);
 
         /** Font Styles */
-        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal(FONT_FILE));
-        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = FONT_TITLE_SIZE;
-        BitmapFont fontTitle = gen.generateFont(param);
-        param.size = FONT_SUBTITLE_SIZE;
-        BitmapFont fontSubtitle = gen.generateFont(param);
-        gen.dispose();
+        BitmapFont font = new BitmapFont();
 
         /** Title Label */
-        Label.LabelStyle titleLS = new Label.LabelStyle(fontTitle, Color.WHITE);
+        Label.LabelStyle titleLS = new Label.LabelStyle(font, Color.WHITE);
         titleLabel = new Label(TITLE_TXT, titleLS);
         pauseTable.add(titleLabel).colspan(3);
 
         /** Add Row in Table */
-        pauseTable.row().padTop(40);
+        pauseTable.row().padTop(70);
 
         /** Music Label */
-        fontSubtitle.getData().setScale(0.5f);
-        Label.LabelStyle subTitleLS = new Label.LabelStyle(fontSubtitle, Color.WHITE);
+        Label.LabelStyle subTitleLS = new Label.LabelStyle(font, Color.WHITE);
         musicLabel = new Label(MUSIC_TXT, subTitleLS);
         pauseTable.add(musicLabel).colspan(1).padLeft(20);
 
@@ -213,7 +207,7 @@ public class HUD {
         musicSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("MUSIC SLIDED: " + musicSlider.getValue());
+                //System.out.println("MUSIC SLIDED: " + musicSlider.getValue());
                 MusicController.getInstance().setVolume((int) musicSlider.getValue());
             }
         });
@@ -221,7 +215,7 @@ public class HUD {
         pauseTable.add(musicSlider).colspan(2);
 
         /** Add New Row */
-        pauseTable.row().padTop(20);
+        pauseTable.row().padTop(40);
 
         /** SoundFX Label */
         sfxLabel = new Label(SFX_TXT, subTitleLS);
@@ -233,7 +227,7 @@ public class HUD {
         sfxSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("SFX SLIDED: " + sfxSlider.getValue());
+                // System.out.println("SFX SLIDED: " + sfxSlider.getValue());
                 SoundController.getInstance().setVolume((int) sfxSlider.getValue());
             }
         });
@@ -256,7 +250,7 @@ public class HUD {
             }
         });
 
-        pauseTable.add(menu).width(ICON_SIZE_SMALL).height(ICON_SIZE_SMALL).padRight(30);
+        pauseTable.add(menu).width(ICON_SIZE_SMALL).height(ICON_SIZE_SMALL).padRight(60);
 
         /** Retry Button */
         Button.ButtonStyle retryStyle = new Button.ButtonStyle();
@@ -285,7 +279,7 @@ public class HUD {
             }
         });
 
-        pauseTable.add(play).width(ICON_SIZE_SMALL).width(ICON_SIZE_SMALL).padLeft(30);
+        pauseTable.add(play).width(ICON_SIZE_SMALL).width(ICON_SIZE_SMALL).padLeft(60);
 
         /** SET INPUT PROCESSOR TO THIS SCREEN */
         Gdx.input.setInputProcessor(stage);
