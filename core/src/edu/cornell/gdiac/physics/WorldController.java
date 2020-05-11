@@ -103,6 +103,27 @@ public abstract class WorldController implements Screen {
 	private static final String HOST_FILE_SW = "host/golemWalk_SW.png";
 	/** Texture file for host sprite WEST */
 	private static final String HOST_FILE_W = "host/golemWalk_W.png";
+
+	/** Texture file for host glyph sprite EAST */
+	private static final String HOST_GLYPH_FILE_E = "host/E_RuneSpriteSheet.png";
+	/** Texture file for host glyph sprite NORTH */
+	private static final String HOST_GLYPH_FILE_N = "host/N_RuneSpriteSheet.png";
+	/** Texture file for host glyph sprite NORTH EAST */
+	private static final String HOST_GLYPH_FILE_NE = "host/NE_RuneSpriteSheet.png";
+	/** Texture file for host sprite NORTH WEST */
+	private static final String HOST_GLYPH_FILE_NW = "host/NW_RuneSpriteSheet.png";
+	/** Texture file for host sprite SOUTH */
+	private static final String HOST_GLYPH_FILE_S = "host/S_RuneSpriteSheet.png";
+	/** Texture file for host sprite SOUTH EAST */
+	private static final String HOST_GLYPH_FILE_SE = "host/SE_RuneSpriteSheet.png";
+	/** Texture file for host sprite SOUTH WEST */
+	private static final String HOST_GLYPH_FILE_SW = "host/SW_RuneSpriteSheet.png";
+	/** Texture file for host sprite WEST */
+	private static final String HOST_GLYPH_FILE_W = "host/W_RuneSpriteSheet.png";
+
+	/** Arms Sprite Sheet */
+	private static final String HOST_ARMS = "host/ArmSpriteSheet.png";
+
 	/** Texture file for spirit head sprite */
 	private static String SPIRIT_HEAD_FILE = "host/SpiritHeadSpritesheet_v01.png";
 	/** Texture file for spirit tail sprite */
@@ -179,6 +200,24 @@ public abstract class WorldController implements Screen {
 	private static Texture hostTextureSW;
 	/** Texture for Host SpriteSheet WEST*/
 	private static Texture hostTextureW;
+	/** Texture for Host Glyph SpriteSheet EAST*/
+	private static Texture hostGlyphTextureE;
+	/** Texture for Host Glyph SpriteSheet NORTH*/
+	private static Texture hostGlyphTextureN;
+	/** Texture for Host Glyph SpriteSheet NORTH EAST*/
+	private static Texture hostGlyphTextureNE;
+	/** Texture for Host Glyph SpriteSheet NORTH WEST*/
+	private static Texture hostGlyphTextureNW;
+	/** Texture for Host Glyph SpriteSheet SOUTH */
+	private static Texture hostGlyphTextureS;
+	/** Texture for Host Glyph SpriteSheet SOUTH EAST*/
+	private static Texture hostGlyphTextureSE;
+	/** Texture for Host Glyph SpriteSheet SOUTH WEST*/
+	private static Texture hostGlyphTextureSW;
+	/** Texture for Host Glyph SpriteSheet WEST*/
+	private static Texture hostGlyphTextureW;
+	/** Texture for Host Arms */
+	private static Texture hostArmsTexture;
 	/** Texture for Host Gauge SpriteSheet */
 	private static Texture hostGaugeTexture;
 	/** Texture for Wall SpriteSheet */
@@ -284,6 +323,24 @@ public abstract class WorldController implements Screen {
 		assets.add(HOST_FILE_SW);
 		manager.load(HOST_FILE_W, Texture.class);
 		assets.add(HOST_FILE_W);
+		manager.load(HOST_GLYPH_FILE_E, Texture.class);
+		assets.add(HOST_GLYPH_FILE_E);
+		manager.load(HOST_GLYPH_FILE_N, Texture.class);
+		assets.add(HOST_GLYPH_FILE_N);
+		manager.load(HOST_GLYPH_FILE_NE, Texture.class);
+		assets.add(HOST_GLYPH_FILE_NE);
+		manager.load(HOST_GLYPH_FILE_NW, Texture.class);
+		assets.add(HOST_GLYPH_FILE_NW);
+		manager.load(HOST_GLYPH_FILE_S, Texture.class);
+		assets.add(HOST_GLYPH_FILE_S);
+		manager.load(HOST_GLYPH_FILE_SE, Texture.class);
+		assets.add(HOST_GLYPH_FILE_SE);
+		manager.load(HOST_GLYPH_FILE_SW, Texture.class);
+		assets.add(HOST_GLYPH_FILE_SW);
+		manager.load(HOST_GLYPH_FILE_W, Texture.class);
+		assets.add(HOST_GLYPH_FILE_W);
+		manager.load(HOST_ARMS, Texture.class);
+		assets.add(HOST_ARMS);
 		manager.load(HOST_GAUGE_FILE, Texture.class);
 		assets.add(HOST_GAUGE_FILE);
 		manager.load(WALL_FILE, Texture.class);
@@ -378,6 +435,15 @@ public abstract class WorldController implements Screen {
 		hostTextureSE = manager.get(HOST_FILE_SE, Texture.class);
 		hostTextureSW = manager.get(HOST_FILE_SW, Texture.class);
 		hostTextureW = manager.get(HOST_FILE_W, Texture.class);
+		hostGlyphTextureE = manager.get(HOST_GLYPH_FILE_E,Texture.class);
+		hostGlyphTextureN = manager.get(HOST_GLYPH_FILE_N, Texture.class);
+		hostGlyphTextureNE = manager.get(HOST_GLYPH_FILE_NE, Texture.class);
+		hostGlyphTextureNW = manager.get(HOST_GLYPH_FILE_NW, Texture.class);
+		hostGlyphTextureS = manager.get(HOST_GLYPH_FILE_S, Texture.class);
+		hostGlyphTextureSE = manager.get(HOST_GLYPH_FILE_SE, Texture.class);
+		hostGlyphTextureSW = manager.get(HOST_GLYPH_FILE_SW, Texture.class);
+		hostGlyphTextureW = manager.get(HOST_GLYPH_FILE_W, Texture.class);
+		hostArmsTexture = manager.get(HOST_ARMS, Texture.class);
 		hostGaugeTexture = manager.get(HOST_GAUGE_FILE, Texture.class);
 		wallTexture = manager.get(WALL_FILE, Texture.class);
 		waterTexture = manager.get(WATER_FILE, Texture.class);
@@ -400,7 +466,15 @@ public abstract class WorldController implements Screen {
 
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture, borderEdgeTexture, borderCornerTexture, energyPillarBody, energyPillarCharge, energyPillarRadius, oscWallVert, oscWallVertGauge, oscWallHorz, oscWallGaugeHorz);
+		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture,
+				hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW,
+				hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, hostGlyphTextureE,
+				hostGlyphTextureN, hostGlyphTextureNE, hostGlyphTextureNW, hostGlyphTextureS,
+				hostGlyphTextureSE, hostGlyphTextureSW, hostGlyphTextureW, hostArmsTexture,
+				wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture,
+				pedestalTexture, borderEdgeTexture, borderCornerTexture, energyPillarBody,
+				energyPillarCharge, energyPillarRadius, oscWallVert, oscWallVertGauge,
+				oscWallHorz, oscWallGaugeHorz);
 		loader = new Loader(factory);
 	}
 	

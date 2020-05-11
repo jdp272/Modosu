@@ -291,6 +291,7 @@ public class HostModel extends BoxObstacle {
      */
     private int elapsedFrames = 0;
     private int pedFrames = 0;
+    private int armFrame = 0;
 
     /**
      * The number of frames that should pass before the animation updates
@@ -726,12 +727,13 @@ public class HostModel extends BoxObstacle {
                              FilmStrip glyphStripS, FilmStrip glyphStripSE, FilmStrip glyphStripSW,
                              FilmStrip glyphStripW, FilmStrip armStrip) {
 
-        hostStrip = walkS;
-        hostStrip.setFrame(HOST_START);
+        this.hostStrip = walkS;
+        this.hostStrip.setFrame(HOST_START);
         this.armStrip = armStrip;
-        this.armStrip.setFrame(HOST_ARM_SOUTH);
-        glyphStrip = glyphStripS;
-        glyphStrip.setFrame(HOST_START);
+        this.armFrame = HOST_ARM_SOUTH;
+        this.armStrip.setFrame(this.armFrame);
+        this.glyphStrip = glyphStripS;
+        this.glyphStrip.setFrame(HOST_START);
 
         hostStripNE = walkNE;
         hostStripNE.setFrame(HOST_START);
@@ -803,6 +805,8 @@ public class HostModel extends BoxObstacle {
                     // NORTH EAST
                     if (direction.y > threshold) {
                         hostStrip = hostStripNE;
+                        glyphStrip = glyphStripNE;
+                        this.armFrame = HOST_ARM_NORTH_EAST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
                         } else {
@@ -813,6 +817,8 @@ public class HostModel extends BoxObstacle {
                     // SOUTH EAST
                     else if (direction.y < -threshold) {
                         hostStrip = hostStripSE;
+                        glyphStrip = glyphStripSE;
+                        this.armFrame = HOST_ARM_SOUTH_EAST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
                         } else {
@@ -822,6 +828,8 @@ public class HostModel extends BoxObstacle {
                     // EAST
                     if (Math.abs(direction.y) < threshold) {
                         hostStrip = hostStripE;
+                        glyphStrip = glyphStripE;
+                        this.armFrame = HOST_ARM_EAST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
                         } else {
@@ -832,6 +840,8 @@ public class HostModel extends BoxObstacle {
                     // NORTH WEST
                     if (direction.y > threshold) {
                         hostStrip = hostStripNW;
+                        glyphStrip = glyphStripNW;
+                        this.armFrame = HOST_ARM_NORTH_WEST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
                         } else {
@@ -841,6 +851,8 @@ public class HostModel extends BoxObstacle {
                     // SOUTH WEST
                     else if (direction.y < -threshold) {
                         hostStrip = hostStripSW;
+                        glyphStrip = glyphStripSW;
+                        this.armFrame = HOST_ARM_SOUTH_WEST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
                         } else {
@@ -850,6 +862,8 @@ public class HostModel extends BoxObstacle {
                     // WEST
                     if (Math.abs(direction.y) < threshold) {
                         hostStrip = hostStripW;
+                        glyphStrip = glyphStripW;
+                        this.armFrame = HOST_ARM_WEST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
                         } else {
@@ -860,6 +874,8 @@ public class HostModel extends BoxObstacle {
                     // NORTH
                     if (direction.y > threshold) {
                         hostStrip = hostStripN;
+                        glyphStrip = glyphStripN;
+                        this.armFrame = HOST_ARM_NORTH;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
                         } else {
@@ -869,6 +885,8 @@ public class HostModel extends BoxObstacle {
                     // SOUTH
                     else if (direction.y < -threshold) {
                         hostStrip = hostStripS;
+                        glyphStrip = glyphStripS;
+                        this.armFrame = HOST_ARM_SOUTH;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
                         } else {
@@ -876,8 +894,10 @@ public class HostModel extends BoxObstacle {
                         }
                     }
                 }
-                if(hostStrip != null) {
+                if(hostStrip != null && glyphStrip != null && armStrip != null) {
                     hostStrip.setFrame(frame);
+                    glyphStrip.setFrame(frame);
+                    armStrip.setFrame(this.armFrame);
                 }
             }
         }
@@ -931,16 +951,20 @@ public class HostModel extends BoxObstacle {
                 if (this.hasBeenPossessed) {
                     /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
                     if (this.currentCharge < this.maxCharge) {
-                        canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
-                        canvas.draw(armStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
-                        canvas.draw(glyphStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
+                        canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                        canvas.draw(glyphStrip, Color.WHITE, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                        canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     } else {
-                        canvas.draw(hostStrip, Color.RED, hostChargeUI.getRegionWidth() / 2f, hostChargeUI.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                        canvas.draw(hostStrip, Color.RED, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                        canvas.draw(glyphStrip, Color.WHITE, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                        canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     }
                 }
                 // When the bot hasn't been possessed the indicator color should be black
                 else {
                     canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                    canvas.draw(glyphStrip, Color.WHITE, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                    canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                 }
             }
         }

@@ -23,14 +23,15 @@ public class Factory {
     private Texture hostTextureSE;
     private Texture hostTextureSW;
     private Texture hostTextureW;
-    private Texture GlyphTextureE;
-    private Texture GlyphTextureN;
-    private Texture GlyphTextureNE;
-    private Texture GlyphTextureNW;
-    private Texture GlyphTextureS;
-    private Texture GlyphTextureSE;
-    private Texture GlyphTextureSW;
-    private Texture GlyphTextureW;
+    private Texture glyphTextureE;
+    private Texture glyphTextureN;
+    private Texture glyphTextureNE;
+    private Texture glyphTextureNW;
+    private Texture glyphTextureS;
+    private Texture glyphTextureSE;
+    private Texture glyphTextureSW;
+    private Texture glyphTextureW;
+    private Texture hostArmTexture;
     private Texture wallTexture;
     private Texture waterTexture;
     private Texture cornerTexture;
@@ -83,15 +84,28 @@ public class Factory {
     /**
      * Number of rows in the host image filmstrip
      */
-    private static final int HOST_ROWS = 6;
+    private static final int HOST_ROWS = 10;
     /**
      * Number of columns in this host image filmstrip
      */
-    private static final int HOST_COLUMNS = 10;
+    private static final int HOST_COLUMNS = 6;
     /**
      * Number of total hosts in the host image filmstrip
      */
     private static final int HOST_SIZE = 60;
+
+    /**
+     * Number of rows in the host arms image filmstrip
+     */
+    private static final int HOST_ARMS_ROWS = 1;
+    /**
+     * Number of columns in the host arms image filmstrip
+     */
+    private static final int HOST_ARMS_COLS = 8;
+    /**
+     * Number of total frames in the host arms image filmstrip
+     */
+    private static final int HOST_ARMS_SIZE = 8;
 
 
     /**
@@ -201,6 +215,15 @@ public class Factory {
             Texture hostTextureSE,
             Texture hostTextureSW,
             Texture hostTextureW,
+            Texture hostGlyphTextureE,
+            Texture hostGlyphTextureN,
+            Texture hostGlyphTextureNE,
+            Texture hostGlyphTextureNW,
+            Texture hostGlyphTextureS,
+            Texture hostGlyphTextureSE,
+            Texture hostGlyphTextureSW,
+            Texture hostGlyphTextureW,
+            Texture hostArmTexture,
             Texture wallTexture,
             Texture waterTexture,
             Texture cornerTexture,
@@ -231,6 +254,15 @@ public class Factory {
         this.hostTextureSE = hostTextureSE;
         this.hostTextureSW = hostTextureSW;
         this.hostTextureW = hostTextureW;
+        this.glyphTextureE = hostGlyphTextureE;
+        this.glyphTextureN = hostGlyphTextureN;
+        this.glyphTextureNE = hostGlyphTextureNE;
+        this.glyphTextureNW = hostGlyphTextureNW;
+        this.glyphTextureS = hostGlyphTextureS;
+        this.glyphTextureSE = hostGlyphTextureSE;
+        this.glyphTextureSW = hostGlyphTextureSW;
+        this.glyphTextureW = hostGlyphTextureW;
+        this.hostArmTexture = hostArmTexture;
         this.wallTexture = wallTexture;
         this.waterTexture = waterTexture;
         this.cornerTexture = cornerTexture;
@@ -424,7 +456,10 @@ public class Factory {
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT / 4f
         );
-        oscWall.setOscWallStrips(new FilmStrip(oscWallHorzTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE), new FilmStrip(oscWallHorzGaugeTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE), new FilmStrip(oscWallVertTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE), new FilmStrip(oscWallVertGaugeTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE));
+        oscWall.setOscWallStrips(new FilmStrip(oscWallHorzTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE),
+                new FilmStrip(oscWallHorzGaugeTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE),
+                new FilmStrip(oscWallVertTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE),
+                new FilmStrip(oscWallVertGaugeTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE));
         oscWall.setMainStrip(isVert, isGoingUp);
         oscWall.setVert(isVert);
         oscWall.setGoingUp(isGoingUp);
@@ -447,7 +482,9 @@ public class Factory {
                 DEFAULT_LIFE
         );
         spirit.setDrawScale(scale);
-        spirit.setFilmStrip(new FilmStrip(spiritBodyTexture, SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE), new FilmStrip(spiritHeadTexture, SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE), new FilmStrip(spiritTailTexture, SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE));
+        spirit.setFilmStrip(new FilmStrip(spiritBodyTexture, SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE),
+                new FilmStrip(spiritHeadTexture, SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE),
+                new FilmStrip(spiritTailTexture, SPIRIT_ROWS, SPIRIT_COLUMNS, SPIRIT_SIZE));
         spirit.setSensor(makeSensors);
         return spirit;
     }
@@ -457,7 +494,10 @@ public class Factory {
     }
 
     public HostModel makeSmallHost(float x, float y, Vector2[] instructions, int currentCharge) {
-        return makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, currentCharge, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, hostChargeTexture);
+        return makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, currentCharge, hostTextureE, hostTextureN,
+                hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW,
+                glyphTextureE, glyphTextureN, glyphTextureNE, glyphTextureNW, glyphTextureS, glyphTextureSE,
+                glyphTextureSW, glyphTextureW, hostArmTexture, hostChargeTexture);
     }
 
     public HostModel makePedestal(float x, float y) {
@@ -481,7 +521,13 @@ public class Factory {
         return ped;
     }
 
-    private HostModel makeHostInternal(float x, float y, Vector2[] instructions, int maxCharge, int currentCharge, Texture hostTextureE, Texture hostTextureN, Texture hostTextureNE, Texture hostTextureNW, Texture hostTextureS, Texture hostTextureSE, Texture hostTextureSW, Texture hostTextureW, Texture hostChargeTexture) {
+    private HostModel makeHostInternal(float x, float y, Vector2[] instructions, int maxCharge, int currentCharge,
+                                       Texture hostTextureE, Texture hostTextureN, Texture hostTextureNE,
+                                       Texture hostTextureNW, Texture hostTextureS, Texture hostTextureSE,
+                                       Texture hostTextureSW, Texture hostTextureW, Texture glyphTextureE,
+                                       Texture glyphTextureN, Texture glyphTextureNE, Texture glyphTextureNW,
+                                       Texture glyphTextureS, Texture glyphTextureSE, Texture glyphTextureSW,
+                                       Texture glyphTextureW, Texture hostArmTexture, Texture hostChargeTexture) {
         HostModel host = new HostModel(
                 x,
                 y,
@@ -498,7 +544,12 @@ public class Factory {
         host.setHostStrip(new FilmStrip(hostTextureE, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(hostTextureN, HOST_ROWS, HOST_COLUMNS, HOST_SIZE),
                 new FilmStrip(hostTextureNE, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(hostTextureNW, HOST_ROWS, HOST_COLUMNS, HOST_SIZE),
                 new FilmStrip(hostTextureS, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(hostTextureSE, HOST_ROWS, HOST_COLUMNS, HOST_SIZE),
-                new FilmStrip(hostTextureSW, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(hostTextureW, HOST_ROWS, HOST_COLUMNS, HOST_SIZE));
+                new FilmStrip(hostTextureSW, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(hostTextureW, HOST_ROWS, HOST_COLUMNS, HOST_SIZE),
+                new FilmStrip(glyphTextureE, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(glyphTextureN, HOST_ROWS, HOST_COLUMNS, HOST_SIZE),
+                new FilmStrip(glyphTextureNE, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(glyphTextureNW, HOST_ROWS, HOST_COLUMNS, HOST_SIZE),
+                new FilmStrip(glyphTextureS, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(glyphTextureSE, HOST_ROWS, HOST_COLUMNS, HOST_SIZE),
+                new FilmStrip(glyphTextureSW, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(glyphTextureW, HOST_ROWS, HOST_COLUMNS, HOST_SIZE),
+                new FilmStrip(hostArmTexture, HOST_ARMS_ROWS, HOST_ARMS_COLS, HOST_ARMS_SIZE));
         host.setCurrentCharge(currentCharge);
         host.setName("host");
         host.setSensor(makeSensors);
