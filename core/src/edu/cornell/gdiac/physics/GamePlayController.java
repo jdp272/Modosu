@@ -173,9 +173,7 @@ public class GamePlayController extends WorldController {
 		world.setContactListener(collisionController);
 
 		// Initialize vectors
-
         cache = new Vector2();
-		cache = new Vector2();
 
 		// TODO Change level loading here
 		File folder = new File("levels");
