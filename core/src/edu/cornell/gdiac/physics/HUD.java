@@ -355,13 +355,13 @@ public class HUD {
     /** When game is resumed */
     public void resumeGame(){
         if ( isPaused ){
-            isPaused = false;
             reset();
         }
     }
 
     public void reset() {
         group.clear();
+        isPaused = false;
         retryButtonClicked = false;
         menuButtonClicked = false;
         playButtonClicked = false;
@@ -376,7 +376,8 @@ public class HUD {
         numTotalHosts = 0;
         numCurrentHosts = 0;
         pauseButtonClicked = false;
-
+        group.clear();
+        isPaused = false;
         timeLabel.setText(String.format(TIMER_PADDING + "%d:%02d", minutes, seconds));
     }
 

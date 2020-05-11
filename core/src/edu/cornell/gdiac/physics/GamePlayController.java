@@ -185,7 +185,6 @@ public class GamePlayController extends WorldController {
 		MusicController.getInstance().play("gameMusic");
 		// MusicController.getInstance().setVolume(40);
 
-
 		Vector2 gravity = new Vector2(world.getGravity());
 
 		FileHandle levelToLoad;
@@ -198,6 +197,7 @@ public class GamePlayController extends WorldController {
 		Gdx.input.setInputProcessor(hud.getStage());
 		hud.setNumTotalHosts(level.hosts.size());
 
+		// Do I really need to make a new one everytime? Can just declare outside once!
 		tutorial = new Tutorial();
 
 		dimensions.set(level.dimensions);
@@ -339,11 +339,9 @@ public class GamePlayController extends WorldController {
 			SoundController.getInstance().play(FAILURE_SOUND, FAILURE_SOUND, false);
 		}
 
-		// Update the tutorials
-		if (InputController.getInstance().didAdvanceTutorial() && !tutorial.didCompleteTutorial()) {
-			tutorial.updateTutorial();
-		}
+		// Check to hid tutorial
 		if (!tutorial.didCompleteTutorial()) {
+			tutorial.updateTutorial(delta);
 			tutorial.drawTutorial(delta);
 		}
 
