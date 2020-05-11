@@ -84,6 +84,56 @@ public class HostModel extends BoxObstacle {
     FilmStrip hostChargeUI;
 
     /**
+     * The texture for general glyph strip
+     */
+    FilmStrip glyphStrip;
+
+    /**
+     * The texture filmstrip for glyph of host walking East
+     */
+    FilmStrip glyphStripE;
+
+    /**
+     * The texture filmstrip for glyph of host walking North
+     */
+    FilmStrip glyphStripN;
+
+    /**
+     * The texture filmstrip for glyph of host walking North East
+     */
+    FilmStrip glyphStripNE;
+
+    /**
+     * The texture filmstrip for glyph of host walking North West
+     */
+    FilmStrip glyphStripNW;
+
+    /**
+     * The texture filmstrip for glyph of host walking South
+     */
+    FilmStrip glyphStripS;
+
+    /**
+     * The texture filmstrip for glyph of host walking South East
+     */
+    FilmStrip glyphStripSE;
+
+    /**
+     * The texture filmstrip for glyph of host walking South West
+     */
+    FilmStrip glyphStripSW;
+
+    /**
+     * The texture filmstrip for glyph of host walking West
+     */
+    FilmStrip glyphStripW;
+
+    /**
+     * The texture for general arms
+     */
+    FilmStrip armStrip;
+
+    /**
      * The texture filmstrip for the host that is the pedestal
      */
     FilmStrip pedestalHost;
@@ -119,6 +169,12 @@ public class HostModel extends BoxObstacle {
      */
     private static final Color unpossessedColor = new Color(0x6B5C5CFF);
 
+    /**
+     * The color of the glyphs for unpossessed golems
+     */
+    private static final Color unpossessedGlyphColor = Color.valueOf("#938282");
+
+
     // FRAMES FOR SPRITE SHEET
 
     /**
@@ -138,6 +194,39 @@ public class HostModel extends BoxObstacle {
      * The frame number for a host charge gauge ending frame
      */
     public static final int HOST_CHARGE_UI_END = 31;
+
+    /**
+     * The frame number of arms of host moving North
+     */
+    public static final int HOST_ARM_NORTH = 0;
+    /**
+     * The frame number of arms of host moving North East
+     */
+    public static final int HOST_ARM_NORTH_EAST = 1;
+    /**
+     * The frame number of arms of host moving East
+     */
+    public static final int HOST_ARM_EAST = 2;
+    /**
+     * The frame number of arms of host moving South East
+     */
+    public static final int HOST_ARM_SOUTH_EAST = 3;
+    /**
+     * The frame number of arms of host moving South
+     */
+    public static final int HOST_ARM_SOUTH = 4;
+    /**
+     * The frame number of arms of host moving South West
+     */
+    public static final int HOST_ARM_SOUTH_WEST = 5;
+    /**
+     * The frame number of arms of host moving West
+     */
+    public static final int HOST_ARM_WEST = 6;
+    /**
+     * The frame number of arms of host moving North West
+     */
+    public static final int HOST_ARM_NORTH_WEST = 7;
 
 
     // Attributes Specific to each HostModel
@@ -501,7 +590,7 @@ public class HostModel extends BoxObstacle {
      */
     public boolean incCurrentCharge() {
         if (this.isPossessed && !this.isPedestal) {
-            if (this.currentCharge == this.maxCharge) {
+            if (currentCharge >= this.maxCharge) {
                 return false;
             } else {
                 this.currentCharge++;
@@ -511,6 +600,7 @@ public class HostModel extends BoxObstacle {
         } else {
             return true;
         }
+
     }
 
     /**
@@ -620,11 +710,28 @@ public class HostModel extends BoxObstacle {
      * @param walkSE the direction of the host in the South East
      * @param walkSW the direction of the host in the South West
      * @param walkW  the direction of the host in the West
+     * @param glyphStripE the direction of the glyph of host in East
+     * @param glyphStripN the direction of the glyph of host in North
+     * @param glyphStripNE the direction of the glyph of host in North East
+     * @param glyphStripNW the direction of the glyph of host in North West
+     * @param glyphStripS  the direction of the glyph of host in South
+     * @param glyphStripSE the direction of the glyph of host in South East
+     * @param glyphStripSW the direction of the glyph of host in South West
+     * @param glyphStripW the direction of the glyph of host in West
+     * @param armStrip the direction of arms of host in East
      */
-    public void setHostStrip(FilmStrip walkE, FilmStrip walkN, FilmStrip walkNE, FilmStrip walkNW, FilmStrip walkS, FilmStrip walkSE, FilmStrip walkSW, FilmStrip walkW) {
+    public void setHostStrip(FilmStrip walkE, FilmStrip walkN, FilmStrip walkNE, FilmStrip walkNW, FilmStrip walkS,
+                             FilmStrip walkSE, FilmStrip walkSW, FilmStrip walkW, FilmStrip glyphStripE,
+                             FilmStrip glyphStripN, FilmStrip glyphStripNE, FilmStrip glyphStripNW,
+                             FilmStrip glyphStripS, FilmStrip glyphStripSE, FilmStrip glyphStripSW,
+                             FilmStrip glyphStripW, FilmStrip armStrip) {
 
         hostStrip = walkS;
-        hostStrip.setFrame(0);
+        hostStrip.setFrame(HOST_START);
+        this.armStrip = armStrip;
+        this.armStrip.setFrame(HOST_ARM_SOUTH);
+        glyphStrip = glyphStripS;
+        glyphStrip.setFrame(HOST_START);
 
         hostStripNE = walkNE;
         hostStripNE.setFrame(HOST_START);
@@ -642,8 +749,26 @@ public class HostModel extends BoxObstacle {
         hostStripN.setFrame(HOST_START);
         hostStripS = walkS;
         hostStripS.setFrame(HOST_START);
+
+        this.glyphStripNE = glyphStripNE;
+        this.glyphStripNE.setFrame(HOST_START);
+        this.glyphStripSE = glyphStripSE;
+        this.glyphStripSE.setFrame(HOST_START);
+        this.glyphStripE = glyphStripE;
+        this.glyphStripE.setFrame(HOST_START);
+        this.glyphStripNW = glyphStripNW;
+        this.glyphStripNW.setFrame(HOST_START);
+        this.glyphStripSW = glyphStripSW;
+        this.glyphStripSW.setFrame(HOST_START);
+        this.glyphStripW = glyphStripW;
+        this.glyphStripW.setFrame(HOST_START);
+        this.glyphStripN = glyphStripN;
+        this.glyphStripN.setFrame(HOST_START);
+        this.glyphStripS = glyphStripS;
+        this.glyphStripS.setFrame(HOST_START);
     }
 
+    private float threshold = 0.5f;
     /**
      * Animates Host Movement
      * <p>
@@ -674,9 +799,9 @@ public class HostModel extends BoxObstacle {
                 //Update UI for Charge
                 this.hostChargeUI.setFrame((int) ((this.currentCharge / this.maxCharge) * HOST_CHARGE_UI_END));
 
-                if (direction.x > 0) {
+                if (direction.x > threshold) {
                     // NORTH EAST
-                    if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                    if (direction.y > threshold) {
                         hostStrip = hostStripNE;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -686,7 +811,7 @@ public class HostModel extends BoxObstacle {
 
                     }
                     // SOUTH EAST
-                    else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                    else if (direction.y < -threshold) {
                         hostStrip = hostStripSE;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -695,7 +820,7 @@ public class HostModel extends BoxObstacle {
                         }
                     }
                     // EAST
-                    if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
+                    if (Math.abs(direction.y) < threshold) {
                         hostStrip = hostStripE;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -703,9 +828,9 @@ public class HostModel extends BoxObstacle {
                             frame = HOST_START;
                         }
                     }
-                } else if (direction.x < 0) {
+                } else if (direction.x < -threshold) {
                     // NORTH WEST
-                    if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                    if (direction.y > threshold) {
                         hostStrip = hostStripNW;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -714,7 +839,7 @@ public class HostModel extends BoxObstacle {
                         }
                     }
                     // SOUTH WEST
-                    else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                    else if (direction.y < -threshold) {
                         hostStrip = hostStripSW;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -723,7 +848,7 @@ public class HostModel extends BoxObstacle {
                         }
                     }
                     // WEST
-                    if (direction.y == 0 || Math.abs(direction.y) < 0.1) {
+                    if (Math.abs(direction.y) < threshold) {
                         hostStrip = hostStripW;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -731,9 +856,9 @@ public class HostModel extends BoxObstacle {
                             frame = HOST_START;
                         }
                     }
-                } else if (direction.x == 0 || Math.abs(direction.x) < 0.1) {
+                } else if (Math.abs(direction.x) < threshold) {
                     // NORTH
-                    if (direction.y > 0 && Math.abs(direction.y) > 0.1) {
+                    if (direction.y > threshold) {
                         hostStrip = hostStripN;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -742,7 +867,7 @@ public class HostModel extends BoxObstacle {
                         }
                     }
                     // SOUTH
-                    else if (direction.y < 0 && Math.abs(direction.y) > 0.1) {
+                    else if (direction.y < -threshold) {
                         hostStrip = hostStripS;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -807,6 +932,8 @@ public class HostModel extends BoxObstacle {
                     /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
                     if (this.currentCharge < this.maxCharge) {
                         canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
+                        canvas.draw(armStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
+                        canvas.draw(glyphStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx , sy);
                     } else {
                         canvas.draw(hostStrip, Color.RED, hostChargeUI.getRegionWidth() / 2f, hostChargeUI.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     }
@@ -847,12 +974,14 @@ public class HostModel extends BoxObstacle {
                             // Color of the 3 flashes
                             warningColor = new Color (chargeProgression * 255f  / 256f , chargeProgression * 155f / 256f, chargeProgression * 222f/256f, 1);
                         }
-                        canvas.draw(hostChargeUI, warningColor, hostChargeUI.getRegionWidth() / 2, hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.9f, 0.9f);
+                        setScaling(hostChargeUI);
+                        canvas.draw(hostChargeUI, warningColor, hostChargeUI.getRegionWidth() / 2f, hostChargeUI.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.9f, 0.9f);
                     }
                 }
                 // When the bot hasn't been possessed the indicator color should be black
                 else {
-                    canvas.draw(hostChargeUI, Color.BLACK, hostChargeUI.getRegionWidth() / 2,hostChargeUI.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 0.9f, 0.9f);
+                    setScaling(hostChargeUI);
+                    canvas.draw(hostChargeUI, Color.BLACK, hostChargeUI.getRegionWidth() / 2f,hostChargeUI.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 0.9f, 0.9f);
                 }
             }
         }

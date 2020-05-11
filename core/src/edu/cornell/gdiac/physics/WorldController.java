@@ -30,11 +30,14 @@ import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.physics.host.ArrowModel;
 import edu.cornell.gdiac.physics.host.FootPrintModel;
 import edu.cornell.gdiac.physics.host.HostModel;
+import edu.cornell.gdiac.physics.obstacle.BorderEdge;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
+import edu.cornell.gdiac.util.MusicController;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.ScreenListener;
+import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -112,7 +115,7 @@ public abstract class WorldController implements Screen {
 	/** Texture file for arrow sprite */
 	private static final String ARROW_FILE = "shared/arrow.png";
 	/** File to texture for Walls */
-	private static String WALL_FILE = "shared/wall_spritesheet_v3.png";
+	private static String WALL_FILE = "shared/wallSpritesheet_v04.png";
 	/** File to texture for Water */
 	private static String WATER_FILE = "shared/waterspritesheet.png";
 	/** File to texture for Water corners */
@@ -229,6 +232,8 @@ public abstract class WorldController implements Screen {
 	// all game objects in the correct order
 	/** Objects drawn above everything else (HUD elements, selected objects) */
 	private PooledList<Obstacle> topDrawLayer;
+	/** Border edge objects to be drawn */
+	private PooledList<BorderEdge> edgeDrawLayer;
 	/** Wall objects to be drawn */
 	private PooledList<Wall> wallDrawLayer;
 	/** Host objects to be drawn */
@@ -512,7 +517,7 @@ public abstract class WorldController implements Screen {
 	private	boolean updateGP;
 
 	/** list of level files*/
-	protected File[] levels;
+	protected ArrayList<File> levels;
 
 	/** Input if paused was pressed */
 	private boolean pressedPause = false;
@@ -547,6 +552,7 @@ public abstract class WorldController implements Screen {
 	 * @param l The level number
 	 */
 	public void setCurrentLevel(int l) {
+		System.out.println("SET CURRENT LEVEL TO:" + l);
 		currentLevel = l;
 	}
 
@@ -701,6 +707,7 @@ public abstract class WorldController implements Screen {
 		lowerLeft = new Vector2();
 		footprints = new ArrayList<>();
 		topDrawLayer = new PooledList<>();
+		edgeDrawLayer = new PooledList<>();
 		wallDrawLayer = new PooledList<>();
 		hostDrawLayer = new PooledList<>();
 		spiritDrawLayer = new PooledList<>();
@@ -926,6 +933,7 @@ public abstract class WorldController implements Screen {
 
 		// Clear the lists so they can be repopulated
 		miscDrawLayer.clear();
+		edgeDrawLayer.clear();
 		wallDrawLayer.clear();
 		hostDrawLayer.clear();
 		spiritDrawLayer.clear();
@@ -964,6 +972,8 @@ public abstract class WorldController implements Screen {
 		for(Obstacle obj : objects) {
 			if(obj.inHUD || obj.selected) {
 				topDrawLayer.add(obj);
+			} else if(obj instanceof BorderEdge) {
+				edgeDrawLayer.add((BorderEdge)obj);
 			} else if(obj instanceof Wall) {
 				wallDrawLayer.add((Wall)obj);
 			} else if(obj instanceof HostModel) {
@@ -980,8 +990,11 @@ public abstract class WorldController implements Screen {
 		for(Obstacle obj : miscDrawLayer) {
 			obj.draw(canvas);
 		}
+		for(BorderEdge edge : edgeDrawLayer) {
+			edge.drawTop(canvas);
+		}
 		for(Wall wall : wallDrawLayer) {
-			wall.draw(canvas);
+			wall.drawFront(canvas);
 		}
 		for(HostModel host : hostDrawLayer) {
 			host.draw(canvas);
@@ -994,6 +1007,9 @@ public abstract class WorldController implements Screen {
 		}
 		for(HostModel host : hostDrawLayer) {
 			host.drawCharge(canvas);
+		}
+		for(BorderEdge edge : edgeDrawLayer) {
+			edge.drawNotTop(canvas);
 		}
 		for(Obstacle obj : topDrawLayer) {
 			obj.draw(canvas);
@@ -1122,6 +1138,7 @@ public abstract class WorldController implements Screen {
 				pauseScreen.getStage().act(delta);
 				pauseScreen.getStage().draw();
 			}
+			MusicController.getInstance().update();
 		}
 	}
 

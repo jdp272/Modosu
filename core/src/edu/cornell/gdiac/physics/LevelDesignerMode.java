@@ -28,6 +28,7 @@ import edu.cornell.gdiac.util.SoundController;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 
 /**
@@ -107,10 +108,12 @@ public class LevelDesignerMode extends WorldController {
      */
     private boolean loadBoard = true;
 
-    /**
-     * Track asset loading from all instances and subclasses
-     */
-    private AssetState assetState = AssetState.EMPTY;
+	private boolean fromCustom = false;
+
+	private boolean newLevel = false;
+
+	/** Track asset loading from all instances and subclasses */
+	private AssetState assetState = AssetState.EMPTY;
 
     /**
      * The level that is populated and used for saving
@@ -171,12 +174,12 @@ public class LevelDesignerMode extends WorldController {
      */
     private ArrayList<HostModel> golems;
 
-    /**
-     * If a selection is currently happening. Even if nothing is selected by
-     * the object selector, this will be true until the mouse is released, and
-     * it prevent another object from being picked up
-     */
-    private boolean selecting;
+	private String levelName;
+
+	/** If a selection is currently happening. Even if nothing is selected by
+	 * the object selector, this will be true until the mouse is released, and
+	 * it prevent another object from being picked up */
+	private boolean selecting;
 
     PooledList<BorderEdge> edges;
     PooledList<BorderCorner> corners;
@@ -193,14 +196,14 @@ public class LevelDesignerMode extends WorldController {
             super(Constants.TILE_WIDTH, Constants.TILE_HEIGHT);
             this.corner = corner;
 
-            setTexture(tex);
-            setDrawScale(scale);
-            setSX(1);
-            setSY(1);
-            setBodyType(BodyDef.BodyType.StaticBody);
-            setSensor(true);
-            setName("corner");
-        }
+			setTexture(tex);
+			setDrawScale(scale);
+//			setSX(1);
+//			setSY(1);
+			setBodyType(BodyDef.BodyType.StaticBody);
+			setSensor(true);
+			setName("corner");
+		}
 
         public final Corner corner;
     }
@@ -213,194 +216,225 @@ public class LevelDesignerMode extends WorldController {
 //	private int initialBottomBorder;
 //	private int initialLeftBorder;
 
-    private CornerObstacle topLeft;
-    private CornerObstacle topRight;
-    private CornerObstacle bottomLeft;
-    private CornerObstacle bottomRight;
+	private CornerObstacle topLeft;
+	private CornerObstacle topRight;
+	private CornerObstacle bottomLeft;
+	private CornerObstacle bottomRight;
 
-    /**
-     * Preloads the assets for this controller.
-     * <p>
-     * To make the game modes more for-loop friendly, we opted for nonstatic loaders
-     * this time.  However, we still want the assets themselves to be static.  So
-     * we have an AssetState that determines the current loading state.  If the
-     * assets are already loaded, this method will do nothing.
-     *
-     * @param manager Reference to global asset manager.
-     */
-    public void preLoadContent(AssetManager manager) {
-        if (assetState != AssetState.EMPTY) {
-            return;
-        }
+	/**
+	 * Preloads the assets for this controller.
+	 *
+	 * To make the game modes more for-loop friendly, we opted for nonstatic loaders
+	 * this time.  However, we still want the assets themselves to be static.  So
+	 * we have an AssetState that determines the current loading state.  If the
+	 * assets are already loaded, this method will do nothing.
+	 *
+	 * @param manager Reference to global asset manager.
+	 */
+	public void preLoadContent(AssetManager manager) {
+		if (assetState != AssetState.EMPTY) {
+			return;
+		}
 
-        assetState = AssetState.LOADING;
-        manager.load(CROSS_FILE, Texture.class);
-        assets.add(CROSS_FILE);
-        manager.load(FOREG_FILE, Texture.class);
-        assets.add(FOREG_FILE);
-        manager.load(BACKG_FILE, Texture.class);
-        assets.add(BACKG_FILE);
-        manager.load(FOOTPRINT_FILE, Texture.class);
-        assets.add(FOOTPRINT_FILE);
+		assetState = AssetState.LOADING;
+		manager.load(CROSS_FILE, Texture.class);
+		assets.add(CROSS_FILE);
+		manager.load(FOREG_FILE, Texture.class);
+		assets.add(FOREG_FILE);
+		manager.load(BACKG_FILE, Texture.class);
+		assets.add(BACKG_FILE);
+		manager.load(FOOTPRINT_FILE, Texture.class);
+		assets.add(FOOTPRINT_FILE);
 
-        super.preLoadContent(manager);
-    }
+		super.preLoadContent(manager);
+	}
 
-    public void setLoadBoard(boolean b) {
-        loadBoard = b;
-    }
+	public void setLoadBoard(boolean b){ loadBoard = b;}
 
-    /**
-     * Loads the assets for this controller.
-     * <p>
-     * To make the game modes more for-loop friendly, we opted for nonstatic loaders
-     * this time.  However, we still want the assets themselves to be static.  So
-     * we have an AssetState that determines the current loading state.  If the
-     * assets are already loaded, this method will do nothing.
-     *
-     * @param manager Reference to global asset manager.
-     */
-    public void loadContent(AssetManager manager) {
-        if (assetState != AssetState.LOADING) {
-            return;
-        }
+	public void setFromCustom(boolean b){ fromCustom = b;}
 
-        crosshairTexture = createTexture(manager, CROSS_FILE, false);
-        backgroundTexture = createTexture(manager, BACKG_FILE, false);
-        foregroundTexture = createTexture(manager, FOREG_FILE, false);
-        footprintTexture = createTexture(manager, FOOTPRINT_FILE, false);
+	/**
+	 * Loads the assets for this controller.
+	 *
+	 * To make the game modes more for-loop friendly, we opted for nonstatic loaders
+	 * this time.  However, we still want the assets themselves to be static.  So
+	 * we have an AssetState that determines the current loading state.  If the
+	 * assets are already loaded, this method will do nothing.
+	 *
+	 * @param manager Reference to global asset manager.
+	 */
+	public void loadContent(AssetManager manager) {
+		if (assetState != AssetState.LOADING) {
+			return;
+		}
 
-        super.loadContent(manager);
-        assetState = AssetState.COMPLETE;
-    }
+		crosshairTexture = createTexture(manager,CROSS_FILE,false);
+		backgroundTexture = createTexture(manager,BACKG_FILE,false);
+		foregroundTexture = createTexture(manager,FOREG_FILE,false);
+		footprintTexture = createTexture(manager, FOOTPRINT_FILE, false);
 
-    /**
-     * The new lessened gravity for this world
-     */
-    private static final float WATER_GRAVITY = -0.25f;
+		super.loadContent(manager);
+		assetState = AssetState.COMPLETE;
+	}
 
-    /**
-     * Mouse selector to move game objects
-     */
-    private ObstacleSelector selector;
+	/** The new lessened gravity for this world */
+	private static final float WATER_GRAVITY = -0.25f;
 
-    /**
-     * Creates and initialize a new instance of the level designer
-     */
-    public LevelDesignerMode() {
-        super(DEFAULT_WIDTH, DEFAULT_HEIGHT, WATER_GRAVITY);
-        setDebug(false);
-        setComplete(false);
-        setFailure(false);
+	/** Mouse selector to move game objects */
+	private ObstacleSelector selector;
 
-        // No need to render HUD in level designer
-        renderHUD = false;
+	/**
+	 * Creates and initialize a new instance of the level designer
 
-        camTarget = new Vector2();
-        camPos = new Vector2();
+	 */
+	public LevelDesignerMode() {
+		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,WATER_GRAVITY);
+		setDebug(false);
+		setComplete(false);
+		setFailure(false);
 
-        cache = new Vector2();
+		// No need to render HUD in level designer
+		renderHUD = false;
 
-        board = new Board(MAX_BOARD_TILES, MAX_BOARD_TILES);
-        lastGolem = null;
-        instructionListCache = new ArrayList<Vector2>();
-        instructionMode = false;
-        instructionCache = new Vector2();
-        footprints = new ArrayList<FootPrintModel>();
-        golems = new ArrayList<HostModel>();
+		camTarget = new Vector2();
+		camPos = new Vector2();
 
-        File folder = new File("levels");
-        levels = folder.listFiles(Constants.filenameFilter);
-        Arrays.sort(levels);
+		cache = new Vector2();
 
-        edges = new PooledList<>();
-        corners = new PooledList<>();
-    }
+		board = new Board(MAX_BOARD_TILES, MAX_BOARD_TILES);
+		lastGolem = null;
+		instructionListCache = new ArrayList<Vector2>();
+		instructionMode = false;
+		instructionCache = new Vector2();
+		footprints = new ArrayList<FootPrintModel>();
+		golems = new ArrayList<HostModel>();
+		if(!loadBoard){
+			level = new Level();
+		}
 
-    /**
-     * Gets the level name, using the current level number
-     *
-     * @return A string representing the level name
-     */
-    public String getLevelName() {
-        return "levels/" + levels[currentLevel % levels.length].getName();
-    }
+		File folder = new File("levels");
+		levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+		Collections.sort(levels);
 
-    /**
-     * Gets the current width of the screen in tiles, rounded down to the
-     * nearest tile index.
-     */
-    public int screenTileWidth() {
-        return (int) (canvas.getWidth() / scale.x / TILE_WIDTH);
-    }
+		edges = new PooledList<>();
+		corners = new PooledList<>();
+	}
 
-    /**
-     * Gets the current height of the screen in tiles, rounded down to the
-     * nearest tile index.
-     */
-    public int screenTileHeight() {
-        return (int) (canvas.getHeight() / scale.y / TILE_WIDTH);
-    }
+	/**
+	 * Gets the level name, using the current level number
+	 *
+	 * @return A string representing the level name
+	 */
+	public String getLevelName() {
+		System.out.println("fromCustom: " + fromCustom + " newLevel: " + newLevel + " levelName: " + levelName);
+		System.out.println("currentLevel: " + currentLevel);
+		if(levelName != null){
+			return levelName;
+		}
+		if(!fromCustom && !newLevel) {
+			levelName = "levels/" + levels.get(currentLevel).getName();
+		}else if(newLevel) {
+			levelName = "Custom/c" + currentLevel + ".lvl";
+		}else{
+			levelName = "Custom/" + levels.get(currentLevel).getName();
+		}
+		return levelName;
+	}
 
-    /**
-     * Sets the number of the level that is loaded in the reset() function
-     *
-     * @param l The level number
-     */
-    public void setCurrentLevel(int l) {
-        currentLevel = l;
-    }
+	/**
+	 * Gets the current width of the screen in tiles, rounded down to the
+	 * nearest tile index.
+	 */
+	public int screenTileWidth() {
+		return (int)(canvas.getWidth() / scale.x / TILE_WIDTH);
+	}
 
-    /**
-     * Refreshes the footprints on the screen to match the instructions of the golems
-     */
-    private void refreshFootprints() {
-        footprints.clear();
-        for (Obstacle ob : objects) {
-            if (ob instanceof HostModel) {
-                Vector2[] list = ((HostModel) ob).getInstructionList();
-                if (list != null) {
-                    for (Vector2 instr : list) {
-                        FootPrintModel ft = new FootPrintModel(footprintTexture, new Vector2(instr.x * scale.x, instr.y * scale.y));
-                        footprints.add(ft);
-                    }
-                }
-            }
-        }
-    }
+	/**
+	 * Gets the current height of the screen in tiles, rounded down to the
+	 * nearest tile index.
+	 */
+	public int screenTileHeight() {
+		return (int)(canvas.getHeight() / scale.y / TILE_WIDTH);
+	}
 
-    /**
-     * Resets the status of the game so that we can play again.
-     * <p>
-     * This method disposes of the world and creates a new one.
-     */
-    public void reset() {
+	/**
+	 *  Sets the number of the level that is loaded in the reset() function
+	 *
+	 * @param l The level number
+	 */
+	public void setCurrentLevel(int l) {
+		currentLevel = l;
+	}
 
-        refreshFootprints();
+	/**
+	 * Refreshes the footprints on the screen to match the instructions of the golems
+	 */
+	private void refreshFootprints() {
+		footprints.clear();
+		for (Obstacle ob : objects) {
+			if (ob instanceof HostModel) {
+				Vector2[] list = ((HostModel)ob).getInstructionList();
+				if (list != null) {
+					for (Vector2 instr : list) {
+						FootPrintModel ft = new FootPrintModel(footprintTexture, new Vector2(instr.x * scale.x, instr.y * scale.y));
+						footprints.add(ft);
+					}
+				}
+			}
+		}
+	}
 
-        Vector2 gravity = new Vector2(world.getGravity());
+	/**
+	 * Resets the status of the game so that we can play again.
+	 *
+	 * This method disposes of the world and creates a new one.
+	 */
+	public void reset() {
 
-        // The objects should be sensors
-        factory.makeSensors = true;
+		if(currentLevel == -1){
+			newLevel = true;
+		}else{
+			newLevel = false;
+		}
 
-        for (Obstacle obj : objects) {
-            obj.deactivatePhysics(world);
-        }
-        objects.clear();
-        addQueue.clear();
-        world.dispose();
+		if(fromCustom || newLevel){
+			File folder = new File("Custom");
+			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+			Collections.sort(levels);
+		}else{
+			File folder = new File("levels");
+			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+			Collections.sort(levels);
+		}
 
-        // Clear the board
-        board.clear(false);
 
-        FileHandle f = new FileHandle("out.lvl");
+	    refreshFootprints();
 
-        world = new World(gravity, false);
+		Vector2 gravity = new Vector2(world.getGravity());
+
+		// The objects should be sensors
+		factory.makeSensors = true;
+
+		for(Obstacle obj : objects) {
+			obj.deactivatePhysics(world);
+		}
+		objects.clear();
+		addQueue.clear();
+		world.dispose();
+
+		// Clear the board
+		board.clear(false);
+
+		FileHandle f = new FileHandle("out.lvl");
+
+		world = new World(gravity,false);
 
 //		level = loader.loadLevel(f);
 
         setComplete(false);
         setFailure(false);
+
+
 
         if (loadBoard) {
 //			bottomBorder = 0;
@@ -416,12 +450,14 @@ public class LevelDesignerMode extends WorldController {
             populateLevel();
         } else {
             // Reset the level size based on the size of the screen
-            board.reset(screenTileWidth(), screenTileHeight());
+			board.reset(screenTileWidth(), screenTileHeight());
+			level = new Level();
+			currentLevel = levels.size();
 
-            setBordersAndUpdateTerrain();
-
-            loadBoard = true;
+			setBordersAndUpdateTerrain();
+			loadBoard = true;
         }
+		getLevelName();
 
         // After populateLevel(), when the borders are set from the loaded level
         camTarget.set(scale.x * Constants.TILE_WIDTH * (board.getWidth()) / 2.f,
@@ -568,40 +604,22 @@ public class LevelDesignerMode extends WorldController {
      * Lays out the game geography.
      */
     private void populateLevel() {
-//		spawnList.addSpawner(spiritSpawn, new SpawnerList.CallbackFunction() {
-//			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-//				if (lastCreated == null) {
-//					return factory.makeSpirit(x, y);
-//				}
-//				lastCreated.setX(x);
-//				lastCreated.setY(y);
-//
-//				return null;
-//			}
-//		});
 
         // TODO: Change this with GamePlayController!!
         FileHandle levelToLoad;
-//		if (currentLevel == 3) {
-//			levelToLoad = Gdx.files.local("levels/custom3.lvl");
-//		} else {
-//			levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
-//		}
+
         System.out.println(getLevelName());
-        levelToLoad = Gdx.files.local(getLevelName());
+
+		if(fromCustom || newLevel) {
+			levelToLoad = Gdx.files.local(getLevelName());
+		}else{
+			levelToLoad = Gdx.files.internal(getLevelName());
+		}
         //levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
 
 
-//		try {
-//		level = new Level(new Vector2(10, 10), new Wall[0], new WaterTile[0],
-//				new SandTile[0], new BorderEdge[0], new BorderCorner[0], new EnergyPillar[0],
-//				new ArrayList<HostModel>(), factory.makeSpirit(5, 5), factory.makePedestal(5, 5));
-        level = loader.loadLevel(levelToLoad);
-//		} catch (Exception e) {
-//			System.out.println(e);
-//			System.out.println(levelToLoad);
-//			level = loader.loadLevel(new FileHandle("levels/custom0.lvl"));
-//		}
+       level = loader.loadLevel(levelToLoad);
+
 
         dimensions = level.dimensions;
         lowerLeft.setZero();
@@ -892,174 +910,174 @@ public class LevelDesignerMode extends WorldController {
 //		if (above instanceof Wall && right instanceof Wall) {
 //			upRightCorner = !(board[x + 1][y + 1] instanceof Wall);
 //		}
-        if (below instanceof Wall && left instanceof Wall) {
-            wallLowerLeft = board.get(x - 1, y - 1) instanceof Wall;
-            if (wallLowerLeft) {
-                lowerLeftIsTop = !((Wall) board.get(x - 1, y - 1)).isFrontWall();
-            }
-        }
-        if (below instanceof Wall && right instanceof Wall) {
-            wallLowerRight = board.get(x + 1, y - 1) instanceof Wall;
-            if (wallLowerRight) {
-                lowerRightIsTop = !((Wall) board.get(x + 1, y - 1)).isFrontWall();
-            }
-        }
+		if (below instanceof Wall && left instanceof Wall) {
+			wallLowerLeft = board.get(x - 1, y - 1) instanceof Wall;
+			if(wallLowerLeft) {
+				lowerLeftIsTop = !((Wall)board.get(x - 1, y - 1)).isFrontWall();
+			}
+		}
+		if (below instanceof Wall && right instanceof Wall) {
+			wallLowerRight = board.get(x + 1,y - 1) instanceof Wall;
+			if(wallLowerRight) {
+				lowerRightIsTop = !((Wall)board.get(x + 1, y - 1)).isFrontWall();
+			}
+		}
 
-        // Switch up the alt boolean every tile
-        ((Wall) board.get(x, y)).setFrame(wallAbove, wallBelow, wallLeft, wallRight,
-                belowIsTop, leftIsTop, rightIsTop,
-                lowerLeftIsTop, lowerRightIsTop, x + y % 2 == 0);
+		// Switch up the alt boolean every tile
+		((Wall)board.get(x, y)).setFrame(wallAbove, wallBelow, wallLeft, wallRight,
+				belowIsTop, leftIsTop, rightIsTop,
+				lowerLeftIsTop, lowerRightIsTop, x, y);
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * Updates the texture for sand tile at and around (x, y) in the board.
-     * this function calls updateSandTile
-     * <p>
-     * If the tile is not a sand tile, or if the tile is out of bounds, nothing
-     * happens.
-     *
-     * @param x The x index in the board of the tile center to update
-     * @param y The y index in the board of the tile center to update
-     */
-    private void updateWallAroundRegion(int x, int y) {
-        // Update the center tile
-        updateWallTile(x, y);
+	/**
+	 * Updates the texture for sand tile at and around (x, y) in the board.
+	 * this function calls updateSandTile
+	 *
+	 * If the tile is not a sand tile, or if the tile is out of bounds, nothing
+	 * happens.
+	 *
+	 * @param x The x index in the board of the tile center to update
+	 * @param y The y index in the board of the tile center to update
+	 */
+	private void updateWallAroundRegion(int x, int y) {
+		// Update the center tile
+		updateWallTile(x, y);
 
-        // Update adjacent tiles
-        updateWallTile(x - 1, y);
-        updateWallTile(x + 1, y);
-        updateWallTile(x, y - 1);
-        updateWallTile(x, y + 1);
+		// Update adjacent tiles
+		updateWallTile(x - 1, y);
+		updateWallTile(x + 1, y);
+		updateWallTile(x, y - 1);
+		updateWallTile(x, y + 1);
 
-        // Update diagonal tiles
-        updateWallTile(x - 1, y + 1);
-        updateWallTile(x + 1, y + 1);
-        updateWallTile(x - 1, y - 1);
-        updateWallTile(x + 1, y - 1);
+		// Update diagonal tiles
+		updateWallTile(x - 1, y + 1);
+		updateWallTile(x + 1, y + 1);
+		updateWallTile(x - 1, y - 1);
+		updateWallTile(x + 1, y - 1);
 
-        // Update tiles in the row two above, in case the above tile is no
-        // longer, or has become, a front wall
-        updateWallTile(x - 1, y + 2);
-        updateWallTile(x, y + 2);
-        updateWallTile(x + 1, y + 2);
-    }
+		// Update tiles in the row two above, in case the above tile is no
+		// longer, or has become, a front wall
+		updateWallTile(x - 1, y + 2);
+		updateWallTile(x, y + 2);
+		updateWallTile(x + 1, y + 2);
+	}
 
-    /**
-     * Processes the object deselected
-     */
-    private void processBorderChange(CornerObstacle corner) {
-        board.processBorderChange(corner.corner, corner.getX(), corner.getY());
+	/**
+	 * Processes the object deselected
+	 */
+	private void processBorderChange(CornerObstacle corner) {
+		board.processBorderChange(corner.corner, corner.getX(), corner.getY());
 
-        setBordersAndUpdateTerrain();
+		setBordersAndUpdateTerrain();
 
-        dimensions.set(Constants.TILE_WIDTH * (board.getWidth()), Constants.TILE_HEIGHT * (board.getHeight()));
-        lowerLeft.set(TILE_WIDTH * (board.getLeftOffset()), TILE_WIDTH * (board.getBottomOffset()));
+		dimensions.set(Constants.TILE_WIDTH * (board.getWidth()), Constants.TILE_HEIGHT * (board.getHeight()));
+		lowerLeft.set(TILE_WIDTH * (board.getLeftOffset()), TILE_WIDTH * (board.getBottomOffset()));
 
-        updateCornerPositions();
+		updateCornerPositions();
 
-    }
+	}
 
-    /**
-     * Sets the borders around the edge of the board with the correct
-     * orientations. Also updates each terrain tile (water, sand, and wall)
-     */
-    private void setBordersAndUpdateTerrain() {
-        // Update terrain tiles based on the new borders and add walls
-        for (int i = board.getLeftBorder(); i < board.getRightBorder(); i++) {
-            for (int j = board.getBottomBorder(); j < board.getTopBorder(); j++) {
-                float xCoord = xTileToCoord(i);
-                float yCoord = yTileToCoord(j);
+	/**
+	 * Sets the borders around the edge of the board with the correct
+	 * orientations. Also updates each terrain tile (water, sand, and wall)
+	 */
+	private void setBordersAndUpdateTerrain() {
+		// Update terrain tiles based on the new borders and add walls
+		for(int i = board.getLeftBorder(); i < board.getRightBorder(); i++) {
+			for(int j = board.getBottomBorder(); j < board.getTopBorder(); j++) {
+				float xCoord = xTileToCoord(i);
+				float yCoord = yTileToCoord(j);
 
-                // Add corners and borders
-                if (i == board.getLeftBorder() && j == board.getBottomBorder()) {
-                    board.set(null, i, j);
-                    BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.BOTTOM_LEFT);
+				// Add corners and borders
+				if(i == board.getLeftBorder() && j == board.getBottomBorder()) {
+					board.set(null, i, j);
+					BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.BOTTOM_LEFT);
 
-                    board.addNewObstacle(border);
-                    addObject(border);
-                } else if (i == board.getRightBorder() - 1 && j == board.getBottomBorder()) {
-                    board.set(null, i, j);
-                    BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.BOTTOM_RIGHT);
+					board.addNewObstacle(border);
+					addObject(border);
+				} else if(i == board.getRightBorder() - 1 && j == board.getBottomBorder()) {
+					board.set(null, i, j);
+					BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.BOTTOM_RIGHT);
 
-                    board.addNewObstacle(border);
-                    addObject(border);
-                } else if (i == board.getLeftBorder() && j == board.getTopBorder() - 1) {
-                    board.set(null, i, j);
-                    BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.TOP_LEFT);
+					board.addNewObstacle(border);
+					addObject(border);
+				} else if(i == board.getLeftBorder() && j == board.getTopBorder() - 1) {
+					board.set(null, i, j);
+					BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.TOP_LEFT);
 
-                    board.addNewObstacle(border);
-                    addObject(border);
-                } else if (i == board.getRightBorder() - 1 && j == board.getTopBorder() - 1) {
-                    board.set(null, i, j);
-                    BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.TOP_RIGHT);
+					board.addNewObstacle(border);
+					addObject(border);
+				} else if(i == board.getRightBorder() - 1 && j == board.getTopBorder() - 1) {
+					board.set(null, i, j);
+					BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.TOP_RIGHT);
 
-                    board.addNewObstacle(border);
-                    addObject(border);
-                } else if (j == board.getBottomBorder()) {
-                    board.set(null, i, j);
-                    BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.BOTTOM);
+					board.addNewObstacle(border);
+					addObject(border);
+				} else if(j == board.getBottomBorder()) {
+					board.set(null, i, j);
+					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.BOTTOM);
 
-                    // Indicate that the edge is next to the left or right side
-                    if (i - board.getLeftBorder() == 1) {
-                        border.setNextToSide(1, BorderEdge.Side.LEFT);
-                    } else if ((board.getRightBorder() - 1) - i == 1) {
-                        border.setNextToSide(1, BorderEdge.Side.RIGHT);
-                    }
-                    board.addNewObstacle(border);
-                    addObject(border);
-                } else if (i == board.getLeftBorder()) {
-                    board.set(null, i, j);
-                    BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.LEFT);
-                    if (j - board.getBottomBorder() == 1) {
-                        border.setNextToSide(1, BorderEdge.Side.BOTTOM);
-                    } else if ((board.getTopBorder() - 1) - j == 1) {
-                        border.setNextToSide(1, BorderEdge.Side.TOP);
-                    }
-                    board.addNewObstacle(border);
-                    addObject(border);
-                } else if (i == board.getRightBorder() - 1) {
-                    board.set(null, i, j);
-                    BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.RIGHT);
-                    if (i - board.getBottomBorder() == 1) {
-                        border.setNextToSide(1, BorderEdge.Side.BOTTOM);
-                    } else if ((board.getTopBorder() - 1) - i == 1) {
-                        border.setNextToSide(1, BorderEdge.Side.TOP);
-                    }
-                    board.addNewObstacle(border);
-                    addObject(border);
-                } else if (j == board.getTopBorder() - 1) {
-                    board.set(null, i, j);
-                    BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.TOP);
-                    if (i - board.getLeftBorder() <= 2) {
-                        border.setNextToSide(i - board.getLeftBorder(), BorderEdge.Side.LEFT);
-                    } else if ((board.getRightBorder() - 1) - i <= 2) {
-                        border.setNextToSide((board.getRightBorder() - 1) - i, BorderEdge.Side.RIGHT);
-                    }
-                    board.addNewObstacle(border);
-                    addObject(border);
-                } else {
-                    if (board.get(i, j) instanceof BorderEdge || board.get(i, j) instanceof BorderCorner) {
-                        board.set(null, i, j);
-                    }
-                    updateTerrainAroundRegion(i, j);
-                    updateWallAroundRegion(i, j);
-                }
-            }
-        }
-    }
+					// Indicate that the edge is next to the left or right side
+					if(i - board.getLeftBorder() == 1) {
+						border.setNextToSide(1, BorderEdge.Side.LEFT);
+					} else if((board.getRightBorder() - 1) - i == 1) {
+						border.setNextToSide(1, BorderEdge.Side.RIGHT);
+					}
+					board.addNewObstacle(border);
+					addObject(border);
+				} else if(i == board.getLeftBorder()) {
+					board.set(null, i, j);
+					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.LEFT);
+					if(j - board.getBottomBorder() == 1) {
+						border.setNextToSide(1, BorderEdge.Side.BOTTOM);
+					} else if((board.getTopBorder() - 1) - j == 1) {
+						border.setNextToSide(1, BorderEdge.Side.TOP);
+					}
+					board.addNewObstacle(border);
+					addObject(border);
+				} else if(i == board.getRightBorder() - 1) {
+					board.set(null, i, j);
+					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.RIGHT);
+					if(i - board.getBottomBorder() == 1) {
+						border.setNextToSide(1, BorderEdge.Side.BOTTOM);
+					} else if((board.getTopBorder() - 1) - i == 1) {
+						border.setNextToSide(1, BorderEdge.Side.TOP);
+					}
+					board.addNewObstacle(border);
+					addObject(border);
+				} else if(j == board.getTopBorder() - 1) {
+					board.set(null, i, j);
+					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.TOP);
+					if(i - board.getLeftBorder() <= 2) {
+						border.setNextToSide(i - board.getLeftBorder(), BorderEdge.Side.LEFT);
+					} else if((board.getRightBorder() - 1) - i <= 2) {
+						border.setNextToSide((board.getRightBorder() - 1) - i, BorderEdge.Side.RIGHT);
+					}
+					board.addNewObstacle(border);
+					addObject(border);
+				} else {
+					if(board.get(i, j) instanceof BorderEdge || board.get(i, j) instanceof BorderCorner) {
+						board.set(null, i, j);
+					}
+					updateTerrainAroundRegion(i, j);
+					updateWallAroundRegion(i, j);
+				}
+			}
+		}
+	}
 
-    /**
-     * Does the updating for the selector.
-     * <p>
-     * This method sets picks up, moves, and drops off objects from the selector
-     * based on the mouse. It updates the board 2D array of tiles. It also
-     * handles updating the spawner and creating new objects from the spawner,
-     * which would be immediately picked up by the selector.
-     */
-    private void updateSelector(boolean hasPed) {
-        InputController input = InputController.getInstance();
+	/**
+	 * Does the updating for the selector.
+	 *
+	 * This method sets picks up, moves, and drops off objects from the selector
+	 * based on the mouse. It updates the board 2D array of tiles. It also
+	 * handles updating the spawner and creating new objects from the spawner,
+	 * which would be immediately picked up by the selector.
+	 */
+	private void updateSelector(boolean hasPed) {
+		InputController input = InputController.getInstance();
 
 		/* Offset the mouse based on the camera translation.
 
@@ -1080,44 +1098,59 @@ public class LevelDesignerMode extends WorldController {
             selecting = false;
         }
 
-        if (lastGolem != null && input.didInstruction() && !instructionMode) {
-            instructionMode = true;
-            instructionListCache.clear();
-            lastGolem.setInstructions(null);
-            System.out.println("Instruction Mode");
-            refreshFootprints();
-        } else if (instructionMode && input.didInstruction()) {
-            instructionMode = false;
-            Vector2[] instructions = new Vector2[instructionListCache.size()];
-            for (int i = 0; i < instructionListCache.size(); i++) {
-                instructions[i] = instructionListCache.get(i);
-            }
-            if (instructionListCache.size() != 0) {
-                lastGolem.setInstructions(instructions);
-            } else {
-                lastGolem.setInstructions(null);
-            }
-            refreshFootprints();
-            System.out.println("Instructions saved to golem");
-        }
+        // Process instructions
+		if (lastGolem != null && input.didInstruction() && !instructionMode) {
+			instructionMode = true;
+			instructionListCache.clear();
+			lastGolem.setInstructions(null);
+			System.out.println("Instruction Mode");
+			refreshFootprints();
+		} else if (instructionMode && input.didInstruction()) {
+			instructionMode = false;
+			Vector2[] instructions = new Vector2[instructionListCache.size()];
+			for (int i = 0; i < instructionListCache.size(); i++) {
+				instructions[i] = instructionListCache.get(i);
+			}
+			if (instructionListCache.size() != 0) {
+				lastGolem.setInstructions(instructions);
+			}
+			else {
+				lastGolem.setInstructions(null);
+			}
+			refreshFootprints();
+			System.out.println("Instructions saved to golem");
+		}
 
-        if (instructionMode && input.didLeftClick()) {
-            int instructionTileX = xCoordToTile(mouseX);
-            int instructionTileY = yCoordToTile(mouseY);
-            float instructionRawX = xTileToCoord(instructionTileX);
-            float instructionRawY = yTileToCoord(instructionTileY);
+		if (instructionMode && input.didLeftClick()) {
+			int instructionTileX = xCoordToTile(mouseX);
+			int instructionTileY = yCoordToTile(mouseY);
+			float instructionRawX = xTileToCoord(instructionTileX);
+			float instructionRawY = yTileToCoord(instructionTileY);
 
-            FootPrintModel fp = new FootPrintModel(footprintTexture, new Vector2(instructionRawX * scale.x, instructionRawY * scale.y));
-            footprints.add(fp);
-            super.setFootprints(footprints);
-            Vector2 instruction = new Vector2(instructionRawX, instructionRawY);
-            instructionListCache.add(instruction);
-            System.out.println("Instruction placed");
-        }
+			FootPrintModel fp = new FootPrintModel(footprintTexture, new Vector2(instructionRawX * scale.x,instructionRawY*scale.y));
+			footprints.add(fp);
+			super.setFootprints(footprints);
+			Vector2 instruction = new Vector2(instructionRawX, instructionRawY);
+			instructionListCache.add(instruction);
+			System.out.println("Instruction placed");
+		}
 
-        if (!selecting && (input.didTertiary()) && !selector.isSelected()) {
-            selector.select(mouseX, mouseY);
-            selecting = true;
+		// Spawn a new object if a spawner was clicked
+		Obstacle spawnedObj = spawnList.update(camPos);
+
+		if(spawnedObj != null) {
+			// If the selected object is a pedestal then check if pedestal is already in the game
+			if((spawnedObj.getName() == "pedestal" && !hasPed) || spawnedObj.getName() != "pedestal") {
+				addObject(spawnedObj);
+//				selector.select(mouseX, mouseY);
+				selector.select(spawnedObj);
+				selecting = true;
+			}
+		}
+
+		if (!selecting && (input.didTertiary()) && !selector.isSelected()) {
+			selector.select(mouseX, mouseY);
+			selecting = true;
 
             // The tile indices
             int x = xCoordToTile(mouseX);
@@ -1127,152 +1160,139 @@ public class LevelDesignerMode extends WorldController {
 			   different object is located there (when the selected object just
 			   spawns, for example), don't remove it
 			 */
-            if (x >= board.getLeftBorder() && y >= board.getBottomBorder() && x < board.getRightBorder() && y < board.getTopBorder()) {
-                if (board.get(x, y) != null && board.get(x, y) == selector.getObstacle()) { // Note: Purposefully comparing references
-                    if (!board.removeFromBoard(x, y)) {
-                        System.out.println("Selected item not removed from board");
-                    }
-                }
+			if(x >= board.getLeftBorder() && y >= board.getBottomBorder() && x < board.getRightBorder() && y < board.getTopBorder()) {
+				if(board.get(x, y) != null && board.get(x, y) == selector.getObstacle()) { // Note: Purposefully comparing references
+					if(!board.removeFromBoard(x, y)) {
+						System.out.println("Selected item not removed from board");
+					}
+				}
 
-                // Update the surroundings after removing old obstacles
-                updateTerrainAroundRegion(x, y);
-                updateWallAroundRegion(x, y);
-            }
+				// Update the surroundings after removing old obstacles
+				updateTerrainAroundRegion(x, y);
+				updateWallAroundRegion(x, y);
+			}
 
-        } else if (!input.didTertiary() && selector.isSelected()) {
-            Obstacle deselected = selector.deselect();
+		} else if (!input.didTertiary() && selector.isSelected()) {
+			Obstacle deselected = selector.deselect();
 
-            if (deselected instanceof CornerObstacle) {
-                processBorderChange((CornerObstacle) deselected);
-            } else if (deselected != null) {
-                if (deselected instanceof HostModel) {
-                    System.out.println("Golem placed");
-                    lastGolem = (HostModel) deselected;
-                }
-                // The tile indices
-                int x = xCoordToTile(deselected.getX());
-                int y = yCoordToTile(deselected.getY());
+			if(deselected instanceof CornerObstacle) {
+				processBorderChange((CornerObstacle)deselected);
+			} else if(deselected != null) {
+				if (deselected instanceof HostModel) {
+					System.out.println("Golem placed");
+					lastGolem = (HostModel)deselected;
+				}
+				// The tile indices
+				int x = xCoordToTile(deselected.getX());
+				int y = yCoordToTile(deselected.getY());
 
-                // TODO: remove destroyed bodies from the pooled list, if we do that
+				// TODO: remove destroyed bodies from the pooled list, if we do that
 
-                if (board.set(deselected, x, y, false)) {
-                    // If the new object was deselected, move to the tile center
-                    deselected.setPosition(xTileToCoord(x), yTileToCoord(y));
+				if(board.set(deselected, x, y, false)) {
+					// If the new object was deselected, move to the tile center
+					deselected.setPosition(xTileToCoord(x), yTileToCoord(y));
 
-                    // Update terrain and walls around the new object
-                    updateTerrainAroundRegion(x, y);
-                    updateWallAroundRegion(x, y);
-                } else {
-                    // If it was not added, it is outside the board and should
-                    // be removed
-                    deselected.markRemoved(true);
-                }
-            }
-        } else {
-            selector.moveTo(mouseX, mouseY);
-        }
-
-        // Spawn a new object if a spawner was clicked
-        Obstacle obj = spawnList.update(camPos);
-
-        if (obj != null) {
-            // If the selected object is a pedestal then check if pedestal is already in the game
-            if ((obj.getName() == "pedestal" && !hasPed) || obj.getName() != "pedestal") {
-                addObject(obj);
-                selector.select(mouseX, mouseY);
-                selecting = true;
-            }
-        }
+					// Update terrain and walls around the new object
+					updateTerrainAroundRegion(x, y);
+					updateWallAroundRegion(x, y);
+				} else {
+					// If it was not added, it is outside the board and should
+					// be removed
+					deselected.markRemoved(true);
+				}
+			}
+		} else {
+			selector.moveTo(mouseX, mouseY);
+		}
 
 
-    }
+	}
 
-    /**
-     * The core gameplay loop of this world.
-     * <p>
-     * This method contains the specific update code for the level designer. It does
-     * not handle collisions, as those are managed by the parent class WorldController.
-     * This method is called after input is read, but before collisions are resolved.
-     * The very last thing that it should do is apply forces to the appropriate objects.
-     *
-     * @param dt Number of seconds since last animation frame
-     */
-    public void update(float dt) {
-        // Move an object if touched
-        InputController input = InputController.getInstance();
+	/**
+	 * The core gameplay loop of this world.
+	 *
+	 * This method contains the specific update code for the level designer. It does
+	 * not handle collisions, as those are managed by the parent class WorldController.
+	 * This method is called after input is read, but before collisions are resolved.
+	 * The very last thing that it should do is apply forces to the appropriate objects.
+	 *
+	 * @param dt Number of seconds since last animation frame
+	 */
+	public void update(float dt) {
+		// Move an object if touched
+		InputController input = InputController.getInstance();
 
-        // TODO This is probably super inefficient but it does the job
-        boolean hasPed = false;
-        // looks for pedestal object in the game thats been placed on the board
-        for (Obstacle obj : objects) {
-            if (obj.getName() == "pedestal" && obj.inGame) {
-                hasPed = true;
-            }
-        }
+		// TODO This is probably super inefficient but it does the job
+		boolean hasPed = false;
+		// looks for pedestal object in the game thats been placed on the board
+		for(Obstacle obj : objects) {
+			if (obj.getName() == "pedestal" && obj.inGame) {
+				hasPed = true;
+			}
+		}
 
 
-        if (input.didClear()) {
-            loadBoard = false; // Remove everything from the board
-            reset();
-        }
-        if (input.didReset()) {
-            loadBoard = true; // Reset the board based on the level
-            reset();
-        }
+		if(input.didClear()) {
+			loadBoard = false; // Remove everything from the board
+			reset();
+		}
+		if(input.didReset()) {
+			loadBoard = true; // Reset the board based on the level
+			reset();
+		}
 
-        // Update the camera position
-        camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
+		// Update the camera position
+		camTarget.add(CAMERA_SPEED * input.getHorizontal(), CAMERA_SPEED * input.getVertical());
 
-        canvas.setCamTarget(camTarget);
-        camPos.set(canvas.updateCamera());
+		canvas.setCamTarget(camTarget);
+		camPos.set(canvas.updateCamera());
 
-        dimensions.set(TILE_WIDTH * (board.getWidth()), TILE_WIDTH * (board.getHeight()));
-        lowerLeft.set(TILE_WIDTH * (board.getLeftOffset()), TILE_WIDTH * (board.getBottomOffset()));
+		dimensions.set(TILE_WIDTH * (board.getWidth()), TILE_WIDTH * (board.getHeight()));
+		lowerLeft.set(TILE_WIDTH * (board.getLeftOffset()), TILE_WIDTH * (board.getBottomOffset()));
 
-        updateSelector(hasPed);
+		updateSelector(hasPed);
 
-        if (input.didPressUp() && selector.isSelected()) {
-            Obstacle selection = selector.getObstacle();
+		if (input.didPressUp() && selector.isSelected()) {
 
-            if(selector.getObstacle().getName() == "host") {
-                if (((HostModel) selection).getCurrentCharge() < MAX_CHARGE_CAPACITY) {
-                    ((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() + 5);
-                    ((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
-                }
-            }
+			Obstacle selection = selector.getObstacle();
+
+			if(selector.getObstacle().getName() == "host") {
+				if (((HostModel) selection).getCurrentCharge() < MAX_CHARGE_CAPACITY) {
+					((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() + 5);
+					((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
+				}
+			}
             else if(selector.getObstacle().getName() == "oscWall") {
                 ((OscWall) selection).setGoingUp(false);
                 ((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), false);
             }
-        }
-
-        if (input.didPressDown() && selector.isSelected()) {
-            Obstacle selection = selector.getObstacle();
-
-            if(selector.getObstacle().getName() == "host") {
-                if (((HostModel) selection).getCurrentCharge() > MIN_CHARGE_CAPACITY) {
-                    ((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() - 5);
-                    ((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
-                }
-            }
+		}
+		if (input.didPressDown() && selector.isSelected()) {
+			Obstacle selection = selector.getObstacle();
+			if(selector.getObstacle().getName() == "host") {
+				if (((HostModel) selection).getCurrentCharge() > MIN_CHARGE_CAPACITY) {
+					((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() - 5);
+					((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
+				}
+			}
             else if(selector.getObstacle().getName() == "oscWall") {
                 ((OscWall) selection).setGoingUp(true);
                 ((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), true);
             }
-        }
+		}
 
 
-        if (input.didDelete()) {
-            // Remove what is currently selected at the mouse location
-            if (selector.isSelected()) {
-                // Get the selection, then remove it from the selector
-                Obstacle selection = selector.getObstacle();
-                selector.deselect();
+		if(input.didDelete()) {
+			// Remove what is currently selected at the mouse location
+			if(selector.isSelected()) {
+				// Get the selection, then remove it from the selector
+				Obstacle selection = selector.getObstacle();
+				selector.deselect();
 
-                selection.markRemoved(true);
-            }
-        }
-        if (input.didSave()) {
+				selection.markRemoved(true);
+			}
+		}
+		if(input.didSave()) {
 
 //			// TODO: COMBINE THIS WITH InputController SOMEHOW!
 //			Gdx.input.getTextInput(new Input.TextInputListener() {
@@ -1309,7 +1329,12 @@ public class LevelDesignerMode extends WorldController {
     private void save(String levelName) {
         // This has to be made local instead of the default, which is "internal" and can't be
         // modified by a jar
-        FileHandle f = Gdx.files.local(levelName);
+        FileHandle f;
+        if(fromCustom || newLevel) {
+			f = Gdx.files.local(levelName);
+		}else{
+        	f = Gdx.files.internal(levelName);
+		}
 
         // TODO: Make this not creating new objects by updating Level to use PooledList(?)
 

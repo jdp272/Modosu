@@ -241,10 +241,12 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param level The level to start the game at
 	 */
 	public void exitScreenLevel(int level) {
+		System.out.println(level);
 		controller.loadContent(manager);
 		controller.setScreenListener(this);
 		controller.setCanvas(canvas);
 		controller.setCurrentLevel(level);
+		controller.inCustom = false;
 		controller.reset();
 
 		setScreen(controller);
@@ -266,7 +268,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelDesigner.setCurrentLevel(level + (page*4));
 			if(level == -1){
 				levelDesigner.setLoadBoard(false);
-				System.out.println("TEST");
 			}
 			levelDesigner.reset();
 
@@ -274,6 +275,43 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 		else {
 			exitScreenLevel(level + (page*4));
+		}
+
+	}
+
+	/**
+	 * The given screen has made a request to exit its player mode
+	 * and enter the game mode on a specific level.
+	 *
+	 * @param level The level to start the game at
+	 */
+	public void exitScreenLevel(int level, int page, boolean custom) {
+
+		if(goLevelDesigner) {
+			levelDesigner.loadContent(manager);
+			levelDesigner.setScreenListener(this);
+			levelDesigner.setCanvas(canvas);
+			levelDesigner.setCurrentLevel(level + (page*4));
+			if(level == -1){
+				levelDesigner.setLoadBoard(false);
+				levelDesigner.setCurrentLevel(-1);
+			}
+			levelDesigner.setFromCustom(custom);
+
+			levelDesigner.reset();
+
+			setScreen(levelDesigner);
+		}
+		else {
+			System.out.println(level + (page*4));
+			controller.loadContent(manager);
+			controller.setScreenListener(this);
+			controller.setCanvas(canvas);
+			controller.setCurrentLevel(level + (page*4));
+			controller.inCustom = custom;
+			controller.reset();
+
+			setScreen(controller);
 		}
 
 	}

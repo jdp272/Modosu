@@ -316,6 +316,7 @@ public class SpiritModel extends BoxObstacle {
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
+
         // Color fades as life progression decreases
         float lifeProgression = this.currentLife / this.defaultLife;
         float disFromBounce = (Vector2.dst2(this.getPosition().x, this.getPosition().y, this.getPosAtBounce().x, this.getPosAtBounce().y)) / 8;
@@ -326,7 +327,6 @@ public class SpiritModel extends BoxObstacle {
 
         // Only draw spirit when it's flying
         if (!isPossessing && !goToCenter) {
-
 
             if(this.didBounce) {
                 canvas.draw(spiritHeadStrip, lifeColor, spiritHeadStrip.getRegionWidth() - 14, spiritHeadStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, this.getVelocity().angleRad(), 0.75f, 0.75f);

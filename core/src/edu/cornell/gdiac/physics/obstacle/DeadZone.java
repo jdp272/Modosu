@@ -235,6 +235,8 @@ public class DeadZone extends BoxObstacle {
             return;
         }
 
+        setScaling(texture);
+
         // Draw the primary frame
         wallStrip.setFrame(primaryFrame);
         canvas.draw(texture, Color.RED,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);

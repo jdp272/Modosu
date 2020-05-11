@@ -263,14 +263,14 @@ public class HostController {
                     }
 
                     // Arrow has been created, and mouse is held down so update the arrow
-                    else if (input.didIsPressed()) {
+                    else if (input.didIsPressed() && arrow != null) {
                         // Set where the spirit currently is for starting draw location
                         arrow.setCurrLoc(velocityCache.set(spirit.getPosition().scl(scale.x, scale.y)));
                         // Set the velocity represented by the arrow
                         arrow.setVelocityRepresented(shootVector, magnitude > MINIMUM_SHOT_SPEED);
                     }
                     // Mouse has been released so shoot and get rid of arrow
-                    else if (input.didRelease()) {
+                    else if (input.didRelease() && arrow != null) {
                         arrow = null;
 
                         // Only shoot if the shooting speed is large enough
@@ -322,6 +322,7 @@ public class HostController {
             }
 
         }
+
 
 
         // Update the Animation of the possessed host

@@ -172,8 +172,8 @@ public class GameCanvas {
 	public Vector2 updateCamera() {
 		// TODO add smoothing
 	    // This line results in the camera following directly on the player, will add smoothing later
-		smoothX = MathUtils.lerp(camera.position.x, camTarget.x, smoothFactor);
-		smoothY = MathUtils.lerp(camera.position.y, camTarget.y, smoothFactor);
+		smoothX = (int)MathUtils.lerp(camera.position.x, camTarget.x, smoothFactor);
+		smoothY = (int)MathUtils.lerp(camera.position.y, camTarget.y, smoothFactor);
 		camera.translate(smoothX - camera.position.x, smoothY - camera.position.y);
 		if (zooming) {
 			camera.zoom = MathUtils.lerp(camera.zoom, targetZoom, 0.1f);

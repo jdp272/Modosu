@@ -64,7 +64,7 @@ public class OscWall extends BoxObstacle {
     private int wallDelayCount = 0;
 
     /** Wall up Delay Max */
-    private int wallDelayMax = 250;
+    private int wallDelayMax = 150;
 
     /**
      * Initialize a new OscWall at the Origin

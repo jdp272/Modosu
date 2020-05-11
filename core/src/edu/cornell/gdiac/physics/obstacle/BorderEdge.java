@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.physics.obstacle;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import edu.cornell.gdiac.physics.GameCanvas;
@@ -228,12 +229,42 @@ public class BorderEdge extends BoxObstacle {
 //    }
 
     @Override
+    protected void setScaling(TextureRegion tex) {
+        super.setScaling(tex);
+        sy *= 3; // Want the border to be 1x3 tiles, so manually scale 1 by 3
+    }
+
+    @Override
     public void draw(GameCanvas canvas) {
         if(texture == null) {
             System.out.println("draw() called on border edge with null texture");
             return;
         }
 
+        setScaling(texture);
         canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,side.angle,sx,sy);
+    }
+
+    /**
+     * Draw the edge if it is a top edge. Otherwise, nothing happens
+     *
+     * @param canvas The canvas for drawing
+     */
+    public void drawTop(GameCanvas canvas) {
+        if(side == Side.TOP) {
+            draw(canvas);
+        }
+    }
+
+
+    /**
+     * Draw the edge if it is not a top edge. Otherwise, nothing happens
+     *
+     * @param canvas The canvas for drawing
+     */
+    public void drawNotTop(GameCanvas canvas) {
+        if(side != Side.TOP) {
+            draw(canvas);
+        }
     }
 }
