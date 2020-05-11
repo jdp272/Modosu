@@ -24,7 +24,12 @@ import java.util.ArrayList;
  */
 public class Loader {
 
-    // Fields
+    public static final String TUTORIAL_DATA_PATH = "levels/tutorial_data.json";
+
+    /** A struct that stores data about the tutorial levels */
+    public static class Tutorials {
+        public TutorialData[] tutorials;
+    }
 
     /** A struct that stores data from an obstacle when read from the json */
     public static class WallData {
@@ -95,6 +100,7 @@ public class Loader {
 
     /** A struct that stores all the data of a level when read from the json */
     public static class LevelData {
+        public int tutorialNum;
         public Vector2 dimensions;
         public Vector2 startLocation;
 
@@ -106,8 +112,10 @@ public class Loader {
         public BorderCornerData[] borderCornerData;
         public EnergyPillarData[] energyPillarData;
 
-        public String message;
     }
+
+    /** The data about the tutorial level messages */
+    private Tutorials tutorials;
 
     /** A factory that creates the game objects */
     private Factory factory;
@@ -128,11 +136,15 @@ public class Loader {
 
         json = new Json();
 
+//        outputTutorials();
+
         manager = new AssetManager();
         // Add font support to the asset manager
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+
+        tutorials = json.fromJson(Tutorials.class, new FileHandle(TUTORIAL_DATA_PATH));
     }
 
     /**
@@ -145,11 +157,15 @@ public class Loader {
     public void saveLevel(FileHandle f, Level level) {
         LevelData levelData = new LevelData();
 
+        // Save the level number in the tutorial, for loading messages. They are
+        // 1 indexed, so 0 or negatives indicate no tutorial message
+        levelData.tutorialNum = level.tutorialNum;
+
         // Store the ground information
         levelData.dimensions = level.dimensions;
 
-        // Save the optional message, if there is one
-        levelData.message = level.message;
+        // Store the starting information
+        levelData.startLocation = new Vector2(level.pedestal.getX(), level.pedestal.getY());
 
         // Store the obstacle data
         levelData.wallData = new WallData[level.walls.length];
@@ -251,9 +267,6 @@ public class Loader {
             }
         }
 
-        // Store the starting information
-        levelData.startLocation = new Vector2(level.pedestal.getX(), level.pedestal.getY());
-
         // Store the now-populated level data
         String output = json.toJson(levelData);
         f.writeString(output, false);
@@ -276,8 +289,8 @@ public class Loader {
         // Load the map regions
         Vector2 dimensions = levelData.dimensions;
 
-        // Load the optional message, if there is one
-        String message = levelData.message;
+        // Load tutorial data
+        int tutorialNum = levelData.tutorialNum;
 
         // Create the walls
         Wall[] walls = new Wall[levelData.wallData.length];
@@ -351,6 +364,35 @@ public class Loader {
         // Create the starting "host" (with no charge capacity)
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
-        return new Level(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, pedestal, spirit, message);
+        return new Level(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, pedestal, spirit, tutorialNum);
     }
+
+    /**
+     * Get tutorial data. If no tutorial file was initially loaded, nothing will
+     * be returned
+     *
+     * @param tutorialNum The index of the tutorial level, 1 indexed. If outside
+     *                    the range of tutorials, null will be returned
+     */
+    public TutorialData getTutorialData(int tutorialNum) {
+        if(tutorials != null && tutorialNum > 0 && tutorialNum <= tutorials.tutorials.length) {
+            return tutorials.tutorials[tutorialNum - 1];
+        }
+        return null;
+    }
+
+//    /**
+//     * Output tutorials. For development purposes only
+//     */
+//    public void outputTutorials() {
+//        Tutorials tutorials = new Tutorials();
+//        tutorials.tutorials = new TutorialData[1];
+//
+//        tutorials.tutorials[0] = new TutorialData();
+//        tutorials.tutorials[0].instructions = "TEST TUTORIAL MESSAGE";
+//        tutorials.tutorials[0].countdown = 60;
+//        tutorials.tutorials[0].location = new Vector2(200, 200);
+//
+//        json.toJson(tutorials, new FileHandle(TUTORIAL_DATA_PATH));
+//    }
 }

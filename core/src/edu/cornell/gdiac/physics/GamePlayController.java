@@ -222,6 +222,10 @@ public class GamePlayController extends WorldController {
 		}
 
 		level = loader.loadLevel(levelToLoad);
+		TutorialData tutorialData = loader.getTutorialData(level.tutorialNum);
+		if(tutorialData != null) {
+			System.out.println(tutorialData.instructions);
+		}
 
 		hud.clearHUD();
 		Gdx.input.setInputProcessor(hud.getStage());
@@ -231,7 +235,6 @@ public class GamePlayController extends WorldController {
 		tutorial = new Tutorial();
 
 		dimensions.set(level.dimensions);
-		System.out.println("dimensions: " + dimensions);
 
 		pedestal = level.pedestal;
 		spirit = level.spirit;
@@ -241,8 +244,6 @@ public class GamePlayController extends WorldController {
 
 		possessed = pedestal;
 		spirit.setGoToCenter(true);
-
-		System.out.println(System.getProperty("user.dir"));
 
 		spirit.setIsPossessing(true);
 

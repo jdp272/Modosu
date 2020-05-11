@@ -16,7 +16,7 @@ public class Level {
      * An empty constructor for a level. Everything is null.
      */
     public Level() {
-        set(null, null, null, null, null, null, null, null, null, null, null);
+        set(null, null, null, null, null, null, null, null, null, null, 0);
     }
 
     /**
@@ -45,7 +45,7 @@ public class Level {
             HostModel pedestal,
             SpiritModel spirit
     ) {
-        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, pedestal, spirit, null);
+        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, pedestal, spirit, 0);
     }
 
     /**
@@ -61,7 +61,8 @@ public class Level {
      * @param hosts An array of the hosts in the level
      * @param pedestal The "host" where the player starts
      * @param spirit The spirit of the player
-     * @param message An optional message to display on the level
+     * @param tutorial An int indicating the tutorial number for this level.
+     *                 Non tutorial levels can use a negative number
      */
     public Level(
             Vector2 dimensions,
@@ -74,9 +75,9 @@ public class Level {
             ArrayList<HostModel> hosts,
             HostModel pedestal,
             SpiritModel spirit,
-            String message
+            int tutorial
     ) {
-        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, pedestal, spirit, message);
+        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, pedestal, spirit, tutorial);
     }
 
     /** The dimensions of the rectangular board, in Box2D coordinates */
@@ -109,8 +110,9 @@ public class Level {
     /** The spirit for the level */
     public SpiritModel spirit;
 
-    /** An optional message to display on the level */
-    public String message;
+    /** An int indicating the tutorial number for this level. Non-tutorial
+        levels can use a negative number */
+    public int tutorialNum;
 
     /**
      * Constructs a simple object encapsulating the elements of a level
@@ -125,7 +127,8 @@ public class Level {
      * @param hosts An array of the hosts in the level
      * @param pedestal The pedestal where the player starts
      * @param spirit The spirit of the player
-     * @param message An optional message to display on the level
+     * @param tutorialNum An int indicating the tutorial number for this level.
+     *      *             Non tutorial levels can use a negative number
      */
     public void set(
             Vector2 dimensions,
@@ -138,7 +141,7 @@ public class Level {
             ArrayList<HostModel> hosts,
             HostModel pedestal,
             SpiritModel spirit,
-            String message
+            int tutorialNum
     ) {
         this.dimensions = dimensions;
         this.walls = walls;
@@ -150,7 +153,7 @@ public class Level {
         this.hosts = hosts;
         this.pedestal = pedestal;
         this.spirit = spirit;
-        this.message = message;
+        this.tutorialNum = tutorialNum;
     }
 
 }

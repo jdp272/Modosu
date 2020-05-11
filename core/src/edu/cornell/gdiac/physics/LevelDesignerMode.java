@@ -1340,7 +1340,7 @@ public class LevelDesignerMode extends WorldController {
 
         // TODO: what if spirit is null
 
-        level.set(dimensions, wallArray, waterArray, sandArray, borderEdgeArray, borderCornerArray, energyPillarArray, hostList, pedestal, spirit, null);
+        level.set(dimensions, wallArray, waterArray, sandArray, borderEdgeArray, borderCornerArray, energyPillarArray, hostList, pedestal, spirit, 0);
         loader.saveLevel(f, level);
 
         reset();

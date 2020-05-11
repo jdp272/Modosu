@@ -51,13 +51,6 @@ public class Tutorial {
     private boolean completedTutoral;
     private TutorialData currentTutorial;
 
-    /** A struct that stores all the data of a tutorial textbox when read from the json */
-    public class TutorialData {
-        public Vector2 location;
-        public String instructions;
-        public int countdown;
-    }
-
     public Tutorial() {
         boxTexture = new Texture(Gdx.files.internal(BACKGROUND_FILE));
         viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
