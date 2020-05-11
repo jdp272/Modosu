@@ -249,6 +249,13 @@ public class InputController {
 	 */
 	public boolean didPause() { return pausePressed; }
 
+	/**
+	 * Returns true if continued tutorial.
+	 *
+	 * @return true if the continue tutorial was pressed.
+	 */
+	public boolean didAdvanceTutorial() { return tutorialNextPressed; }
+
 
 	public boolean didIsPressed() { return mousePressed; }
 
@@ -400,7 +407,7 @@ public class InputController {
 		downHeld = downHeld || Gdx.input.isKeyPressed(Input.Keys.DOWN);
 
 		pausePressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
-		tutorialNextPressed = Gdx.input.isKeyPressed(Input.Keys.ENTER);
+		tutorialNextPressed = Gdx.input.isKeyJustPressed(Input.Keys.ENTER);
 
 		boxPressed = clearPressed  || Gdx.input.isKeyPressed(Input.Keys.B);
 		hostPressed = clearPressed  || Gdx.input.isKeyPressed(Input.Keys.G);

@@ -77,6 +77,9 @@ public class GamePlayController extends WorldController {
 
 	protected EnergyPillar[] energyPillars;
 
+	private Tutorial tutorial;
+
+
 	private Vector2 cache;
 
 	private final int lifePerBounce = 40;
@@ -195,6 +198,8 @@ public class GamePlayController extends WorldController {
 		Gdx.input.setInputProcessor(hud.getStage());
 		hud.setNumTotalHosts(level.hosts.size());
 
+		tutorial = new Tutorial();
+
 		dimensions.set(level.dimensions);
 		System.out.println("dimensions: " + dimensions);
 
@@ -263,6 +268,8 @@ public class GamePlayController extends WorldController {
 		addQueue.add(level.pedestal);
 		collisionController.addHosts(level.hosts);
 		collisionController.addSpirit(level.start);
+
+		tutorial.addTutorial();
 	}
 
 
@@ -326,13 +333,19 @@ public class GamePlayController extends WorldController {
 			SoundController.getInstance().stop(WALK_SOUND);
 		}
 
-
 		// Check lose condition
 		if ((hostController.getPossessedBlownUp() || !spirit.isAlive()) && !isComplete() && !isFailure()) {
 			setFailure(true);
 			SoundController.getInstance().play(FAILURE_SOUND, FAILURE_SOUND, false);
 		}
 
+		// Update the tutorials
+		if (InputController.getInstance().didAdvanceTutorial() && !tutorial.didCompleteTutorial()) {
+			tutorial.updateTutorial();
+		}
+		if (!tutorial.didCompleteTutorial()) {
+			tutorial.drawTutorial(delta);
+		}
 
 		// Get arrow and draw if applicable
 		arrow = hostController.getArrow();
