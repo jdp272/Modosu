@@ -236,7 +236,7 @@ public class GamePlayController extends WorldController {
 		System.out.println("dimensions: " + dimensions);
 
 		pedestal = level.pedestal;
-		spirit = level.start;
+		spirit = level.spirit;
 		spirit.setName("spirit");
 
 		energyPillars = level.energyPillars;
@@ -299,10 +299,10 @@ public class GamePlayController extends WorldController {
 		for(HostModel host : level.hosts) {
 			addQueue.add(host);
 		}
-		addQueue.add(level.start);
+		addQueue.add(level.spirit);
 		addQueue.add(level.pedestal);
 		collisionController.addHosts(level.hosts);
-		collisionController.addSpirit(level.start);
+		collisionController.addSpirit(level.spirit);
 
 		tutorial.addTutorial();
 	}

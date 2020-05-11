@@ -26,12 +26,6 @@ public class Loader {
 
     // Fields
 
-
-    public enum ImageFile {
-        Robot,
-        Crate
-    }
-
     /** A struct that stores data from an obstacle when read from the json */
     public static class WallData {
         public Vector2 origin; // Center of the box
@@ -97,22 +91,12 @@ public class Loader {
         public int currentCharge;
         public Vector2[] instructions;
         public boolean isPedestal;
-        public ImageFile imageFile;
-    }
-
-    public static class PedestalData {
-        public Vector2 location;
-        public float chargeTime = -1; // Maximum amount of charge that can be stored
-
-        public Vector2[] instructions = null;
-
-        public ImageFile imageFile;
     }
 
     /** A struct that stores all the data of a level when read from the json */
     public static class LevelData {
         public Vector2 dimensions;
-        public Vector2 lowerLeft;
+        public Vector2 startLocation;
 
         public WallData[] wallData;
         public WaterData[] waterData;
@@ -122,26 +106,8 @@ public class Loader {
         public BorderCornerData[] borderCornerData;
         public EnergyPillarData[] energyPillarData;
 
-        public PedestalData pedestalData;
-
-        public Vector2 startLocation;
+        public String message;
     }
-
-    /**
-     * Tracks the asset state
-     */
-    public enum AssetState {
-        /** No assets loaded */
-        EMPTY,
-        /** Still loading assets */
-        LOADING,
-        /** Assets are complete */
-        COMPLETE
-    }
-
-    // Assets
-    /** Track all loaded assets (for unloading purposes) */
-    private Array<String> assets;
 
     /** A factory that creates the game objects */
     private Factory factory;
@@ -163,7 +129,6 @@ public class Loader {
         json = new Json();
 
         manager = new AssetManager();
-        assets = new Array<String>();
         // Add font support to the asset manager
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
@@ -183,6 +148,9 @@ public class Loader {
         // Store the ground information
         levelData.dimensions = level.dimensions;
 
+        // Save the optional message, if there is one
+        levelData.message = level.message;
+
         // Store the obstacle data
         levelData.wallData = new WallData[level.walls.length];
         for(int i = 0; i < level.walls.length; i++) {
@@ -190,13 +158,13 @@ public class Loader {
             oData.dimensions = level.walls[i].getDimension();
             oData.origin = new Vector2(level.walls[i].getX(), level.walls[i].getY());
             if(level.walls[i] instanceof Wall) {
-                oData.primaryFrame = ((Wall)level.walls[i]).getPrimaryFrame();
-                oData.leftFrame = ((Wall)level.walls[i]).getLeftFrame();
-                oData.rightFrame = ((Wall)level.walls[i]).getRightFrame();
-                oData.frontEdgeFrame = ((Wall)level.walls[i]).getFrontEdgeFrame();
-                oData.backEdgeFrame = ((Wall)level.walls[i]).getBackEdgeFrame();
-                oData.lowerLeftCornerFrame = ((Wall)level.walls[i]).getLowerLeftCornerFrame();
-                oData.lowerRightCornerFrame = ((Wall)level.walls[i]).getLowerRightCornerFrame();
+                oData.primaryFrame = level.walls[i].getPrimaryFrame();
+                oData.leftFrame = level.walls[i].getLeftFrame();
+                oData.rightFrame = level.walls[i].getRightFrame();
+                oData.frontEdgeFrame = level.walls[i].getFrontEdgeFrame();
+                oData.backEdgeFrame = level.walls[i].getBackEdgeFrame();
+                oData.lowerLeftCornerFrame = level.walls[i].getLowerLeftCornerFrame();
+                oData.lowerRightCornerFrame = level.walls[i].getLowerRightCornerFrame();
             } else {
                 oData.primaryFrame = -1;
                 oData.leftFrame = -1;
@@ -283,10 +251,6 @@ public class Loader {
             }
         }
 
-        PedestalData pData = new PedestalData();
-        pData.location = new Vector2(level.pedestal.getX(), level.pedestal.getY());
-        levelData.pedestalData = pData;
-
         // Store the starting information
         levelData.startLocation = new Vector2(level.pedestal.getX(), level.pedestal.getY());
 
@@ -311,7 +275,9 @@ public class Loader {
 
         // Load the map regions
         Vector2 dimensions = levelData.dimensions;
-        Vector2 lowerLeft = levelData.lowerLeft;
+
+        // Load the optional message, if there is one
+        String message = levelData.message;
 
         // Create the walls
         Wall[] walls = new Wall[levelData.wallData.length];
@@ -379,71 +345,12 @@ public class Loader {
              limit
 
              */
-                hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions, hData.currentCharge));
-//            hosts.add(new HostModel(rData.location.x, rData.location.y, (int)Data.chargeTime), false);
+            hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions, hData.currentCharge));
         }
 
         // Create the starting "host" (with no charge capacity)
-        SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
-        return new Level(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, spirit, pedestal);
+        SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
+        return new Level(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, pedestal, spirit, message);
     }
-
-    public Level reset(int level) {
-        return null;
-//        BoxObstacle[] obs = {new BoxObstacle(50,50,10,10)};
-//        ArrayList<HostModel> robs = new ArrayList<>();
-//        HostModel rob = new HostModel(30,30,10,10, 100);
-//        //rob.setTexture(hostTex);
-//        robs.add(rob,true);
-//        SpiritModel spir = new SpiritModel(70,70,10,10,4);
-//        Level lvl = new Level(null, obs, robs, spir);
-//        return lvl; //loadLevel();
-    }
-    // Private member functions
-    /**
-     * Returns a newly loaded texture region for the given file.
-     *
-     * This helper methods is used to set texture settings (such as scaling, and
-     * whether or not the texture should repeat) after loading.
-     *
-     * This method was taken from lab 4, which was written by Walker M. White
-     *
-     * @param file		The texture (region) file
-     * @param repeat	Whether the texture should be repeated
-     *
-     * @return a newly loaded texture region for the given file.
-     */
-    private TextureRegion createTexture(String file, boolean repeat) {
-        if (manager.isLoaded(file)) {
-            TextureRegion region = new TextureRegion(manager.get(file, Texture.class));
-            region.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-            if (repeat) {
-                region.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-            }
-            return region;
-        }
-        System.out.println(file + " was never loaded");
-        return null;
-    }
-
-//    private int nHosts;
-//
-//    /** reads json data, creates objects and returns them to
-//     * the gameplay controller
-//     * @param json
-//     * @return Obstacle array
-//     */
-//    public Obstacle[] parse(Json json){
-//
-//        return null;
-//    }
-//
-//    public void preLoadContent(AssetManager manager){}
-//
-//    public PooledList<Obstacle> loadContent(int level) {}
-//
-//    public int getnHosts(){return nHosts;}
-//
-
 }

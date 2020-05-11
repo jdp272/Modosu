@@ -611,8 +611,8 @@ public class LevelDesignerMode extends WorldController {
 		if(board.addNewObstacle(level.pedestal)) {
 			addObject(level.pedestal);
 		}
-		if(board.addNewObstacle(level.start)) {
-			addObject(level.start);
+		if(board.addNewObstacle(level.spirit)) {
+			addObject(level.spirit);
 		}
 
 		setBordersAndUpdateTerrain();
@@ -1340,7 +1340,7 @@ public class LevelDesignerMode extends WorldController {
 
         // TODO: what if spirit is null
 
-        level.set(dimensions, wallArray, waterArray, sandArray, borderEdgeArray, borderCornerArray, energyPillarArray, hostList, spirit, pedestal);
+        level.set(dimensions, wallArray, waterArray, sandArray, borderEdgeArray, borderCornerArray, energyPillarArray, hostList, pedestal, spirit, null);
         loader.saveLevel(f, level);
 
         reset();
