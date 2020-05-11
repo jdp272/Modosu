@@ -302,5 +302,4 @@ public class CollisionController implements ContactListener {
 
     public boolean getBounceOnBounds() { return bounceOnBounds; }
 
-//    public boolean getAgainstObstacle() { return againstObstacle; }
 }

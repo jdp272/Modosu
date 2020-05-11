@@ -11,6 +11,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -26,9 +27,12 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.MusicController;
 import edu.cornell.gdiac.util.SoundController;
 
+import javax.print.DocFlavor;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Gameplay controller for Modosu.
@@ -79,7 +83,11 @@ public class GamePlayController extends WorldController {
 
 	private Vector2 cache;
 
+	private Vector2 panTarget;
+
 	private final int lifePerBounce = 40;
+
+	private final float panSpeed = 10f;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -159,11 +167,15 @@ public class GamePlayController extends WorldController {
 		lvl = 0;
 		world.setContactListener(collisionController);
 
+		// Initialize vectors
+
+        cache = new Vector2();
 		cache = new Vector2();
 
+		// TODO Change level loading here
 		File folder = new File("levels");
-		levels = folder.listFiles(Constants.filenameFilter);
-		Arrays.sort(levels);
+		levels = new ArrayList(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+		Collections.sort(levels);
 
 	}
 
@@ -180,15 +192,18 @@ public class GamePlayController extends WorldController {
 		setFailure(false);
 		setMenu(false);
 
+		System.out.println("just called play game music");
 		MusicController.getInstance().play("gameMusic");
 		// MusicController.getInstance().setVolume(40);
-
 
 		Vector2 gravity = new Vector2(world.getGravity());
 
 		FileHandle levelToLoad;
-		System.out.println("levels/" + levels[currentLevel%levels.length].getName());
-		levelToLoad = Gdx.files.local("levels/" + levels[currentLevel%levels.length].getName());
+
+		int levelIndex = ((currentLevel%levels.size()) + levels.size()) % levels.size();
+
+		System.out.println("levels/" + levels.get(levelIndex).getName());
+		levelToLoad = Gdx.files.local("levels/" + levels.get(levelIndex).getName());
 
 		level = loader.loadLevel(levelToLoad);
 
@@ -228,6 +243,9 @@ public class GamePlayController extends WorldController {
 		world.setContactListener(collisionController);
 
 		populateLevel();
+
+		panTarget = new Vector2(pedestal.getPosition().x * scale.x, pedestal.getPosition().y * scale.y);
+
 	}
 
 	/**
@@ -278,8 +296,6 @@ public class GamePlayController extends WorldController {
 	 */
 	public void update(float delta) {
 
-		MusicController.getInstance().update();
-
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){
 			HUD.incrementCurrHosts();
@@ -305,9 +321,8 @@ public class GamePlayController extends WorldController {
 
 		// Calls update on hostController
 		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand(), energyPillars);
-		if (hostController.getLaunched()){
-			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
-		}
+
+		if (hostController.getLaunched()){ SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false); }
 
 
 		// If player is still playing and moving
@@ -343,8 +358,22 @@ public class GamePlayController extends WorldController {
 		}
 
 		// Calculate spirit's screen coordinates from box2d coordinates
-		cache.set(spirit.getPosition());
-		cache.scl(scale.x, scale.y);
+		if (possessed.isPedestal() && !spirit.hasLaunched){
+
+			if (InputController.getInstance().didTertiary()) {
+				panTarget = pedestal.getPosition();
+				panTarget.x *= scale.x;
+				panTarget.y *= scale.y;
+			}
+
+		    panTarget.x += InputController.getInstance().getHorizontal() * panSpeed;
+		    panTarget.y += InputController.getInstance().getVertical() * panSpeed;
+		    cache.set(panTarget);
+		}
+		else {
+			cache.set(spirit.getPosition());
+			cache.scl(scale.x, scale.y);
+		}
 
 		// Handle camera panning
 		canvas.setCamTarget(cache);
@@ -366,7 +395,8 @@ public class GamePlayController extends WorldController {
 		}
 		 */
 
-		if (InputController.getInstance().getHorizontal() != 0 || InputController.getInstance().getVertical() != 0) {
+
+		if (!possessed.isPedestal() && (InputController.getInstance().getHorizontal() != 0 || InputController.getInstance().getVertical() != 0)) {
 			canvas.zoomIn();
 		}
 
