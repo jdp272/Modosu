@@ -296,6 +296,7 @@ public class GDXRoot extends Game implements ScreenListener {
 				levelDesigner.setLoadBoard(false);
 				levelDesigner.setCurrentLevel(-1);
 			}
+			levelDesigner.levelName = null;
 			levelDesigner.setFromCustom(custom);
 
 			levelDesigner.reset();

@@ -125,7 +125,7 @@ public class LevelDesignerMode extends WorldController {
 	/** A list of the golems, for purposes of instructions */
 	private ArrayList<HostModel> golems;
 
-	private String levelName;
+	public String levelName;
 
 	/** If a selection is currently happening. Even if nothing is selected by
 	 * the object selector, this will be true until the mouse is released, and
@@ -277,8 +277,6 @@ public class LevelDesignerMode extends WorldController {
 	 * @return A string representing the level name
 	 */
 	public String getLevelName() {
-		System.out.println("fromCustom: " + fromCustom + " newLevel: " + newLevel + " levelName: " + levelName);
-		System.out.println("currentLevel: " + currentLevel);
 		if(levelName != null){
 			return levelName;
 		}
