@@ -40,21 +40,22 @@ public class Tutorial {
     /** Scene2D Widgets for Indicators */
     private Table table;
     private Label instructionLabel;
-    private Label continueLabel;
     private Texture boxTexture;
 
     /** Variables */
     private int currentIndex;
-    private int delayContinue;
+    private int countdown;
+    private float counter;
     private String instruction;
+    private int updateHeight;
     private boolean completedTutoral;
     private TutorialData currentTutorial;
-    private TutorialData[] tutorials;
 
     /** A struct that stores all the data of a tutorial textbox when read from the json */
     public class TutorialData {
         public Vector2 location;
         public String instructions;
+        public int countdown;
     }
 
     public Tutorial() {
@@ -65,26 +66,19 @@ public class Tutorial {
         table.top();
         table.setBackground(new Image(boxTexture).getDrawable());
 
+        counter = 0;
         currentIndex = 0;
-        tutorials = null;
         currentTutorial = null;
+        updateHeight = 0;
         completedTutoral = false;
-        delayContinue = DELAY_TIME;
-
-        // get in the tutorial data
-        addTutorial();
-
-        if (tutorials != null || tutorials.length != 0) {
-            currentTutorial = tutorials[currentIndex];
-            instruction = currentTutorial.instructions;
-            table.setPosition(currentTutorial.location.x, currentTutorial.location.y);
-        }
+        countdown = Integer.MAX_VALUE;
 
         /* Use Asul Font Font */
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(FONT_FILE));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = FONT_SIZE;
         BitmapFont font = generator.generateFont(parameter);
+        generator.dispose();
 
         /* Create label for the instruction */
         Label.LabelStyle instructionLS = new Label.LabelStyle();
@@ -95,20 +89,6 @@ public class Tutorial {
 
         table.add(instructionLabel).width(MIN_LABEL_WIDTH).padTop(10);
 
-        table.row();
-
-        /* Create label for continue */
-        parameter.size = FONT_SIZE_CONTINUE;
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
-        Label.LabelStyle continueLS = new Label.LabelStyle();
-        continueLS.font = font;
-        continueLS.fontColor = new Color(Color.TEAL);
-        continueLabel = new Label(CONTINUE_TEXT, continueLS);
-
-        table.add(continueLabel).padTop(5).padBottom(5);
-
         // Change dimensions of table
         table.setWidth(DEFAULT_WIDTH);
         table.setHeight(DEFAULT_HEIGHT);
@@ -117,57 +97,51 @@ public class Tutorial {
     }
 
     public void addTutorial() {
-        // do stuff here
-        tutorials = new TutorialData[4];
-        tutorials[0] = new TutorialData();
-        tutorials[0].location = new Vector2(200,100);
-        tutorials[0].instructions = "Click and drag back to shoot ur spirit to and from golems.";
+        // load in stuff
+        currentTutorial = new TutorialData();
+        currentTutorial.location =  new Vector2(200,100);
+        currentTutorial.instructions = "Click and drag back to shoot ur spirit to and from golems.";
+        currentTutorial.countdown = 5;
 
-        tutorials[1] = new TutorialData();
-        tutorials[1].location = new Vector2(700, 400);
-        tutorials[1].instructions = "Use WASD to move the golem back and forth";
-
-        tutorials[2] = new TutorialData();
-        tutorials[2].location = new Vector2(200, 300);
-        tutorials[2].instructions = "Watch out for the energy pillars; they will increase ur charge faster!";
-
-        tutorials[3] = new TutorialData();
-        tutorials[3].location = new Vector2(600, 400);
-        tutorials[3].instructions = "Watch out! SAND.";
+        if (currentTutorial != null) {
+            instructionLabel.setText(currentTutorial.instructions);
+            countdown = currentTutorial.countdown;
+            table.setPosition(currentTutorial.location.x, currentTutorial.location.y);
+        }
     }
-
 
     public void drawTutorial(float dt) {
         stage.act(dt);
         stage.draw();
-
-        // use spritebatch instead?
     }
 
     public boolean didCompleteTutorial() {
-        return completedTutoral || tutorials == null;
+        return completedTutoral || currentTutorial == null;
     }
 
     /** Updates the tutorial to the next tutorial */
-    public void updateTutorial() {
-        System.out.println("Update Tutorial");
-        if (tutorials == null || currentIndex >= tutorials.length - 1) {
-            completedTutoral = true;
-            return;
+    public void updateTutorial(float dt) {
+        if (updateHeight < 2) {
+            updateHeight += 1;
+            table.setHeight(table.getCell(instructionLabel).getPrefHeight() + 25);
         }
 
-        currentIndex++;
-        currentTutorial = tutorials[currentIndex];
-
-        instructionLabel.setText(currentTutorial.instructions);
-
-        table.setHeight(table.getCell(instructionLabel).getPrefHeight() + table.getCell(continueLabel).getPrefHeight() + 25);
-        table.setPosition(currentTutorial.location.x, currentTutorial.location.y);
+        if (countdown == 0) {
+            completedTutoral = true;
+        } else {
+            counter = counter + dt;
+            if (counter >= 1) {
+                countdown--;
+                counter = 0;
+            }
+        }
     }
 
     public void reset() {
+        counter = 0;
+        countdown = Integer.MAX_VALUE;
         currentIndex = -1;
-        tutorials = null;
+        updateHeight = 0;
         currentTutorial = null;
         completedTutoral = false;
     }

@@ -230,6 +230,7 @@ public class GamePlayController extends WorldController {
 		Gdx.input.setInputProcessor(hud.getStage());
 		hud.setNumTotalHosts(level.hosts.size());
 
+		// Do I really need to make a new one everytime? Can just declare outside once!
 		tutorial = new Tutorial();
 
 		dimensions.set(level.dimensions);
@@ -372,11 +373,9 @@ public class GamePlayController extends WorldController {
 
 		HUD.update(delta);
 
-		// Update the tutorials
-		if (InputController.getInstance().didAdvanceTutorial() && !tutorial.didCompleteTutorial()) {
-			tutorial.updateTutorial();
-		}
+		// Check to hid tutorial
 		if (!tutorial.didCompleteTutorial()) {
+			tutorial.updateTutorial(delta);
 			tutorial.drawTutorial(delta);
 		}
 
