@@ -125,6 +125,8 @@ public class LevelDesignerMode extends WorldController {
 	/** A list of the golems, for purposes of instructions */
 	private ArrayList<HostModel> golems;
 
+	private String levelName;
+
 	/** If a selection is currently happening. Even if nothing is selected by
 	 * the object selector, this will be true until the mouse is released, and
 	 * it prevent another object from being picked up */
@@ -275,13 +277,19 @@ public class LevelDesignerMode extends WorldController {
 	 * @return A string representing the level name
 	 */
 	public String getLevelName() {
-		if(!fromCustom) {
-			return "levels/" + levels.get(currentLevel % levels.size()).getName();
-		}else if(newLevel) {
-			return "Custom/c" + levels.get(currentLevel % levels.size()).getName();
-		}else{
-			return "Custom/" + levels.get(currentLevel % levels.size()).getName();
+		System.out.println("fromCustom: " + fromCustom + " newLevel: " + newLevel + " levelName: " + levelName);
+		System.out.println("currentLevel: " + currentLevel);
+		if(levelName != null){
+			return levelName;
 		}
+		if(!fromCustom && !newLevel) {
+			levelName = "levels/" + levels.get(currentLevel).getName();
+		}else if(newLevel) {
+			levelName = "Custom/c" + currentLevel + ".lvl";
+		}else{
+			levelName = "Custom/" + levels.get(currentLevel).getName();
+		}
+		return levelName;
 	}
 
 	/**
@@ -333,11 +341,13 @@ public class LevelDesignerMode extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+
 		if(currentLevel == -1){
 			newLevel = true;
 		}else{
 			newLevel = false;
 		}
+
 		if(fromCustom || newLevel){
 			File folder = new File("Custom");
 			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
@@ -347,6 +357,7 @@ public class LevelDesignerMode extends WorldController {
 			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
 			Collections.sort(levels);
 		}
+
 
 	    refreshFootprints();
 
@@ -397,6 +408,7 @@ public class LevelDesignerMode extends WorldController {
 			setBordersAndUpdateTerrain();
 			loadBoard = true;
         }
+		getLevelName();
 
         // After populateLevel(), when the borders are set from the loaded level
         camTarget.set(scale.x * Constants.TILE_WIDTH * (board.getWidth()) / 2.f,
