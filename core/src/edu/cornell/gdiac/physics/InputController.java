@@ -69,8 +69,11 @@ public class InputController {
 	/** Whether the zoom button was pressed. */
 	private boolean zoomPressed;
 
-	/** Wehther the pause button was pressed */
+	/** Whether the pause button was pressed */
 	private boolean pausePressed;
+
+	/** Whether the tutorial next button was pressed */
+	private boolean tutorialNextPressed;
 
 	/** If a new obstacle button was pressed */
 	private boolean boxPressed;
@@ -391,12 +394,13 @@ public class InputController {
 		secondPressed = secondPressed || Gdx.input.isKeyPressed(Input.Keys.DOWN);
 		prevPressed =  Gdx.input.isKeyPressed(Input.Keys.P);
 		nextPressed =  Gdx.input.isKeyPressed(Input.Keys.N);
-		exitPressed  = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+		// exitPressed  = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
 		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
 		upHeld = upHeld || Gdx.input.isKeyPressed(Input.Keys.UP);
 		downHeld = downHeld || Gdx.input.isKeyPressed(Input.Keys.DOWN);
 
-		pausePressed = Gdx.input.isKeyPressed(Input.Keys.SPACE);
+		pausePressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
+		tutorialNextPressed = Gdx.input.isKeyPressed(Input.Keys.ENTER);
 
 		boxPressed = clearPressed  || Gdx.input.isKeyPressed(Input.Keys.B);
 		hostPressed = clearPressed  || Gdx.input.isKeyPressed(Input.Keys.G);

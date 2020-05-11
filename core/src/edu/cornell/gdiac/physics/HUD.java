@@ -157,7 +157,7 @@ public class HUD {
         table.add(pause).width(60).height(60).padTop(5).padRight(10).right();
         stage.addActor(table);
 
-        /************************************************** PAUSE SCREEN **********************************************/
+        /*************f************************************* PAUSE SCREEN **********************************************/
 
         skin = new Skin();
         textureAtlas = new TextureAtlas(Gdx.files.internal(TEXTURE_ATLAS_FILE));
