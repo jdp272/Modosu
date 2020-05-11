@@ -31,6 +31,10 @@ public class OscWall extends BoxObstacle {
     /** Whether the Gate is Vertical or Horizontal (true is vertical) */
     protected boolean isVert;
 
+    /** Whether the Gate is Up or Down for Physics */
+    protected boolean isUp;
+
+
     /**
      * These constants can be used for the light indicator as well
      */
@@ -51,10 +55,16 @@ public class OscWall extends BoxObstacle {
     private int elapsedFrames = 0;
 
     /** The number of frames that should pass before the animation updates */
-    private int framesPerUpdate = 10;
+    private int framesPerUpdate = 1;
 
     /** Whether or not the animation should be updated on this frame */
     private boolean updateFrame;
+
+    /** Wall Up Delay Tracker */
+    private int wallDelayCount = 0;
+
+    /** Wall up Delay Max */
+    private int wallDelayMax = 250;
 
     /**
      * Initialize a new OscWall at the Origin
@@ -74,6 +84,22 @@ public class OscWall extends BoxObstacle {
      */
     public OscWall(float x, float y, float width, float height) {
         super(x, y, width, height);
+    }
+
+    /**
+     * Get whether the wall is actually up or down
+     * @return true if the wall is up and physics should work
+     */
+    public boolean isUp() {
+        return isUp;
+    }
+
+    /**
+     * Set whether the wall is up or down
+     * @param up should be true if the wall is up and physics should work
+     */
+    public void setUp(boolean up) {
+        isUp = up;
     }
 
     /**
@@ -142,16 +168,36 @@ public class OscWall extends BoxObstacle {
             if (isGoingUp) {
                 if(frame < WALL_RISE_FINISH_FRAME && frame >= WALL_RISE_START_FRAME) {
                     frame++;
-                } else {
-                    frame = WALL_FALLING_START_FRAME;
-                    this.isGoingUp = false;
+                } else if(frame == WALL_RISE_FINISH_FRAME) {
+                    isUp = true;
+                    wallDelayCount++;
+
+                    if(wallDelayCount >= wallDelayMax) {
+                        wallDelayCount = 0;
+                        isUp = false;
+                    }
+                    if(!isUp) {
+                        frame = WALL_FALLING_START_FRAME;
+                        this.isGoingUp = false;
+                    }
                 }
             } else {
                 if (frame < WALL_FALLING_FINISH_FRAME && frame >= WALL_FALLING_START_FRAME) {
+                    isUp = true;
                     frame++;
-                } else {
-                    frame = WALL_RISE_START_FRAME;
-                    this.isGoingUp = true;
+                } else if(frame == WALL_FALLING_FINISH_FRAME) {
+                    isUp = false;
+                    wallDelayCount++;
+
+                    if(wallDelayCount >= wallDelayMax) {
+                        wallDelayCount = 0;
+                        isUp = true;
+                    }
+
+                    if(isUp) {
+                        frame = WALL_RISE_START_FRAME;
+                        this.isGoingUp = true;
+                    }
                 }
             }
         }
@@ -215,14 +261,21 @@ public class OscWall extends BoxObstacle {
     public void draw(GameCanvas canvas) {
         Color goingUpColor = Color.valueOf("#9EE1E5");
         Color goingDownColor = Color.valueOf("#A29382");
+        Color mainColor = Color.WHITE;
+        float delayPercentage = (float) wallDelayCount / (float) wallDelayMax;
 
         if(this.mainOscWallStrip != null && this.mainOscWallGaugeStrip != null) {
             canvas.draw(mainOscWallStrip,Color.WHITE, (float)mainOscWallStrip.getRegionWidth() / 2f, (float)mainOscWallStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.25f, 0.25f);
-            if(this.isGoingUp) {
-                canvas.draw(mainOscWallGaugeStrip, goingUpColor, (float)mainOscWallGaugeStrip.getRegionWidth() / 2f, (float)mainOscWallGaugeStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.25f, 0.25f);
+            if(!this.isUp && !this.isGoingUp) {
+                mainColor = goingDownColor;
+                if((delayPercentage <= 0.6f && delayPercentage > 0.4f) || (delayPercentage <= 1f && delayPercentage > 0.8f)) {
+                    mainColor = goingUpColor;
+                }
+                canvas.draw(mainOscWallGaugeStrip, mainColor, (float)mainOscWallGaugeStrip.getRegionWidth() / 2f, (float)mainOscWallGaugeStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.25f, 0.25f);
             }
-            else {
-                canvas.draw(mainOscWallGaugeStrip, goingDownColor, (float)mainOscWallGaugeStrip.getRegionWidth() / 2f, (float)mainOscWallGaugeStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.25f, 0.25f);
+            if(this.isGoingUp) {
+                mainColor = goingUpColor;
+                canvas.draw(mainOscWallGaugeStrip, mainColor, (float)mainOscWallGaugeStrip.getRegionWidth() / 2f, (float)mainOscWallGaugeStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.25f, 0.25f);
             }
         }
 

@@ -220,9 +220,9 @@ public class HostController {
                             ep.setChargeProgression(chargeProgression);
                         }
 
-                        if(ticks % 30 == 0) {
-                            this.lastPosition = new Vector2(possessed.getPosition());
-                        }
+//                        if(ticks % 30 == 0) {
+//                            this.lastPosition = new Vector2(possessed.getPosition());
+//                        }
 
                         float obstacleFactor = 1;
                         if (inSand) {
@@ -230,16 +230,14 @@ public class HostController {
                         }
                         possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal() * obstacleFactor);
                         possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical() * obstacleFactor);
-                        if((Math.abs(this.lastPosition.dst2(possessed.getPosition())) > 0.000000000001f)) {
-                            System.out.println("=================");
-                            System.out.println("ASDASDASDSA");
-                            this.moved = true;
-                        }
+//                        if((Math.abs(this.lastPosition.dst2(possessed.getPosition())) > 0.000000000001f)) {
+//                            this.moved = true;
+//                        }
 
 
-                        if(this.moved) {
-                            possessed.updateAnimation(possessed.getLinearVelocity());
-                        }
+//                        if(this.moved) {
+//                            possessed.updateAnimation(possessed.getLinearVelocity());
+//                        }
 
                     }
 
@@ -330,6 +328,7 @@ public class HostController {
 
         spirit.updateAnimation();
         pedestal.animatePedestal();
+        possessed.updateAnimation(possessed.getLinearVelocity());
 
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
         // When the spirit has been launched, need to decrement life of spirit

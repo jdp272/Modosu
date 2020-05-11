@@ -414,7 +414,7 @@ public class Factory {
                 x,
                 y,
                 Constants.TILE_WIDTH,
-                Constants.TILE_HEIGHT
+                Constants.TILE_HEIGHT / 4f
         );
         oscWall.setOscWallStrips(new FilmStrip(oscWallHorzTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE), new FilmStrip(oscWallHorzGaugeTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE), new FilmStrip(oscWallVertTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE), new FilmStrip(oscWallVertGaugeTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE));
         oscWall.setMainStrip(isVert, isGoingUp);

@@ -323,7 +323,6 @@ public class GamePlayController extends WorldController {
 		// If player is still playing and moving
 		if (!isFailure() & !isComplete() & hostController.isMoving()) {
 
-			System.out.println("WALKING");
 			// Determine if the player is in sand
 			String walkingSound = collisionController.getInSand() ? WALK_SAND_SOUND : WALK_SOUND;
 			// If unmuted, then play the correct walking sound
@@ -331,8 +330,6 @@ public class GamePlayController extends WorldController {
 		}
 		// Stop playing if player is no longer moving
 		else {
-		    System.out.println("NOT WALKING");
-
 			SoundController.getInstance().stop(WALK_SAND_SOUND);
 			SoundController.getInstance().stop(WALK_SOUND);
 		}

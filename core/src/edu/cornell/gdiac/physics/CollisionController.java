@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import edu.cornell.gdiac.physics.obstacle.DeadZone;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
+import edu.cornell.gdiac.physics.obstacle.OscWall;
 import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
@@ -215,6 +216,14 @@ public class CollisionController implements ContactListener {
                 (bd1.getName() == "pedestal" && body2.getUserData() == spirit) ||
                 (bd1.getName() == "host" && bd2.getName() == "pedestal") ||
                 (bd1.getName() == "pedestal" && bd2.getName() == "host")) {
+            contact.setEnabled(false);
+        }
+
+        // Check for Spirit and Host Collision with OscWall
+        if ((bd1.getName() == "oscWall" && !((OscWall) bd1).isGoingUp() && body2.getUserData() == spirit) ||
+                (body2.getUserData() == spirit && bd1.getName() == "oscWall" && !((OscWall) bd1).isGoingUp()) ||
+            (bd1.getName() == "oscWall" && !((OscWall) bd1).isGoingUp() && bd2.getName() == "host") ||
+                    (bd1.getName() == "host" && bd2.getName() == "oscWall" && !((OscWall) bd2).isGoingUp())) {
             contact.setEnabled(false);
         }
 
