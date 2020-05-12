@@ -61,7 +61,7 @@ import java.util.*;
 public abstract class WorldController implements Screen {
 
     // CHANGE ME WHEN NUMBER OF LEVELS IS CHANGED
-	protected final int numLevels = 15;
+	protected final int numLevels = 25;
 
 	/**
 	 * Tracks the asset state.  Otherwise subclasses will try to load assets 
