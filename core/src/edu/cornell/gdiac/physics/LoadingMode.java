@@ -284,7 +284,6 @@ public class LoadingMode implements Screen {
 	 * @param millis The loading budget in milliseconds
 	 */
 	public LoadingMode(GameCanvas canvas, AssetManager manager, int millis) {
-		System.out.println("SDFSDF");
 		this.manager = manager;
 		this.canvas  = canvas;
 		budget = millis;
