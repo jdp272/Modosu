@@ -209,6 +209,8 @@ public abstract class WorldController implements Screen {
 
 	public HUD hud;
 
+	public Tutorial tutorial;
+
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
 
@@ -689,6 +691,7 @@ public abstract class WorldController implements Screen {
 
 
 		hud = new HUD();
+		tutorial = new Tutorial();
 	}
 	
 	/**
@@ -702,6 +705,7 @@ public abstract class WorldController implements Screen {
 		addQueue.clear();
 		world.dispose();
 		hud.dispose();
+		tutorial.dispose();
 		objects = null;
 		addQueue = null;
 		bounds = null;

@@ -89,12 +89,8 @@ public class Tutorial {
         stage.addActor(table);
     }
 
-    public void addTutorial() {
-        // load in stuff
-        currentTutorial = new TutorialData();
-        currentTutorial.location =  new Vector2(200,100);
-        currentTutorial.instructions = "Click and drag back to shoot ur spirit to and from golems.";
-        currentTutorial.countdown = 5;
+    public void addTutorial(TutorialData tutorialData) {
+        currentTutorial = tutorialData;
 
         if (currentTutorial != null) {
             instructionLabel.setText(currentTutorial.instructions);
@@ -121,7 +117,6 @@ public class Tutorial {
 
         if (countdown == 0) {
             completedTutoral = true;
-            dispose();
         } else {
             counter = counter + dt;
             if (counter >= 1) {

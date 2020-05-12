@@ -81,9 +81,6 @@ public class GamePlayController extends WorldController {
 
 	protected EnergyPillar[] energyPillars;
 
-	private Tutorial tutorial;
-
-
 	private Vector2 cache;
 
 	private Vector2 panTarget;
@@ -222,17 +219,18 @@ public class GamePlayController extends WorldController {
 		}
 
 		level = loader.loadLevel(levelToLoad);
+
+		/* Load in Tutorial */
+		tutorial.reset();
 		TutorialData tutorialData = loader.getTutorialData(level.tutorialNum);
+
 		if(tutorialData != null) {
-			System.out.println(tutorialData.instructions);
+			tutorial.addTutorial(tutorialData);
 		}
 
 		hud.clearHUD();
 		Gdx.input.setInputProcessor(hud.getStage());
 		hud.setNumTotalHosts(level.hosts.size());
-
-		// Do I really need to make a new one everytime? Can just declare outside once!
-		tutorial = new Tutorial();
 
 		dimensions.set(level.dimensions);
 
@@ -302,8 +300,6 @@ public class GamePlayController extends WorldController {
 		addQueue.add(level.pedestal);
 		collisionController.addHosts(level.hosts);
 		collisionController.addSpirit(level.spirit);
-
-		tutorial.addTutorial();
 	}
 
 
