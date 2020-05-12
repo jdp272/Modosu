@@ -66,16 +66,13 @@ public class LoadingMode implements Screen {
 	private static final String HOVER_SOUND = "shared/hover.mp3";
 
 	// Textures for menu screen animation
-//	private static final String FLYING_1 = "shared/phoenix/flying_0-27.png";
-//	private static final String FLYING_2 = "shared/phoenix/flying_28-55.png";
-//	private static final String FLYING_3 = "shared/phoenix/flying_56-83.png";
 	private static final String FLYING_1 = "shared/phoenix/flapping_0-27.png";
 	private static final String FLYING_2 = "shared/phoenix/flapping_28-55.png";
 	private static final String FLYING_3 = "shared/phoenix/flapping_56-69.png";
 
-	private static final String FLAPPING_1 = "shared/phoenix/flying_0-27.png";
-	private static final String FLAPPING_2 = "shared/phoenix/flying_28-55.png";
-	private static final String FLAPPING_3 = "shared/phoenix/flying_56-83.png";
+	private static final String FLAPPING_1 = "shared/phoenix/flapping_0-27.png";
+	private static final String FLAPPING_2 = "shared/phoenix/flapping_28-55.png";
+	private static final String FLAPPING_3 = "shared/phoenix/flapping_56-69.png";
 
 	/** Background texture for start-up */
 	private Texture background;
@@ -101,12 +98,12 @@ public class LoadingMode implements Screen {
 	/** Blank Loading Background */
 	private Texture loadingBackgroundTexture;
 
-	/** Sprite sheet of Loading Text */
-	private Texture flyingTexture_1;
-	/** Sprite sheet of Loading Text */
-	private Texture flyingTexture_2;
-	/** Sprite sheet of Loading Text */
-	private Texture flyingTexture_3;
+//	/** Sprite sheet of Loading Text */
+//	private Texture flyingTexture_1;
+//	/** Sprite sheet of Loading Text */
+//	private Texture flyingTexture_2;
+//	/** Sprite sheet of Loading Text */
+//	private Texture flyingTexture_3;
 	/** Sprite sheet of Loading Text */
 	private Texture flappingTexture_1;
 	/** Sprite sheet of Loading Text */
@@ -287,6 +284,7 @@ public class LoadingMode implements Screen {
 	 * @param millis The loading budget in milliseconds
 	 */
 	public LoadingMode(GameCanvas canvas, AssetManager manager, int millis) {
+		System.out.println("SDFSDF");
 		this.manager = manager;
 		this.canvas  = canvas;
 		budget = millis;
@@ -316,9 +314,9 @@ public class LoadingMode implements Screen {
 		loadingBackgroundTexture = new Texture(LOADING_BACKGROUND_FILE);
 
 		// Load the menu screen textures
-		flyingTexture_1 = new Texture(FLYING_1);
-		flyingTexture_2 = new Texture(FLYING_2);
-		flyingTexture_3 = new Texture(FLYING_3);
+//		flyingTexture_1 = new Texture(FLYING_1);
+//		flyingTexture_2 = new Texture(FLYING_2);
+//		flyingTexture_3 = new Texture(FLYING_3);
 		flappingTexture_1 = new Texture(FLAPPING_1);
 		flappingTexture_2 = new Texture(FLAPPING_2);
 		flappingTexture_3 = new Texture(FLAPPING_3);
@@ -356,12 +354,12 @@ public class LoadingMode implements Screen {
 
 		// For the main menu screen animations
 		setFilmStripMenu(
-				new FilmStrip(flyingTexture_1, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL),
-				new FilmStrip(flyingTexture_2, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL),
-				new FilmStrip(flyingTexture_3, 4, PHOENIX_COL, 14),
+//				new FilmStrip(flyingTexture_1, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL),
+//				new FilmStrip(flyingTexture_2, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL),
+//				new FilmStrip(flyingTexture_3, 4, PHOENIX_COL, 14),
 				new FilmStrip(flappingTexture_1, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL),
 				new FilmStrip(flappingTexture_2, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL),
-				new FilmStrip(flappingTexture_3, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL)
+				new FilmStrip(flappingTexture_3, 4, PHOENIX_COL, 14)
 		);
 	}
 
@@ -407,9 +405,9 @@ public class LoadingMode implements Screen {
 		 wakingGolemTexture.dispose();
 		 loadingBackgroundTexture.dispose();
 
-		 flyingTexture_1.dispose();
-		 flyingTexture_2.dispose();
-		 flyingTexture_3.dispose();
+//		 flyingTexture_1.dispose();
+//		 flyingTexture_2.dispose();
+//		 flyingTexture_3.dispose();
 
 		 flappingTexture_1.dispose();
 		 flappingTexture_2.dispose();
@@ -494,7 +492,6 @@ public class LoadingMode implements Screen {
 			drawProgress(canvas);
 		}
 		else {
-
 			canvas.draw(background, 0, 0);
 			updateMenuAnimation();
 			drawMenuAnimation(canvas);
@@ -534,12 +531,12 @@ public class LoadingMode implements Screen {
 	/** The texture filmstrip for the spirit body */
 	protected FilmStrip  loadingTextStrip;
 
-	/** The texture filmstrip for the phoenix spirit flying */
-	protected FilmStrip  flyingPhoenixStrip_1;
-	/** The texture filmstrip for the phoenix spirit flying */
-	protected FilmStrip  flyingPhoenixStrip_2;
-	/** The texture filmstrip for the phoenix spirit flying */
-	protected FilmStrip  flyingPhoenixStrip_3;
+//	/** The texture filmstrip for the phoenix spirit flying */
+//	protected FilmStrip  flyingPhoenixStrip_1;
+//	/** The texture filmstrip for the phoenix spirit flying */
+//	protected FilmStrip  flyingPhoenixStrip_2;
+//	/** The texture filmstrip for the phoenix spirit flying */
+//	protected FilmStrip  flyingPhoenixStrip_3;
 	/** The texture filmstrip for the phoenix spirit flapping */
 	protected FilmStrip  flappingPhoenixStrip_1;
 	/** The texture filmstrip for the phoenix spirit flapping */
@@ -548,11 +545,11 @@ public class LoadingMode implements Screen {
 	protected FilmStrip  flappingPhoenixStrip_3;
 
 	/** Which number of film strip are you on */
-	private int onFilmStrip = 0;
+	private int onFilmStrip = 4;
 	/** The number of frames that have elapsed since the last animation update */
 	private int elapsedFramesMenu = 0;
 	/** The number of frames that should pass before the animation updates */
-	private int framesPerUpdateMenu = 4;
+	private int framesPerUpdateMenu = 2;
 	/** Whether or not animation should be updated on this frame */
 	private boolean updateFrameMenu;
 
@@ -582,28 +579,30 @@ public class LoadingMode implements Screen {
 
 	/**
 	 * sets all the film strips of the spirit
+//	 * @param flyingPhoenixStrip_1 for the spirit's phoenix
+//	 * @param flyingPhoenixStrip_2 for the spirit's phoenix
+//	 * @param flyingPhoenixStrip_3 for the spirit's phoenix
 	 * @param flappingPhoenixStrip_1 for the spirit's phoenix
 	 * @param flappingPhoenixStrip_2 for the spirit's phoenix
 	 * @param flappingPhoenixStrip_3 for the spirit's phoenix
-	 * @param flyingPhoenixStrip_1 for the spirit's phoenix
-	 * @param flyingPhoenixStrip_2 for the spirit's phoenix
-	 * @param flyingPhoenixStrip_3 for the spirit's phoenix
 	 *
 	 */
-	public void setFilmStripMenu (FilmStrip flappingPhoenixStrip_1,
-							  FilmStrip flappingPhoenixStrip_2,
-							  FilmStrip flappingPhoenixStrip_3,
-							  FilmStrip flyingPhoenixStrip_1,
-							  FilmStrip flyingPhoenixStrip_2,
-							  FilmStrip flyingPhoenixStrip_3) {
+	public void setFilmStripMenu (
+//							FilmStrip flyingPhoenixStrip_1,
+//							FilmStrip flyingPhoenixStrip_2,
+//							FilmStrip flyingPhoenixStrip_3,
+							FilmStrip flappingPhoenixStrip_1,
+							FilmStrip flappingPhoenixStrip_2,
+							FilmStrip flappingPhoenixStrip_3
+							  ) {
 
-		this.flyingPhoenixStrip_1 = flyingPhoenixStrip_1;
-		this.flyingPhoenixStrip_2 = flyingPhoenixStrip_2;
-		this.flyingPhoenixStrip_3 = flyingPhoenixStrip_3;
-
-		this.flyingPhoenixStrip_1.setFrame(FRAME_START);
-		this.flyingPhoenixStrip_2.setFrame(FRAME_START);
-		this.flyingPhoenixStrip_3.setFrame(FRAME_START);
+//		this.flyingPhoenixStrip_1 = flyingPhoenixStrip_1;
+//		this.flyingPhoenixStrip_2 = flyingPhoenixStrip_2;
+//		this.flyingPhoenixStrip_3 = flyingPhoenixStrip_3;
+//
+//		this.flyingPhoenixStrip_1.setFrame(FRAME_START);
+//		this.flyingPhoenixStrip_2.setFrame(FRAME_START);
+//		this.flyingPhoenixStrip_3.setFrame(FRAME_START);
 
 		this.flappingPhoenixStrip_1 = flappingPhoenixStrip_1;
 		this.flappingPhoenixStrip_2 = flappingPhoenixStrip_2;
@@ -622,40 +621,40 @@ public class LoadingMode implements Screen {
 			elapsedFramesMenu = 0;
 		}
 		if (updateFrameMenu) {
-			if (this.flyingPhoenixStrip_1.getFrame() < this.flyingPhoenixStrip_1.getSize() - 1) {
-				this.flyingPhoenixStrip_1.setFrame(this.flyingPhoenixStrip_1.getFrame() + 1);
-					System.out.println("UPDATED STRIP 1: " + this.flyingPhoenixStrip_1.getFrame());
-					onFilmStrip = 1; }
-			else if ((this.flyingPhoenixStrip_1.getFrame() >= this.flyingPhoenixStrip_1.getSize() - 1)
-					&& this.flyingPhoenixStrip_2.getFrame() < this.flyingPhoenixStrip_2.getSize() - 1) {
-						this.flyingPhoenixStrip_2.setFrame(this.flyingPhoenixStrip_2.getFrame() + 1);
-					System.out.println("UPDATED STRIP 2: " + this.flyingPhoenixStrip_2.getFrame());
-					onFilmStrip = 2; }
-			else if ((this.flyingPhoenixStrip_2.getFrame() >= this.flyingPhoenixStrip_2.getSize() - 1)
-					&& this.flyingPhoenixStrip_3.getFrame() < this.flyingPhoenixStrip_3.getSize() - 1) {
-					this.flyingPhoenixStrip_3.setFrame(this.flyingPhoenixStrip_3.getFrame() + 1);
-					System.out.println("UPDATED STRIP 3: " + this.flyingPhoenixStrip_3.getFrame());
-					onFilmStrip = 3; }
-			else if ((this.flyingPhoenixStrip_3.getFrame() >= this.flyingPhoenixStrip_3.getSize() - 1)
-					&& this.flappingPhoenixStrip_1.getFrame() < this.flappingPhoenixStrip_1.getSize() - 1) {
+//			if (this.flyingPhoenixStrip_1.getFrame() < this.flyingPhoenixStrip_1.getSize() - 1) {
+//				this.flyingPhoenixStrip_1.setFrame(this.flyingPhoenixStrip_1.getFrame() + 1);
+//					System.out.println("UPDATED STRIP 1: " + this.flyingPhoenixStrip_1.getFrame());
+//					onFilmStrip = 1; }
+//			else if ((this.flyingPhoenixStrip_1.getFrame() >= this.flyingPhoenixStrip_1.getSize() - 1)
+//					&& this.flyingPhoenixStrip_2.getFrame() < this.flyingPhoenixStrip_2.getSize() - 1) {
+//						this.flyingPhoenixStrip_2.setFrame(this.flyingPhoenixStrip_2.getFrame() + 1);
+//					System.out.println("UPDATED STRIP 2: " + this.flyingPhoenixStrip_2.getFrame());
+//					onFilmStrip = 2; }
+//			else if ((this.flyingPhoenixStrip_2.getFrame() >= this.flyingPhoenixStrip_2.getSize() - 1)
+//					&& this.flyingPhoenixStrip_3.getFrame() < this.flyingPhoenixStrip_3.getSize() - 1) {
+//					this.flyingPhoenixStrip_3.setFrame(this.flyingPhoenixStrip_3.getFrame() + 1);
+//					System.out.println("UPDATED STRIP 3: " + this.flyingPhoenixStrip_3.getFrame());
+//					onFilmStrip = 3; }
+//			else
+			if (this.flappingPhoenixStrip_1.getFrame() < this.flappingPhoenixStrip_1.getSize() - 1) {
 					this.flappingPhoenixStrip_1.setFrame(this.flappingPhoenixStrip_1.getFrame() + 1);
-					System.out.println("UPDATED STRIP 4: " + this.flappingPhoenixStrip_1.getFrame());
+					//System.out.println("UPDATED STRIP 4: " + this.flappingPhoenixStrip_1.getFrame());
 					onFilmStrip = 4; }
 			else if ((this.flappingPhoenixStrip_1.getFrame() >= this.flappingPhoenixStrip_1.getSize() - 1)
 					&& this.flappingPhoenixStrip_2.getFrame() < this.flappingPhoenixStrip_2.getSize() - 1) {
 					this.flappingPhoenixStrip_2.setFrame(this.flappingPhoenixStrip_2.getFrame() + 1);
-					System.out.println("UPDATED STRIP 5: " + this.flappingPhoenixStrip_2.getFrame());
+					//System.out.println("UPDATED STRIP 5: " + this.flappingPhoenixStrip_2.getFrame());
 					onFilmStrip = 5; }
 			else if ((this.flappingPhoenixStrip_2.getFrame() >= this.flappingPhoenixStrip_2.getSize() - 1)
 					&& this.flappingPhoenixStrip_3.getFrame() < this.flappingPhoenixStrip_3.getSize() - 1) {
 					this.flappingPhoenixStrip_3.setFrame(this.flappingPhoenixStrip_3.getFrame() + 1);
-					System.out.println("UPDATED STRIP 6: " + this.flappingPhoenixStrip_3.getFrame());
+					//System.out.println("UPDATED STRIP 6: " + this.flappingPhoenixStrip_3.getFrame());
 					onFilmStrip = 6; }
 			else {
 				this.flappingPhoenixStrip_1.setFrame(FRAME_START);
 				this.flappingPhoenixStrip_2.setFrame(FRAME_START);
 				this.flappingPhoenixStrip_3.setFrame(FRAME_START);
-				onFilmStrip = 3;
+				onFilmStrip = 4;
 			}
 			updateFrameMenu = false;
 		}
@@ -721,15 +720,15 @@ public class LoadingMode implements Screen {
 	private void drawMenuAnimation(GameCanvas canvas) {
 		if (progress > 0 ) {
 			switch (onFilmStrip) {
-				case 1:
-					drawStrip = flyingPhoenixStrip_1;
-					break;
-				case 2:
-					drawStrip = flyingPhoenixStrip_2;
-					break;
-				case 3:
-					drawStrip = flyingPhoenixStrip_3;
-					break;
+//				case 1:
+//					drawStrip = flyingPhoenixStrip_1;
+//					break;
+//				case 2:
+//					drawStrip = flyingPhoenixStrip_2;
+//					break;
+//				case 3:
+//					drawStrip = flyingPhoenixStrip_3;
+//					break;
 				case 4:
 					drawStrip = flappingPhoenixStrip_1;
 					break;
@@ -741,7 +740,7 @@ public class LoadingMode implements Screen {
 					break;
 			}
 			if (drawStrip != null) {
-				System.out.println("DRAWING: " + onFilmStrip);
+				//System.out.println("DRAWING: " + onFilmStrip);
 				canvas.draw(drawStrip, Color.WHITE, 0, 0, 1024, 576);
 			}
 
