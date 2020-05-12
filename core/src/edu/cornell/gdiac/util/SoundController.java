@@ -203,7 +203,6 @@ public class SoundController {
 
 	public void setUnmuted(boolean value) {
 		isUnmuted = value;
-		System.out.println("set sound.unmuted to " + value);
 		if (!isUnmuted){
 			prevSoundVolume = soundVolume;
 			setVolume(0);
@@ -211,7 +210,6 @@ public class SoundController {
 
 		//set to play
 		else {
-			System.out.println("set sound back to volume " + prevSoundVolume);
 			setVolume(prevSoundVolume);
 		}
 	}

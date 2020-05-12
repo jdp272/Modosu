@@ -317,6 +317,8 @@ public class HostController {
             // Host is at max charge
             else {
                 possessedBlownUp = true && possessed.animateDeath();
+                // Remove the arrow if dead
+                arrow = null;
                 possessed.setVX(0);
                 possessed.setVY(0);
             }

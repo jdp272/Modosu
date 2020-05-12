@@ -432,7 +432,7 @@ public class LevelDesignerMode extends WorldController {
 
 		// The objects should be sensors
 		factory.makeSensors = true;
-		
+
 		// Objects should have hitboxes the size of a tile
 		factory.makeTileSized = true;
 

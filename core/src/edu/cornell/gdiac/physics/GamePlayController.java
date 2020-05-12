@@ -359,7 +359,6 @@ public class GamePlayController extends WorldController {
 			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
 		}
 
-		System.out.println("isFailure: " + isFailure() + " isComplete: " + isComplete() + " isMoving: " + hostController.isMoving());
 		// If player is still playing and moving
 		if (!isFailure() & !isComplete() & hostController.isMoving()) {
 
