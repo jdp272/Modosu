@@ -252,7 +252,6 @@ public class GDXRoot extends Game implements ScreenListener {
 		controller.reset();
 
 		setScreen(controller);
-
 	}
 
 	/**

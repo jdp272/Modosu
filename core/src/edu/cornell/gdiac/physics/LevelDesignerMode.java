@@ -686,13 +686,12 @@ public class LevelDesignerMode extends WorldController {
                 addObject(obj);
             }
         }
-
         if (board.addNewObstacle(level.pedestal)) {
             addObject(level.pedestal);
         }
-        if (board.addNewObstacle(level.start)) {
-            addObject(level.start);
-        }
+		if(board.addNewObstacle(level.spirit)) {
+			addObject(level.spirit);
+		}
 
 		// Initialize the decorative roots if they haven't yet been
 		for(int i = 0; i < NUM_DECORATIVE_ROOTS; i++) {
@@ -1489,7 +1488,7 @@ public class LevelDesignerMode extends WorldController {
 
         // TODO: what if spirit is null
 
-        level.set(dimensions, wallArray, waterArray, sandArray, borderEdgeArray, borderCornerArray, energyPillarArray, oscWallArray, decorativeArray, hostList, spirit, pedestal);
+        level.set(dimensions, wallArray, waterArray, sandArray, borderEdgeArray, borderCornerArray, energyPillarArray, oscWallArray, decorativeArray, hostList, pedestal, spirit, 0);
         loader.saveLevel(f, level);
 
         reset();

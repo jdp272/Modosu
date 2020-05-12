@@ -73,7 +73,7 @@ public class Credits extends WorldController implements Screen {
         backStyle.over = new TextureRegionDrawable(new TextureRegion(backButtonClickedTexture));
         backStyle.down = new TextureRegionDrawable(new TextureRegion(backButtonClickedTexture));
         Button back = new Button(backStyle);
-        back.setPosition(PADDING, Gdx.graphics.getHeight() - (4 *PADDING));
+        back.setPosition(2 *PADDING, Gdx.graphics.getHeight() - (5 *PADDING));
 
         back.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {

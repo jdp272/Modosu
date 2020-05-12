@@ -173,15 +173,12 @@ public class GamePlayController extends WorldController {
 
 		sound = SoundController.getInstance();
 		// Initialize vectors
-
         cache = new Vector2();
-		cache = new Vector2();
 
 		// TODO Change level loading here
 		File folder = new File("levels");
 		levels = new ArrayList(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
 		Collections.sort(levels);
-
 	}
 
 
@@ -226,13 +223,22 @@ public class GamePlayController extends WorldController {
 
 		level = loader.loadLevel(levelToLoad);
 
-		HUD.clearHUD();
-		HUD.setNumTotalHosts(level.hosts.size());
+		/* Load in Tutorial */
+		tutorial.reset();
+		TutorialData tutorialData = loader.getTutorialData(level.tutorialNum);
+
+		if(tutorialData != null) {
+			tutorial.addTutorial(tutorialData);
+		}
+
+		hud.clearHUD();
+		Gdx.input.setInputProcessor(hud.getStage());
+		hud.setNumTotalHosts(level.hosts.size());
 
 		dimensions.set(level.dimensions);
 
 		pedestal = level.pedestal;
-		spirit = level.start;
+		spirit = level.spirit;
 		spirit.setName("spirit");
 
 		energyPillars = level.energyPillars;
@@ -241,6 +247,7 @@ public class GamePlayController extends WorldController {
 
 		possessed = pedestal;
 		spirit.setGoToCenter(true);
+
 		spirit.setIsPossessing(true);
 
 		hostController = new HostController(level.hosts, scale, arrowTex, pedestal, canvas, energyPillars);
@@ -300,10 +307,10 @@ public class GamePlayController extends WorldController {
 		for(DecorativeRoots roots : level.decorativeRootTiles) {
 			addQueue.add(roots);
 		}
-		addQueue.add(level.start);
+		addQueue.add(level.spirit);
 		addQueue.add(level.pedestal);
 		collisionController.addHosts(level.hosts);
-		collisionController.addSpirit(level.start);
+		collisionController.addSpirit(level.spirit);
 	}
 
 
@@ -324,7 +331,7 @@ public class GamePlayController extends WorldController {
 		}
 		// Check win condition
 		if (hostController.checkAllPossessed() && !isComplete()){
-			HUD.incrementCurrHosts();
+			hud.incrementCurrHosts();
 			setComplete(true);
 			sound.getInstance().play(VICTORY_SOUND,VICTORY_SOUND,false, 1.2f*sound.getVolume());
 		}
@@ -346,10 +353,11 @@ public class GamePlayController extends WorldController {
 		}
 
 		// Calls update on hostController
-		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand(), energyPillars);
+		hostController.update(delta, possessed, spirit, level.pedestal, collisionController.getInSand(), energyPillars, wasPaused);
 
-		if (hostController.getLaunched()){ sound.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false); }
-
+		if (hostController.getLaunched()){
+			SoundController.getInstance().play(LAUNCH_SOUND,LAUNCH_SOUND,false);
+		}
 
 		// If player is still playing and moving
 		if (!isFailure() & !isComplete() & hostController.isMoving()) {
@@ -365,13 +373,19 @@ public class GamePlayController extends WorldController {
 			sound.stop(WALK_SOUND);
 		}
 
-
 		// Check lose condition
 		if ((hostController.getPossessedBlownUp() || !spirit.isAlive()) && !isComplete() && !isFailure()) {
 			setFailure(true);
 			sound.play(FAILURE_SOUND, FAILURE_SOUND, false, 1.2f*sound.getVolume());
 		}
 
+		HUD.update(delta);
+
+		// Check to hid tutorial
+		if (!tutorial.didCompleteTutorial()) {
+			tutorial.drawTutorial(delta);
+			tutorial.updateTutorial(delta);
+		}
 
 		// Get arrow and draw if applicable
 		arrow = hostController.getArrow();
@@ -434,7 +448,6 @@ public class GamePlayController extends WorldController {
 		*/
 
 		Boolean isInPillar = false;
-
 		// CHECK IF POSSESSED IS IN ENERGY PILLAR RADIUS
         for(EnergyPillar ep : energyPillars) {
             //System.out.println(possessed.getPosition());
@@ -464,6 +477,9 @@ public class GamePlayController extends WorldController {
 
 		// Update sounds
 		sound.getInstance().update();
+
+		// Not paused anymore
+		wasPaused = false;
 
 		// Clear collision controller
 		collisionController.clear();
