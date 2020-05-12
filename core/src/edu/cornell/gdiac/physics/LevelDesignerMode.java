@@ -83,6 +83,16 @@ public class LevelDesignerMode extends WorldController {
      */
     private static final int MAX_BOARD_TILES = 127;
 
+	/**
+	 * The x location of the tutorial box
+	 */
+	private static final int TUTORIAL_X = 50;
+
+	/**
+	 * The y location of the tutorial box
+	 */
+	private static final int TUTORIAL_Y = 50;
+
     /**
      * Texture asset for mouse crosshairs
      */
@@ -193,6 +203,8 @@ public class LevelDesignerMode extends WorldController {
 	private TutorialData keyBindingsMessage;
 	/** The message explaining the osc wall usage */
 	private TutorialData oscWallMessage;
+	/** The message explaining the host usage */
+	private TutorialData hostMessage;
 
 	public String levelName;
 
@@ -351,18 +363,23 @@ public class LevelDesignerMode extends WorldController {
 
 		pedestalMessage = new TutorialData();
 		pedestalMessage.countdown = 3;
-		pedestalMessage.location = new Vector2(50, 50);
+		pedestalMessage.location = new Vector2(TUTORIAL_X, TUTORIAL_Y);
 		pedestalMessage.instructions = "The level can't be saved without a pedestal!";
 
 		keyBindingsMessage = new TutorialData();
 		keyBindingsMessage.countdown = 10;
-		keyBindingsMessage.location = new Vector2(50, 50);
+		keyBindingsMessage.location = new Vector2(TUTORIAL_X, TUTORIAL_Y);
 		keyBindingsMessage.instructions = "Press ENTER to save, C to clear, and R to reset to the original loaded level.";
 
 		oscWallMessage = new TutorialData();
 		oscWallMessage.countdown = 5;
-		oscWallMessage.location = new Vector2(50, 50);
+		oscWallMessage.location = new Vector2(TUTORIAL_X, TUTORIAL_Y);
 		oscWallMessage.instructions = "Use arrow keys to raise, lower, and rotate oscillating walls.";
+
+		hostMessage = new TutorialData();
+		hostMessage.countdown = 5;
+		hostMessage.location = new Vector2(TUTORIAL_X, TUTORIAL_Y);
+		hostMessage.instructions = "When a golem is selected, UP and DOWN can adjust its charge. Press I after deslecting for instruction mode, to select where it should walk.";
 	}
 
 	/**
@@ -1278,6 +1295,7 @@ public class LevelDesignerMode extends WorldController {
 				if (deselected instanceof HostModel) {
 					System.out.println("Golem placed");
 					lastGolem = (HostModel)deselected;
+					tutorial.addTutorial(hostMessage);
 				}
 				// The tile indices
 				int x = xCoordToTile(deselected.getX());
