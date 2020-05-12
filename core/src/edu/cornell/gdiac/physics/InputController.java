@@ -425,8 +425,8 @@ public class InputController {
 		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
 		upHeld = upHeld || Gdx.input.isKeyPressed(Input.Keys.UP);
 		downHeld = downHeld || Gdx.input.isKeyPressed(Input.Keys.DOWN);
-		leftHeld =  Gdx.input.isKeyPressed(Input.Keys.LEFT);
-		rightHeld = Gdx.input.isKeyPressed(Input.Keys.RIGHT);
+		leftHeld =  leftHeld || Gdx.input.isKeyPressed(Input.Keys.LEFT);
+		rightHeld = rightHeld || Gdx.input.isKeyPressed(Input.Keys.RIGHT);
 
 		pausePressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
 		tutorialNextPressed = Gdx.input.isKeyJustPressed(Input.Keys.ENTER);
@@ -526,8 +526,8 @@ public class InputController {
 		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
 		upHeld = Gdx.input.isKeyPressed(Input.Keys.UP);
 		downHeld = Gdx.input.isKeyPressed(Input.Keys.DOWN);
-		leftHeld = leftHeld || Gdx.input.isKeyPressed(Input.Keys.LEFT);
-		rightHeld = rightHeld || Gdx.input.isKeyPressed(Input.Keys.RIGHT);
+		leftHeld = Gdx.input.isKeyPressed(Input.Keys.LEFT);
+		rightHeld = Gdx.input.isKeyPressed(Input.Keys.RIGHT);
 
 		boxPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.B));
 		hostPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.G));

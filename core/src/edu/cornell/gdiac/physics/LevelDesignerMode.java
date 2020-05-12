@@ -27,7 +27,6 @@ import edu.cornell.gdiac.util.SoundController;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,23 +51,63 @@ public class LevelDesignerMode extends WorldController {
      */
     public static final int MIN_CHARGE_CAPACITY = 0;
 
-	/** Texture file for mouse crosshairs */
-	private static final String CROSS_FILE = "shared/crosshair.png";
-	/** Texture file for watery foreground */
-	private static final String FOREG_FILE = "shared/foreground.png";
-	/** Texture file for background image */
-	private static final String BACKG_FILE = "shared/background.png";
-	/** Texture file for host footprints */
-	private static final String FOOTPRINT_FILE = "host/footprints.png";
+    /**
+     * Texture file for mouse crosshairs
+     */
+    private static final String CROSS_FILE = "shared/crosshair.png";
+    /**
+     * Texture file for watery foreground
+     */
+    private static final String FOREG_FILE = "shared/foreground.png";
+    /**
+     * Texture file for background image
+     */
+    private static final String BACKG_FILE = "shared/background.png";
+    /**
+     * Texture file for host footprints
+     */
+    private static final String FOOTPRINT_FILE = "host/footprints.png";
 
-	/** Speed for changing camera position */
-	private static final float CAMERA_SPEED = 5.f;
+    /**
+     * Speed for changing camera position
+     */
+    private static final float CAMERA_SPEED = 5.f;
 
-	/** Width of each tile, in box2D coordinates */
-	private static final float TILE_WIDTH = 2.f;
+    /**
+     * Width of each tile, in box2D coordinates
+     */
+    private static final float TILE_WIDTH = 2.f;
 
-	/** The maximum width and height of the board, in tile coordinates */
-	private static final int MAX_BOARD_TILES = 127;
+    /**
+     * The maximum width and height of the board, in tile coordinates
+     */
+    private static final int MAX_BOARD_TILES = 127;
+
+    /**
+     * Texture asset for mouse crosshairs
+     */
+    private TextureRegion crosshairTexture;
+    /**
+     * Texture asset for background image
+     */
+    private TextureRegion backgroundTexture;
+    /**
+     * Texture asset for foreground
+     */
+    private TextureRegion foregroundTexture;
+    /**
+     * Texture asset for footprint
+     */
+    private TextureRegion footprintTexture;
+
+    /**
+     * The level to be loaded in reset()
+     */
+    private int currentLevel = 0;
+    /**
+     * A boolean indicating if the board should be reloaded from the file
+     */
+    private boolean loadBoard = true;
 
 	// For the decorative roots
 	/** The index of the left most root in the decorative roots array */
@@ -82,20 +121,6 @@ public class LevelDesignerMode extends WorldController {
 	/** The number of decorative root tiles */
 	private static final int NUM_DECORATIVE_ROOTS = 4;
 
-	/** Texture asset for mouse crosshairs */
-	private TextureRegion crosshairTexture;
-	/** Texture asset for background image */
-	private TextureRegion backgroundTexture;
-	/** Texture asset for foreground */
-	private TextureRegion foregroundTexture;
-	/** Texture asset for footprint */
-	private TextureRegion footprintTexture;
-
-	/** The level to be loaded in reset() */
-	private int currentLevel = 0;
-	/** A boolean indicating if the board should be reloaded from the file */
-	private boolean loadBoard = true;
-
 	private boolean fromCustom = false;
 
 	private boolean newLevel = false;
@@ -103,40 +128,64 @@ public class LevelDesignerMode extends WorldController {
 	/** Track asset loading from all instances and subclasses */
 	private AssetState assetState = AssetState.EMPTY;
 
-	/** The level that is populated and used for saving */
-	private Level level;
+    /**
+     * The level that is populated and used for saving
+     */
+    private Level level;
 
-	/** The collection of spawning objects, for making new game elements */
-	private SpawnerList spawnList;
+    /**
+     * The collection of spawning objects, for making new game elements
+     */
+    private SpawnerList spawnList;
 
-	/** The camera target */
-	private Vector2 camTarget;
-	/** The camera position */
-	private Vector2 camPos;
+    /**
+     * The camera target
+     */
+    private Vector2 camTarget;
+    /**
+     * The camera position
+     */
+    private Vector2 camPos;
 
-	/** Intermediate vector used for arithmetic */
-	private Vector2 cache;
+    /**
+     * Intermediate vector used for arithmetic
+     */
+    private Vector2 cache;
 
-	/** The board storing the level in a tile based system */
-	private Board board;
+    /**
+     * The board storing the level in a tile based system
+     */
+    private Board board;
 
-	/** A reference to the last golem placed, for placing instructions */
-	private HostModel lastGolem;
+    /**
+     * A reference to the last golem placed, for placing instructions
+     */
+    private HostModel lastGolem;
 
-	/** A boolean to determine if you are currently placing instructions */
-	private boolean instructionMode;
+    /**
+     * A boolean to determine if you are currently placing instructions
+     */
+    private boolean instructionMode;
 
-	/** A cached arraylist to represent the instruction list */
-	private ArrayList<Vector2> instructionListCache;
+    /**
+     * A cached arraylist to represent the instruction list
+     */
+    private ArrayList<Vector2> instructionListCache;
 
-	/** A cached vector2 to hold one instruction */
-	private Vector2 instructionCache;
+    /**
+     * A cached vector2 to hold one instruction
+     */
+    private Vector2 instructionCache;
 
-	/** A list of footprints for instruction visuals */
-	private ArrayList<FootPrintModel> footprints;
+    /**
+     * A list of footprints for instruction visuals
+     */
+    private ArrayList<FootPrintModel> footprints;
 
-	/** A list of the golems, for purposes of instructions */
-	private ArrayList<HostModel> golems;
+    /**
+     * A list of the golems, for purposes of instructions
+     */
+    private ArrayList<HostModel> golems;
 
 	public String levelName;
 
@@ -144,6 +193,9 @@ public class LevelDesignerMode extends WorldController {
 	 * the object selector, this will be true until the mouse is released, and
 	 * it prevent another object from being picked up */
 	private boolean selecting;
+
+    PooledList<BorderEdge> edges;
+    PooledList<BorderCorner> corners;
 
 	/** An array of the decorative tiles on the board
 	 *
@@ -154,17 +206,17 @@ public class LevelDesignerMode extends WorldController {
 	 */
 	public BoxObstacle[] decorativeRoots;
 
-	public enum Corner {
-		TOP_LEFT,
-		TOP_RIGHT,
-		BOTTOM_LEFT,
-		BOTTOM_RIGHT
-	}
+    public enum Corner {
+        TOP_LEFT,
+        TOP_RIGHT,
+        BOTTOM_LEFT,
+        BOTTOM_RIGHT
+    }
 
-	public class CornerObstacle extends BoxObstacle {
-		public CornerObstacle(TextureRegion tex, Corner corner) {
-			super(Constants.TILE_WIDTH,Constants.TILE_HEIGHT);
-			this.corner = corner;
+    public class CornerObstacle extends BoxObstacle {
+        public CornerObstacle(TextureRegion tex, Corner corner) {
+            super(Constants.TILE_WIDTH, Constants.TILE_HEIGHT);
+            this.corner = corner;
 
 			setTexture(tex);
 			setDrawScale(scale);
@@ -175,8 +227,8 @@ public class LevelDesignerMode extends WorldController {
 			setName("corner");
 		}
 
-		public final Corner corner;
-	}
+        public final Corner corner;
+    }
 
 
 //	private int topBorder;
@@ -431,36 +483,39 @@ public class LevelDesignerMode extends WorldController {
         canvas.setCamTarget(camTarget);
         camPos.set(canvas.updateCamera());
 
-		// Setup the spawner list
-		Wall boxSpawn = factory.makeWall(0.f, 0.f);
-		addObject(boxSpawn);
+        // Setup the spawner list
+        Wall boxSpawn = factory.makeWall(0.f, 0.f);
+        addObject(boxSpawn);
 
-		WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
-		addObject(waterSpawn);
+        WaterTile waterSpawn = factory.makeWater(0.f, 0.f);
+        addObject(waterSpawn);
 
-		SandTile sandSpawn = factory.makeSand(0.f, 0.f);
-		addObject(sandSpawn);
+        SandTile sandSpawn = factory.makeSand(0.f, 0.f);
+        addObject(sandSpawn);
 
-		HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
-		addObject(hostSpawn);
+        HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
+        addObject(hostSpawn);
 
 //		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
 //		addObject(spiritSpawn);
 
-		HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
-		addObject(pedestalSpawn);
+        HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
+        addObject(pedestalSpawn);
+
+        OscWall oscWallSpawn = factory.makeOscWall(0.f, 0.f);
+        addObject(oscWallSpawn);
 
         EnergyPillar energyPillarSpawn = factory.makeEnergyPillar(0.f, 0.f);
         addObject(energyPillarSpawn);
 
         spawnList = new SpawnerList(canvas, scale, camPos);
 
-		spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
-			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-				Wall boxSpawn = factory.makeWall(x, y);
-				return boxSpawn;
-			}
-		});
+        spawnList.addSpawner(boxSpawn, new SpawnerList.CallbackFunction() {
+            public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+                Wall boxSpawn = factory.makeWall(x, y);
+                return boxSpawn;
+            }
+        });
 
         spawnList.addSpawner(waterSpawn, new SpawnerList.CallbackFunction() {
             public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
@@ -486,11 +541,18 @@ public class LevelDesignerMode extends WorldController {
             }
         });
 
-		spawnList.addSpawner(energyPillarSpawn, new SpawnerList.CallbackFunction() {
-			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-				return factory.makeEnergyPillar(x,y);
-			}
-		});
+        spawnList.addSpawner(oscWallSpawn, new SpawnerList.CallbackFunction() {
+            @Override
+            public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+                return factory.makeOscWall(x, y);
+            }
+        });
+
+        spawnList.addSpawner(energyPillarSpawn, new SpawnerList.CallbackFunction() {
+            public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
+                return factory.makeEnergyPillar(x, y);
+            }
+        });
 
 //		spawnList.addSpawner(edgeSpawn, new SpawnerList.CallbackFunction() {
 //			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
@@ -498,31 +560,31 @@ public class LevelDesignerMode extends WorldController {
 //			}
 //		});
 
-		selector = new ObstacleSelector(world);
-		selector.setTexture(crosshairTexture);
-		selector.setDrawScale(scale);
+        selector = new ObstacleSelector(world);
+        selector.setTexture(crosshairTexture);
+        selector.setDrawScale(scale);
 
 
-		// Add the corner objects
+        // Add the corner objects
 
-		topLeft = new CornerObstacle(crosshairTexture, Corner.TOP_LEFT);
-		topLeft.inGame = false;
-		topLeft.inHUD = true;
-		addObject(topLeft);
+        topLeft = new CornerObstacle(crosshairTexture, Corner.TOP_LEFT);
+        topLeft.inGame = false;
+        topLeft.inHUD = true;
+        addObject(topLeft);
 
-		topRight = new CornerObstacle(crosshairTexture, Corner.TOP_RIGHT);
-		topRight.inGame = false;
-		topRight.inHUD = true;
-		addObject(topRight);
+        topRight = new CornerObstacle(crosshairTexture, Corner.TOP_RIGHT);
+        topRight.inGame = false;
+        topRight.inHUD = true;
+        addObject(topRight);
 
-		bottomLeft = new CornerObstacle(crosshairTexture, Corner.BOTTOM_LEFT);
-		bottomLeft.inGame = false;
-		bottomLeft.inHUD = true;
-		addObject(bottomLeft);
+        bottomLeft = new CornerObstacle(crosshairTexture, Corner.BOTTOM_LEFT);
+        bottomLeft.inGame = false;
+        bottomLeft.inHUD = true;
+        addObject(bottomLeft);
 
         bottomRight = new CornerObstacle(crosshairTexture, Corner.BOTTOM_RIGHT);
         bottomRight.inGame = false;
-		bottomRight.inHUD = true;
+        bottomRight.inHUD = true;
         addObject(bottomRight);
 
         updateCornerPositions();
@@ -576,53 +638,57 @@ public class LevelDesignerMode extends WorldController {
 		dimensions = level.dimensions;
 		lowerLeft.setZero();
 		board.reset((int)(dimensions.x / Constants.TILE_WIDTH), (int)(dimensions.y / Constants.TILE_HEIGHT));
-
-		dimensions.x = board.getWidth();
-		dimensions.y = board.getHeight();
-		lowerLeft.x = board.getLeftOffset();
-		lowerLeft.y = board.getBottomOffset();
+        dimensions.x = board.getWidth();
+        dimensions.y = board.getHeight();
+        lowerLeft.x = board.getLeftOffset();
+        lowerLeft.y = board.getBottomOffset();
 
 //		System.out.println("dimensions: " + dimensions + ", lowerLeft: " + lowerLeft);
 
-		for(Obstacle obj : level.walls) {
-			if(board.addNewObstacle(obj)) {
-				addObject(obj);
-			}
-		}
-		for(Obstacle obj : level.hosts) {
-			if(board.addNewObstacle(obj)) {
-				addObject(obj);
-			}
-		}
-		for(Obstacle obj : level.water) {
-			if(board.addNewObstacle(obj)) {
-				addObject(obj);
-			}
-		}
-		for(Obstacle obj : level.sand) {
-			if(board.addNewObstacle(obj)) {
-				addObject(obj);
-			}
-		}
-		for(Obstacle obj : level.borderEdges) {
-			if(board.addNewObstacle(obj)) {
-				addObject(obj);
-			}
-		}
-		for(Obstacle obj : level.borderCorners) {
-			if(board.addNewObstacle(obj)) {
-				addObject(obj);
-			}
-		}
-		for (Obstacle obj : level.energyPillars) {
-			if(board.addNewObstacle(obj)) {
-				addObject(obj);
-			}
-		}
+        for (Obstacle obj : level.walls) {
+            if (board.addNewObstacle(obj)) {
+                addObject(obj);
+            }
+        }
+        for (Obstacle obj : level.hosts) {
+            if (board.addNewObstacle(obj)) {
+                addObject(obj);
+            }
+        }
+        for (Obstacle obj : level.water) {
+            if (board.addNewObstacle(obj)) {
+                addObject(obj);
+            }
+        }
+        for (Obstacle obj : level.sand) {
+            if (board.addNewObstacle(obj)) {
+                addObject(obj);
+            }
+        }
+        for (Obstacle obj : level.borderEdges) {
+            if (board.addNewObstacle(obj)) {
+                addObject(obj);
+            }
+        }
+        for (Obstacle obj : level.borderCorners) {
+            if (board.addNewObstacle(obj)) {
+                addObject(obj);
+            }
+        }
+        for (Obstacle obj : level.energyPillars) {
+            if (board.addNewObstacle(obj)) {
+                addObject(obj);
+            }
+        }
 
-		if(board.addNewObstacle(level.pedestal)) {
-			addObject(level.pedestal);
-		}
+        for (Obstacle obj : level.oscWalls) {
+            if(board.addNewObstacle(obj)) {
+                addObject(obj);
+            }
+        }
+        if (board.addNewObstacle(level.pedestal)) {
+            addObject(level.pedestal);
+        }
 		if(board.addNewObstacle(level.spirit)) {
 			addObject(level.spirit);
 		}
@@ -640,230 +706,222 @@ public class LevelDesignerMode extends WorldController {
 		setBordersAndUpdateTerrain();
 	}
 
-	/**
-	 * Gets the x index of tile index that an x coordinate is in
-	 *
-	 * @param coord The box2D x coordinate
-	 *
-	 * @return The x value of the tile index
-	 */
-	private int xCoordToTile(float coord) {
-		return Math.round((coord - (TILE_WIDTH / 2.f)) / TILE_WIDTH) + board.getInitialLeftBorder();
-	}
+    /**
+     * Gets the x index of tile index that an x coordinate is in
+     *
+     * @param coord The box2D x coordinate
+     * @return The x value of the tile index
+     */
+    private int xCoordToTile(float coord) {
+        return Math.round((coord - (TILE_WIDTH / 2.f)) / TILE_WIDTH) + board.getInitialLeftBorder();
+    }
 
-	/**
-	 * Gets the y index of tile index that an y coordinate is in
-	 *
-	 * @param coord The box2D y coordinate
-	 *
-	 * @return The y value of the tile index
-	 */
-	private int yCoordToTile(float coord) {
-		return Math.round((coord - (TILE_WIDTH / 2.f)) / TILE_WIDTH) + board.getInitialBottomBorder();
-	}
+    /**
+     * Gets the y index of tile index that an y coordinate is in
+     *
+     * @param coord The box2D y coordinate
+     * @return The y value of the tile index
+     */
+    private int yCoordToTile(float coord) {
+        return Math.round((coord - (TILE_WIDTH / 2.f)) / TILE_WIDTH) + board.getInitialBottomBorder();
+    }
 
-	/**
-	 * Gets the x coordinate of the center of a tile
-	 *
-	 * @param index The x value of the tile index
-	 *
-	 * @return The box2D x coordinate of the tile center
-	 */
-	private float xTileToCoord(int index) {
-		return xTileToCoord(index, false);
-	}
+    /**
+     * Gets the x coordinate of the center of a tile
+     *
+     * @param index The x value of the tile index
+     * @return The box2D x coordinate of the tile center
+     */
+    private float xTileToCoord(int index) {
+        return xTileToCoord(index, false);
+    }
 
-	/**
-	 * Gets the y coordinate of the center of a tile
-	 *
-	 * @param index The y value of the tile index
-	 *
-	 * @return The box2D y coordinate of the tile center
-	 */
-	private float yTileToCoord(int index) {
-		return yTileToCoord(index, false);
-	}
+    /**
+     * Gets the y coordinate of the center of a tile
+     *
+     * @param index The y value of the tile index
+     * @return The box2D y coordinate of the tile center
+     */
+    private float yTileToCoord(int index) {
+        return yTileToCoord(index, false);
+    }
 
-	/**
-	 * Gets the x coordinate of a tile
-	 *
-	 * @param index The x value of the tile index
-	 * @param corner If true, gets the lower left corner coordinate. Otherwise,
-	 *               gets the center coordinate
-	 *
-	 * @return The box2D x coordinate of the tile
-	 */
-	private float xTileToCoord(int index, boolean corner) {
-		return ((index - board.getInitialLeftBorder()) + 0.5f) * TILE_WIDTH - (corner ? TILE_WIDTH / 2.f : 0);
-	}
+    /**
+     * Gets the x coordinate of a tile
+     *
+     * @param index  The x value of the tile index
+     * @param corner If true, gets the lower left corner coordinate. Otherwise,
+     *               gets the center coordinate
+     * @return The box2D x coordinate of the tile
+     */
+    private float xTileToCoord(int index, boolean corner) {
+        return ((index - board.getInitialLeftBorder()) + 0.5f) * TILE_WIDTH - (corner ? TILE_WIDTH / 2.f : 0);
+    }
 
-	/**
-	 * Gets the y coordinate of a tile
-	 *
-	 * @param index The y value of the tile index
-	 * @param corner If true, gets the lower left corner coordinate. Otherwise,
-	 *               gets the center coordinate
-	 *
-	 * @return The box2D y coordinate of the tile corner
-	 */
-	private float yTileToCoord(int index, boolean corner) {
-		return ((index - board.getInitialBottomBorder()) + 0.5f) * TILE_WIDTH - (corner ? TILE_WIDTH / 2.f : 0);
-	}
+    /**
+     * Gets the y coordinate of a tile
+     *
+     * @param index  The y value of the tile index
+     * @param corner If true, gets the lower left corner coordinate. Otherwise,
+     *               gets the center coordinate
+     * @return The box2D y coordinate of the tile corner
+     */
+    private float yTileToCoord(int index, boolean corner) {
+        return ((index - board.getInitialBottomBorder()) + 0.5f) * TILE_WIDTH - (corner ? TILE_WIDTH / 2.f : 0);
+    }
 
-	/**
-	 * Updates the texture for water tile at index x, y in the board based on
-	 * its surroundings (if they are water or ground)
-	 *
-	 * If the tile is not a water tile, or if the tile is out of bounds, nothing
-	 * happens.
-	 *
-	 * @param x The x index in the board of the tile to update
-	 * @param y The y index in the board of the tile to update
-	 *
-	 * @return True if a water tile was updated, false otherwise
-	 */
-	private boolean updateTerrainTile(int x, int y) {
-		if(x < board.getLeftBorder() || y < board.getBottomBorder() || x >= board.getRightBorder() || y >= board.getTopBorder() || !(board.get(x, y) instanceof Terrain)) {
-			return false;
-		}
+    /**
+     * Updates the texture for water tile at index x, y in the board based on
+     * its surroundings (if they are water or ground)
+     * <p>
+     * If the tile is not a water tile, or if the tile is out of bounds, nothing
+     * happens.
+     *
+     * @param x The x index in the board of the tile to update
+     * @param y The y index in the board of the tile to update
+     * @return True if a water tile was updated, false otherwise
+     */
+    private boolean updateTerrainTile(int x, int y) {
+        if (x < board.getLeftBorder() || y < board.getBottomBorder() || x >= board.getRightBorder() || y >= board.getTopBorder() || !(board.get(x, y) instanceof Terrain)) {
+            return false;
+        }
 
-		Terrain terrain = (Terrain)board.get(x, y);
+        Terrain terrain = (Terrain) board.get(x, y);
 
-		Obstacle above = null, below = null, left = null, right = null;
-		boolean hasGroundAbove = false, hasGroundBelow = false, hasGroundLeft = false, hasGroundRight = false;
-		boolean upLeftCorner = false, upRightCorner = false, downLeftCorner = false, downRightCorner = false;
+        Obstacle above = null, below = null, left = null, right = null;
+        boolean hasGroundAbove = false, hasGroundBelow = false, hasGroundLeft = false, hasGroundRight = false;
+        boolean upLeftCorner = false, upRightCorner = false, downLeftCorner = false, downRightCorner = false;
 
-		// Set the adjacent tiles if they are in bounds, and if so, check if a
-		// ground border is needed
-		if(y + 1 < board.getTopBorder()) {
-			above = board.get(x, y + 1);
-			hasGroundAbove = !(terrain.continuousWithTile(above));
-		}
-		if(y - 1 >= board.getBottomBorder()) {
-			below = board.get(x, y - 1);
-			hasGroundBelow = !(terrain.continuousWithTile(below));
-		}
-		if(x - 1 >= board.getLeftBorder()) {
-			left = board.get(x - 1, y);
-			hasGroundLeft = !(terrain.continuousWithTile(left));
-		}
-		if(x + 1 < board.getRightBorder()) {
-			right = board.get(x + 1, y);
-			hasGroundRight = !(terrain.continuousWithTile(right));
-		}
+        // Set the adjacent tiles if they are in bounds, and if so, check if a
+        // ground border is needed
+        if (y + 1 < board.getTopBorder()) {
+            above = board.get(x, y + 1);
+            hasGroundAbove = !(terrain.continuousWithTile(above));
+        }
+        if (y - 1 >= board.getBottomBorder()) {
+            below = board.get(x, y - 1);
+            hasGroundBelow = !(terrain.continuousWithTile(below));
+        }
+        if (x - 1 >= board.getLeftBorder()) {
+            left = board.get(x - 1, y);
+            hasGroundLeft = !(terrain.continuousWithTile(left));
+        }
+        if (x + 1 < board.getRightBorder()) {
+            right = board.get(x + 1, y);
+            hasGroundRight = !(terrain.continuousWithTile(right));
+        }
 
-		// If the corner should be drawn for each side, based on if adjacent
-		// water tiles have ground
-		if (terrain.continuousWithTile(above) && terrain.continuousWithTile(left)) {
-			upLeftCorner = !terrain.continuousWithTile(board.get(x - 1, y + 1));
-		}
-		if (terrain.continuousWithTile(above) && terrain.continuousWithTile(right)) {
-			upRightCorner = !terrain.continuousWithTile(board.get(x + 1, y + 1));
-		}
-		if (terrain.continuousWithTile(below) && terrain.continuousWithTile(left)) {
-			downLeftCorner = !terrain.continuousWithTile(board.get(x - 1, y - 1));
-		}
-		if (terrain.continuousWithTile(below) && terrain.continuousWithTile(right)) {
-			downRightCorner = !terrain.continuousWithTile(board.get(x + 1, y - 1));
-		}
+        // If the corner should be drawn for each side, based on if adjacent
+        // water tiles have ground
+        if (terrain.continuousWithTile(above) && terrain.continuousWithTile(left)) {
+            upLeftCorner = !terrain.continuousWithTile(board.get(x - 1, y + 1));
+        }
+        if (terrain.continuousWithTile(above) && terrain.continuousWithTile(right)) {
+            upRightCorner = !terrain.continuousWithTile(board.get(x + 1, y + 1));
+        }
+        if (terrain.continuousWithTile(below) && terrain.continuousWithTile(left)) {
+            downLeftCorner = !terrain.continuousWithTile(board.get(x - 1, y - 1));
+        }
+        if (terrain.continuousWithTile(below) && terrain.continuousWithTile(right)) {
+            downRightCorner = !terrain.continuousWithTile(board.get(x + 1, y - 1));
+        }
 
-		((Terrain) board.get(x, y)).setFrame(hasGroundAbove, hasGroundBelow, hasGroundLeft, hasGroundRight, true);
-		((Terrain) board.get(x, y)).setCorners(upLeftCorner, upRightCorner, downLeftCorner, downRightCorner);
+        ((Terrain) board.get(x, y)).setFrame(hasGroundAbove, hasGroundBelow, hasGroundLeft, hasGroundRight, true);
+        ((Terrain) board.get(x, y)).setCorners(upLeftCorner, upRightCorner, downLeftCorner, downRightCorner);
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Updates the texture for water tile at and around (x, y) in the board.
-	 * this function calls updateWaterTile
-	 *
-	 * If the tile is not a water tile, or if the tile is out of bounds, nothing
-	 * happens.
-	 *
-	 * @param x The x index in the board of the tile center to update
-	 * @param y The y index in the board of the tile center to update
-	 */
-	private void updateTerrainAroundRegion(int x, int y) {
-		updateTerrainTile(x, y);
+    /**
+     * Updates the texture for water tile at and around (x, y) in the board.
+     * this function calls updateWaterTile
+     * <p>
+     * If the tile is not a water tile, or if the tile is out of bounds, nothing
+     * happens.
+     *
+     * @param x The x index in the board of the tile center to update
+     * @param y The y index in the board of the tile center to update
+     */
+    private void updateTerrainAroundRegion(int x, int y) {
+        updateTerrainTile(x, y);
 
-		updateTerrainTile(x - 1, y);
-		updateTerrainTile(x + 1, y);
-		updateTerrainTile(x, y - 1);
-		updateTerrainTile(x, y + 1);
+        updateTerrainTile(x - 1, y);
+        updateTerrainTile(x + 1, y);
+        updateTerrainTile(x, y - 1);
+        updateTerrainTile(x, y + 1);
 
-		updateTerrainTile(x - 1, y + 1);
-		updateTerrainTile(x + 1, y + 1);
-		updateTerrainTile(x - 1, y - 1);
-		updateTerrainTile(x + 1, y - 1);
-	}
+        updateTerrainTile(x - 1, y + 1);
+        updateTerrainTile(x + 1, y + 1);
+        updateTerrainTile(x - 1, y - 1);
+        updateTerrainTile(x + 1, y - 1);
+    }
 
-	/**
-	 * If the given tile is either a Wall, a BorderEdge, or a BorderCorner
-	 *
-	 * @param o The object to check
-	 */
-	public boolean isWallOrBorder(Obstacle o) {
-		return o instanceof Wall || o instanceof BorderEdge || o instanceof BorderCorner;
-	}
+    /**
+     * If the given tile is either a Wall, a BorderEdge, or a BorderCorner
+     *
+     * @param o The object to check
+     */
+    public boolean isWallOrBorder(Obstacle o) {
+        return o instanceof Wall || o instanceof BorderEdge || o instanceof BorderCorner;
+    }
 
-	/**
-	 * Updates the texture for wall tile at index x, y in the board based on
-	 * its surroundings (if they are wall or not)
-	 *
-	 * If the tile is not a wall, or if the tile is out of bounds, nothing
-	 * happens.
-	 *
-	 * @param x The x index in the board of the tile to update
-	 * @param y The y index in the board of the tile to update
-	 *
-	 * @return True if a wall tile was updated, false otherwise
-	 */
-	private boolean updateWallTile(int x, int y) {
-		if(x < board.getLeftBorder() || y < board.getBottomBorder() || x >= board.getRightBorder() || y >= board.getTopBorder() || !(board.get(x, y) instanceof Wall)) {
-			return false;
-		}
+    /**
+     * Updates the texture for wall tile at index x, y in the board based on
+     * its surroundings (if they are wall or not)
+     * <p>
+     * If the tile is not a wall, or if the tile is out of bounds, nothing
+     * happens.
+     *
+     * @param x The x index in the board of the tile to update
+     * @param y The y index in the board of the tile to update
+     * @return True if a wall tile was updated, false otherwise
+     */
+    private boolean updateWallTile(int x, int y) {
+        if (x < board.getLeftBorder() || y < board.getBottomBorder() || x >= board.getRightBorder() || y >= board.getTopBorder() || !(board.get(x, y) instanceof Wall)) {
+            return false;
+        }
 
-		Obstacle above = null, below = null, left = null, right = null;
+        Obstacle above = null, below = null, left = null, right = null;
 
-		// If the walls exist
-		boolean wallAbove = false, wallBelow = false, wallLeft = false,
-				wallRight = false, wallLowerLeft = false, wallLowerRight = false;
-		// If the walls are top walls (not a front facing wall)
-		boolean belowIsTop = false, leftIsTop = false, rightIsTop = false,
-				lowerLeftIsTop = false, lowerRightIsTop = false;
+        // If the walls exist
+        boolean wallAbove = false, wallBelow = false, wallLeft = false,
+                wallRight = false, wallLowerLeft = false, wallLowerRight = false;
+        // If the walls are top walls (not a front facing wall)
+        boolean belowIsTop = false, leftIsTop = false, rightIsTop = false,
+                lowerLeftIsTop = false, lowerRightIsTop = false;
 
-		// Set the adjacent tiles if they are in bounds, and if so, check if a
-		// ground border is needed
-		if(y + 1 < board.getTopBorder()) {
-			above = board.get(x, y + 1);
-			wallAbove = above instanceof Wall;
-		}
-		if(y - 1 >= board.getBottomBorder()) {
-			below = board.get(x, y - 1);
-			// NOTE:
-			// ONLY FOR BELOW DOES IT COUNT AS A WALL IF IT IS A BORDER!
-			// This is so that there is not a front wall next to the border,
-			// because a front wall has a smaller hitbox and would mean there
-			// would be a tunnel between the wall and the edge
-			wallBelow = isWallOrBorder(below);
-			if(below instanceof Wall) {
-				belowIsTop = !((Wall)below).isFrontWall();
-			}
-		}
-		if(x - 1 >= board.getLeftBorder()) {
-			left = board.get(x - 1, y);
-			wallLeft = left instanceof Wall;
-			if(wallLeft) {
-				leftIsTop = !((Wall)left).isFrontWall();
-			}
-		}
-		if(x + 1 < board.getRightBorder()) {
-			right = board.get(x + 1, y);
-			wallRight = right instanceof Wall;
-			if(wallRight) {
-				rightIsTop = !((Wall)right).isFrontWall();
-			}
-		}
+        // Set the adjacent tiles if they are in bounds, and if so, check if a
+        // ground border is needed
+        if (y + 1 < board.getTopBorder()) {
+            above = board.get(x, y + 1);
+            wallAbove = above instanceof Wall;
+        }
+        if (y - 1 >= board.getBottomBorder()) {
+            below = board.get(x, y - 1);
+            // NOTE:
+            // ONLY FOR BELOW DOES IT COUNT AS A WALL IF IT IS A BORDER!
+            // This is so that there is not a front wall next to the border,
+            // because a front wall has a smaller hitbox and would mean there
+            // would be a tunnel between the wall and the edge
+            wallBelow = isWallOrBorder(below);
+            if (below instanceof Wall) {
+                belowIsTop = !((Wall) below).isFrontWall();
+            }
+        }
+        if (x - 1 >= board.getLeftBorder()) {
+            left = board.get(x - 1, y);
+            wallLeft = left instanceof Wall;
+            if (wallLeft) {
+                leftIsTop = !((Wall) left).isFrontWall();
+            }
+        }
+        if (x + 1 < board.getRightBorder()) {
+            right = board.get(x + 1, y);
+            wallRight = right instanceof Wall;
+            if (wallRight) {
+                rightIsTop = !((Wall) right).isFrontWall();
+            }
+        }
 
 //		// If the corner should be drawn for each side, based on if adjacent
 //		// sand tiles have ground
@@ -1255,21 +1313,49 @@ public class LevelDesignerMode extends WorldController {
 
 		updateSelector(hasPed);
 
-		if (input.didPressUp() && selector.isSelected() && selector.getObstacle().getName() == "host") {
+		if (input.didPressUp() && selector.isSelected()) {
 			Obstacle selection = selector.getObstacle();
-			if (((HostModel) selection).getCurrentCharge() < MAX_CHARGE_CAPACITY) {
-				((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() + 5);
-				((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
+			if(selector.getObstacle().getName() == "host") {
+				if (((HostModel) selection).getCurrentCharge() < MAX_CHARGE_CAPACITY) {
+					((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() + 5);
+					((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
+				}
 			}
+            else if(selector.getObstacle().getName() == "oscWall") {
+                ((OscWall) selection).setGoingUp(false);
+				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), ((OscWall) selection).isGoingUp());
+            }
+		}
+		if (input.didPressDown() && selector.isSelected()) {
+			Obstacle selection = selector.getObstacle();
+			if(selector.getObstacle().getName() == "host") {
+				if (((HostModel) selection).getCurrentCharge() > MIN_CHARGE_CAPACITY) {
+					((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() - 5);
+					((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
+				}
+			}
+            else if(selector.getObstacle().getName() == "oscWall") {
+                ((OscWall) selection).setGoingUp(true);
+				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), ((OscWall) selection).isGoingUp());
+            }
+		}
 
-		}
-		if (input.didPressDown() && selector.isSelected() && selector.getObstacle().getName() == "host") {
+		if (input.didPressLeft() && selector.isSelected()) {
 			Obstacle selection = selector.getObstacle();
-			if (((HostModel) selection).getCurrentCharge() > MIN_CHARGE_CAPACITY) {
-				((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() - 5);
-				((HostModel) selection).setChargeStripFrame(((HostModel) selection).getCurrentCharge());
+			if(selector.getObstacle().getName() == "oscWall") {
+				((OscWall) selection).setVert(true);
+				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), ((OscWall) selection).isGoingUp());
 			}
 		}
+
+		if (input.didPressRight() && selector.isSelected()) {
+			Obstacle selection = selector.getObstacle();
+			if(selector.getObstacle().getName() == "oscWall") {
+				((OscWall) selection).setVert(false);
+				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), ((OscWall) selection).isGoingUp());
+			}
+		}
+
 
 
 		if(input.didDelete()) {
@@ -1318,10 +1404,11 @@ public class LevelDesignerMode extends WorldController {
         ArrayList<BoxObstacle> waterList = new ArrayList<>();
         ArrayList<BoxObstacle> sandList = new ArrayList<>();
         ArrayList<HostModel> hostList = new ArrayList<>();
-		ArrayList<Wall> wallList = new ArrayList<>();
-		ArrayList<BorderEdge> borderEdgeList = new ArrayList<>();
-		ArrayList<BorderCorner> borderCornerList = new ArrayList<>();
+        ArrayList<Wall> wallList = new ArrayList<>();
+        ArrayList<BorderEdge> borderEdgeList = new ArrayList<>();
+        ArrayList<BorderCorner> borderCornerList = new ArrayList<>();
         ArrayList<EnergyPillar> energyPillarList = new ArrayList<>();
+        ArrayList<OscWall> oscWallList = new ArrayList<>();
 		ArrayList<BoxObstacle> decorativeList = new ArrayList<>();
         HostModel pedestal = null;
 
@@ -1332,16 +1419,16 @@ public class LevelDesignerMode extends WorldController {
                 continue;
             }
 
-			// To update the position of each object, offset its position by the
-			// lower left offset. It has to be negated, because lower left is
-			// initially the offset of the ground. To move objects in the
-			// opposite direction (to be the same distance from the corner of
-			// the ground), they must move in the other direction.
-			cache.set(lowerLeft);
-			cache.scl(-1.f);
-			cache.add(obj.getPosition());
+            // To update the position of each object, offset its position by the
+            // lower left offset. It has to be negated, because lower left is
+            // initially the offset of the ground. To move objects in the
+            // opposite direction (to be the same distance from the corner of
+            // the ground), they must move in the other direction.
+            cache.set(lowerLeft);
+            cache.scl(-1.f);
+            cache.add(obj.getPosition());
 
-			obj.setPosition(cache);
+            obj.setPosition(cache);
 
             if (obj instanceof SpiritModel) {
                 spirit = (SpiritModel) obj;
@@ -1359,10 +1446,12 @@ public class LevelDesignerMode extends WorldController {
             } else if (obj instanceof Wall) {
                 wallList.add((Wall) obj);
             } else if (obj instanceof BorderEdge) {
-				borderEdgeList.add((BorderEdge) obj);
-			} else if (obj instanceof BorderCorner) {
-				borderCornerList.add((BorderCorner) obj);
-			} else if (obj instanceof BoxObstacle && obj.getName() == "decorative") {
+                borderEdgeList.add((BorderEdge) obj);
+            } else if (obj instanceof BorderCorner) {
+                borderCornerList.add((BorderCorner) obj);
+            } else if (obj instanceof OscWall) {
+                oscWallList.add((OscWall) obj);
+            } else if (obj instanceof BoxObstacle && obj.getName() == "decorative") {
             	decorativeList.add((BoxObstacle)obj);
 			}
         }
@@ -1380,21 +1469,26 @@ public class LevelDesignerMode extends WorldController {
         SandTile[] sandArray = new SandTile[sandList.size()];
         sandList.toArray(sandArray);
 
-		BorderEdge[] borderEdgeArray = new BorderEdge[borderEdgeList.size()];
-		borderEdgeList.toArray(borderEdgeArray);
+        BorderEdge[] borderEdgeArray = new BorderEdge[borderEdgeList.size()];
+        borderEdgeList.toArray(borderEdgeArray);
 
-		BorderCorner[] borderCornerArray = new BorderCorner[borderCornerList.size()];
-		borderCornerList.toArray(borderCornerArray);
+        BorderCorner[] borderCornerArray = new BorderCorner[borderCornerList.size()];
+        borderCornerList.toArray(borderCornerArray);
 
         EnergyPillar[] energyPillarArray = new EnergyPillar[energyPillarList.size()];
         energyPillarList.toArray(energyPillarArray);
+
+        OscWall[] oscWallArray = new OscWall[oscWallList.size()];
+        oscWallList.toArray(oscWallArray);
+
+        // TODO: what if spirit is null
 
 		DecorativeRoots[] decorativeArray = new DecorativeRoots[decorativeList.size()];
 		decorativeList.toArray(decorativeArray);
 
         // TODO: what if spirit is null
 
-        level.set(dimensions, wallArray, waterArray, sandArray, borderEdgeArray, borderCornerArray, energyPillarArray, decorativeArray, hostList, pedestal, spirit, 0);
+        level.set(dimensions, wallArray, waterArray, sandArray, borderEdgeArray, borderCornerArray, energyPillarArray, oscWallArray, decorativeArray, hostList, pedestal, spirit, 0);
         loader.saveLevel(f, level);
 
         reset();

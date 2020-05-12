@@ -66,6 +66,8 @@ public class HostController {
 
     private Vector2 spiritCache;
 
+    private Vector2 lastPosition;
+
     /**
      * Constant to change the speed of golem movement
      */
@@ -127,6 +129,7 @@ public class HostController {
         moved = false;
         canvas = c;
         this.energyPillars = energyPillars;
+        this.lastPosition = new Vector2(pedestal.getPosition());
     }
 
     /**
@@ -153,6 +156,7 @@ public class HostController {
      * @param inSand
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand, EnergyPillar[] energyPillars, boolean wasPaused) {
+        ticks++;
         // Removes the arrow that was clicked when paused
         if (wasPaused) arrow = null;
 
@@ -219,17 +223,28 @@ public class HostController {
                             ep.setChargeProgression(chargeProgression);
                         }
 
+//                        if(ticks % 30 == 0) {
+//                            this.lastPosition = new Vector2(possessed.getPosition());
+//                        }
+
                         float obstacleFactor = 1;
                         if (inSand) {
                             obstacleFactor = .5f;
                         }
                         possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal() * obstacleFactor);
                         possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical() * obstacleFactor);
+//                        if((Math.abs(this.lastPosition.dst2(possessed.getPosition())) > 0.000000000001f)) {
+//                            this.moved = true;
+//                        }
 
-                        if (input.getVertical() != 0 || input.getHorizontal() != 0) {
-                            moved = true;
-                        }
+
+//                        if(this.moved) {
+//                            possessed.updateAnimation(possessed.getLinearVelocity());
+//                        }
+
                     }
+
+
 
                     if ((input.getVertical() != 0 || input.getHorizontal() != 0) && (!spirit.getGoToCenter())) {
                         spirit.setPosition(possessed.getPosition());
@@ -308,18 +323,20 @@ public class HostController {
             if (possessed.getCurrentCharge() > possessed.getMaxCharge()) {
                 possessedBlownUp = true;
             }
+
         }
 
 
         // Update the Animation of the possessed host
 
         spirit.updateAnimation();
+        pedestal.animatePedestal();
         possessed.updateAnimation(possessed.getLinearVelocity());
-        pedestal.animateStrip();
 
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
         // When the spirit has been launched, need to decrement life of spirit
         if (spirit.hasLaunched) {
+            possessed.setHasPlayedPossession(false);
             // If you can decrement life, decrement life
             if (spirit.decCurrentLife()) {
                 // Spirit isn't dead yet
@@ -360,6 +377,7 @@ public class HostController {
 
             // Updated Animation of Each Host
             h.updateAnimation(h.getLinearVelocity());
+
 
             if (h != possessed && !h.beenPossessed()) {
                 Vector2 target = h.getInstruction();

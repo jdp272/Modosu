@@ -48,7 +48,7 @@ import edu.cornell.gdiac.util.*;
  */
 public class LoadingMode implements Screen {
 	// Textures necessary to support the loading screen
-	private static final String WAKING_GOLEM_FILE = "shared/wakinggolem.png";
+	private static final String WAKING_GOLEM_FILE = "host/wakinggolem.png";
 	private static final String LOADING_TEXT_FILE = "shared/loadingspritesheet.png";
 	private static final String LOADING_BACKGROUND_FILE = "shared/loading.png";
 

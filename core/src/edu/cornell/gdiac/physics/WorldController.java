@@ -39,7 +39,6 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.MusicController;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.ScreenListener;
-import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -105,12 +104,56 @@ public abstract class WorldController implements Screen {
 	private static final String HOST_FILE_SW = "host/golemWalk_SW.png";
 	/** Texture file for host sprite WEST */
 	private static final String HOST_FILE_W = "host/golemWalk_W.png";
+
+	/** Texture file for host glyph sprite EAST */
+	private static final String HOST_GLYPH_FILE_E = "host/E_RuneSpriteSheet.png";
+	/** Texture file for host glyph sprite NORTH */
+	private static final String HOST_GLYPH_FILE_N = "host/N_RuneSpriteSheet.png";
+	/** Texture file for host glyph sprite NORTH EAST */
+	private static final String HOST_GLYPH_FILE_NE = "host/NE_RuneSpriteSheet.png";
+	/** Texture file for host sprite NORTH WEST */
+	private static final String HOST_GLYPH_FILE_NW = "host/NW_RuneSpriteSheet.png";
+	/** Texture file for host sprite SOUTH */
+	private static final String HOST_GLYPH_FILE_S = "host/S_RuneSpriteSheet.png";
+	/** Texture file for host sprite SOUTH EAST */
+	private static final String HOST_GLYPH_FILE_SE = "host/SE_RuneSpriteSheet.png";
+	/** Texture file for host sprite SOUTH WEST */
+	private static final String HOST_GLYPH_FILE_SW = "host/SW_RuneSpriteSheet.png";
+	/** Texture file for host sprite WEST */
+	private static final String HOST_GLYPH_FILE_W = "host/W_RuneSpriteSheet.png";
+
+	/** Texture file for host death sprite EAST */
+	private static final String HOST_DEATH_FILE_E = "host/E_DeathSpriteSheet.png";
+	/** Texture file for host death sprite NORTH */
+	private static final String HOST_DEATH_FILE_N = "host/N_DeathSpriteSheet.png";
+	/** Texture file for host death sprite NORTH EAST */
+	private static final String HOST_DEATH_FILE_NE = "host/NE_DeathSpriteSheet.png";
+	/** Texture file for host death NORTH WEST */
+	private static final String HOST_DEATH_FILE_NW = "host/NW_DeathSpriteSheet.png";
+	/** Texture file for host death SOUTH */
+	private static final String HOST_DEATH_FILE_S = "host/S_DeathSpriteSheet.png";
+	/** Texture file for host death SOUTH EAST */
+	private static final String HOST_DEATH_FILE_SE = "host/SE_DeathSpriteSheet.png";
+	/** Texture file for host death SOUTH WEST */
+	private static final String HOST_DEATH_FILE_SW = "host/SW_DeathSpriteSheet.png";
+	/** Texture file for host death WEST */
+	private static final String HOST_DEATH_FILE_W = "host/W_DeathSpriteSheet.png";
+
+	/** Arms Sprite Sheet */
+	private static final String HOST_ARMS_FILE = "host/ArmSpriteSheet.png";
+
+	/** Host General Possession Sprite Sheet */
+	private static final String HOST_GEN_POSSESSION_FILE = "host/golemGenPossession.png";
+	/** Host New Possession Sprite Sheet */
+	private static final String HOST_NEW_POSSESSION_FILE = "host/golemNewPossession.png";
+
+	/** Golem Waking Up Sprite Sheet */
+	private static final String HOST_WAKING_UP_FILE = "host/wakinggolem.png";
+
 	/** Texture file for spirit head sprite */
 	private static String SPIRIT_HEAD_FILE = "host/SpiritHeadSpritesheet_v01.png";
 	/** Texture file for spirit tail sprite */
 	private static String SPIRIT_TAIL_FILE = "host/SpiritTailSpritesheet_v01.png";
-	/** Texture file for spirit body sprite */
-	private static String SPIRIT_BODY_FILE = "host/SpiritBodySpritesheet_v01.png";
 
 	/** File to texture for Hosts' Gauge */
 	private static String HOST_GAUGE_FILE = "host/chargeGauge.png";
@@ -141,6 +184,16 @@ public abstract class WorldController implements Screen {
 	/** File to texture for Energy Pillar Radius */
 	private static String DECORATIVE_ROOTS_FILE = "shared/rootsspritesheet.png";
 
+
+	/** File to texture for OscWall Horz */
+	public static String OSC_WALL_HORZ_FILE = "shared/horizontalGateSpritesheet.png";
+	/** File to texture for OscWall Horz Gauge */
+	public static String OSC_WALL_HORZ_GAUGE_FILE = "shared/horizontalGateLightSpritesheet.png";
+
+	/** File to texture for OscWall Horz */
+	public static String OSC_WALL_VERT_FILE = "shared/verticalGateSpritesheet.png";
+	/** File to texture for OscWall Horz Gauge */
+	public static String OSC_WALL_VERT_GAUGE_FILE = "shared/verticalGateLightSpritesheet.png";
 
 	private static int FONT_SIZE = 56;
 
@@ -173,6 +226,46 @@ public abstract class WorldController implements Screen {
 	private static Texture hostTextureSW;
 	/** Texture for Host SpriteSheet WEST*/
 	private static Texture hostTextureW;
+	/** Texture for Host Glyph SpriteSheet EAST*/
+	private static Texture hostGlyphTextureE;
+	/** Texture for Host Glyph SpriteSheet NORTH*/
+	private static Texture hostGlyphTextureN;
+	/** Texture for Host Glyph SpriteSheet NORTH EAST*/
+	private static Texture hostGlyphTextureNE;
+	/** Texture for Host Glyph SpriteSheet NORTH WEST*/
+	private static Texture hostGlyphTextureNW;
+	/** Texture for Host Glyph SpriteSheet SOUTH */
+	private static Texture hostGlyphTextureS;
+	/** Texture for Host Glyph SpriteSheet SOUTH EAST*/
+	private static Texture hostGlyphTextureSE;
+	/** Texture for Host Glyph SpriteSheet SOUTH WEST*/
+	private static Texture hostGlyphTextureSW;
+	/** Texture for Host Glyph SpriteSheet WEST*/
+	private static Texture hostGlyphTextureW;
+	/** Texture for Host death SpriteSheet EAST*/
+	private static Texture hostDeathTextureE;
+	/** Texture for Host death SpriteSheet NORTH*/
+	private static Texture hostDeathTextureN;
+	/** Texture for Host death SpriteSheet NORTH EAST*/
+	private static Texture hostDeathTextureNE;
+	/** Texture for Host death SpriteSheet NORTH WEST*/
+	private static Texture hostDeathTextureNW;
+	/** Texture for Host death SpriteSheet SOUTH */
+	private static Texture hostDeathTextureS;
+	/** Texture for Host death SpriteSheet SOUTH EAST*/
+	private static Texture hostDeathTextureSE;
+	/** Texture for Host death SpriteSheet SOUTH WEST*/
+	private static Texture hostDeathTextureSW;
+	/** Texture for Host death SpriteSheet WEST*/
+	private static Texture hostDeathTextureW;
+	/** Texture for Host Arms */
+	private static Texture hostArmsTexture;
+	/** Texture for Host Gen Possession */
+	private static Texture hostGenPossessionTexture;
+	/** Texture for Host New Possession */
+	private static Texture hostNewPossessionTexture;
+	/** Texture for Host Waking Up */
+	private static Texture hostWakingUpTexture;
 	/** Texture for Host Gauge SpriteSheet */
 	private static Texture hostGaugeTexture;
 	/** Texture for Wall SpriteSheet */
@@ -203,6 +296,14 @@ public abstract class WorldController implements Screen {
 	private static Texture energyPillarCharge;
 	/** Texture for Energy Pillar Radius Texture */
 	private static Texture energyPillarRadius;
+	/** Texture for Osc Wall Horz */
+	private static Texture oscWallHorz;
+	/** Texture for Osc Wall Gauge Horz */
+	private static Texture oscWallGaugeHorz;
+	/** Texture for Osc Wall Vert */
+	private static Texture oscWallVert;
+	/** Texture for Osc Wall Vert Gauge */
+	private static Texture oscWallVertGauge;
 	/** Texture for decorative roots */
 	private static Texture rootsTexture;
 
@@ -274,6 +375,46 @@ public abstract class WorldController implements Screen {
 		assets.add(HOST_FILE_SW);
 		manager.load(HOST_FILE_W, Texture.class);
 		assets.add(HOST_FILE_W);
+		manager.load(HOST_GLYPH_FILE_E, Texture.class);
+		assets.add(HOST_GLYPH_FILE_E);
+		manager.load(HOST_GLYPH_FILE_N, Texture.class);
+		assets.add(HOST_GLYPH_FILE_N);
+		manager.load(HOST_GLYPH_FILE_NE, Texture.class);
+		assets.add(HOST_GLYPH_FILE_NE);
+		manager.load(HOST_GLYPH_FILE_NW, Texture.class);
+		assets.add(HOST_GLYPH_FILE_NW);
+		manager.load(HOST_GLYPH_FILE_S, Texture.class);
+		assets.add(HOST_GLYPH_FILE_S);
+		manager.load(HOST_GLYPH_FILE_SE, Texture.class);
+		assets.add(HOST_GLYPH_FILE_SE);
+		manager.load(HOST_GLYPH_FILE_SW, Texture.class);
+		assets.add(HOST_GLYPH_FILE_SW);
+		manager.load(HOST_GLYPH_FILE_W, Texture.class);
+		assets.add(HOST_GLYPH_FILE_W);
+		manager.load(HOST_DEATH_FILE_E, Texture.class);
+		assets.add(HOST_DEATH_FILE_E);
+		manager.load(HOST_DEATH_FILE_N, Texture.class);
+		assets.add(HOST_DEATH_FILE_N);
+		manager.load(HOST_DEATH_FILE_NE, Texture.class);
+		assets.add(HOST_DEATH_FILE_NE);
+		manager.load(HOST_DEATH_FILE_NW, Texture.class);
+		assets.add(HOST_DEATH_FILE_NW);
+		manager.load(HOST_DEATH_FILE_S, Texture.class);
+		assets.add(HOST_DEATH_FILE_S);
+		manager.load(HOST_DEATH_FILE_SE, Texture.class);
+		assets.add(HOST_DEATH_FILE_SE);
+		manager.load(HOST_DEATH_FILE_SW, Texture.class);
+		assets.add(HOST_DEATH_FILE_SW);
+		manager.load(HOST_DEATH_FILE_W, Texture.class);
+		assets.add(HOST_DEATH_FILE_W);
+		manager.load(HOST_ARMS_FILE, Texture.class);
+		assets.add(HOST_ARMS_FILE);
+		manager.load(HOST_GEN_POSSESSION_FILE, Texture.class);
+		assets.add(HOST_GEN_POSSESSION_FILE);
+		manager.load(HOST_NEW_POSSESSION_FILE, Texture.class);
+		assets.add(HOST_NEW_POSSESSION_FILE);
+		manager.load(HOST_WAKING_UP_FILE, Texture.class);
+		assets.add(HOST_WAKING_UP_FILE);
 		manager.load(HOST_GAUGE_FILE, Texture.class);
 		assets.add(HOST_GAUGE_FILE);
 		manager.load(WALL_FILE, Texture.class);
@@ -290,8 +431,6 @@ public abstract class WorldController implements Screen {
 		assets.add(ARROW_FILE);
 		manager.load(PEDESTAL_FILE, Texture.class);
 		assets.add(PEDESTAL_FILE);
-		manager.load(SPIRIT_BODY_FILE, Texture.class);
-		assets.add(SPIRIT_BODY_FILE);
 		manager.load(SPIRIT_HEAD_FILE, Texture.class);
 		assets.add(SPIRIT_HEAD_FILE);
 		manager.load(SPIRIT_TAIL_FILE, Texture.class);
@@ -306,6 +445,14 @@ public abstract class WorldController implements Screen {
 		assets.add(ENERGY_PILLAR_BODY_FILE);
 		manager.load(ENERGY_PILLAR_RADIUS_FILE, Texture.class);
 		assets.add(ENERGY_PILLAR_RADIUS_FILE);
+		manager.load(OSC_WALL_HORZ_FILE, Texture.class);
+		assets.add(OSC_WALL_HORZ_FILE);
+		manager.load(OSC_WALL_HORZ_GAUGE_FILE, Texture.class);
+		assets.add(OSC_WALL_HORZ_GAUGE_FILE);
+		manager.load(OSC_WALL_VERT_FILE, Texture.class);
+		assets.add(OSC_WALL_VERT_FILE);
+		manager.load(OSC_WALL_VERT_GAUGE_FILE, Texture.class);
+		assets.add(OSC_WALL_VERT_GAUGE_FILE);
 		manager.load(DECORATIVE_ROOTS_FILE, Texture.class);
 		assets.add(DECORATIVE_ROOTS_FILE);
 
@@ -362,6 +509,26 @@ public abstract class WorldController implements Screen {
 		hostTextureSE = manager.get(HOST_FILE_SE, Texture.class);
 		hostTextureSW = manager.get(HOST_FILE_SW, Texture.class);
 		hostTextureW = manager.get(HOST_FILE_W, Texture.class);
+		hostGlyphTextureE = manager.get(HOST_GLYPH_FILE_E,Texture.class);
+		hostGlyphTextureN = manager.get(HOST_GLYPH_FILE_N, Texture.class);
+		hostGlyphTextureNE = manager.get(HOST_GLYPH_FILE_NE, Texture.class);
+		hostGlyphTextureNW = manager.get(HOST_GLYPH_FILE_NW, Texture.class);
+		hostGlyphTextureS = manager.get(HOST_GLYPH_FILE_S, Texture.class);
+		hostGlyphTextureSE = manager.get(HOST_GLYPH_FILE_SE, Texture.class);
+		hostGlyphTextureSW = manager.get(HOST_GLYPH_FILE_SW, Texture.class);
+		hostGlyphTextureW = manager.get(HOST_GLYPH_FILE_W, Texture.class);
+		hostDeathTextureE = manager.get(HOST_DEATH_FILE_E,Texture.class);
+		hostDeathTextureN = manager.get(HOST_DEATH_FILE_N, Texture.class);
+		hostDeathTextureNE = manager.get(HOST_DEATH_FILE_NE, Texture.class);
+		hostDeathTextureNW = manager.get(HOST_DEATH_FILE_NW, Texture.class);
+		hostDeathTextureS = manager.get(HOST_DEATH_FILE_S, Texture.class);
+		hostDeathTextureSE = manager.get(HOST_DEATH_FILE_SE, Texture.class);
+		hostDeathTextureSW = manager.get(HOST_DEATH_FILE_SW, Texture.class);
+		hostDeathTextureW = manager.get(HOST_DEATH_FILE_W, Texture.class);
+		hostArmsTexture = manager.get(HOST_ARMS_FILE, Texture.class);
+		hostNewPossessionTexture = manager.get(HOST_NEW_POSSESSION_FILE, Texture.class);
+		hostGenPossessionTexture = manager.get(HOST_GEN_POSSESSION_FILE, Texture.class);
+		hostWakingUpTexture = manager.get(HOST_WAKING_UP_FILE, Texture.class);
 		hostGaugeTexture = manager.get(HOST_GAUGE_FILE, Texture.class);
 		wallTexture = manager.get(WALL_FILE, Texture.class);
 		waterTexture = manager.get(WATER_FILE, Texture.class);
@@ -369,7 +536,6 @@ public abstract class WorldController implements Screen {
 		sandTexture = manager.get(SAND_FILE, Texture.class);
 		cornerSandTexture = manager.get(CORNER_SAND_FILE, Texture.class);
 		pedestalTexture = manager.get(PEDESTAL_FILE, Texture.class);
-		spiritBodyTexture = manager.get(SPIRIT_BODY_FILE, Texture.class);
 		spiritHeadTexture = manager.get(SPIRIT_HEAD_FILE, Texture.class);
 		spiritTailTexture = manager.get(SPIRIT_TAIL_FILE, Texture.class);
 		borderEdgeTexture = manager.get(BORDER_EDGE_FILE, Texture.class);
@@ -377,10 +543,28 @@ public abstract class WorldController implements Screen {
 		energyPillarBody = manager.get(ENERGY_PILLAR_BODY_FILE, Texture.class);
 		energyPillarCharge = manager.get(ENERGY_PILLAR_BODY_CHARGE_FILE, Texture.class);
 		energyPillarRadius = manager.get(ENERGY_PILLAR_RADIUS_FILE, Texture.class);
+		oscWallHorz = manager.get(OSC_WALL_HORZ_FILE, Texture.class);
+		oscWallGaugeHorz = manager.get(OSC_WALL_HORZ_GAUGE_FILE, Texture.class);
+		oscWallVert = manager.get(OSC_WALL_VERT_FILE, Texture.class);
+		oscWallVertGauge = manager.get(OSC_WALL_VERT_GAUGE_FILE, Texture.class);
 		rootsTexture = manager.get(DECORATIVE_ROOTS_FILE, Texture.class);
 
+
 		// Set the proper textures in the factory
-		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture, borderEdgeTexture, borderCornerTexture, energyPillarBody, energyPillarCharge, energyPillarRadius, rootsTexture);
+		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture,
+				hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW,
+				hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, hostGlyphTextureE,
+				hostGlyphTextureN, hostGlyphTextureNE, hostGlyphTextureNW, hostGlyphTextureS,
+				hostGlyphTextureSE, hostGlyphTextureSW, hostGlyphTextureW, hostDeathTextureE,
+				hostDeathTextureN, hostDeathTextureNE, hostDeathTextureNW, hostDeathTextureS,
+				hostDeathTextureSE, hostDeathTextureSW, hostDeathTextureW, hostArmsTexture,
+				hostNewPossessionTexture, hostGenPossessionTexture, hostWakingUpTexture,
+				wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture,
+				pedestalTexture, borderEdgeTexture, borderCornerTexture, energyPillarBody,
+				energyPillarCharge, energyPillarRadius, oscWallVert, oscWallVertGauge,
+				oscWallHorz, oscWallGaugeHorz, rootsTexture);
+
+		// Set the proper textures in the factory
 		loader = new Loader(factory);
 	}
 	
@@ -983,6 +1167,9 @@ public abstract class WorldController implements Screen {
 			wall.drawFront(canvas);
 		}
 		for(HostModel host : hostDrawLayer) {
+			host.drawCharge(canvas);
+		}
+		for(HostModel host : hostDrawLayer) {
 			host.draw(canvas);
 		}
 		for(SpiritModel spirit : spiritDrawLayer) {
@@ -990,9 +1177,6 @@ public abstract class WorldController implements Screen {
 		}
 		for(Wall wall : wallDrawLayer) {
 			wall.drawTop(canvas);
-		}
-		for(HostModel host : hostDrawLayer) {
-			host.drawCharge(canvas);
 		}
 		for(BorderEdge edge : edgeDrawLayer) {
 			edge.drawNotTop(canvas);

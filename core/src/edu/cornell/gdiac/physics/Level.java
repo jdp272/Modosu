@@ -12,42 +12,8 @@ import java.util.ArrayList;
  */
 public class Level {
 
-    /**
-     * An empty constructor for a level. Everything is null.
-     */
     public Level() {
-        set(null, null, null, null, null, null, null, null, null, null, null, 0);
-    }
-
-    /**
-     * Constructs a simple object encapsulating the elements of a level
-     *
-     * @param dimensions The dimensions of the rectangular board in Box2D
-     *                   coordinates
-     * @param walls An array of the walls in the level
-     * @param water An array of the water tiles in the level
-     * @param sand An array of the sand tiles in the level
-     * @param borderEdges An array of the border edges in the level
-     * @param borderCorners An array of the border corners in the level
-     * @param decorativeRootTiles An array of the decorativeRoot tiles in the level
-     * @param hosts An array of the hosts in the level
-     * @param spirit The spirit of the player
-     * @param pedestal The "host" where the player starts
-     */
-    public Level(
-            Vector2 dimensions,
-            Wall[] walls,
-            WaterTile[] water,
-            SandTile[] sand,
-            BorderEdge[] borderEdges,
-            BorderCorner[] borderCorners,
-            EnergyPillar[] energyPillars,
-            DecorativeRoots[] decorativeRootTiles,
-            ArrayList<HostModel> hosts,
-            HostModel pedestal,
-            SpiritModel spirit
-    ) {
-        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, decorativeRootTiles, hosts, pedestal, spirit, 0);
+        set(null, null, null, null, null, null, null, null, null, null, null, null, 0);
     }
 
     /**
@@ -74,13 +40,14 @@ public class Level {
             BorderEdge[] borderEdges,
             BorderCorner[] borderCorners,
             EnergyPillar[] energyPillars,
+            OscWall[] oscWalls,
             DecorativeRoots[] decorativeRootTiles,
             ArrayList<HostModel> hosts,
             HostModel pedestal,
             SpiritModel spirit,
             int tutorial
     ) {
-        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, decorativeRootTiles, hosts, pedestal, spirit, tutorial);
+        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, oscWalls, decorativeRootTiles, hosts, pedestal, spirit, tutorial);
     }
 
     /** The dimensions of the rectangular board, in Box2D coordinates */
@@ -103,6 +70,9 @@ public class Level {
 
     /** An array of the energy pillars in the level */
     public EnergyPillar[] energyPillars;
+
+    /** An array of the oscillating walls in the level */
+    public OscWall[] oscWalls;
 
     /** An array of the decorativeRoot tiles in the level */
     public DecorativeRoots[] decorativeRootTiles;
@@ -144,6 +114,7 @@ public class Level {
             BorderEdge[] borderEdges,
             BorderCorner[] borderCorners,
             EnergyPillar[] energyPillars,
+            OscWall[] oscWalls,
             DecorativeRoots[] decorativeRootTiles,
             ArrayList<HostModel> hosts,
             HostModel pedestal,
@@ -157,6 +128,7 @@ public class Level {
         this.borderEdges = borderEdges;
         this.borderCorners = borderCorners;
         this.energyPillars = energyPillars;
+        this.oscWalls = oscWalls;
         this.decorativeRootTiles = decorativeRootTiles;
         this.hosts = hosts;
         this.pedestal = pedestal;

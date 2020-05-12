@@ -72,7 +72,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		// Start loading with the asset manager
 		manager = new AssetManager();
 		managerLoad = new AssetManager();
-		
+
 		// Add font support to the asset manager
 		FileHandleResolver resolver = new InternalFileHandleResolver();
 		manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));

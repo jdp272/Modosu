@@ -90,6 +90,15 @@ public class Loader {
         public Vector2 dimensions;
     }
 
+    /** A struct that stores the data of the oscwall when read from the json */
+    public static class OscWallData {
+        public Vector2 origin; //Center of the oscwall
+        public Vector2 dimensions;
+
+        public boolean isVert;
+        public boolean isGoingUp;
+    }
+
     /** A struct that stores data from a host when read from the json */
     public static class HostData {
         public Vector2 location;
@@ -119,6 +128,7 @@ public class Loader {
         public BorderEdgeData[] borderEdgeData;
         public BorderCornerData[] borderCornerData;
         public EnergyPillarData[] energyPillarData;
+        public OscWallData[] oscWallData;
         public DecorativeRootData[] decorativeRootData;
 
     }
@@ -262,6 +272,20 @@ public class Loader {
             levelData.energyPillarData[i] = epData;
         }
 
+        // Store the oscillating wall data
+        levelData.oscWallData = new OscWallData[level.oscWalls.length];
+        for (int i = 0; i < level.oscWalls.length; i++) {
+           OscWallData owData = new OscWallData();
+           owData.dimensions = level.oscWalls[i].getDimension();
+           owData.origin = new Vector2(level.oscWalls[i].getX(), level.oscWalls[i].getY());
+           owData.isGoingUp = level.oscWalls[i].isGoingUp();
+           owData.isVert = level.oscWalls[i].isVert();
+           System.out.println(owData.isGoingUp);
+           System.out.println(owData.isVert);
+
+           levelData.oscWallData[i] = owData;
+        }
+
         // Store the host data
         levelData.hostData = new HostData[level.hosts.size()];
         for(int i = 0; i < level.hosts.size(); i++) {
@@ -365,6 +389,13 @@ public class Loader {
             energyPillars[i] = factory.makeEnergyPillar(epData.origin.x, epData.origin.y);
         }
 
+        OscWall[] oscWalls = new OscWall[levelData.oscWallData.length];
+        OscWallData owData;
+        for (int i = 0; i < levelData.oscWallData.length; i++) {
+            owData = levelData.oscWallData[i];
+            oscWalls[i] = factory.makeOscWall(owData.origin.x, owData.origin.y, owData.isVert, owData.isGoingUp);
+        }
+
         // Create the hosts
         ArrayList<HostModel> hosts = new ArrayList<HostModel>();
         HostData hData; // A simple reference to the data being processed
@@ -397,7 +428,7 @@ public class Loader {
         // Create the starting "host" (with no charge capacity)
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
-        return new Level(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, roots, hosts, pedestal, spirit, tutorialNum);
+        return new Level(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, oscWalls, roots, hosts, pedestal, spirit, tutorialNum);
     }
 
     /**

@@ -46,7 +46,7 @@ public class SpiritModel extends BoxObstacle {
     // Animation related Variables
 
     /** The texture filmstrip for the spirit body */
-    protected FilmStrip  spiritBodyStrip;
+//    protected FilmStrip  spiritBodyStrip;
     /** The texture filmstrip for the spirit tail */
     protected FilmStrip spiritTailStrip;
     /** The texture filmstrip for the spirit head */
@@ -275,19 +275,19 @@ public class SpiritModel extends BoxObstacle {
 
     /**
      * sets all the film strips of the spirit
-     * @param spiritBodyStrip filmstrip for the spirit's body
      * @param spiritHeadStrip filmstrip for the spirit's head
      * @param spiritTailStrip filmstrip for the spirit's tail
      */
-    public void setFilmStrip (FilmStrip spiritBodyStrip, FilmStrip spiritHeadStrip, FilmStrip spiritTailStrip) {
-        this.spiritBodyStrip = spiritBodyStrip;
-        this.spiritBodyStrip.setFrame(SPIRIT_FRAME_STARTING);
+//    public void setFilmStrip (FilmStrip spiritBodyStrip, FilmStrip spiritHeadStrip, FilmStrip spiritTailStrip) {
+    public void setFilmStrip (FilmStrip spiritHeadStrip, FilmStrip spiritTailStrip) {
+//        this.spiritBodyStrip = spiritBodyStrip;
+//        this.spiritBodyStrip.setFrame(SPIRIT_FRAME_STARTING);
         this.spiritHeadStrip = spiritHeadStrip;
         this.spiritHeadStrip.setFrame(SPIRIT_FRAME_STARTING);
         this.spiritTailStrip = spiritTailStrip;
         this.spiritTailStrip.setFrame(SPIRIT_FRAME_STARTING);
     }
-    
+
     public void updateAnimation () {
         elapsedFrames++;
         updateFrame = true;
@@ -297,13 +297,15 @@ public class SpiritModel extends BoxObstacle {
             elapsedFrames = 0;
         }
         if (updateFrame) {
-            if ((this.spiritBodyStrip.getFrame() < this.spiritBodyStrip.getSize() - 1) && (this.spiritHeadStrip.getFrame() < this.spiritHeadStrip.getSize() - 1) &&
-                    (this.spiritTailStrip.getFrame() < this.spiritTailStrip.getSize() - 1)) {
-                this.spiritBodyStrip.setFrame(this.spiritBodyStrip.getFrame() + 1);
+            if (((this.spiritHeadStrip.getFrame() < this.spiritHeadStrip.getSize() - 1) &&
+                    (this.spiritTailStrip.getFrame() < this.spiritTailStrip.getSize() - 1))) {
+//            if ((this.spiritBodyStrip.getFrame() < this.spiritBodyStrip.getSize() - 1) && (this.spiritHeadStrip.getFrame() < this.spiritHeadStrip.getSize() - 1) &&
+//                    (this.spiritTailStrip.getFrame() < this.spiritTailStrip.getSize() - 1)) {
+//                this.spiritBodyStrip.setFrame(this.spiritBodyStrip.getFrame() + 1);
                 this.spiritTailStrip.setFrame(this.spiritTailStrip.getFrame() + 1);
                 this.spiritHeadStrip.setFrame(this.spiritHeadStrip.getFrame() + 1);
             } else {
-                this.spiritBodyStrip.setFrame(SPIRIT_FRAME_STARTING);
+//                this.spiritBodyStrip.setFrame(SPIRIT_FRAME_STARTING);
                 this.spiritHeadStrip.setFrame(SPIRIT_FRAME_STARTING);
                 this.spiritTailStrip.setFrame(SPIRIT_FRAME_STARTING);
             }
