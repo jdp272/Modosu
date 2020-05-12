@@ -119,6 +119,8 @@ public class SoundController {
 	/** The default volume of sounds for this controller */
 	private float soundVolume;
 
+	private float prevSoundVolume;
+
 	/** 
 	 * Creates a new SoundController with the default settings.
 	 */
@@ -131,7 +133,8 @@ public class SoundController {
 		frameLimit = DEFAULT_FRAME;
 		current = 0;
 		isUnmuted = true;
-		soundVolume = .40f;
+		soundVolume = 1f;
+		prevSoundVolume = 1f;
 	}
 
 	/**
@@ -152,8 +155,13 @@ public class SoundController {
 	 * Sets the volume of the sound controller. All sounds are defaulted to this volume.
 	 * @param v	The sound volume in the range [0,1]
 	 */
-	public void setVolume(float v) { soundVolume = v/100; }
-	
+	public void setVolume(float v) {
+		if (v > 0) { isUnmuted = true; }
+		soundVolume = v;
+	}
+
+
+	public float getVolume() { return soundVolume; }
 
 	/// Sound Management
 	/**
@@ -193,7 +201,20 @@ public class SoundController {
 		return play(key,filename,loop,soundVolume);
 	}
 
-	public void setUnmuted(boolean value) { isUnmuted = value; }
+	public void setUnmuted(boolean value) {
+		isUnmuted = value;
+		System.out.println("set sound.unmuted to " + value);
+		if (!isUnmuted){
+			prevSoundVolume = soundVolume;
+			setVolume(0);
+		}
+
+		//set to play
+		else {
+			System.out.println("set sound back to volume " + prevSoundVolume);
+			setVolume(prevSoundVolume);
+		}
+	}
 
 	/**
 	 * Plays the an instance of the given sound
@@ -294,6 +315,11 @@ public class SoundController {
 	 * garbage collection.
 	 */
 	public void update() {
+		// If volume is 0, mute this controller
+		if (soundVolume == 0) {
+			isUnmuted = false;
+		}
+
 		for(String key : actives.keys()) {
 			ActiveSound snd = actives.get(key);
 			snd.lifespan++;

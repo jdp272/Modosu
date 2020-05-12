@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import edu.cornell.gdiac.util.MusicController;
 import edu.cornell.gdiac.util.ScreenListener;
 
 
@@ -117,6 +118,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controller.dispose();
 		levelSelect.dispose();
 		levelDesigner.dispose();
+		MusicController.getInstance().removeAll();
 
 		canvas.dispose();
 		canvas = null;
