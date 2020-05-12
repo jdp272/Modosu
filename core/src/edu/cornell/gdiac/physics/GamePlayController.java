@@ -392,7 +392,8 @@ public class GamePlayController extends WorldController {
 		// Calculate spirit's screen coordinates from box2d coordinates
 		if (possessed.isPedestal() && !spirit.hasLaunched){
 			if (InputController.getInstance().didTertiary()) {
-				panTarget = pedestal.getPosition();
+				panTarget.x = pedestal.getPosition().x;
+				panTarget.y = pedestal.getPosition().y;
 				panTarget.x *= scale.x;
 				panTarget.y *= scale.y;
 			}
@@ -406,6 +407,7 @@ public class GamePlayController extends WorldController {
 			cache.set(spirit.getPosition());
 			cache.scl(scale.x, scale.y);
 		}
+		System.out.println(panTarget);
 
 		// Handle camera panning
 		canvas.setCamTarget(cache);
