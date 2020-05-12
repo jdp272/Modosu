@@ -107,6 +107,10 @@ public class InputController {
 	private boolean upHeld;
 	/** If down is held */
 	private boolean downHeld;
+	/** If left is held */
+	private boolean leftHeld;
+	/** If right is held */
+	private boolean rightHeld;
 
 	/** How much did we move horizontally? */
 	private float horizontal;
@@ -117,7 +121,10 @@ public class InputController {
 	/** The crosshair cache (for using as a return value) */
 	private Vector2 mousePositionCache;
 
+	private float height;
 
+
+	public void setScreenHeight(float h) { height = h; }
 
 	/**
 	 * Returns the amount of sideways movement.
@@ -345,6 +352,20 @@ public class InputController {
 	public boolean didPressDown() { return downHeld; }
 
 	/**
+	 * Returns true if the left button is pressed.
+	 *
+	 * @return true if the left button pressed
+	 */
+	public boolean didPressLeft() { return leftHeld; }
+
+	/**
+	 * Returns true if the right button is pressed.
+	 *
+	 * @return true if the right button is pressed
+	 */
+	public boolean didPressRight() { return rightHeld; }
+
+	/**
 	 * Creates a new input controller
 	 *
 	 * The input controller attempts to connect to the X-Box controller at device 0,
@@ -385,7 +406,6 @@ public class InputController {
 		mousePressedPrevious = mousePressed;
 
 		readKeyboard();
-
 	}
 
 	/**
@@ -405,6 +425,8 @@ public class InputController {
 		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
 		upHeld = upHeld || Gdx.input.isKeyPressed(Input.Keys.UP);
 		downHeld = downHeld || Gdx.input.isKeyPressed(Input.Keys.DOWN);
+		leftHeld = upHeld || Gdx.input.isKeyPressed(Input.Keys.LEFT);
+		rightHeld = downHeld || Gdx.input.isKeyPressed(Input.Keys.RIGHT);
 
 		pausePressed = Gdx.input.isKeyPressed(Input.Keys.ESCAPE);
 		tutorialNextPressed = Gdx.input.isKeyJustPressed(Input.Keys.ENTER);
@@ -443,7 +465,7 @@ public class InputController {
 
 		leftJustClicked = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
 
-		mousePosition.set(Gdx.input.getX(), Gdx.input.getY());
+		mousePosition.set(Gdx.input.getX(), height - Gdx.input.getY());
 	}
 
 
@@ -504,6 +526,8 @@ public class InputController {
 		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
 		upHeld = Gdx.input.isKeyPressed(Input.Keys.UP);
 		downHeld = Gdx.input.isKeyPressed(Input.Keys.DOWN);
+		leftHeld = upHeld || Gdx.input.isKeyPressed(Input.Keys.LEFT);
+		rightHeld = downHeld || Gdx.input.isKeyPressed(Input.Keys.RIGHT);
 
 		boxPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.B));
 		hostPressed = (secondary && clearPressed)  || (Gdx.input.isKeyPressed(Input.Keys.G));
