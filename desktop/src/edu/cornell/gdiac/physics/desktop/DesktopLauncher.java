@@ -37,6 +37,7 @@ public class DesktopLauncher {
 		config.width  = 1024;
 		config.height = 576;
 		config.resizable = false;
+		config.title = "modosu";
 		new LwjglApplication(new GDXRoot(), config);
 	}
 }
