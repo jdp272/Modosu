@@ -379,12 +379,6 @@ public class GamePlayController extends WorldController {
 
 		HUD.update(delta);
 
-		// Check to hid tutorial
-		if (!tutorial.didCompleteTutorial()) {
-			tutorial.drawTutorial(delta);
-			tutorial.updateTutorial(delta);
-		}
-
 		// Get arrow and draw if applicable
 		arrow = hostController.getArrow();
 		if (arrow != null){ arrow.draw(canvas); }
@@ -408,7 +402,7 @@ public class GamePlayController extends WorldController {
 		    cache.set(panTarget);
 		}
 		else {
-			System.out.println("Not panning");
+//			System.out.println("Not panning");
 			cache.set(spirit.getPosition());
 			cache.scl(scale.x, scale.y);
 		}

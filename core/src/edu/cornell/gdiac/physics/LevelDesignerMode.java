@@ -187,6 +187,11 @@ public class LevelDesignerMode extends WorldController {
      */
     private ArrayList<HostModel> golems;
 
+    /** The message that a pedestal must be present for saving */
+    private TutorialData pedestalMessage;
+	/** The message explaining the key bindings */
+	private TutorialData keyBindingsMessage;
+
 	public String levelName;
 
 	/** If a selection is currently happening. Even if nothing is selected by
@@ -311,7 +316,7 @@ public class LevelDesignerMode extends WorldController {
 
 	 */
 	public LevelDesignerMode() {
-		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,WATER_GRAVITY);
+		super(DEFAULT_WIDTH, DEFAULT_HEIGHT, WATER_GRAVITY);
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
@@ -332,7 +337,7 @@ public class LevelDesignerMode extends WorldController {
 		instructionCache = new Vector2();
 		footprints = new ArrayList<FootPrintModel>();
 		golems = new ArrayList<HostModel>();
-		if(!loadBoard){
+		if (!loadBoard) {
 			level = new Level();
 		}
 
@@ -341,6 +346,16 @@ public class LevelDesignerMode extends WorldController {
 		for (int i = 0; i < NUM_LEVELS; i++) {
 			levels.add(Gdx.files.internal("levels/" + i + ".lvl"));
 		}
+
+		pedestalMessage = new TutorialData();
+		pedestalMessage.countdown = 3;
+		pedestalMessage.location = new Vector2(50, 50);
+		pedestalMessage.instructions = "The level can't be saved without a pedestal!";
+
+		keyBindingsMessage = new TutorialData();
+		keyBindingsMessage.countdown = 10;
+		keyBindingsMessage.location = new Vector2(50, 50);
+		keyBindingsMessage.instructions = "Press ENTER to save, C to clear, and R to reset to the original loaded level.";
 	}
 
 	/**
@@ -414,12 +429,14 @@ public class LevelDesignerMode extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-
 		if(currentLevel == -1){
 			newLevel = true;
 		}else{
 			newLevel = false;
 		}
+
+		tutorial.reset();
+		tutorial.addTutorial(keyBindingsMessage);
 
 //		if(fromCustom || newLevel){
 //			File folder = new File("Custom");
@@ -1382,6 +1399,7 @@ public class LevelDesignerMode extends WorldController {
                 save(getLevelName());
                 System.out.println("Saving level as: " + getLevelName());
             } else {
+				tutorial.addTutorial(pedestalMessage);
                 System.out.println("Did not save level: no pedestal found");
             }
         }

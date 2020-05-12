@@ -1292,6 +1292,12 @@ public abstract class WorldController implements Screen {
 		if (arrow != null && !failed){
 			arrow.draw(canvas);
 		}
+
+		// Check to hid tutorial
+		if (!tutorial.didCompleteTutorial()) {
+			tutorial.drawTutorial(delta);
+			tutorial.updateTutorial(delta);
+		}
 	}
 	
 	/**

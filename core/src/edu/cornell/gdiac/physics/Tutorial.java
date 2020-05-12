@@ -90,6 +90,8 @@ public class Tutorial {
     }
 
     public void addTutorial(TutorialData tutorialData) {
+        reset();
+
         currentTutorial = tutorialData;
 
         if (currentTutorial != null) {
