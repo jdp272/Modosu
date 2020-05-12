@@ -380,6 +380,11 @@ public class HostModel extends BoxObstacle {
     private boolean inPillar;
 
     /**
+     * Whether return was a fizzle
+     */
+    private boolean isFizzle;
+
+    /**
      * drawing scales to resize the host (doesn't affect hit box)
      */
     private float sx = 0.4f;
@@ -442,6 +447,13 @@ public class HostModel extends BoxObstacle {
         return moving;
     }
 
+    /**
+     * Sets whether the possession was a fizzle
+     * @param fizzle is true if was fizzle
+     */
+    public void setFizzle(boolean fizzle) {
+        isFizzle = fizzle;
+    }
 
     /**
      * Gets the max charge a host can hold before exploding
@@ -961,6 +973,20 @@ public class HostModel extends BoxObstacle {
 
     }
 
+    public boolean animateDeath() {
+        int frame = HOST_START;
+        if(hostStrip != null) {
+            frame = hostStrip.getFrame();
+        }
+        System.out.println(frame);
+
+        if(frame >= HOST_START && frame < HOST_FINISH) {
+            frame++;
+        }
+        hostStrip.setFrame(frame);
+        return frame == HOST_FINISH;
+    }
+
 
 
 
@@ -994,13 +1020,14 @@ public class HostModel extends BoxObstacle {
             if (updateFrame) {
 
                 //Update UI for Charge
-                this.hostChargeUI.setFrame((int) ((this.currentCharge / this.maxCharge) * HOST_CHARGE_UI_END));
+                this.hostChargeUI.setFrame(Math.min(HOST_CHARGE_UI_END, (int) ((this.currentCharge / this.maxCharge) * HOST_CHARGE_UI_END)));
 
                 if (direction.x > threshold) {
                     // NORTH EAST
                     if (direction.y > threshold) {
                         hostStrip = hostStripNE;
                         glyphStrip = glyphStripNE;
+                        deadStrip = deadStripNE;
                         this.armFrame = HOST_ARM_NORTH_EAST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -1013,6 +1040,7 @@ public class HostModel extends BoxObstacle {
                     else if (direction.y < -threshold) {
                         hostStrip = hostStripSE;
                         glyphStrip = glyphStripSE;
+                        deadStrip = deadStripSE;
                         this.armFrame = HOST_ARM_SOUTH_EAST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -1024,6 +1052,7 @@ public class HostModel extends BoxObstacle {
                     if (Math.abs(direction.y) < threshold) {
                         hostStrip = hostStripE;
                         glyphStrip = glyphStripE;
+                        deadStrip = deadStripE;
                         this.armFrame = HOST_ARM_EAST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -1036,6 +1065,7 @@ public class HostModel extends BoxObstacle {
                     if (direction.y > threshold) {
                         hostStrip = hostStripNW;
                         glyphStrip = glyphStripNW;
+                        deadStrip = deadStripNW;
                         this.armFrame = HOST_ARM_NORTH_WEST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -1047,6 +1077,7 @@ public class HostModel extends BoxObstacle {
                     else if (direction.y < -threshold) {
                         hostStrip = hostStripSW;
                         glyphStrip = glyphStripSW;
+                        deadStrip = deadStripSW;
                         this.armFrame = HOST_ARM_SOUTH_WEST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -1058,6 +1089,7 @@ public class HostModel extends BoxObstacle {
                     if (Math.abs(direction.y) < threshold) {
                         hostStrip = hostStripW;
                         glyphStrip = glyphStripW;
+                        deadStrip = deadStripW;
                         this.armFrame = HOST_ARM_WEST;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -1070,6 +1102,7 @@ public class HostModel extends BoxObstacle {
                     if (direction.y > threshold) {
                         hostStrip = hostStripN;
                         glyphStrip = glyphStripN;
+                        deadStrip = deadStripN;
                         this.armFrame = HOST_ARM_NORTH;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -1081,6 +1114,7 @@ public class HostModel extends BoxObstacle {
                     else if (direction.y < -threshold) {
                         hostStrip = hostStripS;
                         glyphStrip = glyphStripS;
+                        deadStrip = deadStripS;
                         this.armFrame = HOST_ARM_SOUTH;
                         if (frame < HOST_FINISH && frame >= HOST_START) {
                             frame++;
@@ -1089,10 +1123,15 @@ public class HostModel extends BoxObstacle {
                         }
                     }
                 }
-                if(hostStrip != null && glyphStrip != null && armStrip != null) {
+
+                if(hostStrip != null && glyphStrip != null && armStrip != null && deadStrip != null) {
+                    deadStrip.setFrame(frame);
                     hostStrip.setFrame(frame);
                     glyphStrip.setFrame(frame);
                     armStrip.setFrame(this.armFrame);
+                    if(this.currentCharge == this.maxCharge) {
+                        hostStrip = deadStrip;
+                    }
                 }
             }
         }
@@ -1163,9 +1202,7 @@ public class HostModel extends BoxObstacle {
                         canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                         // WHEN GOLEM DIES
                     } else {
-                        canvas.draw(hostStrip, Color.RED, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-                        canvas.draw(glyphStrip, Color.RED, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
-                        canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
+                        canvas.draw(hostStrip, Color.WHITE, deadStrip.getRegionWidth() / 2f, deadStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     }
 
                 }
@@ -1177,7 +1214,11 @@ public class HostModel extends BoxObstacle {
                 }
 
                 if(!this.hasPlayedPossession && this.isPossessed && !animatePossession()) {
-                    canvas.draw(possessionStrip, Color.WHITE, possessionStrip.getRegionWidth() / 2f, possessionStrip.getRegionHeight() /1.8f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.8f, 0.8f);
+                    if(this.isFizzle) {
+                        canvas.draw(possessionStrip, Color.RED, possessionStrip.getRegionWidth() / 2f, possessionStrip.getRegionHeight() / 1.8f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.8f, 0.8f);
+                    } else {
+                        canvas.draw(possessionStrip, Color.WHITE, possessionStrip.getRegionWidth() / 2f, possessionStrip.getRegionHeight() / 1.8f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.8f, 0.8f);
+                    }
                 }
             }
         }
