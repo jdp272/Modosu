@@ -10,6 +10,7 @@
 package edu.cornell.gdiac.physics.host;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -82,6 +83,11 @@ public class HostModel extends BoxObstacle {
      * The texture for charge UI
      */
     FilmStrip hostChargeUI;
+
+    /**
+     * The texture for shadow
+     */
+    TextureRegion hostShadow;
 
     /**
      * The texture for general glyph strip
@@ -837,6 +843,10 @@ public class HostModel extends BoxObstacle {
         }
     }
 
+    public void setHostShadow(TextureRegion shadow) {
+        this.hostShadow = shadow;
+    }
+
     /**
      * Sets all the textures by direction for the host
      *
@@ -1224,6 +1234,17 @@ public class HostModel extends BoxObstacle {
         }
     }
 
+    /**
+     * Draws the host shadow
+     *
+     * @param canvas Drawing context
+     */
+    public void drawShadow(GameCanvas canvas) {
+        if (!this.isPedestal) {
+            setScaling(hostShadow);
+            canvas.draw(hostShadow, Color.BLACK, hostChargeUI.getRegionWidth() / 2f,hostChargeUI.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 0.9f, 0.9f);
+        }
+    }
 
     /**
      * Draws the host charge UI bar.

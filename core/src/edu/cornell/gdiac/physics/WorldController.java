@@ -157,6 +157,8 @@ public abstract class WorldController implements Screen {
 
 	/** File to texture for Hosts' Gauge */
 	private static String HOST_GAUGE_FILE = "host/chargeGauge.png";
+	/** File to texture for Hosts' Shadow */
+	private static String HOST_SHADOW_FILE = "host/shadow.png";
 	/** Texture file for arrow sprite */
 	private static final String ARROW_FILE = "shared/arrow.png";
 	/** File to texture for Walls */
@@ -268,6 +270,8 @@ public abstract class WorldController implements Screen {
 	private static Texture hostWakingUpTexture;
 	/** Texture for Host Gauge SpriteSheet */
 	private static Texture hostGaugeTexture;
+	/** Texture for Host Shadow */
+	private static Texture hostShadowTexture;
 	/** Texture for Wall SpriteSheet */
 	private static Texture wallTexture;
 	/** Texture for Water SpriteSheet */
@@ -417,6 +421,8 @@ public abstract class WorldController implements Screen {
 		assets.add(HOST_WAKING_UP_FILE);
 		manager.load(HOST_GAUGE_FILE, Texture.class);
 		assets.add(HOST_GAUGE_FILE);
+		manager.load(HOST_SHADOW_FILE, Texture.class);
+		assets.add(HOST_SHADOW_FILE);
 		manager.load(WALL_FILE, Texture.class);
 		assets.add(WALL_FILE);
 		manager.load(WATER_FILE, Texture.class);
@@ -530,6 +536,7 @@ public abstract class WorldController implements Screen {
 		hostGenPossessionTexture = manager.get(HOST_GEN_POSSESSION_FILE, Texture.class);
 		hostWakingUpTexture = manager.get(HOST_WAKING_UP_FILE, Texture.class);
 		hostGaugeTexture = manager.get(HOST_GAUGE_FILE, Texture.class);
+		hostShadowTexture = manager.get(HOST_SHADOW_FILE, Texture.class);
 		wallTexture = manager.get(WALL_FILE, Texture.class);
 		waterTexture = manager.get(WATER_FILE, Texture.class);
 		cornerTexture = manager.get(CORNER_FILE, Texture.class);
@@ -552,7 +559,7 @@ public abstract class WorldController implements Screen {
 
 		// Set the proper textures in the factory
 		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture,
-				hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW,
+				hostGaugeTexture, hostShadowTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW,
 				hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, hostGlyphTextureE,
 				hostGlyphTextureN, hostGlyphTextureNE, hostGlyphTextureNW, hostGlyphTextureS,
 				hostGlyphTextureSE, hostGlyphTextureSW, hostGlyphTextureW, hostDeathTextureE,
@@ -1167,7 +1174,7 @@ public abstract class WorldController implements Screen {
 			wall.drawFront(canvas);
 		}
 		for(HostModel host : hostDrawLayer) {
-			host.drawCharge(canvas);
+			host.drawShadow(canvas);
 		}
 		for(HostModel host : hostDrawLayer) {
 			host.draw(canvas);
@@ -1177,6 +1184,9 @@ public abstract class WorldController implements Screen {
 		}
 		for(Wall wall : wallDrawLayer) {
 			wall.drawTop(canvas);
+		}
+		for(HostModel host : hostDrawLayer) {
+			host.drawCharge(canvas);
 		}
 		for(BorderEdge edge : edgeDrawLayer) {
 			edge.drawNotTop(canvas);

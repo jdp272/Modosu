@@ -58,7 +58,10 @@ public class GameCanvas {
 		ADDITIVE,
 		/** Color values are draw on top of one another with no transparency support */
 		OPAQUE
-	}	
+	}
+
+	public static final float ZOOM_IN_MULTIPLIER = 1.25f;
+	public static final float ZOOM_OUT_MULTIPLIER = 2.f;
 
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
@@ -149,6 +152,8 @@ public class GameCanvas {
 		global = new Matrix4();
 		vertex = new Vector2();
 		camPos = new Vector2();
+
+		camera.zoom = ZOOM_IN_MULTIPLIER;
 	}
 		
     /**
@@ -235,7 +240,7 @@ public class GameCanvas {
 	 * Begins the process of zooming the camera out
 	 */
 	public void zoomOut() {
-		targetZoom = 1.75f;
+		targetZoom = ZOOM_OUT_MULTIPLIER;
 		zoomingOut = true;
 		zoomingIn = false;
 		zooming = true;
@@ -245,7 +250,7 @@ public class GameCanvas {
 	 * Begins the process of zooming the camera out
 	 */
 	public void zoomIn() {
-	    targetZoom = 1;
+	    targetZoom = ZOOM_IN_MULTIPLIER;
 		zoomingIn = true;
 		zoomingOut = false;
 		zooming = true;
