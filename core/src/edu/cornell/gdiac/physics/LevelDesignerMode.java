@@ -1324,8 +1324,7 @@ public class LevelDesignerMode extends WorldController {
 			}
             else if(selector.getObstacle().getName() == "oscWall") {
                 ((OscWall) selection).setGoingUp(false);
-				((OscWall) selection).setVert(false);
-				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), false);
+				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), ((OscWall) selection).isGoingUp());
             }
 		}
 		if (input.didPressDown() && selector.isSelected()) {
@@ -1338,10 +1337,26 @@ public class LevelDesignerMode extends WorldController {
 			}
             else if(selector.getObstacle().getName() == "oscWall") {
                 ((OscWall) selection).setGoingUp(true);
-				((OscWall) selection).setVert(true);
-				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), true);
+				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), ((OscWall) selection).isGoingUp());
             }
 		}
+
+		if (input.didPressLeft() && selector.isSelected()) {
+			Obstacle selection = selector.getObstacle();
+			if(selector.getObstacle().getName() == "oscWall") {
+				((OscWall) selection).setVert(true);
+				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), ((OscWall) selection).isGoingUp());
+			}
+		}
+
+		if (input.didPressRight() && selector.isSelected()) {
+			Obstacle selection = selector.getObstacle();
+			if(selector.getObstacle().getName() == "oscWall") {
+				((OscWall) selection).setVert(false);
+				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), ((OscWall) selection).isGoingUp());
+			}
+		}
+
 
 
 		if(input.didDelete()) {
