@@ -440,7 +440,6 @@ public class LevelSelectMode extends WorldController implements Screen {
                 SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
                 pressState = 4;
                 isPressed = true;
-                page++;
             }
         }
         if(screenX >= prevStart.x && screenX <= prevEnd.x && page != 0) {
@@ -448,7 +447,6 @@ public class LevelSelectMode extends WorldController implements Screen {
                 SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
                 pressState = 5;
                 isPressed = true;
-                page--;
             }
         }
 
