@@ -95,6 +95,12 @@ public class GameCanvas {
 	private float panSpeed = 2.5f;
 	/** The place that the camera wants to pan to */
 	private Vector2 camTarget;
+	/** The intensity of camera shake */
+	private float shakeIntensity;
+	/** Total number of frames that this shake will take place over */
+	private int shakeDuration;
+	/** Number of shake frames that have passed so far */
+	private int shakeElapsed;
 
 	// Zoom Variables
 	private float currentZoom;
@@ -168,11 +174,36 @@ public class GameCanvas {
 		camTarget = target;
 	}
 
+	public void shakeCamera(float intensity, int duration) {
+		shakeDuration = duration;
+		shakeIntensity = intensity;
+		shakeElapsed = 0;
+	}
+
+	/**
+	 * Forces the camera to move directly to the set position, no smoothing
+	 * @param position the position to move to
+	 */
+	public void forceCamPosition(Vector2 position) {
+		camera.position.set(position.x, position.y, 0);
+		camera.update();
+		camPos.set(camera.position.x, camera.position.y);
+	}
+
 	public Vector2 updateCamera() {
 		// TODO add smoothing
 	    // This line results in the camera following directly on the player, will add smoothing later
 		smoothX = (int)MathUtils.lerp(camera.position.x, camTarget.x, smoothFactor);
 		smoothY = (int)MathUtils.lerp(camera.position.y, camTarget.y, smoothFactor);
+
+		if (shakeElapsed < shakeDuration) {
+			shakeElapsed++;
+			float x = (MathUtils.random() - 0.5f) * shakeIntensity;
+			float y = (MathUtils.random() - 0.5f) * shakeIntensity;
+			smoothX += x;
+			smoothY += y;
+		}
+
 		camera.translate(smoothX - camera.position.x, smoothY - camera.position.y);
 		if (zooming) {
 			camera.zoom = MathUtils.lerp(camera.zoom, targetZoom, 0.1f);
@@ -181,6 +212,9 @@ public class GameCanvas {
 				zooming = false;
 			}
 		}
+
+
+
 
 		camera.update();
 
