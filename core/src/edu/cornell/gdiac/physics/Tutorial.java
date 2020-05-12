@@ -103,6 +103,9 @@ public class Tutorial {
 
     public void drawTutorial(float dt) {
         stage.act(dt);
+
+        if(didCompleteTutorial()) return;
+
         stage.draw();
     }
 
@@ -125,6 +128,15 @@ public class Tutorial {
                 countdown--;
                 counter = 0;
             }
+        }
+
+        // Fade out the box
+        if(countdown <= 1) {
+            if(counter >= 0.5) {
+                table.setColor(1.f, 1.f, 1.f, 1.f - ((counter - 0.5f) * 2.f));
+            }
+        } else {
+            table.setColor(1.f, 1.f, 1.f, 1.f);
         }
     }
 
