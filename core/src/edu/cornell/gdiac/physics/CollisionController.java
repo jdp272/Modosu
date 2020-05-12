@@ -125,6 +125,9 @@ public class CollisionController implements ContactListener {
                 // host is now possessed
                 hostPossessed.setPossessed(true);
 
+                // set impact for screen shake
+                hostPossessed.setImpact(true);
+
                 // Spirit's life is replenished upon possessing new host
                 spirit.setCurrentLife(spirit.getDefaultLife());
 

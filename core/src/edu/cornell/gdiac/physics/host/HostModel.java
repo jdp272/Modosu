@@ -370,7 +370,10 @@ public class HostModel extends BoxObstacle {
      * Whether the host is a pedestal or not
      */
     private boolean isPedestal;
-
+    /**
+     * Set to true on collision, then set to false after camera shake happens
+     */
+    private boolean impact;
     /**
      * Whether the host is in a pillar or not
      */
@@ -595,6 +598,7 @@ public class HostModel extends BoxObstacle {
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
         isPossessed = false;
+        impact = false;
         isAlive = true;
         setName("host");
     }
@@ -625,6 +629,7 @@ public class HostModel extends BoxObstacle {
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
+        impact = false;
         isPossessed = true;
         isAlive = false;
         setName("pedestal");
@@ -732,9 +737,21 @@ public class HostModel extends BoxObstacle {
         return hasBeenPossessed;
     }
 
-//    public void setBeenPossessed(boolean b){
-//        hasBeenPossessed = b;
-//    }
+    /**
+     * Getter for impact
+     * @return true if the golem was just hit by a spirit
+     */
+    public boolean getImpact() {
+        return impact;
+    }
+
+    /**
+     * Setter for impact (for camera shake)
+     * @param impact true if the golem was just hit by a spirit
+     */
+    public void setImpact(boolean impact) {
+        this.impact = impact;
+    }
 
     /**
      * Gets the full list of instructions
