@@ -440,7 +440,7 @@ public class GamePlayController extends WorldController {
 
 		if (spirit.getDidBounce()) {
 			spirit.decCurrentLife(lifePerBounce);
-			canvas.shakeCamera(7, 5);
+			canvas.shakeCamera(15, 5);
 		}
 
 		/*
