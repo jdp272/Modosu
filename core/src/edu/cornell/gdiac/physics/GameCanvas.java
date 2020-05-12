@@ -58,7 +58,10 @@ public class GameCanvas {
 		ADDITIVE,
 		/** Color values are draw on top of one another with no transparency support */
 		OPAQUE
-	}	
+	}
+
+	public static final float ZOOM_IN_MULTIPLIER = 1.25f;
+	public static final float ZOOM_OUT_MULTIPLIER = 1.75f;
 
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
@@ -149,6 +152,8 @@ public class GameCanvas {
 		global = new Matrix4();
 		vertex = new Vector2();
 		camPos = new Vector2();
+
+		camera.zoom = ZOOM_IN_MULTIPLIER;
 	}
 		
     /**
@@ -213,9 +218,6 @@ public class GameCanvas {
 			}
 		}
 
-
-
-
 		camera.update();
 
 		return camPos.set(camera.position.x, camera.position.y);
@@ -235,7 +237,7 @@ public class GameCanvas {
 	 * Begins the process of zooming the camera out
 	 */
 	public void zoomOut() {
-		targetZoom = 1.75f;
+		targetZoom = ZOOM_OUT_MULTIPLIER;
 		zoomingOut = true;
 		zoomingIn = false;
 		zooming = true;
@@ -245,7 +247,7 @@ public class GameCanvas {
 	 * Begins the process of zooming the camera out
 	 */
 	public void zoomIn() {
-	    targetZoom = 1;
+	    targetZoom = ZOOM_IN_MULTIPLIER;
 		zoomingIn = true;
 		zoomingOut = false;
 		zooming = true;
@@ -321,6 +323,15 @@ public class GameCanvas {
 	 */
 	public Vector2 getSize() {
 		return new Vector2(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+	}
+
+	/**
+	 * Returns the current zoom of the camera
+	 *
+	 * @return the current zoom of the camera
+	 */
+	public float getZoom() {
+		return camera.zoom;
 	}
 	
 	/**

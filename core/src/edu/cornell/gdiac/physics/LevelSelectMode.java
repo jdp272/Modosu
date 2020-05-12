@@ -119,6 +119,53 @@ public class LevelSelectMode extends WorldController implements Screen {
     private int pressState;
 
     /**
+     * A boolean indicating if preset levels should be offered. For normal
+     * playing, preset levels are likely wanted, but before going to level
+     * designer, preset levels should not be available.
+     */
+    private boolean forceCustom = false;
+
+    /**
+     * A boolean indicating if preset levels should be offered. For normal
+     * playing, preset levels are likely wanted, but before going to level
+     * designer, preset levels should not be available.
+     *
+     * @param value The new value for force custom
+     */
+    public void setForceCustom(boolean value) {
+        forceCustom = value; // Set this first so setCustom will work properly
+        setCustom(value);
+    }
+
+    /**
+     * Set whether to use custom levels or not. Will not function if forceCustom
+     * is true
+     *
+     * @param custom Whether custom levels should be used or not
+     */
+    private void setCustom(boolean custom) {
+        if(forceCustom && !custom) {
+            // If forceCustom, make sure custom is set to true, regardless of
+            // the input to this function
+            setCustom(true);
+            return;
+        }
+
+        onCustom = custom;
+
+        getLevels(custom);
+        File folder;
+        folder = Gdx.files.local("Custom").file();
+
+        if (custom) {
+            pages = (int) Math.ceil(folder.listFiles(Constants.filenameFilter).length / 4.0) + 1;
+        }
+        else {
+            pages = numLevels / 4 + 1;
+        }
+    }
+
+    /**
      * Preloads the assets for this controller.
      *
      * To make the game modes more for-loop friendly, we opted for nonstatic loaders
@@ -217,7 +264,7 @@ public class LevelSelectMode extends WorldController implements Screen {
         page = 0;
 
         colorHovered = new Color(Color.rgb565(190f,245f,253f));
-        colorUnhovered = new Color(Color.WHITE);
+        colorUnhovered = Color.WHITE;
         colorOne = colorUnhovered;
         colorTwo = colorUnhovered;
         colorThree = colorUnhovered;
@@ -244,6 +291,7 @@ public class LevelSelectMode extends WorldController implements Screen {
      * This method disposes of the world and creates a new one.
      */
     public void reset() {
+        renderHUD = false;
     }
 
 
@@ -322,7 +370,9 @@ public class LevelSelectMode extends WorldController implements Screen {
         center.y = customEnd.y;//(customEnd.y + customStart.y)/2;
         levelFont.setColor(customColor);
         levelFont.getData().setScale(0.75f, 0.75f);
-        if(!onCustom){
+        if(!onCustom || forceCustom){
+            // Show the word custom when it is a button to go to the custom
+            // presets, or if the player must stay on custom levels
             name = "Custom";
         }else{
             name = "Presets";
@@ -471,6 +521,8 @@ public class LevelSelectMode extends WorldController implements Screen {
             }
 
             if (screenX >= customStart.x && screenX <= customEnd.x) {
+
+                /* TODO this should be removed but I'm too afraid to delete things right now
                 if (screenY >= customStart.y && screenY <= customEnd.y && pressState == 6) {
                     page = 0;
                     File folder;
@@ -492,6 +544,9 @@ public class LevelSelectMode extends WorldController implements Screen {
                         pages = numLevels / 4 + 1;
                     }
                 }
+
+                 */
+                setCustom(!onCustom);
             }
         }
         colorOne = colorUnhovered;
@@ -604,16 +659,17 @@ public class LevelSelectMode extends WorldController implements Screen {
                 }
             }
             if (screenX >= customStart.x && screenX <= customEnd.x) {
-                if (screenY >= customStart.y && screenY <= customEnd.y) {
-                    customColor = colorHovered;
-                    if (!hoverCustom) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
-                        hoverCustom = true;
+                if(!forceCustom) {
+                    if (screenY >= customStart.y && screenY <= customEnd.y) {
+                        customColor = colorHovered;
+                        if (!hoverCustom) {
+                            SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                            hoverCustom = true;
+                        }
+                    } else {
+                        customColor = colorUnhovered;
+                        hoverCustom = false;
                     }
-                }
-                else {
-                    customColor = colorUnhovered;
-                    hoverCustom = false;
                 }
             }
 

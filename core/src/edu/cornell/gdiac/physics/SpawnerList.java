@@ -81,7 +81,7 @@ public class SpawnerList {
 
         // This starts at the middle of the screen, because with the camera
         // offset, it will be the upper right corner
-        bottom = canvas.getHeight() / 2.f / scale.y;
+        bottom = canvas.getZoom() * canvas.getHeight() / 2.f / scale.y;
 
         spawnerList = new ArrayList<Spawner>();
     }
@@ -107,8 +107,11 @@ public class SpawnerList {
 
 //        obj.setX((canvas.getWidth() + camTarget.x) / scale.x - boxSpawn.getWidth() / 2.f);
 //        obj.setY((canvas.getHeight() + camTarget.y) / scale.y - boxSpawn.getHeight() / 2.f);
+        obj.setWidth(Constants.TILE_WIDTH);
+        obj.setHeight(Constants.TILE_HEIGHT);
+
         bottom -= obj.getHeight() / 2.f;
-        obj.setX(canvas.getWidth() / 2.f / scale.x - obj.getWidth() / 2.f);
+        obj.setX(canvas.getZoom() * canvas.getWidth() / 2.f / scale.x - obj.getWidth() / 2.f);
         obj.setY(bottom);
         bottom -= obj.getHeight() / 2.f;
 

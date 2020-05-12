@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.host.HostModel;
@@ -15,6 +16,7 @@ public class Factory {
     private static int DEFAULT_LIFE = 250;
 
     private Texture hostChargeTexture;
+    private Texture hostShadow;
     private Texture hostTextureE;
     private Texture hostTextureN;
     private Texture hostTextureNE;
@@ -62,6 +64,9 @@ public class Factory {
     private Texture oscWallHorzTexture;
     private Texture oscWallHorzGaugeTexture;
     private Texture rootsTexture;
+
+    /** The shadow texture for hosts. Not a film strip, so can be stored here */
+    private TextureRegion hostShadowRegion;
 
     // Static variables for sprite sheets
 
@@ -213,12 +218,17 @@ public class Factory {
     /** Can be set. If true, instantiated objects are sensors */
     public boolean makeSensors;
 
+    /** Can be set. If true, new objects are the size of a tile */
+    public boolean makeTileSized;
+
+
     public Factory(
             Vector2 scale,
             Texture spiritBodyTexture,
             Texture spiritHeadTexture,
             Texture spiritTailTexture,
             Texture hostChargeTexture,
+            Texture hostShadow,
             Texture hostTextureE,
             Texture hostTextureN,
             Texture hostTextureNE,
@@ -269,6 +279,7 @@ public class Factory {
         this.spiritHeadTexture = spiritHeadTexture;
         this.spiritTailTexture = spiritTailTexture;
         this.hostChargeTexture = hostChargeTexture;
+        this.hostShadow = hostShadow;
         this.hostTextureE = hostTextureE;
         this.hostTextureN = hostTextureN;
         this.hostTextureNE = hostTextureNE;
@@ -313,6 +324,8 @@ public class Factory {
         this.oscWallHorzTexture = oscWallHorzTexture;
         this.oscWallHorzGaugeTexture = oscWallHorzGaugeTexture;
         this.rootsTexture = rootsTexture;
+
+        this.hostShadowRegion = new TextureRegion(hostShadow);
     }
 
     public DecorativeRoots makeDecorativeRoot(float x, float y, int frame) {
@@ -363,6 +376,10 @@ public class Factory {
         wall.setBodyType(BodyDef.BodyType.StaticBody);
         wall.setSensor(makeSensors);
         wall.setName("wall");
+        if(makeTileSized) {
+            wall.setWidth(Constants.TILE_WIDTH);
+            wall.setHeight(Constants.TILE_HEIGHT);
+        }
         return wall;
     }
 
@@ -387,6 +404,10 @@ public class Factory {
         wall.setBodyType(BodyDef.BodyType.StaticBody);
         wall.setSensor(makeSensors);
         wall.setName("wall");
+        if(makeTileSized) {
+            wall.setWidth(Constants.TILE_WIDTH);
+            wall.setHeight(Constants.TILE_HEIGHT);
+        }
         return wall;
     }
 
@@ -460,6 +481,10 @@ public class Factory {
         water.setBodyType(BodyDef.BodyType.StaticBody);
         water.setSensor(makeSensors);
         water.setName("water");
+        if(makeTileSized) {
+            water.setWidth(Constants.TILE_WIDTH);
+            water.setHeight(Constants.TILE_HEIGHT);
+        }
         return water;
     }
 
@@ -481,6 +506,10 @@ public class Factory {
         sand.setBodyType(BodyDef.BodyType.KinematicBody);
         sand.setSensor(makeSensors);
         sand.setName("sand");
+        if(makeTileSized) {
+            sand.setWidth(Constants.TILE_WIDTH);
+            sand.setHeight(Constants.TILE_HEIGHT);
+        }
         return sand;
     }
 
@@ -515,6 +544,10 @@ public class Factory {
         oscWall.setBodyType(BodyDef.BodyType.KinematicBody);
         oscWall.setSensor(makeSensors);
         oscWall.setName("oscWall");
+        if(makeTileSized) {
+            oscWall.setWidth(Constants.TILE_WIDTH);
+            oscWall.setHeight(Constants.TILE_HEIGHT);
+        }
         return oscWall;
     }
 
@@ -545,12 +578,7 @@ public class Factory {
     }
 
     public HostModel makeSmallHost(float x, float y, Vector2[] instructions, int currentCharge) {
-        return makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, currentCharge, hostTextureE, hostTextureN,
-                hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW,
-                glyphTextureE, glyphTextureN, glyphTextureNE, glyphTextureNW, glyphTextureS, glyphTextureSE,
-                glyphTextureSW, glyphTextureW, hostDeathTextureE, hostDeathTextureN, hostDeathTextureNE,
-                hostDeathTextureNW, hostDeathTextureS, hostDeathTextureSE, hostDeathTextureSW,
-                hostDeathTextureW, hostArmTexture, hostGenPossession, hostNewPossession, hostWakingUp, hostChargeTexture);
+        return makeHostInternal(x, y, instructions, SMALL_MAX_CHARGE, currentCharge);
     }
 
     public HostModel makePedestal(float x, float y) {
@@ -571,20 +599,14 @@ public class Factory {
         ped.setPedestalStrip(new FilmStrip(pedestalTexture, PEDESTAL_ROWS, PEDESTAL_COLS, PEDESTAL_SIZE));
         ped.setName("pedestal");
         ped.setSensor(makeSensors);
+        if(makeTileSized) {
+            ped.setWidth(Constants.TILE_WIDTH);
+            ped.setHeight(Constants.TILE_HEIGHT);
+        }
         return ped;
     }
 
-    private HostModel makeHostInternal(float x, float y, Vector2[] instructions, int maxCharge, int currentCharge,
-                                       Texture hostTextureE, Texture hostTextureN, Texture hostTextureNE,
-                                       Texture hostTextureNW, Texture hostTextureS, Texture hostTextureSE,
-                                       Texture hostTextureSW, Texture hostTextureW, Texture glyphTextureE,
-                                       Texture glyphTextureN, Texture glyphTextureNE, Texture glyphTextureNW,
-                                       Texture glyphTextureS, Texture glyphTextureSE, Texture glyphTextureSW,
-                                       Texture glyphTextureW, Texture hostDeathTextureE, Texture hostDeathTextureN,
-                                       Texture hostDeathTextureNE, Texture hostDeathTextureNW, Texture hostDeathTextureS,
-                                       Texture hostDeathTextureSE, Texture hostDeathTextureSW, Texture hostDeathTextureW,
-                                       Texture hostArmTexture, Texture hostGenPossession, Texture hostNewPossession,
-                                       Texture hostWakingUp, Texture hostChargeTexture) {
+    private HostModel makeHostInternal(float x, float y, Vector2[] instructions, int maxCharge, int currentCharge) {
         HostModel host = new HostModel(
                 x,
                 y,
@@ -598,6 +620,7 @@ public class Factory {
         );
         host.setDrawScale(scale);
         host.setChargeStrip(new FilmStrip(hostChargeTexture, CHARGE_ROWS, CHARGE_COLUMNS, CHARGE_SIZE), currentCharge);
+        host.setHostShadow(hostShadowRegion);
         host.setHostStrip(new FilmStrip(hostTextureE, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(hostTextureN, HOST_ROWS, HOST_COLUMNS, HOST_SIZE),
                 new FilmStrip(hostTextureNE, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(hostTextureNW, HOST_ROWS, HOST_COLUMNS, HOST_SIZE),
                 new FilmStrip(hostTextureS, HOST_ROWS, HOST_COLUMNS, HOST_SIZE), new FilmStrip(hostTextureSE, HOST_ROWS, HOST_COLUMNS, HOST_SIZE),
@@ -617,6 +640,10 @@ public class Factory {
         host.setCurrentCharge(currentCharge);
         host.setName("host");
         host.setSensor(makeSensors);
+        if(makeTileSized) {
+            host.setWidth(Constants.TILE_WIDTH);
+            host.setHeight(Constants.TILE_HEIGHT);
+        }
         return host;
     }
 }

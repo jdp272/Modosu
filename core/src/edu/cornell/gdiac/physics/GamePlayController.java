@@ -195,6 +195,8 @@ public class GamePlayController extends WorldController {
 		setFailure(false);
 		setMenu(false);
 
+		renderHUD = true;
+
 		System.out.println("just called play game music");
 		MusicController.getInstance().play("gameMusic");
 		// MusicController.getInstance().setVolume(40);
