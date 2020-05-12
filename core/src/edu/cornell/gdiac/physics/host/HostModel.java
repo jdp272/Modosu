@@ -1139,7 +1139,7 @@ public class HostModel extends BoxObstacle {
                     hostStrip.setFrame(frame);
                     glyphStrip.setFrame(frame);
                     armStrip.setFrame(this.armFrame);
-                    if(this.currentCharge == this.maxCharge) {
+                    if(this.currentCharge >= this.maxCharge) {
                         hostStrip = deadStrip;
                     }
                 }

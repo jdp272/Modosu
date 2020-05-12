@@ -191,6 +191,8 @@ public class LevelDesignerMode extends WorldController {
     private TutorialData pedestalMessage;
 	/** The message explaining the key bindings */
 	private TutorialData keyBindingsMessage;
+	/** The message explaining the osc wall usage */
+	private TutorialData oscWallMessage;
 
 	public String levelName;
 
@@ -356,6 +358,11 @@ public class LevelDesignerMode extends WorldController {
 		keyBindingsMessage.countdown = 10;
 		keyBindingsMessage.location = new Vector2(50, 50);
 		keyBindingsMessage.instructions = "Press ENTER to save, C to clear, and R to reset to the original loaded level.";
+
+		oscWallMessage = new TutorialData();
+		oscWallMessage.countdown = 5;
+		oscWallMessage.location = new Vector2(50, 50);
+		oscWallMessage.instructions = "Use arrow keys to raise, lower, and rotate oscillating walls.";
 	}
 
 	/**
@@ -1231,6 +1238,9 @@ public class LevelDesignerMode extends WorldController {
 				addObject(spawnedObj);
 //				selector.select(mouseX, mouseY);
 				selector.select(spawnedObj);
+				if(spawnedObj instanceof OscWall) {
+					tutorial.addTutorial(oscWallMessage);
+				}
 				selecting = true;
 			}
 		}
@@ -1339,7 +1349,7 @@ public class LevelDesignerMode extends WorldController {
 
 		updateSelector(hasPed);
 
-		if (input.didPressUp() && selector.isSelected()) {
+		if (input.didHoldUp() && selector.isSelected()) {
 			Obstacle selection = selector.getObstacle();
 			if(selector.getObstacle().getName() == "host") {
 				if (((HostModel) selection).getCurrentCharge() < MAX_CHARGE_CAPACITY) {
@@ -1352,7 +1362,7 @@ public class LevelDesignerMode extends WorldController {
 				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), ((OscWall) selection).isGoingUp());
             }
 		}
-		if (input.didPressDown() && selector.isSelected()) {
+		if (input.didHoldDown() && selector.isSelected()) {
 			Obstacle selection = selector.getObstacle();
 			if(selector.getObstacle().getName() == "host") {
 				if (((HostModel) selection).getCurrentCharge() > MIN_CHARGE_CAPACITY) {
@@ -1366,18 +1376,11 @@ public class LevelDesignerMode extends WorldController {
             }
 		}
 
-		if (input.didPressLeft() && selector.isSelected()) {
+		// Toggle if the osc wall is vertical when left or right pressing
+		if ((input.didPressLeft() || input.didPressRight()) && selector.isSelected()) {
 			Obstacle selection = selector.getObstacle();
 			if(selector.getObstacle().getName() == "oscWall") {
-				((OscWall) selection).setVert(true);
-				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), ((OscWall) selection).isGoingUp());
-			}
-		}
-
-		if (input.didPressRight() && selector.isSelected()) {
-			Obstacle selection = selector.getObstacle();
-			if(selector.getObstacle().getName() == "oscWall") {
-				((OscWall) selection).setVert(false);
+				((OscWall) selection).setVert(!((OscWall) selection).isVert());
 				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), ((OscWall) selection).isGoingUp());
 			}
 		}

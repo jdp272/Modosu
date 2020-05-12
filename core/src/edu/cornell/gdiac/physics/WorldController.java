@@ -33,9 +33,7 @@ import com.badlogic.gdx.utils.Array;
 import edu.cornell.gdiac.physics.host.ArrowModel;
 import edu.cornell.gdiac.physics.host.FootPrintModel;
 import edu.cornell.gdiac.physics.host.HostModel;
-import edu.cornell.gdiac.physics.obstacle.BorderEdge;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.physics.obstacle.Wall;
+import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.MusicController;
 import edu.cornell.gdiac.util.PooledList;
@@ -60,7 +58,7 @@ import java.util.*;
  */
 public abstract class WorldController implements Screen {
 	/** The number of levels */
-	protected static final int NUM_LEVELS = 24; //////////////// CHANGE DEPENDING ON AMOUNT OF LEVELS ///////////////
+	protected static final int NUM_LEVELS = 25; //////////////// CHANGE DEPENDING ON AMOUNT OF LEVELS ///////////////
 
 	/**
 	 * Tracks the asset state.  Otherwise subclasses will try to load assets 
@@ -327,18 +325,20 @@ public abstract class WorldController implements Screen {
 
 	// These are all lists which are filled each draw frame, in order to draw
 	// all game objects in the correct order
-	/** Objects drawn above everything else (HUD elements, selected objects) */
-	private PooledList<Obstacle> topDrawLayer;
 	/** Border edge objects to be drawn */
 	private PooledList<BorderEdge> edgeDrawLayer;
+	/** Objects to be drawn on below others, like terrain tiles */
+	private PooledList<Obstacle> groundDrawLayer;
+	/** Objects to be drawn above terrain and under everything else */
+	private PooledList<Obstacle> rootsDrawLayer;
+	/** Objects that stick up vertically, and need to be sorted by y pos */
+	private PooledList<Obstacle> threeDimensionalDrawLayer;
 	/** Wall objects to be drawn */
 	private PooledList<Wall> wallDrawLayer;
 	/** Host objects to be drawn */
 	private PooledList<HostModel> hostDrawLayer;
-	/** Spirit objects to be drawn */
-	private PooledList<SpiritModel> spiritDrawLayer;
-	/** Misc objects to be drawn underneath */
-	private PooledList<Obstacle> miscDrawLayer;
+	/** Objects drawn above everything else (HUD elements, selected objects) */
+	private PooledList<Obstacle> topDrawLayer;
 
 	/** The dimensions of the board */
 	protected Vector2 dimensions;
@@ -910,10 +910,11 @@ public abstract class WorldController implements Screen {
 		footprints = new ArrayList<>();
 		topDrawLayer = new PooledList<>();
 		edgeDrawLayer = new PooledList<>();
-		wallDrawLayer = new PooledList<>();
+		groundDrawLayer = new PooledList<>();
+		rootsDrawLayer = new PooledList<>();
 		hostDrawLayer = new PooledList<>();
-		spiritDrawLayer = new PooledList<>();
-		miscDrawLayer = new PooledList<>();
+		wallDrawLayer = new PooledList<>();
+		threeDimensionalDrawLayer = new PooledList<>();
 
 
 		hud = new HUD();
@@ -1137,11 +1138,12 @@ public abstract class WorldController implements Screen {
 		canvas.clear();
 
 		// Clear the lists so they can be repopulated
-		miscDrawLayer.clear();
 		edgeDrawLayer.clear();
-		wallDrawLayer.clear();
+		groundDrawLayer.clear();
+		rootsDrawLayer.clear();
+		threeDimensionalDrawLayer.clear();
 		hostDrawLayer.clear();
-		spiritDrawLayer.clear();
+		wallDrawLayer.clear();
 		topDrawLayer.clear();
 
 
@@ -1177,103 +1179,61 @@ public abstract class WorldController implements Screen {
 		for(Obstacle obj : objects) {
 			if(obj.inHUD || obj.selected) {
 				topDrawLayer.add(obj);
+			} else if(obj instanceof Terrain || obj instanceof BorderCorner) {
+				groundDrawLayer.add(obj);
+			} else if(obj instanceof DecorativeRoots) {
+				rootsDrawLayer.add(obj);
 			} else if(obj instanceof BorderEdge) {
 				edgeDrawLayer.add((BorderEdge)obj);
-			} else if(obj instanceof Wall) {
-				wallDrawLayer.add((Wall)obj);
-			} else if(obj instanceof HostModel) {
-				hostDrawLayer.add((HostModel)obj);
-			} else if(obj instanceof SpiritModel) {
-				spiritDrawLayer.add((SpiritModel)obj);
 			} else {
-				miscDrawLayer.add(obj);
+				threeDimensionalDrawLayer.add(obj);
+				if(obj instanceof HostModel) {
+					hostDrawLayer.add((HostModel)obj);
+				} else if(obj instanceof Wall) {
+					wallDrawLayer.add((Wall)obj);
+				}
 			}
 		}
 
 		canvas.begin();
 
-		for(Obstacle obj : miscDrawLayer) {
+		Collections.sort(threeDimensionalDrawLayer, new Comparator<Obstacle>() {
+			@Override
+			public int compare(Obstacle ob1, Obstacle ob2) {
+				// Want to sort them so furthest away is in front, so those are
+				// drawn first
+				float diff = ob2.getY() - ob1.getY();
+
+				if(diff > 0) return 1;
+				else if(diff < 0) return -1;
+				else return 0;
+			}
+		});
+
+		for(Obstacle obj : groundDrawLayer) {
+			obj.draw(canvas);
+		}
+		for(Obstacle obj : rootsDrawLayer) {
 			obj.draw(canvas);
 		}
 		for(BorderEdge edge : edgeDrawLayer) {
 			edge.drawTop(canvas);
 		}
-		for(Wall wall : wallDrawLayer) {
-			wall.drawFront(canvas);
-		}
-		for(HostModel host : hostDrawLayer) {
-			host.drawShadow(canvas);
-		}
-		for(HostModel host : hostDrawLayer) {
-			host.drawBody(canvas);
-		}
-		for(SpiritModel spirit : spiritDrawLayer) {
-			spirit.draw(canvas);
-		}
-		for(Wall wall : wallDrawLayer) {
-			wall.drawTop(canvas);
-		}
-		for(HostModel host : hostDrawLayer) {
-			host.drawCharge(canvas);
+		for(Obstacle obj : threeDimensionalDrawLayer) {
+			obj.draw(canvas);
 		}
 		for(BorderEdge edge : edgeDrawLayer) {
 			edge.drawNotTop(canvas);
 		}
+		for(HostModel host : hostDrawLayer) {
+			host.drawCharge(canvas);
+		}
+		for(Wall wall : wallDrawLayer) {
+			wall.drawTop(canvas);
+		}
 		for(Obstacle obj : topDrawLayer) {
 			obj.draw(canvas);
 		}
-
-//		for(Obstacle obj : objects) {
-//			if(!(obj instanceof Wall) && !(obj instanceof HostModel) && !obj.inHUD && !obj.selected) {
-//				obj.draw(canvas);
-//			}
-//		}
-//		for(Obstacle obj : objects) {
-//			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
-//				obj.draw(canvas);
-//			}
-//		}
-//		for(Obstacle obj : objects) {
-//			if((obj instanceof HostModel || obj instanceof SpiritModel) && !obj.inHUD && !obj.selected) {
-//				obj.draw(canvas);
-//			}
-//		}
-//		for(Obstacle obj : objects) {
-//			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
-//				((Wall)obj).drawTop(canvas);
-//			}
-//		}
-//		for(Obstacle obj : objects) {
-//			if(obj.inHUD || obj.selected) {
-//				obj.draw(canvas);
-//			}
-//		}
-
-//		for(Obstacle obj : objects) {
-//			if(!(obj instanceof Wall) && !(obj instanceof HostModel) && !obj.inHUD && !obj.selected) {
-//				obj.draw(canvas);
-//			}
-//		}
-//		for(Obstacle obj : objects) {
-//			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
-//				obj.draw(canvas);
-//			}
-//		}
-//		for(Obstacle obj : objects) {
-//			if((obj instanceof HostModel || obj instanceof SpiritModel) && !obj.inHUD && !obj.selected) {
-//				obj.draw(canvas);
-//			}
-//		}
-//		for(Obstacle obj : objects) {
-//			if(obj instanceof Wall && !obj.inHUD && !obj.selected) {
-//				((Wall)obj).drawTop(canvas);
-//			}
-//		}
-//		for(Obstacle obj : objects) {
-//			if(obj.inHUD || obj.selected) {
-//				obj.draw(canvas);
-//			}
-//		}
 
 		// Draw footprints
 		for (FootPrintModel fp : footprints) {
