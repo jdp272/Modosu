@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
@@ -163,7 +164,7 @@ public class Loader {
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
-        tutorials = json.fromJson(Tutorials.class, new FileHandle(TUTORIAL_DATA_PATH));
+        tutorials = json.fromJson(Tutorials.class, Gdx.files.internal(TUTORIAL_DATA_PATH));
     }
 
     /**

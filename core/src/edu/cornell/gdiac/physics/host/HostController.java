@@ -205,10 +205,6 @@ public class HostController {
                 spirit.setVY(0f);
             }
 
-            // Zoom the camera out on z, or back in if it is out
-            if (input.didZoom()) {
-
-            }
 
             // If its possible to increment the charge of the host
             if (possessed.incCurrentCharge()) {

@@ -160,17 +160,31 @@ public class LevelSelectMode extends WorldController implements Screen {
             page = 0;
         }
 
-        File folder;
         onCustom = custom;
-        if (onCustom) {
-            folder = new File("Custom");
-        } else {
-            folder = new File("levels");
-        }
-        levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
-        Collections.sort(levels);
 
-        pages = (int) Math.ceil(folder.listFiles(Constants.filenameFilter).length / 4.0);
+        getLevels(custom);
+        setPages();
+//        File folder;
+//        folder = Gdx.files.local("Custom").file();
+//
+//
+//        if(levels != null) {
+//            pages = (int) Math.ceil(levels.size() / 4.0) + 1;
+//            System.out.println(levels.size());
+//        } else {
+//            if (custom) {
+//                pages = (int) Math.ceil(folder.listFiles(Constants.filenameFilter).length / 4.0) + 1;
+//            } else {
+//                pages = numLevels / 4 + 1;
+//            }
+//        }
+    }
+
+    /**
+     * Sets the number of pages
+     */
+    public void setPages() {
+        pages = (int) Math.ceil(levels.size() / 4.0);
     }
 
     /**
@@ -289,12 +303,11 @@ public class LevelSelectMode extends WorldController implements Screen {
         onCustom = false;
         hoverCustom = false;
 
-        File folder = new File("levels");
 
-        levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
-        Collections.sort(levels);
+//        File folder = new File("levels");
 
-        pages = (int)Math.ceil(folder.listFiles(Constants.filenameFilter).length/4.0);
+        getLevels(false);
+//        pages = (int)Math.ceil(folder.listFiles(Constants.filenameFilter).length/4.0);
     }
 
     /**
@@ -304,6 +317,9 @@ public class LevelSelectMode extends WorldController implements Screen {
      */
     public void reset() {
         renderHUD = false;
+
+        getLevels(onCustom);
+        setPages();
     }
 
 
@@ -358,26 +374,26 @@ public class LevelSelectMode extends WorldController implements Screen {
             canvas.draw(prevTexture, colorPrev, 0f, 0f, prevStart.x, prevStart.y, 0, 1, 1);
         }
         levelFont.setColor(colorOne);
-        String name = levels.get(page * 4).getName();
+        String name = levels.get(page * 4).file().getName();
         Vector2 center = new Vector2((oneEnd.x+oneStart.x)/2,(oneEnd.y+oneStart.y)/2);
         canvas.drawText(name.substring(0,name.length()-4), levelFont, center.x, center.y);
 
         if (page*4 + 1 < levels.size()) {
             center.x = (twoEnd.x+twoStart.x)/2;
             levelFont.setColor(colorTwo);
-            name = levels.get(page * 4 + 1).getName();
+            name = levels.get(page * 4 + 1).file().getName();
             canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y);
         }
         if (page*4 + 2 < levels.size()) {
             center.x = (threeEnd.x+threeStart.x)/2;
             levelFont.setColor(colorThree);
-            name = levels.get(page * 4 + 2).getName();
+            name = levels.get(page * 4 + 2).file().getName();
             canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y-backgroundTexture.getRegionHeight()*0.1f);
         }
         if (page*4 + 3 < levels.size()) {
             center.x = (fourEnd.x+fourStart.x)/2;
             levelFont.setColor(colorFour);
-            name = levels.get(page * 4 + 3).getName();
+            name = levels.get(page * 4 + 3).file().getName();
             canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y);
         }
 
@@ -533,6 +549,7 @@ public class LevelSelectMode extends WorldController implements Screen {
             }
             if (screenX >= nextStart.x && screenX <= nextEnd.x && page != pages - 1) {
                 if (screenY >= nextStart.y && screenY <= nextEnd.y && pressState == 4) {
+                    System.out.println("Page = " + page + ", pages = " + pages);
                     page++;
                 }
             }
@@ -543,6 +560,31 @@ public class LevelSelectMode extends WorldController implements Screen {
             }
 
             if (screenX >= customStart.x && screenX <= customEnd.x) {
+
+                /* TODO this should be removed but I'm too afraid to delete things right now
+                if (screenY >= customStart.y && screenY <= customEnd.y && pressState == 6) {
+                    page = 0;
+                    File folder;
+                    if(!onCustom) {
+                        folder = new File("Custom");
+                    }else{
+                        folder = new File("levels");
+                    }
+                    onCustom = !onCustom;
+                    getLevels(onCustom);
+
+                    if (onCustom) {
+                        pages = (int) Math.ceil(folder.listFiles(Constants.filenameFilter).length / 4.0) + 1;
+
+//                        if (goToDesigner) pages++;
+
+                    }
+                    else {
+                        pages = numLevels / 4 + 1;
+                    }
+                }
+
+                 */
                 setCustom(!onCustom);
             }
 

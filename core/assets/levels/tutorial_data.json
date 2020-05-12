@@ -6,5 +6,6 @@
   {location:{x:600,y:400},instructions:"You may need to retrace your steps in order to possess every golem.",countdown:20},
   {location:{x:700,y:350},instructions:"Some golems are unstable, and their overcharge bar will already be partially filled.",countdown:10},
   {location:{x:125,y:400},instructions:"Some golems will move around on their own.",countdown:7},
-  {location:{x:125,y:300},instructions:"While inside a pillar's energy ring, your golem will overcharge faster.",countdown:15}
+  {location:{x:125,y:300},instructions:"While inside a pillar's energy ring, your golem will overcharge faster.",countdown:15},
+  {location:{x:125,y:200},instructions:"You can pan the camera before starting and you can always press Z to zoom out. Press ESC to pause.",countdown:15}
 ]}
