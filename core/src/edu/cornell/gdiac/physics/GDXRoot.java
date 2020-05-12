@@ -55,8 +55,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** Credits screen controller */
 	private Credits credits;
 
-
-
 	/** Stores whether to exit to level designer after a level is selected */
 	private boolean goLevelDesigner = false;
 
@@ -184,6 +182,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelSelect.loadContent(manager);
 			levelSelect.setScreenListener(this);
 			levelSelect.setCanvas(canvas);
+			levelSelect.setForceCustom(true);
 			levelSelect.reset();
 			setScreen(levelSelect);
 		}
@@ -194,6 +193,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelSelect.loadContent(manager);
 			levelSelect.setScreenListener(this);
 			levelSelect.setCanvas(canvas);
+			levelSelect.setForceCustom(false);
 			levelSelect.reset();
 			setScreen(levelSelect);
 		}
