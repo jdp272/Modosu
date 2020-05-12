@@ -14,9 +14,10 @@ public class Level {
 
     /**
      * An empty constructor for a level. Everything is null.
+     *
      */
     public Level() {
-        set(null, null, null, null, null, null, null, null, null, null, null);
+        set(null, null, null, null, null, null, null, null, null,null, null, null);
     }
 
     /**
@@ -27,6 +28,7 @@ public class Level {
      * @param walls An array of the walls in the level
      * @param water An array of the water tiles in the level
      * @param sand An array of the sand tiles in the level
+     * @param decorativeRootTiles An array of the decorativeRoot tiles in the level
      * @param hosts An array of the hosts in the level
      * @param start The "host" where the player starts
      */
@@ -39,11 +41,12 @@ public class Level {
             BorderCorner[] borderCorners,
             EnergyPillar[] energyPillars,
             OscWall[] oscWalls,
+            DecorativeRoots[] decorativeRootTiles,
             ArrayList<HostModel> hosts,
             SpiritModel start,
             HostModel pedestal
     ) {
-        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, oscWalls, hosts, start, pedestal);
+        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, oscWalls, decorativeRootTiles, hosts, start, pedestal);
     }
 
     /** The dimensions of the rectangular board, in Box2D coordinates */
@@ -70,6 +73,9 @@ public class Level {
     /** An array of the oscillating walls in the level */
     public OscWall[] oscWalls;
 
+    /** An array of the decorativeRoot tiles in the level */
+    public DecorativeRoots[] decorativeRootTiles;
+
     /** An array of the hosts in the level */
     public ArrayList<HostModel> hosts;
 
@@ -88,6 +94,7 @@ public class Level {
             BorderCorner[] borderCorners,
             EnergyPillar[] energyPillars,
             OscWall[] oscWalls,
+            DecorativeRoots[] decorativeRootTiles,
             ArrayList<HostModel> hosts,
             SpiritModel start,
             HostModel pedestal
@@ -100,9 +107,9 @@ public class Level {
         this.borderCorners = borderCorners;
         this.energyPillars = energyPillars;
         this.oscWalls = oscWalls;
+        this.decorativeRootTiles = decorativeRootTiles;
         this.hosts = hosts;
         this.start = start;
         this.pedestal = pedestal;
     }
-
 }

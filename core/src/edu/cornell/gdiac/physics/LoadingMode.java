@@ -168,6 +168,10 @@ public class LoadingMode implements Screen {
 
 	private InputController input;
 
+	private MusicController music;
+
+	private SoundController sound;
+
 	/** The y-coordinate of the center of the screen */
 	private int centerY;
 	/** The x-coordinate of the center of the screen */
@@ -190,6 +194,8 @@ public class LoadingMode implements Screen {
 	private pressState buttonPressed;
 
 	private boolean isReady;
+
+
 
 	private static enum pressState {
 		START,
@@ -258,6 +264,9 @@ public class LoadingMode implements Screen {
 		resize(canvas.getWidth(),canvas.getHeight());
 
 		input = InputController.getInstance();
+		input.setScreenHeight(canvas.getHeight());
+		music = MusicController.getInstance();
+		sound = SoundController.getInstance();
 
 		colorHovered = new Color(Color.SKY);
 		colorUnhovered = new Color(Color.WHITE);
@@ -317,9 +326,9 @@ public class LoadingMode implements Screen {
 	public void preLoadContent() {
 		manager.load(CLICK_SOUND, Sound.class);
 		manager.load(HOVER_SOUND, Sound.class);
-		if(MusicController.getInstance().isEmpty()){
-			MusicController.getInstance().addMusic("menuMusic", "shared/menumusic.wav");
-			MusicController.getInstance().addMusic("gameMusic", "shared/gameplaymusic.mp3");
+		if(music.isEmpty()){
+			music.addMusic("menuMusic", "shared/menumusic.wav");
+			music.addMusic("gameMusic", "shared/gameplaymusic.mp3");
 		}
 	}
 
@@ -334,10 +343,9 @@ public class LoadingMode implements Screen {
 	 *
 	 */
 	public void loadContent() {
-		SoundController sounds = SoundController.getInstance();
-		sounds.allocate(manager, CLICK_SOUND);
-		sounds.allocate(manager, HOVER_SOUND);
-		MusicController.getInstance().play("menuMusic");
+		sound.allocate(manager, CLICK_SOUND);
+		sound.allocate(manager, HOVER_SOUND);
+		music.play("menuMusic");
 	}
 	
 	/**
@@ -374,6 +382,12 @@ public class LoadingMode implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void update(float delta) {
+		if (input.didPressLeft()){
+			System.out.println("LEFT");
+		}
+		if (input.didPressRight()) {
+			System.out.println("RIGHT");
+		}
 		if (playButton == null) {
 			manager.update(budget);
 			this.progress = manager.getProgress();
@@ -398,14 +412,14 @@ public class LoadingMode implements Screen {
 			}
 		}
 		else {
-			MusicController.getInstance().update();
-			//DO WALKER WHITES SUGGESTION!!!!!! MAY
-			input.readInput();
-			Vector2 pos = input.getMousePosition();
+			music.update();
 
-			// Flip to match graphics coordinates
-			float screenY = heightY - pos.y;
-			float screenX = pos.x;
+			input.readInput();
+			hoverVolume = .40f*sound.getVolume();
+
+
+			float screenY = input.getMousePosition().y;
+			float screenX = input.getMousePosition().x;
 			if (input.didLeftClick()) {
 				updatePressed(screenX, screenY);
 			}
@@ -416,7 +430,7 @@ public class LoadingMode implements Screen {
 			updateHover(screenX, screenY);
 		}
 		// Update sounds
-		SoundController.getInstance().update();
+		sound.update();
 	}
 
 	/**
@@ -451,7 +465,10 @@ public class LoadingMode implements Screen {
 
 			canvas.draw(quit, buttonPressed == pressState.QUIT && isPressed ? Color.SKY : colorQuit, 0, 0,
 					QUIT_X, QUIT_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
-			if (SoundController.getInstance().isUnmuted()) {
+
+			//System.out.println(sound.isUnmuted());
+			//System.out.println(music.isUnmuted());
+			if (sound.isUnmuted() && music.isUnmuted()) {
 				canvas.draw(unmute, buttonPressed == pressState.MUTE && isPressed ? Color.SKY : colorMute, 0,0, MUTE_X, MUTE_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 			}
 			else {
@@ -650,7 +667,7 @@ public class LoadingMode implements Screen {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.START;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
+				sound.play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
 				isPressed = true;
 			}
 		}
@@ -658,7 +675,7 @@ public class LoadingMode implements Screen {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlSelect.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_SELECT_Y && screenY <= LEVEL_SELECT_Y + (lvlSelect.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.SELECT;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
+				sound.play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
 				isPressed = true;
 			}
 		}
@@ -666,7 +683,7 @@ public class LoadingMode implements Screen {
 		if(screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= LEVEL_Y && screenY <= LEVEL_Y + (lvlDesign.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.DESIGN;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
+				sound.play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
 				isPressed = true;
 			}
 		}
@@ -674,7 +691,7 @@ public class LoadingMode implements Screen {
 		if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
 			if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth() * scale * BUTTON_SCALE)) {
 				buttonPressed = pressState.CREDITS;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
+				sound.play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
 				isPressed = true;
 			}
 		}
@@ -682,7 +699,7 @@ public class LoadingMode implements Screen {
 		if(screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE) ) {
 				buttonPressed = pressState.QUIT;
-				SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
+				sound.play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
 				isPressed = true;
 			}
 		}
@@ -706,6 +723,7 @@ public class LoadingMode implements Screen {
 	 * @param screenY the y-coordinate of the mouse on the screen
 	 */	
 	public void updateReleased(float screenX, float screenY) {
+		//System.out.println("released!");
 		if (isPressed) {
 			if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
 				if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {
@@ -764,9 +782,9 @@ public class LoadingMode implements Screen {
 						isReady = false;
 						buttonPressed = pressState.NONE;
 					}
-
-					MusicController.getInstance().setUnmuted(!MusicController.getInstance().isUnmuted());
-					SoundController.getInstance().setUnmuted(!SoundController.getInstance().isUnmuted());
+					System.out.println("music unmuted is:" + !music.isUnmuted());
+					music.setUnmuted(!music.isUnmuted());
+					sound.setUnmuted(!sound.isUnmuted());
 				}
 			}
 		}
@@ -798,7 +816,7 @@ public class LoadingMode implements Screen {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE)) {
 					colorStart = colorHovered;
 					if (!hoverButton) {
-						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -812,7 +830,7 @@ public class LoadingMode implements Screen {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X+(lvlSelect.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlSelect = colorHovered;
 					if (!hoverButton) {
-						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -826,7 +844,7 @@ public class LoadingMode implements Screen {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlDesign = colorHovered;
 					if (!hoverButton) {
-						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -840,7 +858,7 @@ public class LoadingMode implements Screen {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth()*scale*BUTTON_SCALE)) {
 					colorCredits = colorHovered;
 					if (!hoverButton) {
-						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -853,14 +871,14 @@ public class LoadingMode implements Screen {
 				if (screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE)) {
 					colorQuit = colorHovered;
 					if (!hoverButton) {
-						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
 				else if (screenX >= MUTE_X && screenX <= MUTE_X + (mute.getWidth()*scale*BUTTON_SCALE)) {
 					colorMute = colorHovered;
 					if (!hoverButton) {
-						SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}

@@ -199,8 +199,8 @@ public class GameCanvas {
 
 		if (shakeElapsed < shakeDuration) {
 			shakeElapsed++;
-			float x = (MathUtils.random() - 0.5f) * shakeIntensity;
-			float y = (MathUtils.random() - 0.5f) * shakeIntensity;
+			int x = (int)((MathUtils.random() - 0.5f) * shakeIntensity);
+			int y = (int)((MathUtils.random() - 0.5f) * shakeIntensity);
 			smoothX += x;
 			smoothY += y;
 		}

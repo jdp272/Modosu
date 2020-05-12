@@ -20,7 +20,6 @@ package edu.cornell.gdiac.util;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.files.FileHandle;
 
 import java.util.HashMap;
 
@@ -57,14 +56,22 @@ public class MusicController {
 
 	private Music musicNext;
 
+	private String musicNextName;
+
+	private boolean reverse;
+
+	private float prevMusicVolume;
+
 	/**
 	 * Creates a new Music with the default settings.
 	 */
 	private MusicController() {
 		isUnmuted = true;
 		crossFading = false;
+		reverse = false;
 		musicNext = null;
 		musicVolume = 1f;
+		prevMusicVolume = 1f;
 	}
 
 	/**
@@ -92,17 +99,30 @@ public class MusicController {
 	 *
 	 * @param filename The filename for the sound asset
 	 */
-	public void addMusic(String musicName, String filename) {
-		System.out.println("added: " + musicName);
-		musicHolder.put(musicName, Gdx.audio.newMusic(Gdx.files.internal(filename)));
-	}
+	public void addMusic(String musicName, String filename) { musicHolder.put(musicName, Gdx.audio.newMusic(Gdx.files.internal(filename))); }
 
 	/**
 	 * Removes the existing music from this MusicController if present.
 	 *
-	 * @param musicName The name of the music to remove
+	 * @param musicNames The list of music names to remove.
 	 */
-	public void removeMusic(String musicName) { musicHolder.remove(musicName); }
+	public void removeMusic(String[] musicNames) {
+		for (int i = 0; i < musicNames.length; i++) {
+			Music m = musicHolder.get(musicNames[i]);
+			m.dispose();
+		}
+	}
+
+	/** Removes all existing music from this MusicController */
+	public void removeAll() {
+		String[] listToRemove = new String[musicHolder.size()];
+		int i = 0;
+		for (String m : musicHolder.keySet()) {
+			listToRemove[i] = m;
+			i++;
+		}
+		removeMusic(listToRemove);
+	}
 
 	/// Getters and Setters
 
@@ -113,15 +133,38 @@ public class MusicController {
 	 */
 	public void setUnmuted(boolean value) {
 		isUnmuted = value;
-
+		//System.out.println("set music.unmuted to " + value);
 		// If just got muted and currently playing
 		if (!isUnmuted && isPlaying()) {
+			if (musicNext != null && crossFading) {
+				if (!reverse) {
+					music.stop();
+					music = musicNext;
+				}
+				else {
+					musicNext.setVolume(0f);
+					musicNext = null;
+				}
+				crossFading = false;
+				reverse = false;
+				music.play();
+			}
+			//System.out.println("set volulme of music to 0");
+			music.setVolume(0);
+			if (musicNext != null) { musicNext.setVolume(0); }
+			prevMusicVolume = musicVolume;
 			setVolume(0);
 		}
 		// If current playing and unmuted, but music is still silent
 		if (music.isPlaying() && isUnmuted && music.getVolume() == 0f) {
-			setVolume(musicVolume);
+			//System.out.println("set music back to volume " + prevMusicVolume);
+			setVolume(prevMusicVolume);
 		}
+
+	}
+
+	public float getVolume() {
+		return (musicVolume);
 	}
 
 	 /** Returns true if this MusicController is unmuted.
@@ -134,58 +177,62 @@ public class MusicController {
 	public void play(String musicNameToPlay){
 		// Some music is currently playing
 		if (music != null){
-			if (musicName.equals(musicNameToPlay)) {
-				System.out.println("not changing song cause same one is called");
-				return;
-			}
-			else {
-				Music musicToPlay = musicHolder.get(musicNameToPlay);
+			//System.out.println("trying to play: " + musicNameToPlay);
+			Music musicToPlay = musicHolder.get(musicNameToPlay);
 
-				// If while cross fading, another change happens
-				if (crossFading && musicNameToPlay != null){
-					crossFading = false;
-					System.out.println("MUSIC WILL BE BROKEN!!");
-					music.stop();
-					musicNext.stop();
-					music = null;
-					musicNext = null;
-				}
-				else {
-					crossFading = true;
-
-					if (musicToPlay != null) {
-						musicName = musicNameToPlay;
-						musicNext = musicToPlay;
-
-						// Incoming song is at 10% of current volume
-						musicNext.setVolume(.10f * musicVolume);
-
-						// New song will start and stop increasing when reaches current volume
-						maximumThreshold = music.getVolume();
-
-						// Will stop old one when it is less than 10% of the current volume
-						minimumThreshold = .10f * maximumThreshold;
-
-						// Start playing new track
-						musicNext.play();
+			// If while cross fading, another change happens
+			if (crossFading && musicNameToPlay != null){
+					music.setVolume(music.getVolume());
+					if(reverse){
+						reverse = false;
 					}
+					else{
+						reverse = true;
+					}
+
+			}
+			else if (musicNameToPlay != musicName) {
+				//System.out.println("get into start");
+				crossFading = true;
+
+				if (musicToPlay != null) {
+					musicNext = musicToPlay;
+					musicNextName = musicNameToPlay;
+
+					// Incoming song is at 10% of current volume
+					musicNext.setVolume(.10f * musicVolume);
+
+					// New song will start and stop increasing when reaches current volume
+					maximumThreshold = music.getVolume();
+
+					// Will stop old one when it is less than 10% of the current volume
+					minimumThreshold = .10f * maximumThreshold;
+
+					// Start playing new track
+					musicNext.play();
 				}
 			}
+			else{
+				System.out.println("Should go into here");
+			}
+
 		}
 		// No music is currently playing
 		else {
+			//System.out.println("no music is playing so making it!");
 			Music musicToPlay = musicHolder.get(musicNameToPlay);
 			if (musicToPlay != null) {
 				musicName = musicNameToPlay;
 				music = musicToPlay;
 			}
 			else {
-				System.out.println("The music you're trying to play isnt in the holder.");
+				//System.out.println("The music you're trying to play isnt in the holder.");
 			}
 		}
 
-		if (music != null) {
+		if (music != null && !crossFading && !reverse) {
 			music.setVolume( isUnmuted() ? musicVolume : 0f);
+			//System.out.println("this is the musics volume " + musicVolume);
 			music.setLooping(true);
 			music.play();
 		}
@@ -216,30 +263,61 @@ public class MusicController {
 			musicVolume = v;
 			music.setVolume(v);
 		}
+		if (v > 0) { isUnmuted = true; }
 	}
 
 	/** Update function for this Music Controller. */
 	public void update() {
+		// If volume is 0, mute this controller
+		if (musicVolume == 0) {
+			isUnmuted = false;
+		}
+
 		// Normal update where music is just playing
 		if (music != null) {
 			if (!crossFading) {
-				musicNext = null; music.play(); }
+				musicNext = null; music.play();
+			}
 
 			// Cross fade update
 			else {
-				// Update cross fade volumes
-				music.setVolume(music.getVolume() - (.015f * music.getVolume()));
-				musicNext.setVolume(musicNext.getVolume() + (.015f * musicNext.getVolume()));
+				// Forward cross fade
+				if (!reverse) {
+					//System.out.println("forward");
+					// Update cross fade volumes
+					music.setVolume(music.getVolume() - (.015f * music.getVolume()));
+					musicNext.setVolume(musicNext.getVolume() + (.015f * musicNext.getVolume()));
 
-				// Condition to stop cross fade
-				if (music.getVolume() < minimumThreshold || musicNext.getVolume() >= maximumThreshold) {
-					crossFading = false;
-					music.stop();
-					music = musicNext;
+					// Condition to stop cross fade
+					if (music.getVolume() < minimumThreshold || musicNext.getVolume() >= maximumThreshold || !isUnmuted) {
+						crossFading = false;
+						music.stop();
+						music = musicNext;
+						music.setVolume(maximumThreshold);
+						music.play();
+						musicName = musicNextName;
+						musicNextName = null;
+						//System.out.println("finished forward");
+					}
+				}
+				// Reversed cross fade
+				else {
+					//System.out.println("backward");
+					// Update cross fade volumes
+					musicNext.setVolume(musicNext.getVolume() - (.015f * musicNext.getVolume()));
+					music.setVolume(music.getVolume() + (.015f * music.getVolume()));
 
-					music.setVolume(maximumThreshold);
-					music.play();
-					System.out.println("Cross fade is false;");
+					// Condition to stop cross fade
+					if (musicNext.getVolume() < minimumThreshold || music.getVolume() >= maximumThreshold && !isUnmuted) {
+						crossFading = false;
+						reverse = false;
+						musicNext.setVolume(0f);
+						musicNext = null;
+						music.setVolume(maximumThreshold);
+						musicNextName = null;
+						music.play();
+						//System.out.println("finished reverse");
+					}
 				}
 			}
 		}

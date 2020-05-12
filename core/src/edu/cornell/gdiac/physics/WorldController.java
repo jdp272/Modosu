@@ -173,13 +173,15 @@ public abstract class WorldController implements Screen {
 	private static String BORDER_EDGE_FILE = "shared/forest.png";
 	/** File to texture for borders */
 	private static String BORDER_CORNER_FILE = "shared/forestcorners.png";
-
 	/** File to texture for Energy Pillar body */
 	private static String  ENERGY_PILLAR_BODY_FILE = "shared/energyPillar_base.png";
 	/** File to texture for Energy Pillar Charge */
 	private static String ENERGY_PILLAR_BODY_CHARGE_FILE = "shared/energyPillar_lights.png";
 	/** File to texture for Energy Pillar Radius */
 	private static String ENERGY_PILLAR_RADIUS_FILE = "shared/energyRing.png";
+	/** File to texture for Energy Pillar Radius */
+	private static String DECORATIVE_ROOTS_FILE = "shared/rootsspritesheet.png";
+
 
 	/** File to texture for OscWall Horz */
 	public static String OSC_WALL_HORZ_FILE = "shared/horizontalGateSpritesheet.png";
@@ -300,6 +302,8 @@ public abstract class WorldController implements Screen {
 	private static Texture oscWallVert;
 	/** Texture for Osc Wall Vert Gauge */
 	private static Texture oscWallVertGauge;
+	/** Texture for decorative roots */
+	private static Texture rootsTexture;
 
 	/** List of footprints for level editor */
 	private ArrayList<FootPrintModel> footprints;
@@ -445,6 +449,8 @@ public abstract class WorldController implements Screen {
 		assets.add(OSC_WALL_VERT_FILE);
 		manager.load(OSC_WALL_VERT_GAUGE_FILE, Texture.class);
 		assets.add(OSC_WALL_VERT_GAUGE_FILE);
+		manager.load(DECORATIVE_ROOTS_FILE, Texture.class);
+		assets.add(DECORATIVE_ROOTS_FILE);
 
 		// Load the font
 		FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -537,6 +543,7 @@ public abstract class WorldController implements Screen {
 		oscWallGaugeHorz = manager.get(OSC_WALL_HORZ_GAUGE_FILE, Texture.class);
 		oscWallVert = manager.get(OSC_WALL_VERT_FILE, Texture.class);
 		oscWallVertGauge = manager.get(OSC_WALL_VERT_GAUGE_FILE, Texture.class);
+		rootsTexture = manager.get(DECORATIVE_ROOTS_FILE, Texture.class);
 
 
 		// Set the proper textures in the factory
@@ -551,7 +558,9 @@ public abstract class WorldController implements Screen {
 				wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture,
 				pedestalTexture, borderEdgeTexture, borderCornerTexture, energyPillarBody,
 				energyPillarCharge, energyPillarRadius, oscWallVert, oscWallVertGauge,
-				oscWallHorz, oscWallGaugeHorz);
+				oscWallHorz, oscWallGaugeHorz, rootsTexture);
+
+		// Set the proper textures in the factory
 		loader = new Loader(factory);
 	}
 	
