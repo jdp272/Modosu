@@ -98,6 +98,14 @@ public class Loader {
         public boolean isPedestal;
     }
 
+    /** A struct that stores data for decorative roots when read from the json */
+    public static class DecorativeRootData {
+        public Vector2 origin; // Center of the tile
+        public Vector2 dimensions;
+        public int frame;
+    }
+
+
     /** A struct that stores all the data of a level when read from the json */
     public static class LevelData {
         public int tutorialNum;
@@ -111,6 +119,7 @@ public class Loader {
         public BorderEdgeData[] borderEdgeData;
         public BorderCornerData[] borderCornerData;
         public EnergyPillarData[] energyPillarData;
+        public DecorativeRootData[] decorativeRootData;
 
     }
 
@@ -267,6 +276,20 @@ public class Loader {
             }
         }
 
+        // Store the decorative root data
+        levelData.decorativeRootData = new DecorativeRootData[level.decorativeRootTiles.length];
+        for(int i = 0; i < level.decorativeRootTiles.length; i++) {
+            DecorativeRootData dData = new DecorativeRootData();
+            dData.dimensions = new Vector2(level.decorativeRootTiles[i].getX(), level.decorativeRootTiles[i].getY());
+            dData.origin = level.decorativeRootTiles[i].getPosition();
+            dData.frame = level.decorativeRootTiles[i].getFrame();
+
+            levelData.decorativeRootData[i] = dData;
+        }
+
+        // Store the starting information
+        levelData.startLocation = new Vector2(level.pedestal.getX(), level.pedestal.getY());
+
         // Store the now-populated level data
         String output = json.toJson(levelData);
         f.writeString(output, false);
@@ -361,10 +384,20 @@ public class Loader {
             hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions, hData.currentCharge));
         }
 
+        if(levelData.decorativeRootData == null) {
+            levelData.decorativeRootData = new DecorativeRootData[0];
+        }
+        DecorativeRoots[] roots = new DecorativeRoots[levelData.decorativeRootData.length];
+        DecorativeRootData dData; // A simple reference to the data being processed
+        for (int i = 0; i < levelData.decorativeRootData.length; i++) {
+            dData = levelData.decorativeRootData[i];
+            roots[i] = factory.makeDecorativeRoot(dData.origin.x, dData.origin.y, dData.frame);
+        }
+
         // Create the starting "host" (with no charge capacity)
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
         SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
-        return new Level(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, pedestal, spirit, tutorialNum);
+        return new Level(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, roots, hosts, pedestal, spirit, tutorialNum);
     }
 
     /**

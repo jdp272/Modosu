@@ -25,6 +25,7 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.SoundController;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -68,6 +69,18 @@ public class LevelDesignerMode extends WorldController {
 
 	/** The maximum width and height of the board, in tile coordinates */
 	private static final int MAX_BOARD_TILES = 127;
+
+	// For the decorative roots
+	/** The index of the left most root in the decorative roots array */
+	private static final int LEFT_LEFT_ROOT_INDEX = 0;
+	/** The index of the 2nd most left root in the decorative roots array */
+	private static final int MID_LEFT_ROOT_INDEX = 1;
+	/** The index of the 2nd most right root in the decorative roots array */
+	private static final int MID_RIGHT_ROOT_INDEX = 2;
+	/** The index of the right most root in the decorative roots array */
+	private static final int RIGHT_RIGHT_ROOT_INDEX = 3;
+	/** The number of decorative root tiles */
+	private static final int NUM_DECORATIVE_ROOTS = 4;
 
 	/** Texture asset for mouse crosshairs */
 	private TextureRegion crosshairTexture;
@@ -132,8 +145,14 @@ public class LevelDesignerMode extends WorldController {
 	 * it prevent another object from being picked up */
 	private boolean selecting;
 
-	PooledList<BorderEdge> edges;
-	PooledList<BorderCorner> corners;
+	/** An array of the decorative tiles on the board
+	 *
+	 * Index 0 is the upper left corner
+	 * Index 1 is just right of the upper left corner
+	 * Index 2 is just left of the upper right corner
+	 * Index 3 is the upper right corner
+	 */
+	public BoxObstacle[] decorativeRoots;
 
 	public enum Corner {
 		TOP_LEFT,
@@ -158,6 +177,7 @@ public class LevelDesignerMode extends WorldController {
 
 		public final Corner corner;
 	}
+
 
 //	private int topBorder;
 //	private int bottomBorder;
@@ -253,6 +273,7 @@ public class LevelDesignerMode extends WorldController {
 		cache = new Vector2();
 
 		board = new Board(MAX_BOARD_TILES, MAX_BOARD_TILES);
+		decorativeRoots = new BoxObstacle[NUM_DECORATIVE_ROOTS];
 		lastGolem = null;
 		instructionListCache = new ArrayList<Vector2>();
 		instructionMode = false;
@@ -266,9 +287,6 @@ public class LevelDesignerMode extends WorldController {
 		File folder = new File("levels");
 		levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
 		Collections.sort(levels);
-
-		edges = new PooledList<>();
-		corners = new PooledList<>();
 	}
 
 	/**
@@ -356,7 +374,6 @@ public class LevelDesignerMode extends WorldController {
 			Collections.sort(levels);
 		}
 
-
 	    refreshFootprints();
 
 		Vector2 gravity = new Vector2(world.getGravity());
@@ -382,8 +399,6 @@ public class LevelDesignerMode extends WorldController {
 
         setComplete(false);
         setFailure(false);
-
-
 
         if (loadBoard) {
 //			bottomBorder = 0;
@@ -556,9 +571,7 @@ public class LevelDesignerMode extends WorldController {
 		}
         //levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
 
-
        level = loader.loadLevel(levelToLoad);
-
 
 		dimensions = level.dimensions;
 		lowerLeft.setZero();
@@ -607,12 +620,21 @@ public class LevelDesignerMode extends WorldController {
 			}
 		}
 
-
 		if(board.addNewObstacle(level.pedestal)) {
 			addObject(level.pedestal);
 		}
 		if(board.addNewObstacle(level.spirit)) {
 			addObject(level.spirit);
+		}
+
+		// Initialize the decorative roots if they haven't yet been
+		for(int i = 0; i < NUM_DECORATIVE_ROOTS; i++) {
+			// Will be repositioned by setBordersAndUpdateTerrain()
+			if(decorativeRoots[i] != null) {
+				decorativeRoots[i].markRemoved(true);
+			}
+			decorativeRoots[i] = factory.makeDecorativeRoot(0, 0, i);
+			addObject(decorativeRoots[i]);
 		}
 
 		setBordersAndUpdateTerrain();
@@ -931,31 +953,39 @@ public class LevelDesignerMode extends WorldController {
 				float xCoord = xTileToCoord(i);
 				float yCoord = yTileToCoord(j);
 
-				// Add corners and borders
+				// Bottom left corner
 				if(i == board.getLeftBorder() && j == board.getBottomBorder()) {
 					board.set(null, i, j);
 					BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.BOTTOM_LEFT);
 
 					board.addNewObstacle(border);
 					addObject(border);
+
+				// Bottom right corner
 				} else if(i == board.getRightBorder() - 1 && j == board.getBottomBorder()) {
 					board.set(null, i, j);
 					BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.BOTTOM_RIGHT);
 
 					board.addNewObstacle(border);
 					addObject(border);
+
+				// Top left corner
 				} else if(i == board.getLeftBorder() && j == board.getTopBorder() - 1) {
 					board.set(null, i, j);
 					BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.TOP_LEFT);
 
 					board.addNewObstacle(border);
 					addObject(border);
+
+				// Top right corner
 				} else if(i == board.getRightBorder() - 1 && j == board.getTopBorder() - 1) {
 					board.set(null, i, j);
 					BorderCorner border = factory.makeBorderCorner(xCoord, yCoord, BorderCorner.Corner.TOP_RIGHT);
 
 					board.addNewObstacle(border);
 					addObject(border);
+
+				// Bottom edge
 				} else if(j == board.getBottomBorder()) {
 					board.set(null, i, j);
 					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.BOTTOM);
@@ -968,6 +998,8 @@ public class LevelDesignerMode extends WorldController {
 					}
 					board.addNewObstacle(border);
 					addObject(border);
+
+				// Left edge
 				} else if(i == board.getLeftBorder()) {
 					board.set(null, i, j);
 					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.LEFT);
@@ -978,6 +1010,8 @@ public class LevelDesignerMode extends WorldController {
 					}
 					board.addNewObstacle(border);
 					addObject(border);
+
+				// Right edge
 				} else if(i == board.getRightBorder() - 1) {
 					board.set(null, i, j);
 					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.RIGHT);
@@ -988,6 +1022,8 @@ public class LevelDesignerMode extends WorldController {
 					}
 					board.addNewObstacle(border);
 					addObject(border);
+
+				// Top edge
 				} else if(j == board.getTopBorder() - 1) {
 					board.set(null, i, j);
 					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.TOP);
@@ -998,10 +1034,36 @@ public class LevelDesignerMode extends WorldController {
 					}
 					board.addNewObstacle(border);
 					addObject(border);
+
+				// Everything else
 				} else {
+					// Remove any stray border pieces
 					if(board.get(i, j) instanceof BorderEdge || board.get(i, j) instanceof BorderCorner) {
 						board.set(null, i, j);
 					}
+
+					// If the location is next to an upper corner, add the
+					// proper decorative tile
+					if(j == board.getTopBorder() - 2) {
+						// Furthest left on the board
+						if(i == board.getLeftBorder() + 1) {
+							decorativeRoots[LEFT_LEFT_ROOT_INDEX].setPosition(xCoord, yCoord);
+
+						// 2nd furthest left on the board
+						} else if(i == board.getLeftBorder() + 2) {
+							decorativeRoots[MID_LEFT_ROOT_INDEX].setPosition(xCoord, yCoord);
+
+						// 2nd furthest right on the board
+						}
+						if(i == board.getRightBorder() - 3) {
+							decorativeRoots[MID_RIGHT_ROOT_INDEX].setPosition(xCoord, yCoord);
+
+						// Furthest right on the board
+						} else if(i == board.getRightBorder() - 2) {
+							decorativeRoots[RIGHT_RIGHT_ROOT_INDEX].setPosition(xCoord, yCoord);
+						}
+					}
+
 					updateTerrainAroundRegion(i, j);
 					updateWallAroundRegion(i, j);
 				}
@@ -1221,20 +1283,6 @@ public class LevelDesignerMode extends WorldController {
 			}
 		}
 		if(input.didSave()) {
-
-//			// TODO: COMBINE THIS WITH InputController SOMEHOW!
-//			Gdx.input.getTextInput(new Input.TextInputListener() {
-//				@Override
-//				public void input (String levelName) {
-//					System.out.println("Saving level as levels/" + levelName + ".lvl");
-//					save("levels/" + levelName + ".lvl");
-//				}
-//
-//				@Override
-//				public void canceled () {
-//					System.out.println("Cancelling save");
-//				}
-//			}, "Input custom level name", "custom", "");
             if (hasPed) {
                 save(getLevelName());
                 System.out.println("Saving level as: " + getLevelName());
@@ -1274,6 +1322,7 @@ public class LevelDesignerMode extends WorldController {
 		ArrayList<BorderEdge> borderEdgeList = new ArrayList<>();
 		ArrayList<BorderCorner> borderCornerList = new ArrayList<>();
         ArrayList<EnergyPillar> energyPillarList = new ArrayList<>();
+		ArrayList<BoxObstacle> decorativeList = new ArrayList<>();
         HostModel pedestal = null;
 
         //System.out.println(cache);
@@ -1313,6 +1362,8 @@ public class LevelDesignerMode extends WorldController {
 				borderEdgeList.add((BorderEdge) obj);
 			} else if (obj instanceof BorderCorner) {
 				borderCornerList.add((BorderCorner) obj);
+			} else if (obj instanceof BoxObstacle && obj.getName() == "decorative") {
+            	decorativeList.add((BoxObstacle)obj);
 			}
         }
 
@@ -1338,9 +1389,12 @@ public class LevelDesignerMode extends WorldController {
         EnergyPillar[] energyPillarArray = new EnergyPillar[energyPillarList.size()];
         energyPillarList.toArray(energyPillarArray);
 
+		DecorativeRoots[] decorativeArray = new DecorativeRoots[decorativeList.size()];
+		decorativeList.toArray(decorativeArray);
+
         // TODO: what if spirit is null
 
-        level.set(dimensions, wallArray, waterArray, sandArray, borderEdgeArray, borderCornerArray, energyPillarArray, hostList, pedestal, spirit, 0);
+        level.set(dimensions, wallArray, waterArray, sandArray, borderEdgeArray, borderCornerArray, energyPillarArray, decorativeArray, hostList, pedestal, spirit, 0);
         loader.saveLevel(f, level);
 
         reset();

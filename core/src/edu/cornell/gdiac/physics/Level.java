@@ -16,7 +16,7 @@ public class Level {
      * An empty constructor for a level. Everything is null.
      */
     public Level() {
-        set(null, null, null, null, null, null, null, null, null, null, 0);
+        set(null, null, null, null, null, null, null, null, null, null, null, 0);
     }
 
     /**
@@ -29,6 +29,7 @@ public class Level {
      * @param sand An array of the sand tiles in the level
      * @param borderEdges An array of the border edges in the level
      * @param borderCorners An array of the border corners in the level
+     * @param decorativeRootTiles An array of the decorativeRoot tiles in the level
      * @param hosts An array of the hosts in the level
      * @param spirit The spirit of the player
      * @param pedestal The "host" where the player starts
@@ -41,11 +42,12 @@ public class Level {
             BorderEdge[] borderEdges,
             BorderCorner[] borderCorners,
             EnergyPillar[] energyPillars,
+            DecorativeRoots[] decorativeRootTiles,
             ArrayList<HostModel> hosts,
             HostModel pedestal,
             SpiritModel spirit
     ) {
-        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, pedestal, spirit, 0);
+        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, decorativeRootTiles, hosts, pedestal, spirit, 0);
     }
 
     /**
@@ -72,12 +74,13 @@ public class Level {
             BorderEdge[] borderEdges,
             BorderCorner[] borderCorners,
             EnergyPillar[] energyPillars,
+            DecorativeRoots[] decorativeRootTiles,
             ArrayList<HostModel> hosts,
             HostModel pedestal,
             SpiritModel spirit,
             int tutorial
     ) {
-        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, hosts, pedestal, spirit, tutorial);
+        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, decorativeRootTiles, hosts, pedestal, spirit, tutorial);
     }
 
     /** The dimensions of the rectangular board, in Box2D coordinates */
@@ -100,6 +103,9 @@ public class Level {
 
     /** An array of the energy pillars in the level */
     public EnergyPillar[] energyPillars;
+
+    /** An array of the decorativeRoot tiles in the level */
+    public DecorativeRoots[] decorativeRootTiles;
 
     /** An array of the hosts in the level */
     public ArrayList<HostModel> hosts;
@@ -138,6 +144,7 @@ public class Level {
             BorderEdge[] borderEdges,
             BorderCorner[] borderCorners,
             EnergyPillar[] energyPillars,
+            DecorativeRoots[] decorativeRootTiles,
             ArrayList<HostModel> hosts,
             HostModel pedestal,
             SpiritModel spirit,
@@ -150,10 +157,10 @@ public class Level {
         this.borderEdges = borderEdges;
         this.borderCorners = borderCorners;
         this.energyPillars = energyPillars;
+        this.decorativeRootTiles = decorativeRootTiles;
         this.hosts = hosts;
         this.pedestal = pedestal;
         this.spirit = spirit;
         this.tutorialNum = tutorialNum;
     }
-
 }

@@ -20,6 +20,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.host.HostController;
 import edu.cornell.gdiac.physics.host.HostModel;
+import edu.cornell.gdiac.physics.obstacle.DecorativeRoots;
 import edu.cornell.gdiac.physics.obstacle.EnergyPillar;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.obstacle.Wall;
@@ -210,10 +211,10 @@ public class GamePlayController extends WorldController {
 
 		int levelIndex = ((currentLevel%levels.size()) + levels.size()) % levels.size();
 
-		if(inCustom){
+		if(inCustom) {
 			System.out.println("Custom/" + levels.get(levelIndex).getName());
 			levelToLoad = Gdx.files.local("Custom/" + levels.get(levelIndex).getName());
-		}else {
+		} else {
 			System.out.println("levels/" + levels.get(levelIndex).getName());
 			levelToLoad = Gdx.files.local("levels/" + levels.get(levelIndex).getName());
 		}
@@ -295,6 +296,9 @@ public class GamePlayController extends WorldController {
 		}
 		for(HostModel host : level.hosts) {
 			addQueue.add(host);
+		}
+		for(DecorativeRoots roots : level.decorativeRootTiles) {
+			addQueue.add(roots);
 		}
 		addQueue.add(level.spirit);
 		addQueue.add(level.pedestal);
@@ -449,7 +453,7 @@ public class GamePlayController extends WorldController {
 
 		if (spirit.getDidBounce()) {
 			spirit.decCurrentLife(lifePerBounce);
-			canvas.shakeCamera(7, 5);
+			canvas.shakeCamera(15, 5);
 		}
 
 		/*
