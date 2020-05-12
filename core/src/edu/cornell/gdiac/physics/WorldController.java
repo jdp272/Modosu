@@ -16,6 +16,8 @@
  */
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -209,7 +211,9 @@ public abstract class WorldController implements Screen {
 
 	public ArrowModel arrow;
 
-	public Pause pauseScreen;
+	public HUD hud;
+
+	public Tutorial tutorial;
 
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
@@ -492,6 +496,7 @@ public abstract class WorldController implements Screen {
 	/** Whether to update Gameplay controller */
 	private	boolean updateGP;
 
+
 	/** list of level files*/
 	protected ArrayList<File> levels;
 
@@ -499,6 +504,8 @@ public abstract class WorldController implements Screen {
 	private boolean pressedPause = false;
 	/** Whether game is currently paused */
 	private boolean isPaused = false;
+	/** Whether game was just paused */
+	protected boolean wasPaused = false;
 
 	/**
 	 * Returns true if debug mode is active.
@@ -689,7 +696,9 @@ public abstract class WorldController implements Screen {
 		spiritDrawLayer = new PooledList<>();
 		miscDrawLayer = new PooledList<>();
 
-		pauseScreen = new Pause();
+
+		hud = new HUD();
+		tutorial = new Tutorial();
 	}
 	
 	/**
@@ -702,15 +711,15 @@ public abstract class WorldController implements Screen {
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
+		hud.dispose();
+		tutorial.dispose();
 		objects = null;
 		addQueue = null;
 		bounds = null;
 		scale  = null;
 		world  = null;
 		canvas = null;
-
-		pauseScreen.dispose();
-		pauseScreen = null;
+		hud = null;
 	}
 
 	/**
@@ -793,7 +802,8 @@ public abstract class WorldController implements Screen {
 			reset();
 		}
 
-		if (input.didPause()) {
+		if (input.didPause() || HUD.getPauseClicked()) {
+			arrow = null;
 			pressedPause = true;
 			return false;
 		}
@@ -1049,9 +1059,6 @@ public abstract class WorldController implements Screen {
 		}
 		canvas.end();
 
-
-
-
 		if (debug) {
 			canvas.beginDebug();
 			for(Obstacle obj : objects) {
@@ -1062,11 +1069,6 @@ public abstract class WorldController implements Screen {
 
 		if (arrow != null && !failed){
 			arrow.draw(canvas);
-		}
-
-		// Sets the stage to draw the HUD
-		if(renderHUD) {
-			canvas.drawHUD(delta);
 		}
 	}
 	
@@ -1095,24 +1097,31 @@ public abstract class WorldController implements Screen {
 		if (active) {
 			updateGP = preUpdate(delta);
 
+			/** If it was the first time the player pressed pause */
 			if (pressedPause) {
+				System.out.println("PRESSED PAUSE");
 				isPaused = true;
-				pauseScreen.pauseGame();
+				hud.pauseGame();
 				pressedPause = false;
 			}
 
+			draw(delta);
+
+			/** If the game isnt paused or switching screens, continue updating GP */
 			if (updateGP && !isPaused) {
 				update(delta); // This is the one that must be defined.
 				postUpdate(delta);
 			}
 
-			draw(delta);
+			/** Draw the HUD (on top of the environment */
+			if (renderHUD) {
+				hud.getStage().act(delta);
+				hud.getStage().draw();
+			}
 
-			/** IF GAME IS CURRENTLY PAUSED */
+			/** If the game is currently paused */
 			if (isPaused) {
 				pause();
-				pauseScreen.getStage().act(delta);
-				pauseScreen.getStage().draw();
 			}
 			MusicController.getInstance().update();
 		}
@@ -1126,20 +1135,22 @@ public abstract class WorldController implements Screen {
 	 */
 	public void pause() {
 		// TODO Auto-generated method stub
-		if (pauseScreen.getMenuClicked()) {
+
+		if (hud.getMenuClicked()) {
 			isPaused = false;
 			setMenu(true);
 			listener.exitScreen(this, EXIT_MENU);
-			pauseScreen.reset();
+			hud.reset();
 		}
-		if (pauseScreen.getRetryClicked()) {
+		if (hud.getRetryClicked()) {
 			isPaused = false;
-			pauseScreen.reset();
+			hud.reset();
 			reset();
 		}
-		if (pauseScreen.getPlayClicked()) {
-			pauseScreen.resumeGame();
+		if (hud.getPlayClicked()) {
+			hud.resumeGame();
 			isPaused = false;
+			wasPaused = true;
 		}
 	}
 

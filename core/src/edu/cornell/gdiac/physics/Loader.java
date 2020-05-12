@@ -24,12 +24,11 @@ import java.util.ArrayList;
  */
 public class Loader {
 
-    // Fields
+    public static final String TUTORIAL_DATA_PATH = "levels/tutorial_data.json";
 
-
-    public enum ImageFile {
-        Robot,
-        Crate
+    /** A struct that stores data about the tutorial levels */
+    public static class Tutorials {
+        public TutorialData[] tutorials;
     }
 
     /** A struct that stores data from an obstacle when read from the json */
@@ -97,16 +96,6 @@ public class Loader {
         public int currentCharge;
         public Vector2[] instructions;
         public boolean isPedestal;
-        public ImageFile imageFile;
-    }
-
-    public static class PedestalData {
-        public Vector2 location;
-        public float chargeTime = -1; // Maximum amount of charge that can be stored
-
-        public Vector2[] instructions = null;
-
-        public ImageFile imageFile;
     }
 
     /** A struct that stores data for decorative roots when read from the json */
@@ -119,8 +108,9 @@ public class Loader {
 
     /** A struct that stores all the data of a level when read from the json */
     public static class LevelData {
+        public int tutorialNum;
         public Vector2 dimensions;
-        public Vector2 lowerLeft;
+        public Vector2 startLocation;
 
         public WallData[] wallData;
         public WaterData[] waterData;
@@ -131,26 +121,10 @@ public class Loader {
         public EnergyPillarData[] energyPillarData;
         public DecorativeRootData[] decorativeRootData;
 
-        public PedestalData pedestalData;
-
-        public Vector2 startLocation;
     }
 
-    /**
-     * Tracks the asset state
-     */
-    public enum AssetState {
-        /** No assets loaded */
-        EMPTY,
-        /** Still loading assets */
-        LOADING,
-        /** Assets are complete */
-        COMPLETE
-    }
-
-    // Assets
-    /** Track all loaded assets (for unloading purposes) */
-    private Array<String> assets;
+    /** The data about the tutorial level messages */
+    private Tutorials tutorials;
 
     /** A factory that creates the game objects */
     private Factory factory;
@@ -171,12 +145,15 @@ public class Loader {
 
         json = new Json();
 
+//        outputTutorials();
+
         manager = new AssetManager();
-        assets = new Array<String>();
         // Add font support to the asset manager
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+
+        tutorials = json.fromJson(Tutorials.class, new FileHandle(TUTORIAL_DATA_PATH));
     }
 
     /**
@@ -189,8 +166,15 @@ public class Loader {
     public void saveLevel(FileHandle f, Level level) {
         LevelData levelData = new LevelData();
 
+        // Save the level number in the tutorial, for loading messages. They are
+        // 1 indexed, so 0 or negatives indicate no tutorial message
+        levelData.tutorialNum = level.tutorialNum;
+
         // Store the ground information
         levelData.dimensions = level.dimensions;
+
+        // Store the starting information
+        levelData.startLocation = new Vector2(level.pedestal.getX(), level.pedestal.getY());
 
         // Store the obstacle data
         levelData.wallData = new WallData[level.walls.length];
@@ -199,13 +183,13 @@ public class Loader {
             oData.dimensions = level.walls[i].getDimension();
             oData.origin = new Vector2(level.walls[i].getX(), level.walls[i].getY());
             if(level.walls[i] instanceof Wall) {
-                oData.primaryFrame = ((Wall)level.walls[i]).getPrimaryFrame();
-                oData.leftFrame = ((Wall)level.walls[i]).getLeftFrame();
-                oData.rightFrame = ((Wall)level.walls[i]).getRightFrame();
-                oData.frontEdgeFrame = ((Wall)level.walls[i]).getFrontEdgeFrame();
-                oData.backEdgeFrame = ((Wall)level.walls[i]).getBackEdgeFrame();
-                oData.lowerLeftCornerFrame = ((Wall)level.walls[i]).getLowerLeftCornerFrame();
-                oData.lowerRightCornerFrame = ((Wall)level.walls[i]).getLowerRightCornerFrame();
+                oData.primaryFrame = level.walls[i].getPrimaryFrame();
+                oData.leftFrame = level.walls[i].getLeftFrame();
+                oData.rightFrame = level.walls[i].getRightFrame();
+                oData.frontEdgeFrame = level.walls[i].getFrontEdgeFrame();
+                oData.backEdgeFrame = level.walls[i].getBackEdgeFrame();
+                oData.lowerLeftCornerFrame = level.walls[i].getLowerLeftCornerFrame();
+                oData.lowerRightCornerFrame = level.walls[i].getLowerRightCornerFrame();
             } else {
                 oData.primaryFrame = -1;
                 oData.leftFrame = -1;
@@ -303,10 +287,6 @@ public class Loader {
             levelData.decorativeRootData[i] = dData;
         }
 
-        PedestalData pData = new PedestalData();
-        pData.location = new Vector2(level.pedestal.getX(), level.pedestal.getY());
-        levelData.pedestalData = pData;
-
         // Store the starting information
         levelData.startLocation = new Vector2(level.pedestal.getX(), level.pedestal.getY());
 
@@ -331,7 +311,9 @@ public class Loader {
 
         // Load the map regions
         Vector2 dimensions = levelData.dimensions;
-        Vector2 lowerLeft = levelData.lowerLeft;
+
+        // Load tutorial data
+        int tutorialNum = levelData.tutorialNum;
 
         // Create the walls
         Wall[] walls = new Wall[levelData.wallData.length];
@@ -399,8 +381,7 @@ public class Loader {
              limit
 
              */
-                hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions, hData.currentCharge));
-//            hosts.add(new HostModel(rData.location.x, rData.location.y, (int)Data.chargeTime), false);
+            hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions, hData.currentCharge));
         }
 
         if(levelData.decorativeRootData == null) {
@@ -414,66 +395,37 @@ public class Loader {
         }
 
         // Create the starting "host" (with no charge capacity)
-        SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
         HostModel pedestal = factory.makePedestal(levelData.startLocation.x, levelData.startLocation.y);
-        return new Level(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, roots, hosts, spirit, pedestal);
+        SpiritModel spirit = factory.makeSpirit(levelData.startLocation.x, levelData.startLocation.y);
+        return new Level(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, roots, hosts, pedestal, spirit, tutorialNum);
     }
 
-    public Level reset(int level) {
-        return null;
-//        BoxObstacle[] obs = {new BoxObstacle(50,50,10,10)};
-//        ArrayList<HostModel> robs = new ArrayList<>();
-//        HostModel rob = new HostModel(30,30,10,10, 100);
-//        //rob.setTexture(hostTex);
-//        robs.add(rob,true);
-//        SpiritModel spir = new SpiritModel(70,70,10,10,4);
-//        Level lvl = new Level(null, obs, robs, spir);
-//        return lvl; //loadLevel();
-    }
-    // Private member functions
     /**
-     * Returns a newly loaded texture region for the given file.
+     * Get tutorial data. If no tutorial file was initially loaded, nothing will
+     * be returned
      *
-     * This helper methods is used to set texture settings (such as scaling, and
-     * whether or not the texture should repeat) after loading.
-     *
-     * This method was taken from lab 4, which was written by Walker M. White
-     *
-     * @param file		The texture (region) file
-     * @param repeat	Whether the texture should be repeated
-     *
-     * @return a newly loaded texture region for the given file.
+     * @param tutorialNum The index of the tutorial level, 1 indexed. If outside
+     *                    the range of tutorials, null will be returned
      */
-    private TextureRegion createTexture(String file, boolean repeat) {
-        if (manager.isLoaded(file)) {
-            TextureRegion region = new TextureRegion(manager.get(file, Texture.class));
-            region.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-            if (repeat) {
-                region.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-            }
-            return region;
+    public TutorialData getTutorialData(int tutorialNum) {
+        if(tutorials != null && tutorialNum > 0 && tutorialNum <= tutorials.tutorials.length) {
+            return tutorials.tutorials[tutorialNum - 1];
         }
-        System.out.println(file + " was never loaded");
         return null;
     }
 
-//    private int nHosts;
-//
-//    /** reads json data, creates objects and returns them to
-//     * the gameplay controller
-//     * @param json
-//     * @return Obstacle array
+//    /**
+//     * Output tutorials. For development purposes only
 //     */
-//    public Obstacle[] parse(Json json){
+//    public void outputTutorials() {
+//        Tutorials tutorials = new Tutorials();
+//        tutorials.tutorials = new TutorialData[1];
 //
-//        return null;
+//        tutorials.tutorials[0] = new TutorialData();
+//        tutorials.tutorials[0].instructions = "TEST TUTORIAL MESSAGE";
+//        tutorials.tutorials[0].countdown = 60;
+//        tutorials.tutorials[0].location = new Vector2(200, 200);
+//
+//        json.toJson(tutorials, new FileHandle(TUTORIAL_DATA_PATH));
 //    }
-//
-//    public void preLoadContent(AssetManager manager){}
-//
-//    public PooledList<Obstacle> loadContent(int level) {}
-//
-//    public int getnHosts(){return nHosts;}
-//
-
 }

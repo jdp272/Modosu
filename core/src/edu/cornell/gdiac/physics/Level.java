@@ -14,11 +14,9 @@ public class Level {
 
     /**
      * An empty constructor for a level. Everything is null.
-     *
-     * @param decorativeRootTiles An array of the decorativeRoot tiles in the level
      */
     public Level() {
-        set(null, null, null, null, null, null, null, null, null, null, null);
+        set(null, null, null, null, null, null, null, null, null, null, null, 0);
     }
 
     /**
@@ -29,9 +27,12 @@ public class Level {
      * @param walls An array of the walls in the level
      * @param water An array of the water tiles in the level
      * @param sand An array of the sand tiles in the level
+     * @param borderEdges An array of the border edges in the level
+     * @param borderCorners An array of the border corners in the level
      * @param decorativeRootTiles An array of the decorativeRoot tiles in the level
      * @param hosts An array of the hosts in the level
-     * @param start The "host" where the player starts
+     * @param spirit The spirit of the player
+     * @param pedestal The "host" where the player starts
      */
     public Level(
             Vector2 dimensions,
@@ -43,10 +44,43 @@ public class Level {
             EnergyPillar[] energyPillars,
             DecorativeRoots[] decorativeRootTiles,
             ArrayList<HostModel> hosts,
-            SpiritModel start,
-            HostModel pedestal
+            HostModel pedestal,
+            SpiritModel spirit
     ) {
-        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, decorativeRootTiles, hosts, start, pedestal);
+        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, decorativeRootTiles, hosts, pedestal, spirit, 0);
+    }
+
+    /**
+     * Constructs a simple object encapsulating the elements of a level
+     *
+     * @param dimensions The dimensions of the rectangular board in Box2D
+     *                   coordinates
+     * @param walls An array of the walls in the level
+     * @param water An array of the water tiles in the level
+     * @param sand An array of the sand tiles in the level
+     * @param borderEdges An array of the border edges in the level
+     * @param borderCorners An array of the border corners in the level
+     * @param hosts An array of the hosts in the level
+     * @param pedestal The "host" where the player starts
+     * @param spirit The spirit of the player
+     * @param tutorial An int indicating the tutorial number for this level.
+     *                 Non tutorial levels can use a negative number
+     */
+    public Level(
+            Vector2 dimensions,
+            Wall[] walls,
+            WaterTile[] water,
+            SandTile[] sand,
+            BorderEdge[] borderEdges,
+            BorderCorner[] borderCorners,
+            EnergyPillar[] energyPillars,
+            DecorativeRoots[] decorativeRootTiles,
+            ArrayList<HostModel> hosts,
+            HostModel pedestal,
+            SpiritModel spirit,
+            int tutorial
+    ) {
+        set(dimensions, walls, water, sand, borderEdges, borderCorners, energyPillars, decorativeRootTiles, hosts, pedestal, spirit, tutorial);
     }
 
     /** The dimensions of the rectangular board, in Box2D coordinates */
@@ -79,9 +113,29 @@ public class Level {
     /** The pedestal where the starting spirit starts */
     public HostModel pedestal;
 
-    /** The "host" where the player starts */
-    public SpiritModel start;
+    /** The spirit for the level */
+    public SpiritModel spirit;
 
+    /** An int indicating the tutorial number for this level. Non-tutorial
+        levels can use a negative number */
+    public int tutorialNum;
+
+    /**
+     * Constructs a simple object encapsulating the elements of a level
+     *
+     * @param dimensions The dimensions of the rectangular board in Box2D
+     *                   coordinates
+     * @param walls An array of the walls in the level
+     * @param water An array of the water tiles in the level
+     * @param sand An array of the sand tiles in the level
+     * @param borderEdges An array of the border edges in the level
+     * @param borderCorners An array of the border corners in the level
+     * @param hosts An array of the hosts in the level
+     * @param pedestal The pedestal where the player starts
+     * @param spirit The spirit of the player
+     * @param tutorialNum An int indicating the tutorial number for this level.
+     *      *             Non tutorial levels can use a negative number
+     */
     public void set(
             Vector2 dimensions,
             Wall[] walls,
@@ -92,8 +146,9 @@ public class Level {
             EnergyPillar[] energyPillars,
             DecorativeRoots[] decorativeRootTiles,
             ArrayList<HostModel> hosts,
-            SpiritModel start,
-            HostModel pedestal
+            HostModel pedestal,
+            SpiritModel spirit,
+            int tutorialNum
     ) {
         this.dimensions = dimensions;
         this.walls = walls;
@@ -104,7 +159,8 @@ public class Level {
         this.energyPillars = energyPillars;
         this.decorativeRootTiles = decorativeRootTiles;
         this.hosts = hosts;
-        this.start = start;
         this.pedestal = pedestal;
+        this.spirit = spirit;
+        this.tutorialNum = tutorialNum;
     }
 }

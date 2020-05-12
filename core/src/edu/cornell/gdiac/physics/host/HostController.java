@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.HUD;
 import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.obstacle.EnergyPillar;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
@@ -151,7 +152,9 @@ public class HostController {
      * @param dt     Number of seconds since last animation frame
      * @param inSand
      */
-    public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand, EnergyPillar[] energyPillars) {
+    public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand, EnergyPillar[] energyPillars, boolean wasPaused) {
+        // Removes the arrow that was clicked when paused
+        if (wasPaused) arrow = null;
 
         // Brings the spirit to the center of the host
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
