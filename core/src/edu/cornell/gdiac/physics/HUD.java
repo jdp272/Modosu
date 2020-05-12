@@ -90,8 +90,8 @@ public class HUD {
     private Skin skin;
     private Group group;
     private Table pauseTable;
-    private static Slider musicSlider;
-    private static Slider sfxSlider;
+    private Slider musicSlider;
+    private Slider sfxSlider;
     private Label titleLabel;
     private Label musicLabel;
     private Label sfxLabel;
@@ -201,11 +201,11 @@ public class HUD {
         sliderStyle.background = skin.getDrawable(sBAR);
         sliderStyle.knob = skin.getDrawable(sKNOB);
         musicSlider = new Slider(0, 100, 1f, false, sliderStyle);
-        musicSlider.setValue(MusicController.getInstance().getVolume()*100);
+        musicSlider.setValue(MusicController.getInstance().getVolume()*100f);
         musicSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //System.out.println("MUSIC SLIDED: " + musicSlider.getValue());
+                System.out.println("MUSIC SLIDED: " + musicSlider.getValue());
                 MusicController.getInstance().setVolume(musicSlider.getValue()/100f);
             }
         });
@@ -221,11 +221,11 @@ public class HUD {
 
         /** SFX Slider */
         sfxSlider = new Slider(0, 100, 1f, false, sliderStyle);
-        sfxSlider.setValue(SoundController.getInstance().getVolume()*100);
+        sfxSlider.setValue(SoundController.getInstance().getVolume());
         sfxSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // System.out.println("SFX SLIDED: " + sfxSlider.getValue());
+                System.out.println("SFX SLIDED: " + sfxSlider.getValue());
                 SoundController.getInstance().setVolume(sfxSlider.getValue()/100f);
             }
         });
@@ -298,10 +298,6 @@ public class HUD {
             timeLabel.setText(String.format(TIMER_PADDING + "%d:%02d", minutes, seconds));
             timeCount = 0;
         }
-
-        musicSlider.setValue(MusicController.getInstance().getVolume()*100);
-        sfxSlider.setValue(SoundController.getInstance().getVolume()*100);
-
     }
 
     /** Increments the number of current hosts possessed */
@@ -337,6 +333,9 @@ public class HUD {
         isPaused = true;
         group.addActor(pauseTable);
         stage.addActor(group);
+
+        musicSlider.setValue(MusicController.getInstance().getVolume()*100f);
+        sfxSlider.setValue(SoundController.getInstance().getVolume()*100f);
     }
 
     /** Returns whether menu icon was clicked */

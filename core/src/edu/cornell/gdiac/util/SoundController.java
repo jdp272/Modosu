@@ -133,8 +133,8 @@ public class SoundController {
 		frameLimit = DEFAULT_FRAME;
 		current = 0;
 		isUnmuted = true;
-		soundVolume = 1f;
-		prevSoundVolume = 1f;
+		soundVolume = 0.5f;
+		prevSoundVolume = 0.5f;
 	}
 
 	/**

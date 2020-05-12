@@ -70,8 +70,8 @@ public class MusicController {
 		crossFading = false;
 		reverse = false;
 		musicNext = null;
-		musicVolume = 1f;
-		prevMusicVolume = 1f;
+		musicVolume = 0.5f;
+		prevMusicVolume =0.5f;
 	}
 
 	/**
