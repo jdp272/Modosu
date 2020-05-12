@@ -652,7 +652,7 @@ public abstract class WorldController implements Screen {
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
 	/** Max number of levels */
-	protected static final int MAX_NUM_LEVELS = 8; //////////////// CHANGE DEPENDING ON AMOUNT OF LEVELS ///////////////
+	protected static final int MAX_NUM_LEVELS = 15; //////////////// CHANGE DEPENDING ON AMOUNT OF LEVELS ///////////////
 	
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;

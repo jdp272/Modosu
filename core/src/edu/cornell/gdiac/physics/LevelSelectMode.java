@@ -469,9 +469,11 @@ public class LevelSelectMode extends WorldController implements Screen {
 
         if(screenX >= customStart.x && screenX <= customEnd.x) {
             if (screenY >= customStart.y && screenY <= customEnd.y)  {
-                SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
-                pressState = 6;
-                isPressed = true;
+                if(!forceCustom) {
+                    SoundController.getInstance().play(CLICK_SOUND, CLICK_SOUND, false);
+                    pressState = 6;
+                    isPressed = true;
+                }
             }
         }
 
