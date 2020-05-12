@@ -314,14 +314,14 @@ public class HostController {
 
             // Host is at max charge
             else {
-                possessedBlownUp = true;
+                possessedBlownUp = true && possessed.animateDeath();
                 possessed.setVX(0);
                 possessed.setVY(0);
             }
 
             // Case when Host's currentCharge exceed maxCharge
             if (possessed.getCurrentCharge() > possessed.getMaxCharge()) {
-                possessedBlownUp = true;
+                possessedBlownUp = true && possessed.animateDeath();
             }
 
         }
@@ -336,6 +336,7 @@ public class HostController {
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
         // When the spirit has been launched, need to decrement life of spirit
         if (spirit.hasLaunched) {
+            possessed.setFizzle(false);
             possessed.setHasPlayedPossession(false);
             // If you can decrement life, decrement life
             if (spirit.decCurrentLife()) {
@@ -354,7 +355,8 @@ public class HostController {
             spirit.setPosition(possessed.getPosition());
             // TODO: Replace 100 with variable whatever amount we want the host to go up by
             if(possessed != pedestal) {
-                possessed.setCurrentCharge(possessed.getCurrentCharge() + 100);
+            possessed.setCurrentCharge((int)Math.min(possessed.getCurrentCharge() + 100, possessed.getMaxCharge()));
+            possessed.setFizzle(true);
             }
 
             if(possessed == pedestal) {
