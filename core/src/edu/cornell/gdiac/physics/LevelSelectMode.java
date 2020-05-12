@@ -267,7 +267,7 @@ public class LevelSelectMode extends WorldController implements Screen {
         Vector2 pos = input.getMousePosition();
 
         // Flip to match graphics coordinates
-        float screenY = 576-pos.y;
+        float screenY = pos.y;
         float screenX = pos.x;
         if (input.didLeftClick()){ updatePressed(screenX, screenY); }
         else if (input.didRelease()) { updateReleased(screenX, screenY);}

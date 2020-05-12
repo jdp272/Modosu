@@ -232,7 +232,7 @@ public class HostController {
                         spirit.setPosition(possessed.getPosition());
                     }
 
-                    Vector2 mousePos = mousePosCache.set(Gdx.input.getX(), canvas.getHeight() - Gdx.input.getY());
+                    Vector2 mousePos = mousePosCache.set(input.getMousePosition());
                     Vector2 shootVector = spiritCache.set(spiritCenter).sub(mousePos);
 
                     float vx = SHOOTING_MULTIPLIER * shootVector.x / scale.x;
@@ -306,7 +306,6 @@ public class HostController {
                 possessedBlownUp = true;
             }
         }
-
 
 
         // Update the Animation of the possessed host
