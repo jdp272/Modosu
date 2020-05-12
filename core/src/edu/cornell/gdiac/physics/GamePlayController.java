@@ -440,6 +440,13 @@ public class GamePlayController extends WorldController {
 
 		if (spirit.getDidBounce()) {
 			spirit.decCurrentLife(lifePerBounce);
+			canvas.shakeCamera(10, 5);
+		}
+
+		if (possessed.getImpact()) {
+			canvas.forceCamPosition(new Vector2(spirit.getPosition().x * scale.x, spirit.getPosition().y * scale.y));
+			canvas.shakeCamera(15, 5);
+			possessed.setImpact(false);
 		}
 
 		// Update sounds
