@@ -155,6 +155,11 @@ public class LevelSelectMode extends WorldController implements Screen {
             return;
         }
 
+        // Only reset the page if the mode actually switched
+        if(onCustom != custom) {
+            page = 0;
+        }
+
         File folder;
         onCustom = custom;
         if (onCustom) {
