@@ -1,6 +1,8 @@
 package edu.cornell.gdiac.physics.obstacle;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.util.FilmStrip;
 
@@ -24,7 +26,11 @@ public class EnergyPillar extends BoxObstacle {
     }
 
     public EnergyPillar(float x, float y, float width, float height) {
+
         super(x, y, width, height);
+        PolygonShape s = new PolygonShape();
+        s.setAsBox(getWidth() / 2, getHeight() / 4, new Vector2(0, getHeight() / 4), 0);
+        shape = s;
     }
 
 
