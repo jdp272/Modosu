@@ -130,13 +130,15 @@ public abstract class WorldController implements Screen {
 	private static String BORDER_EDGE_FILE = "shared/forest.png";
 	/** File to texture for borders */
 	private static String BORDER_CORNER_FILE = "shared/forestcorners.png";
-
 	/** File to texture for Energy Pillar body */
 	private static String  ENERGY_PILLAR_BODY_FILE = "shared/energyPillar_base.png";
 	/** File to texture for Energy Pillar Charge */
 	private static String ENERGY_PILLAR_BODY_CHARGE_FILE = "shared/energyPillar_lights.png";
 	/** File to texture for Energy Pillar Radius */
 	private static String ENERGY_PILLAR_RADIUS_FILE = "shared/energyRing.png";
+	/** File to texture for Energy Pillar Radius */
+	private static String DECORATIVE_ROOTS_FILE = "shared/rootsspritesheet.png";
+
 
 	private static int FONT_SIZE = 56;
 
@@ -199,6 +201,8 @@ public abstract class WorldController implements Screen {
 	private static Texture energyPillarCharge;
 	/** Texture for Energy Pillar Radius Texture */
 	private static Texture energyPillarRadius;
+	/** Texture for decorative roots */
+	private static Texture rootsTexture;
 
 	/** List of footprints for level editor */
 	private ArrayList<FootPrintModel> footprints;
@@ -298,6 +302,8 @@ public abstract class WorldController implements Screen {
 		assets.add(ENERGY_PILLAR_BODY_FILE);
 		manager.load(ENERGY_PILLAR_RADIUS_FILE, Texture.class);
 		assets.add(ENERGY_PILLAR_RADIUS_FILE);
+		manager.load(DECORATIVE_ROOTS_FILE, Texture.class);
+		assets.add(DECORATIVE_ROOTS_FILE);
 
 		// Load the font
 		FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -367,9 +373,10 @@ public abstract class WorldController implements Screen {
 		energyPillarBody = manager.get(ENERGY_PILLAR_BODY_FILE, Texture.class);
 		energyPillarCharge = manager.get(ENERGY_PILLAR_BODY_CHARGE_FILE, Texture.class);
 		energyPillarRadius = manager.get(ENERGY_PILLAR_RADIUS_FILE, Texture.class);
+		rootsTexture = manager.get(DECORATIVE_ROOTS_FILE, Texture.class);
 
 		// Set the proper textures in the factory
-		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture, borderEdgeTexture, borderCornerTexture, energyPillarBody, energyPillarCharge, energyPillarRadius);
+		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture, hostGaugeTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW, hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture, pedestalTexture, borderEdgeTexture, borderCornerTexture, energyPillarBody, energyPillarCharge, energyPillarRadius, rootsTexture);
 		loader = new Loader(factory);
 	}
 	

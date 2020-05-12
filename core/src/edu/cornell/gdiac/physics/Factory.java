@@ -41,128 +41,85 @@ public class Factory {
     private Texture energyPillarBodyTexture;
     private Texture energyPillarBodyChargeTexture;
     private Texture energyPillarRadiusTexture;
+    private Texture rootsTexture;
 
-    /** Static Variables for Sprite Sheet */
+    // Static variables for sprite sheets
 
-    /**
-     * Number of rows in the energy pillar filmstrip
-     */
+    /** Number of rows in the energy pillar filmstrip */
     private static final int ENERGY_PILLAR_ROWS = 1;
-    /**
-     * Number of columns in the energy pillar filmstrip
-     */
+    /** Number of columns in the energy pillar filmstrip */
     private static final int ENERGY_PILLAR_COLUMNS = 1;
-    /**
-     * Number of frames in the energy pillar filmstrip
-     */
+    /** Number of frames in the energy pillar filmstrip */
     private static final int ENERGY_PILLAR_SIZE = 1;
 
-
-    /**
-     * Number of rows in the spirit image filmstrip
-     */
+    /** Number of rows in the spirit image filmstrip */
     private static final int SPIRIT_ROWS = 35;
-    /**
-     * Number of columns in the spirit image filmstrip
-     */
+    /** Number of columns in the spirit image filmstrip */
     private static final int SPIRIT_COLUMNS = 4;
-    /**
-     * Total Number of frames in the spirit image filmstrip
-     */
+    /** Total Number of frames in the spirit image filmstrip */
     private static final int SPIRIT_SIZE = 140;
 
-    /**
-     * Number of rows in the host image filmstrip
-     */
+    /** Number of rows in the host image filmstrip */
     private static final int HOST_ROWS = 6;
-    /**
-     * Number of columns in this host image filmstrip
-     */
+    /** Number of columns in this host image filmstrip */
     private static final int HOST_COLUMNS = 10;
-    /**
-     * Number of total hosts in the host image filmstrip
-     */
+    /** Number of total hosts in the host image filmstrip */
     private static final int HOST_SIZE = 60;
 
-    /**
-     * Number of rows in the charge image filmstrip
-     */
+    /** Number of rows in the charge image filmstrip */
     private static final int CHARGE_ROWS = 4;
-    /**
-     * Number of columns in the charge image filmstrip
-     */
+    /** Number of columns in the charge image filmstrip */
     private static final int CHARGE_COLUMNS = 8;
-    /**
-     * Number of total frames in the charge image filmstrip
-     */
+    /** Number of total frames in the charge image filmstrip */
     private static final int CHARGE_SIZE = 32;
 
-    /**
-     * Number of rows in the wall image filmstrip
-     */
+    /** Number of rows in the wall image filmstrip */
     private static final int WALL_ROWS = 4;
     /** Number of columns in this wall image filmstrip */
     private static final int WALL_COLUMNS = 8;
     /** Number of total hosts in the wall image filmstrip */
     private static final int WALL_SIZE = 32;
 
-    /**
-     * Number of rows in the water image filmstrip
-     */
+    /** Number of rows in the water image filmstrip */
     private static final int WATER_ROWS = 4;
-    /**
-     * Number of columns in the water image filmstrip
-     */
+    /** Number of columns in the water image filmstrip */
     private static final int WATER_COLUMNS = 4;
-    /**
-     * Number of total hosts in the water image filmstrip
-     */
+    /** Number of total hosts in the water image filmstrip */
     private static final int WATER_SIZE = 16;
 
-    /**
-     * Number of rows in the water corner image filmstrip
-     */
+    /** Number of rows in the water corner image filmstrip */
     private static final int WATER_CORNER_ROWS = 2;
-    /**
-     * Number of columns in the water corner image filmstrip
-     */
+    /** Number of columns in the water corner image filmstrip */
     private static final int WATER_CORNER_COLUMNS = 2;
-    /**
-     * Number of total hosts in the water corner image filmstrip
-     */
+    /** Number of total hosts in the water corner image filmstrip */
     private static final int WATER_CORNER_SIZE = 4;
 
-    /**
-     * Number of rows in the pedestal image filmstrip
-     */
+    /** Number of rows in the pedestal image filmstrip */
     private static final int PEDESTAL_ROWS = 1;
-    /**
-     * Number of columns in the pedestal image filmstrip
-     */
-    private static final int PEDESTAL_COLS = 4;
-    /**
-     * Number of total pedestals in the pedestal image filmstrip
-     */
+    /** Number of columns in the pedestal image filmstrip */
+    private static final int PEDESTAL_COLUMNS = 4;
+    /** Number of total pedestals in the pedestal image filmstrip */
     private static final int PEDESTAL_SIZE = 4;
 
     /** Number of rows in the border edge image filmstrip */
     private static final int BORDER_EDGE_ROWS = 4;
     /** Number of columns in the border edge image filmstrip */
-    private static final int BORDER_EDGE_COLS = 9;
+    private static final int BORDER_EDGE_COLUMNS = 9;
 
     /** Number of rows in the border corner image filmstrip */
     private static final int BORDER_CORNER_ROWS = 2;
     /** Number of columns in the border corner image filmstrip */
-    private static final int BORDER_CORNER_COLS = 2;
+    private static final int BORDER_CORNER_COLUMNS = 2;
 
+    /** Number of rows in the decorative roots image filmstrip */
+    private static final int ROOTS_ROWS = 2;
+    /** Number of columns in the decorative roots image filmstrip */
+    private static final int ROOTS_COLUMNS = 2;
 
     /** The draw scale of objects */
     private Vector2 scale;
 
-
-    /**
-     * Can be set. If true, instantiated objects are sensors
-     */
+    /** Can be set. If true, instantiated objects are sensors */
     public boolean makeSensors;
 
     public Factory(
@@ -189,7 +146,8 @@ public class Factory {
             Texture borderCornerTexture,
             Texture energyPillarBodyTexture,
             Texture energyPillarBodyChargeTexture,
-            Texture energyPillarRadiusTexture
+            Texture energyPillarRadiusTexture,
+            Texture rootsTexture
     ) {
         this.scale = scale;
         this.spiritBodyTexture = spiritBodyTexture;
@@ -215,8 +173,27 @@ public class Factory {
         this.energyPillarBodyChargeTexture = energyPillarBodyChargeTexture;
         this.energyPillarBodyTexture = energyPillarBodyTexture;
         this.energyPillarRadiusTexture = energyPillarRadiusTexture;
+        this.rootsTexture = rootsTexture;
     }
 
+    public DecorativeRoots makeDecorativeRoot(float x, float y, int frame) {
+        DecorativeRoots roots = new DecorativeRoots(
+                x,
+                y,
+                Constants.TILE_WIDTH,
+                Constants.TILE_HEIGHT,
+                frame
+        );
+        FilmStrip tex = new FilmStrip(rootsTexture, ROOTS_ROWS, ROOTS_COLUMNS);
+        tex.setFrame(frame);
+        roots.setTexture(tex);
+        roots.setDrawScale(scale);
+        roots.setBodyType(BodyDef.BodyType.StaticBody);
+        roots.setSensor(true); // They should never obstruct other objects
+        roots.setName("decorative");
+        roots.selectable = false;
+        return roots;
+    }
 
     public EnergyPillar makeEnergyPillar(float x, float y) {
         EnergyPillar engPill = new EnergyPillar(
@@ -281,7 +258,7 @@ public class Factory {
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT,
                 side,
-                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLS)
+                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS)
         );
         edge.selectable = false;
         edge.setDrawScale(scale);
@@ -299,7 +276,7 @@ public class Factory {
                 Constants.TILE_HEIGHT,
                 side,
                 frame,
-                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLS)
+                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS)
         );
         edge.selectable = false;
         edge.setDrawScale(scale);
@@ -316,7 +293,7 @@ public class Factory {
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT,
                 c,
-                new FilmStrip(borderCornerTexture, BORDER_CORNER_ROWS, BORDER_CORNER_COLS)
+                new FilmStrip(borderCornerTexture, BORDER_CORNER_ROWS, BORDER_CORNER_COLUMNS)
         );
         corner.selectable = false;
         corner.setDrawScale(scale);
@@ -408,7 +385,7 @@ public class Factory {
                 true
         );
         ped.setDrawScale(scale);
-        ped.setPedestalStrip(new FilmStrip(pedestalTexture, PEDESTAL_ROWS, PEDESTAL_COLS, PEDESTAL_SIZE));
+        ped.setPedestalStrip(new FilmStrip(pedestalTexture, PEDESTAL_ROWS, PEDESTAL_COLUMNS, PEDESTAL_SIZE));
         ped.setName("pedestal");
         ped.setSensor(makeSensors);
         return ped;
