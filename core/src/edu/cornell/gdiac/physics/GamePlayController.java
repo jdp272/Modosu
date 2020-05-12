@@ -175,10 +175,9 @@ public class GamePlayController extends WorldController {
 		// Initialize vectors
         cache = new Vector2();
 
-		// TODO Change level loading here
-		File folder = new File("levels");
-		levels = new ArrayList(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
-		Collections.sort(levels);
+		// Levels were loaded here but I don't think that's necessary because reset does it too
+		// and is always called when gameplay controller first loads up
+
 	}
 
 
@@ -189,15 +188,8 @@ public class GamePlayController extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-		if(inCustom){
-			File folder = new File("Custom");
-			levels = new ArrayList(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
-			Collections.sort(levels);
-		}else{
-			File folder = new File("levels");
-			levels = new ArrayList(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
-			Collections.sort(levels);
-		}
+
+	    getLevels(inCustom);
 		// Reset game conditions to represent a new game
 		setComplete(false);
 		setFailure(false);
@@ -213,12 +205,13 @@ public class GamePlayController extends WorldController {
 
 		int levelIndex = ((currentLevel%levels.size()) + levels.size()) % levels.size();
 
+		// TODO These are currently the same so if everything works this if statement can be removed
 		if(inCustom) {
-			System.out.println("Custom/" + levels.get(levelIndex).getName());
-			levelToLoad = Gdx.files.local("Custom/" + levels.get(levelIndex).getName());
+//			System.out.println("Custom/" + levels.get(levelIndex).getName());
+			levelToLoad = levels.get(levelIndex);
 		} else {
-			System.out.println("levels/" + levels.get(levelIndex).getName());
-			levelToLoad = Gdx.files.local("levels/" + levels.get(levelIndex).getName());
+//			System.out.println("levels/" + levels.get(levelIndex).getName());
+			levelToLoad = levels.get(levelIndex);
 		}
 
 		level = loader.loadLevel(levelToLoad);

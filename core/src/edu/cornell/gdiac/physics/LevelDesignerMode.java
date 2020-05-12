@@ -337,8 +337,10 @@ public class LevelDesignerMode extends WorldController {
 		}
 
 		File folder = new File("levels");
-		levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
-		Collections.sort(levels);
+		levels = new ArrayList<FileHandle>();
+		for (int i = 0; i < numLevels; i++) {
+			levels.add(Gdx.files.internal("levels/" + i + ".lvl"));
+		}
 	}
 
 	/**
@@ -346,19 +348,22 @@ public class LevelDesignerMode extends WorldController {
 	 *
 	 * @return A string representing the level name
 	 */
+
 	public String getLevelName() {
 		if(levelName != null){
 			return levelName;
 		}
 		if(!fromCustom && !newLevel) {
-			levelName = "levels/" + levels.get(currentLevel).getName();
+			levelName = "levels/" + levels.get(currentLevel).file().getName();
 		}else if(newLevel) {
 			levelName = "Custom/c" + currentLevel + ".lvl";
 		}else{
-			levelName = "Custom/" + levels.get(currentLevel).getName();
+			levelName = "Custom/" + levels.get(currentLevel).file().getName();
 		}
 		return levelName;
 	}
+
+
 
 	/**
 	 * Gets the current width of the screen in tiles, rounded down to the
@@ -416,15 +421,16 @@ public class LevelDesignerMode extends WorldController {
 			newLevel = false;
 		}
 
-		if(fromCustom || newLevel){
-			File folder = new File("Custom");
-			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
-			Collections.sort(levels);
-		}else{
-			File folder = new File("levels");
-			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
-			Collections.sort(levels);
-		}
+//		if(fromCustom || newLevel){
+//			File folder = new File("Custom");
+//			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+//			Collections.sort(levels);
+//		}else{
+//			File folder = new File("levels");
+//			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
+//			Collections.sort(levels);
+//		}
+        getLevels(fromCustom || newLevel);
 
 	    refreshFootprints();
 
