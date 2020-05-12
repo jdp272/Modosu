@@ -62,9 +62,20 @@ public class LoadingMode implements Screen {
 	private static final String QUIT_FILE = "shared/quit.png";
 	private static final String MUTE_FILE = "shared/mute.png";
 	private static final String UNMUTE_FILE = "shared/unmute.png";
-
 	private static final String CLICK_SOUND = "shared/click.mp3";
 	private static final String HOVER_SOUND = "shared/hover.mp3";
+
+	// Textures for menu screen animation
+//	private static final String FLYING_1 = "shared/phoenix/flying_0-27.png";
+//	private static final String FLYING_2 = "shared/phoenix/flying_28-55.png";
+//	private static final String FLYING_3 = "shared/phoenix/flying_56-83.png";
+	private static final String FLYING_1 = "shared/phoenix/flapping_0-27.png";
+	private static final String FLYING_2 = "shared/phoenix/flapping_28-55.png";
+	private static final String FLYING_3 = "shared/phoenix/flapping_56-69.png";
+
+	private static final String FLAPPING_1 = "shared/phoenix/flying_0-27.png";
+	private static final String FLAPPING_2 = "shared/phoenix/flying_28-55.png";
+	private static final String FLAPPING_3 = "shared/phoenix/flying_56-83.png";
 
 	/** Background texture for start-up */
 	private Texture background;
@@ -89,6 +100,20 @@ public class LoadingMode implements Screen {
 	private Texture loadingTexture;
 	/** Blank Loading Background */
 	private Texture loadingBackgroundTexture;
+
+	/** Sprite sheet of Loading Text */
+	private Texture flyingTexture_1;
+	/** Sprite sheet of Loading Text */
+	private Texture flyingTexture_2;
+	/** Sprite sheet of Loading Text */
+	private Texture flyingTexture_3;
+	/** Sprite sheet of Loading Text */
+	private Texture flappingTexture_1;
+	/** Sprite sheet of Loading Text */
+	private Texture flappingTexture_2;
+	/** Sprite sheet of Loading Text */
+	private Texture flappingTexture_3;
+
 
 	/** Default budget for asset loader (do nothing but load 60 fps) */
 	private static int DEFAULT_BUDGET = 15;
@@ -150,6 +175,14 @@ public class LoadingMode implements Screen {
 	private static int LOADING_TEXT_ROW_COL    = 2;
 	/** Column length of start text animation */
 	private static int LOADING_TEXT_TOTAL = 4;
+
+	/** Row length of menu animation  */
+	private static int PHOENIX_ROW = 7;
+	/** Column length of menu  animation */
+	private static int PHOENIX_COL = 4;
+	/** Size of menu animation */
+	private static int PHOENIX_TOTAL = 28;
+
 	/** Offset */
 	private static int OFFSET = 128;
 	/** 2X Offset */
@@ -194,8 +227,6 @@ public class LoadingMode implements Screen {
 	private pressState buttonPressed;
 
 	private boolean isReady;
-
-
 
 	private static enum pressState {
 		START,
@@ -284,6 +315,14 @@ public class LoadingMode implements Screen {
 		loadingTexture = new Texture(LOADING_TEXT_FILE);
 		loadingBackgroundTexture = new Texture(LOADING_BACKGROUND_FILE);
 
+		// Load the menu screen textures
+		flyingTexture_1 = new Texture(FLYING_1);
+		flyingTexture_2 = new Texture(FLYING_2);
+		flyingTexture_3 = new Texture(FLYING_3);
+		flappingTexture_1 = new Texture(FLAPPING_1);
+		flappingTexture_2 = new Texture(FLAPPING_2);
+		flappingTexture_3 = new Texture(FLAPPING_3);
+
 		// Load the next two images immediately.
 		playButton = null;
 		lvlDesign = null;
@@ -303,15 +342,27 @@ public class LoadingMode implements Screen {
 		isPressed = false;
 		isReady = false;
 		active = false;
-		updateFrame = true;
+		updateFrameLoading = true;
+		updateFrameMenu = true;
 
 		buttonPressed = pressState.NONE;
 
 		active = true;
 
 		// For the loading screen animations
-		setFilmStrip(new FilmStrip(wakingGolemTexture, WAKING_GOLEM_ROW, WAKING_GOLEM_COLUMN, WAKING_GOLEM_TOTAL),
+		setFilmStripLoading(new FilmStrip(wakingGolemTexture, WAKING_GOLEM_ROW, WAKING_GOLEM_COLUMN, WAKING_GOLEM_TOTAL),
 				new FilmStrip(loadingTexture, LOADING_TEXT_ROW_COL, LOADING_TEXT_ROW_COL, LOADING_TEXT_TOTAL));
+
+
+		// For the main menu screen animations
+		setFilmStripMenu(
+				new FilmStrip(flyingTexture_1, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL),
+				new FilmStrip(flyingTexture_2, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL),
+				new FilmStrip(flyingTexture_3, 4, PHOENIX_COL, 14),
+				new FilmStrip(flappingTexture_1, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL),
+				new FilmStrip(flappingTexture_2, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL),
+				new FilmStrip(flappingTexture_3, PHOENIX_ROW, PHOENIX_COL, PHOENIX_TOTAL)
+		);
 	}
 
 	/**
@@ -355,20 +406,14 @@ public class LoadingMode implements Screen {
 		 loadingTexture.dispose();
 		 wakingGolemTexture.dispose();
 		 loadingBackgroundTexture.dispose();
-		 //background.dispose();
-//		 statusBar.dispose();
-//		 playButton.dispose();
-//		 lvlSelect.dispose();
-//		 lvlDesign.dispose();
-//		 credits.dispose();
-//		 quit.dispose();
-//		 unmute.dispose();
-//		 mute.dispose();
-//		 background = null;
-//		 if (playButton != null) {
-//			 playButton.dispose();
-//			 playButton = null;
-//		 }
+
+		 flyingTexture_1.dispose();
+		 flyingTexture_2.dispose();
+		 flyingTexture_3.dispose();
+
+		 flappingTexture_1.dispose();
+		 flappingTexture_2.dispose();
+		 flappingTexture_3.dispose();
 	}
 
 
@@ -445,11 +490,14 @@ public class LoadingMode implements Screen {
 
 		if (playButton == null) {
 			canvas.draw(loadingBackgroundTexture, 0,0);
-			updateAnimation();
+			updateLoadingAnimation();
 			drawProgress(canvas);
 		}
 		else {
+
 			canvas.draw(background, 0, 0);
+			updateMenuAnimation();
+			drawMenuAnimation(canvas);
 
 			canvas.draw(playButton, buttonPressed == pressState.START && isPressed ? Color.SKY : colorStart, 0, 0,
 						BUTTON_X, START_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
@@ -478,40 +526,164 @@ public class LoadingMode implements Screen {
 		canvas.end();
 	}
 
+	/** The current filmstrip to draw */
+	protected FilmStrip drawStrip;
+
 	/** The texture filmstrip for the spirit body */
 	protected FilmStrip  golemWakingStrip;
 	/** The texture filmstrip for the spirit body */
 	protected FilmStrip  loadingTextStrip;
+
+	/** The texture filmstrip for the phoenix spirit flying */
+	protected FilmStrip  flyingPhoenixStrip_1;
+	/** The texture filmstrip for the phoenix spirit flying */
+	protected FilmStrip  flyingPhoenixStrip_2;
+	/** The texture filmstrip for the phoenix spirit flying */
+	protected FilmStrip  flyingPhoenixStrip_3;
+	/** The texture filmstrip for the phoenix spirit flapping */
+	protected FilmStrip  flappingPhoenixStrip_1;
+	/** The texture filmstrip for the phoenix spirit flapping */
+	protected FilmStrip  flappingPhoenixStrip_2;
+	/** The texture filmstrip for the phoenix spirit flapping */
+	protected FilmStrip  flappingPhoenixStrip_3;
+
+	/** Which number of film strip are you on */
+	private int onFilmStrip = 0;
 	/** The number of frames that have elapsed since the last animation update */
-	private int elapsedFrames = 0;
+	private int elapsedFramesMenu = 0;
 	/** The number of frames that should pass before the animation updates */
-	private int framesPerUpdate = 16;
+	private int framesPerUpdateMenu = 4;
 	/** Whether or not animation should be updated on this frame */
-	private boolean updateFrame;
+	private boolean updateFrameMenu;
+
+	/** The number of frames that have elapsed since the last animation update */
+	private int elapsedFramesLoading = 0;
+	/** The number of frames that should pass before the animation updates */
+	private int framesPerUpdateLoading = 16;
+	/** Whether or not animation should be updated on this frame */
+	private boolean updateFrameLoading;
 
 	private static final int FRAME_START = 0;
 
 	/**
 	 * sets all the film strips of the spirit
 	 * @param golemWakingUp filmstrip for the spirit's body
+	 *
 	 */
-	public void setFilmStrip (FilmStrip golemWakingUp, FilmStrip loadingTextStrip) {
+	public void setFilmStripLoading(FilmStrip golemWakingUp,
+							  FilmStrip loadingTextStrip) {
+
 		this.golemWakingStrip = golemWakingUp;
 		this.golemWakingStrip.setFrame(FRAME_START);
 
 		this.loadingTextStrip = loadingTextStrip;
 		this.loadingTextStrip.setFrame(FRAME_START);
-
 	}
 
-	public void updateAnimation () {
-		elapsedFrames++;
+	/**
+	 * sets all the film strips of the spirit
+	 * @param flappingPhoenixStrip_1 for the spirit's phoenix
+	 * @param flappingPhoenixStrip_2 for the spirit's phoenix
+	 * @param flappingPhoenixStrip_3 for the spirit's phoenix
+	 * @param flyingPhoenixStrip_1 for the spirit's phoenix
+	 * @param flyingPhoenixStrip_2 for the spirit's phoenix
+	 * @param flyingPhoenixStrip_3 for the spirit's phoenix
+	 *
+	 */
+	public void setFilmStripMenu (FilmStrip flappingPhoenixStrip_1,
+							  FilmStrip flappingPhoenixStrip_2,
+							  FilmStrip flappingPhoenixStrip_3,
+							  FilmStrip flyingPhoenixStrip_1,
+							  FilmStrip flyingPhoenixStrip_2,
+							  FilmStrip flyingPhoenixStrip_3) {
 
-		if (elapsedFrames >= framesPerUpdate) {
-			updateFrame = true;
-			elapsedFrames = 0;
+		this.flyingPhoenixStrip_1 = flyingPhoenixStrip_1;
+		this.flyingPhoenixStrip_2 = flyingPhoenixStrip_2;
+		this.flyingPhoenixStrip_3 = flyingPhoenixStrip_3;
+
+		this.flyingPhoenixStrip_1.setFrame(FRAME_START);
+		this.flyingPhoenixStrip_2.setFrame(FRAME_START);
+		this.flyingPhoenixStrip_3.setFrame(FRAME_START);
+
+		this.flappingPhoenixStrip_1 = flappingPhoenixStrip_1;
+		this.flappingPhoenixStrip_2 = flappingPhoenixStrip_2;
+		this.flappingPhoenixStrip_3 = flappingPhoenixStrip_3;
+
+		this.flappingPhoenixStrip_1.setFrame(FRAME_START);
+		this.flappingPhoenixStrip_2.setFrame(FRAME_START);
+		this.flappingPhoenixStrip_3.setFrame(FRAME_START);
+	}
+
+	public void updateMenuAnimation () {
+		elapsedFramesMenu++;
+
+		if (elapsedFramesMenu >= framesPerUpdateMenu) {
+			updateFrameMenu = true;
+			elapsedFramesMenu = 0;
 		}
-		if (updateFrame) {
+		if (updateFrameMenu) {
+			if (this.flyingPhoenixStrip_1.getFrame() < this.flyingPhoenixStrip_1.getSize() - 1) {
+				this.flyingPhoenixStrip_1.setFrame(this.flyingPhoenixStrip_1.getFrame() + 1);
+					System.out.println("UPDATED STRIP 1: " + this.flyingPhoenixStrip_1.getFrame());
+					onFilmStrip = 1; }
+			else if ((this.flyingPhoenixStrip_1.getFrame() >= this.flyingPhoenixStrip_1.getSize() - 1)
+					&& this.flyingPhoenixStrip_2.getFrame() < this.flyingPhoenixStrip_2.getSize() - 1) {
+						this.flyingPhoenixStrip_2.setFrame(this.flyingPhoenixStrip_2.getFrame() + 1);
+					System.out.println("UPDATED STRIP 2: " + this.flyingPhoenixStrip_2.getFrame());
+					onFilmStrip = 2; }
+			else if ((this.flyingPhoenixStrip_2.getFrame() >= this.flyingPhoenixStrip_2.getSize() - 1)
+					&& this.flyingPhoenixStrip_3.getFrame() < this.flyingPhoenixStrip_3.getSize() - 1) {
+					this.flyingPhoenixStrip_3.setFrame(this.flyingPhoenixStrip_3.getFrame() + 1);
+					System.out.println("UPDATED STRIP 3: " + this.flyingPhoenixStrip_3.getFrame());
+					onFilmStrip = 3; }
+			else if ((this.flyingPhoenixStrip_3.getFrame() >= this.flyingPhoenixStrip_3.getSize() - 1)
+					&& this.flappingPhoenixStrip_1.getFrame() < this.flappingPhoenixStrip_1.getSize() - 1) {
+					this.flappingPhoenixStrip_1.setFrame(this.flappingPhoenixStrip_1.getFrame() + 1);
+					System.out.println("UPDATED STRIP 4: " + this.flappingPhoenixStrip_1.getFrame());
+					onFilmStrip = 4; }
+			else if ((this.flappingPhoenixStrip_1.getFrame() >= this.flappingPhoenixStrip_1.getSize() - 1)
+					&& this.flappingPhoenixStrip_2.getFrame() < this.flappingPhoenixStrip_2.getSize() - 1) {
+					this.flappingPhoenixStrip_2.setFrame(this.flappingPhoenixStrip_2.getFrame() + 1);
+					System.out.println("UPDATED STRIP 5: " + this.flappingPhoenixStrip_2.getFrame());
+					onFilmStrip = 5; }
+			else if ((this.flappingPhoenixStrip_2.getFrame() >= this.flappingPhoenixStrip_2.getSize() - 1)
+					&& this.flappingPhoenixStrip_3.getFrame() < this.flappingPhoenixStrip_3.getSize() - 1) {
+					this.flappingPhoenixStrip_3.setFrame(this.flappingPhoenixStrip_3.getFrame() + 1);
+					System.out.println("UPDATED STRIP 6: " + this.flappingPhoenixStrip_3.getFrame());
+					onFilmStrip = 6; }
+			else {
+				this.flappingPhoenixStrip_1.setFrame(FRAME_START);
+				this.flappingPhoenixStrip_2.setFrame(FRAME_START);
+				this.flappingPhoenixStrip_3.setFrame(FRAME_START);
+				onFilmStrip = 3;
+			}
+			updateFrameMenu = false;
+		}
+	}
+
+	/**
+	 * Called when we leave the screen
+	 * Will update the animations to reset
+	 */
+	public void resetAnimation() {
+		// Compute the drawing scale
+		onFilmStrip = 3;
+		this.flappingPhoenixStrip_1.setFrame(FRAME_START);
+		this.flappingPhoenixStrip_2.setFrame(FRAME_START);
+		this.flappingPhoenixStrip_3.setFrame(FRAME_START);
+
+		elapsedFramesMenu = 0;
+		updateFrameMenu = false;
+	}
+
+	public void updateLoadingAnimation () {
+		elapsedFramesLoading++;
+
+		if (elapsedFramesLoading >= framesPerUpdateLoading) {
+			updateFrameLoading = true;
+			elapsedFramesLoading = 0;
+		}
+		if (updateFrameLoading) {
 			if ((this.golemWakingStrip.getFrame() < this.golemWakingStrip.getSize() - 1)) {
 				this.golemWakingStrip.setFrame(this.golemWakingStrip.getFrame() + 1); }
 
@@ -520,7 +692,7 @@ public class LoadingMode implements Screen {
 			} else {
 				this.loadingTextStrip.setFrame(FRAME_START);
 			}
-			updateFrame = false;
+			updateFrameLoading = false;
 		}
 	}
 
@@ -541,6 +713,41 @@ public class LoadingMode implements Screen {
 		}
 	}
 
+	/**
+	 * Updates the main menu animation
+	 *
+	 * @param canvas The drawing context
+	 */
+	private void drawMenuAnimation(GameCanvas canvas) {
+		if (progress > 0 ) {
+			switch (onFilmStrip) {
+				case 1:
+					drawStrip = flyingPhoenixStrip_1;
+					break;
+				case 2:
+					drawStrip = flyingPhoenixStrip_2;
+					break;
+				case 3:
+					drawStrip = flyingPhoenixStrip_3;
+					break;
+				case 4:
+					drawStrip = flappingPhoenixStrip_1;
+					break;
+				case 5:
+					drawStrip = flappingPhoenixStrip_2;
+					break;
+				case 6:
+					drawStrip = flappingPhoenixStrip_3;
+					break;
+			}
+			if (drawStrip != null) {
+				System.out.println("DRAWING: " + onFilmStrip);
+				canvas.draw(drawStrip, Color.WHITE, 0, 0, 1024, 576);
+			}
+
+		}
+	}
+
 	// ADDITIONAL SCREEN METHODS
 	/**
 	 * Called when the Screen should render itself.
@@ -558,24 +765,28 @@ public class LoadingMode implements Screen {
 			// We are are ready, notify our listener
 			if (isReady && buttonPressed == pressState.START && listener != null) {
 				buttonPressed = pressState.NONE;
+				resetAnimation();
 				listener.exitScreen(this, WorldController.EXIT_PLAY);
 			}
 
 			// Go to level design mode
 			if (isReady && buttonPressed == pressState.DESIGN && listener != null) {
 				buttonPressed = pressState.NONE;
+				resetAnimation();
 				listener.exitScreen(this,WorldController.EXIT_DESIGN);
 			}
 
 			// Go to level select mode
 			if(isReady && buttonPressed == pressState.SELECT && listener != null) {
 				buttonPressed = pressState.NONE;
+				resetAnimation();
 				listener.exitScreen(this,WorldController.EXIT_SELECT);
 			}
 
 			// Go to credits mode
 			if (isReady && buttonPressed == pressState.CREDITS && listener != null) {
 				buttonPressed = pressState.NONE;
+				resetAnimation();
 				listener.exitScreen(this, WorldController.EXIT_CREDITS);
 			}
 
