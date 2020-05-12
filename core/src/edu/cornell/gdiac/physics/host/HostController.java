@@ -334,6 +334,7 @@ public class HostController {
         // PORTION OF CODE THAT DEALS WITH DECREMENTING LIFE OF SPIRIT
         // When the spirit has been launched, need to decrement life of spirit
         if (spirit.hasLaunched) {
+            possessed.setHasPlayedPossession(false);
             // If you can decrement life, decrement life
             if (spirit.decCurrentLife()) {
                 // Spirit isn't dead yet

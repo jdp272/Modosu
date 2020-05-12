@@ -1253,9 +1253,7 @@ public class LevelDesignerMode extends WorldController {
 		updateSelector(hasPed);
 
 		if (input.didPressUp() && selector.isSelected()) {
-
 			Obstacle selection = selector.getObstacle();
-
 			if(selector.getObstacle().getName() == "host") {
 				if (((HostModel) selection).getCurrentCharge() < MAX_CHARGE_CAPACITY) {
 					((HostModel) selection).setCurrentCharge(((HostModel) selection).getCurrentCharge() + 5);
@@ -1264,7 +1262,8 @@ public class LevelDesignerMode extends WorldController {
 			}
             else if(selector.getObstacle().getName() == "oscWall") {
                 ((OscWall) selection).setGoingUp(false);
-                ((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), false);
+				((OscWall) selection).setVert(false);
+				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), false);
             }
 		}
 		if (input.didPressDown() && selector.isSelected()) {
@@ -1277,7 +1276,8 @@ public class LevelDesignerMode extends WorldController {
 			}
             else if(selector.getObstacle().getName() == "oscWall") {
                 ((OscWall) selection).setGoingUp(true);
-                ((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), true);
+				((OscWall) selection).setVert(true);
+				((OscWall) selection).setMainStrip(((OscWall) selection).isVert(), true);
             }
 		}
 

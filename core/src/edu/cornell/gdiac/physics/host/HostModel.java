@@ -139,6 +139,11 @@ public class HostModel extends BoxObstacle {
     FilmStrip pedestalHost;
 
     /**
+     * The texture filmstrip for animation of a possession
+     */
+    FilmStrip possessionStrip;
+
+    /**
      * The texture filmstrip for the animation for a new possession
      */
     FilmStrip newPossessionStrip;
@@ -147,6 +152,51 @@ public class HostModel extends BoxObstacle {
      * The texture filmstrip for the animation for any possession
      */
     FilmStrip genPossessionStrip;
+
+    /**
+     * The texture filmstrip for the animation of a dead golem
+     */
+    FilmStrip deadStrip;
+
+    /**
+     * The texture filmstrip for the animation of a dead golem EAST
+     */
+    FilmStrip deadStripE;
+
+    /**
+     * The texture filmstrip for glyph of dead golem NORTH
+     */
+    FilmStrip deadStripN;
+
+    /**
+     * The texture filmstrip for glyph of dead golem North East
+     */
+    FilmStrip deadStripNE;
+
+    /**
+     * The texture filmstrip for glyph of dead golem North West
+     */
+    FilmStrip deadStripNW;
+
+    /**
+     * The texture filmstrip for glyph of dead golem South
+     */
+    FilmStrip deadStripS;
+
+    /**
+     * The texture filmstrip for glyph of dead golem South East
+     */
+    FilmStrip deadStripSE;
+
+    /**
+     * The texture filmstrip for glyph of dead golem South West
+     */
+    FilmStrip deadStripSW;
+
+    /**
+     * The texture filmstrip for glyph of dead golem West
+     */
+    FilmStrip deadStripW;
 
     // Default physics values
     /**
@@ -183,12 +233,6 @@ public class HostModel extends BoxObstacle {
      * The color of the glyphs for unpossessed golems
      */
     private static final Color unpossessedGlyphColor = Color.valueOf("#938282");
-
-    /**
-     * The color of the glyphs for possessed golems
-     */
-    private static final Color possessedColor = Color.valueOf("#c8f1ee");
-
 
 
     // FRAMES FOR SPRITE SHEET
@@ -244,8 +288,44 @@ public class HostModel extends BoxObstacle {
      */
     public static final int HOST_ARM_NORTH_WEST = 7;
 
+    /**
+     * The frame number for starting Wake Up
+     */
+    public static final int HOST_WAKE_UP_START = 0;
+    /**
+     * The frame number for ending Wake Up
+     */
+    public static final int HOST_WAKE_UP_FINISH = 7;
+
+    /**
+     * The frame number for starting possession
+     */
+    public static final int HOST_POSSESSION_START = 0;
+    /**
+     * The frame number for finishing possession
+     */
+    public static final int HOST_POSSESSION_FINISH = 7;
+
+    /**
+     * The frame number for starting pedestal animation
+     */
+    public static final int PEDESTAL_START = 0;
+    /**
+     * The frame number for ending pedestal animation
+     */
+    public static final int PEDESTAL_FINISH = 13;
+
+
 
     // Attributes Specific to each HostModel
+    /**
+     * Boolean Whether possession animation has ran before
+     */
+    private boolean hasPlayedPossession;
+    /**
+     * Boolean whether possession animation has been played before
+     */
+    private boolean hasPlayedPossessionBefore;
     /**
      * Boolean Whether HostModel is Possessed
      */
@@ -308,6 +388,7 @@ public class HostModel extends BoxObstacle {
     private int elapsedFrames = 0;
     private int pedFrames = 0;
     private int armFrame = 0;
+    private int posFrame =0;
 
     /**
      * The number of frames that should pass before the animation updates
@@ -316,6 +397,7 @@ public class HostModel extends BoxObstacle {
      */
     private int framesPerUpdate = 2;
     private int pedFramesPerUpdate = 12;
+    private int posFramesPerUpdate = 3;
 
     /**
      * Whether or not the animation should be updated on this frame
@@ -323,6 +405,7 @@ public class HostModel extends BoxObstacle {
      */
     private boolean updateFrame;
     private boolean pedUpdateFrame;
+    private boolean posFrameUpdate;
 
 
     /**
@@ -506,6 +589,8 @@ public class HostModel extends BoxObstacle {
         this.hasBeenPossessed = false;
         this.updateFrame = true;
         this.moving = (ins != null);
+        this.hasPlayedPossession = false;
+        this.hasPlayedPossessionBefore = false;
         setDensity(DEFAULT_DENSITY);
         setFriction(DEFAULT_FRICTION);
         setRestitution(DEFAULT_RESTITUTION);
@@ -581,6 +666,13 @@ public class HostModel extends BoxObstacle {
         isPossessed = possessed;
     }
 
+    public boolean isHasPlayedPossession() {
+        return hasPlayedPossession;
+    }
+
+    public void setHasPlayedPossession(boolean hasPlayedPossession) {
+        this.hasPlayedPossession = hasPlayedPossession;
+    }
 
     /**
      * Sets the current charge of the host.
@@ -741,7 +833,9 @@ public class HostModel extends BoxObstacle {
                              FilmStrip walkSE, FilmStrip walkSW, FilmStrip walkW, FilmStrip glyphStripE,
                              FilmStrip glyphStripN, FilmStrip glyphStripNE, FilmStrip glyphStripNW,
                              FilmStrip glyphStripS, FilmStrip glyphStripSE, FilmStrip glyphStripSW,
-                             FilmStrip glyphStripW, FilmStrip armStrip) {
+                             FilmStrip glyphStripW, FilmStrip deadStripE, FilmStrip deadStripN,
+                             FilmStrip deadStripNE, FilmStrip deadStripNW, FilmStrip deadStripS,
+                             FilmStrip deadStripSE, FilmStrip deadStripSW, FilmStrip deadStripW, FilmStrip armStrip) {
 
         this.hostStrip = walkS;
         this.hostStrip.setFrame(HOST_START);
@@ -750,23 +844,25 @@ public class HostModel extends BoxObstacle {
         this.armStrip.setFrame(this.armFrame);
         this.glyphStrip = glyphStripS;
         this.glyphStrip.setFrame(HOST_START);
+        this.deadStrip = deadStripS;
+        this.deadStrip.setFrame(HOST_START);
 
-        hostStripNE = walkNE;
-        hostStripNE.setFrame(HOST_START);
-        hostStripSE = walkSE;
-        hostStripSE.setFrame(HOST_START);
-        hostStripE = walkE;
-        hostStripE.setFrame(HOST_START);
-        hostStripNW = walkNW;
-        hostStripNW.setFrame(HOST_START);
-        hostStripSW = walkSW;
-        hostStripSW.setFrame(HOST_START);
-        hostStripW = walkW;
-        hostStripW.setFrame(HOST_START);
-        hostStripN = walkN;
-        hostStripN.setFrame(HOST_START);
-        hostStripS = walkS;
-        hostStripS.setFrame(HOST_START);
+        this.hostStripNE = walkNE;
+        this.hostStripNE.setFrame(HOST_START);
+        this.hostStripSE = walkSE;
+        this.hostStripSE.setFrame(HOST_START);
+        this.hostStripE = walkE;
+        this.hostStripE.setFrame(HOST_START);
+        this.hostStripNW = walkNW;
+        this.hostStripNW.setFrame(HOST_START);
+        this.hostStripSW = walkSW;
+        this.hostStripSW.setFrame(HOST_START);
+        this.hostStripW = walkW;
+        this.hostStripW.setFrame(HOST_START);
+        this.hostStripN = walkN;
+        this.hostStripN.setFrame(HOST_START);
+        this.hostStripS = walkS;
+        this.hostStripS.setFrame(HOST_START);
 
         this.glyphStripNE = glyphStripNE;
         this.glyphStripNE.setFrame(HOST_START);
@@ -784,7 +880,73 @@ public class HostModel extends BoxObstacle {
         this.glyphStripN.setFrame(HOST_START);
         this.glyphStripS = glyphStripS;
         this.glyphStripS.setFrame(HOST_START);
+
+        this.deadStripNE = deadStripNE;
+        this.deadStripNE.setFrame(HOST_START);
+        this.deadStripSE = deadStripSE;
+        this.deadStripSE.setFrame(HOST_START);
+        this.deadStripE = deadStripE;
+        this.deadStripE.setFrame(HOST_START);
+        this.deadStripNW = deadStripNW;
+        this.deadStripNW.setFrame(HOST_START);
+        this.deadStripSW = deadStripSW;
+        this.deadStripSW.setFrame(HOST_START);
+        this.deadStripW = deadStripW;
+        this.deadStripW.setFrame(HOST_START);
+        this.deadStripN = deadStripN;
+        this.deadStripN.setFrame(HOST_START);
+        this.deadStripS = deadStripS;
+        this.deadStripS.setFrame(HOST_START);
     }
+
+    public void setJuiceStrips(FilmStrip genPossessionStrip, FilmStrip newPossessionStrip, FilmStrip hostWakingUp) {
+        this.genPossessionStrip = genPossessionStrip;
+        this.genPossessionStrip.setFrame(HOST_POSSESSION_START);
+
+        this.newPossessionStrip = newPossessionStrip;
+        this.newPossessionStrip.setFrame(HOST_POSSESSION_START);
+
+        this.hostWakingUp = hostWakingUp;
+        this.hostWakingUp.setFrame(HOST_WAKE_UP_START);
+    }
+
+    public boolean animatePossession() {
+        posFrame++;
+        posFrameUpdate = false;
+        int frame = HOST_POSSESSION_START;
+
+        if(this.possessionStrip != null) {
+            frame = this.possessionStrip.getFrame();
+        }
+
+        if(posFrame == posFramesPerUpdate) {
+            posFrameUpdate = true;
+            posFrame = 0;
+        }
+        if(posFrameUpdate) {
+            if (frame >= HOST_POSSESSION_START && frame < HOST_POSSESSION_FINISH) {
+                frame++;
+            } else {
+                frame = HOST_POSSESSION_START;
+            }
+        }
+        possessionStrip.setFrame(frame);
+        boolean isDone = frame == HOST_POSSESSION_FINISH;
+        if (isDone) {
+            this.hasPlayedPossession = true;
+            this.hasPlayedPossessionBefore = true;
+            possessionStrip.setFrame(HOST_POSSESSION_START);
+        }
+        return isDone;
+    }
+
+    public void animateWakingUp() {
+
+    }
+
+
+
+
 
     private float threshold = 0.5f;
     /**
@@ -927,13 +1089,13 @@ public class HostModel extends BoxObstacle {
         pedUpdateFrame = false;
         if (pedFrames >= pedFramesPerUpdate) {
             pedUpdateFrame = true;
-            pedFrames = 0;
+            pedFrames = PEDESTAL_START;
         }
         if (pedUpdateFrame) {
-            if (this.pedestalHost.getFrame() < this.pedestalHost.getSize() - 1) {
+            if (this.pedestalHost.getFrame() < PEDESTAL_FINISH) {
                 this.pedestalHost.setFrame(this.pedestalHost.getFrame() + 1);
             } else {
-                this.pedestalHost.setFrame(0);
+                this.pedestalHost.setFrame(PEDESTAL_START);
             }
         }
     }
@@ -962,17 +1124,22 @@ public class HostModel extends BoxObstacle {
         if (this.isPedestal) {
             // Make pedestal clear when no longer in possession.
             if (this.isPossessed) {
-                canvas.draw(pedestalHost, Color.WHITE, pedestalHost.getRegionWidth() / 2f, pedestalHost.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+                canvas.draw(pedestalHost, Color.WHITE, pedestalHost.getRegionWidth() / 2f, pedestalHost.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.3f, 0.3f);
             } else {
-                canvas.draw(pedestalHost, Color.CLEAR, pedestalHost.getRegionWidth() / 2f, pedestalHost.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
+                canvas.draw(pedestalHost, Color.CLEAR, pedestalHost.getRegionWidth() / 2f, pedestalHost.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.3f, 0.3f);
             }
         } else {
             // Draw the host
             if (this.hostStrip != null && this.hostChargeUI != null) {
-
                 // If bot has already been possessed colors should change
                 if (this.hasBeenPossessed) {
                     /** Implementation of the HostModel with Charging Bar that Changes Colors and Blinks */
+                    if(!this.hasPlayedPossessionBefore) {
+                        possessionStrip = genPossessionStrip;
+                    } else {
+                       possessionStrip = newPossessionStrip;
+                    }
+
                     if (this.currentCharge < this.maxCharge) {
                         canvas.draw(hostStrip, Color.WHITE, hostStrip.getRegionWidth() / 2f, hostStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                         canvas.draw(glyphStrip, warningColor, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
@@ -983,6 +1150,7 @@ public class HostModel extends BoxObstacle {
                         canvas.draw(glyphStrip, Color.RED, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                         canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     }
+
                 }
                 // When the bot hasn't been possessed the indicator color should be black
                 else {
@@ -990,9 +1158,14 @@ public class HostModel extends BoxObstacle {
                     canvas.draw(glyphStrip, unpossessedGlyphColor, glyphStrip.getRegionWidth() / 2f, glyphStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                 }
+
+                if(!this.hasPlayedPossession && this.isPossessed && !animatePossession()) {
+                    canvas.draw(possessionStrip, Color.WHITE, possessionStrip.getRegionWidth() / 2f, possessionStrip.getRegionHeight() /1.8f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.8f, 0.8f);
+                }
             }
         }
     }
+
 
     /**
      * Draws the host charge UI bar.
