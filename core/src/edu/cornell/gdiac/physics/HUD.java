@@ -90,8 +90,8 @@ public class HUD {
     private Skin skin;
     private Group group;
     private Table pauseTable;
-    private Slider musicSlider;
-    private Slider sfxSlider;
+    private static Slider musicSlider;
+    private static Slider sfxSlider;
     private Label titleLabel;
     private Label musicLabel;
     private Label sfxLabel;
@@ -201,7 +201,7 @@ public class HUD {
         sliderStyle.background = skin.getDrawable(sBAR);
         sliderStyle.knob = skin.getDrawable(sKNOB);
         musicSlider = new Slider(0, 100, 1f, false, sliderStyle);
-        musicSlider.setValue(50);
+        musicSlider.setValue(MusicController.getInstance().getVolume()*100);
         musicSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -221,7 +221,7 @@ public class HUD {
 
         /** SFX Slider */
         sfxSlider = new Slider(0, 100, 1f, false, sliderStyle);
-        sfxSlider.setValue(50);
+        sfxSlider.setValue(SoundController.getInstance().getVolume()*100);
         sfxSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -298,6 +298,10 @@ public class HUD {
             timeLabel.setText(String.format(TIMER_PADDING + "%d:%02d", minutes, seconds));
             timeCount = 0;
         }
+
+        musicSlider.setValue(MusicController.getInstance().getVolume()*100);
+        sfxSlider.setValue(SoundController.getInstance().getVolume()*100);
+
     }
 
     /** Increments the number of current hosts possessed */
