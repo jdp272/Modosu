@@ -59,9 +59,8 @@ import java.util.*;
  * place nicely with the static assets.
  */
 public abstract class WorldController implements Screen {
-
-    // CHANGE ME WHEN NUMBER OF LEVELS IS CHANGED
-	protected final int numLevels = 25;
+	/** The number of levels */
+	protected static final int NUM_LEVELS = 24; //////////////// CHANGE DEPENDING ON AMOUNT OF LEVELS ///////////////
 
 	/**
 	 * Tracks the asset state.  Otherwise subclasses will try to load assets 
@@ -654,8 +653,6 @@ public abstract class WorldController implements Screen {
 	protected static final float DEFAULT_HEIGHT = 18.0f;
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
-	/** Max number of levels */
-	protected static final int MAX_NUM_LEVELS = 15; //////////////// CHANGE DEPENDING ON AMOUNT OF LEVELS ///////////////
 
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
@@ -735,7 +732,7 @@ public abstract class WorldController implements Screen {
 		}
 		else {
 			levels = new ArrayList<FileHandle>();
-			for (int i = 1; i <= numLevels; i++) {
+			for (int i = 1; i <= NUM_LEVELS; i++) {
 				// Ensure one digit number has a leading 0 in the string
 				String num = i < 10 ? "0" + i : "" + i;
 				levels.add(Gdx.files.internal("levels/" + num + ".lvl"));
@@ -768,7 +765,7 @@ public abstract class WorldController implements Screen {
 	public void incrementCurrentLevel() {
 		// currentLevel = (int) Math.min(currentLevel + 1, MAX_NUM_LEVELS);
 		// TODO: Game Complete When Beat All Levels -- currently loops
-		currentLevel = (currentLevel + 1) % MAX_NUM_LEVELS;
+		currentLevel = (currentLevel + 1) % NUM_LEVELS;
 	}
 
 	/**

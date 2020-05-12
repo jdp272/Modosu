@@ -338,7 +338,7 @@ public class LevelDesignerMode extends WorldController {
 
 		File folder = new File("levels");
 		levels = new ArrayList<FileHandle>();
-		for (int i = 0; i < numLevels; i++) {
+		for (int i = 0; i < NUM_LEVELS; i++) {
 			levels.add(Gdx.files.internal("levels/" + i + ".lvl"));
 		}
 	}
