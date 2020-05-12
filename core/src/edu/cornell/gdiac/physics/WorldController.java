@@ -20,6 +20,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -42,6 +43,7 @@ import edu.cornell.gdiac.util.ScreenListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -59,8 +61,11 @@ import java.util.Iterator;
  * place nicely with the static assets.
  */
 public abstract class WorldController implements Screen {
-	
-	/** 
+
+    // CHANGE ME WHEN NUMBER OF LEVELS IS CHANGED
+	protected final int numLevels = 7;
+
+	/**
 	 * Tracks the asset state.  Otherwise subclasses will try to load assets 
 	 */
 	protected enum AssetState {
@@ -106,41 +111,41 @@ public abstract class WorldController implements Screen {
 	private static final String HOST_FILE_W = "host/golemWalk_W.png";
 
 	/** Texture file for host glyph sprite EAST */
-	private static final String HOST_GLYPH_FILE_E = "host/E_RuneSpriteSheet.png";
+	private static final String HOST_GLYPH_FILE_E = "host/E_RuneSpritesheet.png";
 	/** Texture file for host glyph sprite NORTH */
-	private static final String HOST_GLYPH_FILE_N = "host/N_RuneSpriteSheet.png";
+	private static final String HOST_GLYPH_FILE_N = "host/N_RuneSpritesheet.png";
 	/** Texture file for host glyph sprite NORTH EAST */
-	private static final String HOST_GLYPH_FILE_NE = "host/NE_RuneSpriteSheet.png";
+	private static final String HOST_GLYPH_FILE_NE = "host/NE_RuneSpritesheet.png";
 	/** Texture file for host sprite NORTH WEST */
-	private static final String HOST_GLYPH_FILE_NW = "host/NW_RuneSpriteSheet.png";
+	private static final String HOST_GLYPH_FILE_NW = "host/NW_RuneSpritesheet.png";
 	/** Texture file for host sprite SOUTH */
-	private static final String HOST_GLYPH_FILE_S = "host/S_RuneSpriteSheet.png";
+	private static final String HOST_GLYPH_FILE_S = "host/S_RuneSpritesheet.png";
 	/** Texture file for host sprite SOUTH EAST */
-	private static final String HOST_GLYPH_FILE_SE = "host/SE_RuneSpriteSheet.png";
+	private static final String HOST_GLYPH_FILE_SE = "host/SE_RuneSpritesheet.png";
 	/** Texture file for host sprite SOUTH WEST */
-	private static final String HOST_GLYPH_FILE_SW = "host/SW_RuneSpriteSheet.png";
+	private static final String HOST_GLYPH_FILE_SW = "host/SW_RuneSpritesheet.png";
 	/** Texture file for host sprite WEST */
-	private static final String HOST_GLYPH_FILE_W = "host/W_RuneSpriteSheet.png";
+	private static final String HOST_GLYPH_FILE_W = "host/W_RuneSpritesheet.png";
 
 	/** Texture file for host death sprite EAST */
-	private static final String HOST_DEATH_FILE_E = "host/E_DeathSpriteSheet.png";
+	private static final String HOST_DEATH_FILE_E = "host/E_DeathSpritesheet.png";
 	/** Texture file for host death sprite NORTH */
-	private static final String HOST_DEATH_FILE_N = "host/N_DeathSpriteSheet.png";
+	private static final String HOST_DEATH_FILE_N = "host/N_DeathSpritesheet.png";
 	/** Texture file for host death sprite NORTH EAST */
-	private static final String HOST_DEATH_FILE_NE = "host/NE_DeathSpriteSheet.png";
+	private static final String HOST_DEATH_FILE_NE = "host/NE_DeathSpritesheet.png";
 	/** Texture file for host death NORTH WEST */
-	private static final String HOST_DEATH_FILE_NW = "host/NW_DeathSpriteSheet.png";
+	private static final String HOST_DEATH_FILE_NW = "host/NW_DeathSpritesheet.png";
 	/** Texture file for host death SOUTH */
-	private static final String HOST_DEATH_FILE_S = "host/S_DeathSpriteSheet.png";
+	private static final String HOST_DEATH_FILE_S = "host/S_DeathSpritesheet.png";
 	/** Texture file for host death SOUTH EAST */
-	private static final String HOST_DEATH_FILE_SE = "host/SE_DeathSpriteSheet.png";
+	private static final String HOST_DEATH_FILE_SE = "host/SE_DeathSpritesheet.png";
 	/** Texture file for host death SOUTH WEST */
-	private static final String HOST_DEATH_FILE_SW = "host/SW_DeathSpriteSheet.png";
+	private static final String HOST_DEATH_FILE_SW = "host/SW_DeathSpritesheet.png";
 	/** Texture file for host death WEST */
-	private static final String HOST_DEATH_FILE_W = "host/W_DeathSpriteSheet.png";
+	private static final String HOST_DEATH_FILE_W = "host/W_DeathSpritesheet.png";
 
 	/** Arms Sprite Sheet */
-	private static final String HOST_ARMS_FILE = "host/ArmSpriteSheet.png";
+	private static final String HOST_ARMS_FILE = "host/ArmSpritesheet.png";
 
 	/** Host General Possession Sprite Sheet */
 	private static final String HOST_GEN_POSSESSION_FILE = "host/golemGenPossession.png";
@@ -653,7 +658,8 @@ public abstract class WorldController implements Screen {
 	protected static final float DEFAULT_GRAVITY = -4.9f;
 	/** Max number of levels */
 	protected static final int MAX_NUM_LEVELS = 8; //////////////// CHANGE DEPENDING ON AMOUNT OF LEVELS ///////////////
-	
+
+
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
 	/** All the objects in the world. */
@@ -689,7 +695,7 @@ public abstract class WorldController implements Screen {
 
 
 	/** list of level files*/
-	protected ArrayList<File> levels;
+	protected ArrayList<FileHandle> levels;
 
 	/** Input if paused was pressed */
 	private boolean pressedPause = false;
@@ -718,6 +724,23 @@ public abstract class WorldController implements Screen {
 	 */
 	public void setDebug(boolean value) {
 		debug = value;
+	}
+
+	public void getLevels(boolean custom) {
+		if (custom) {
+			FileHandle folder = Gdx.files.local("Custom");
+			ArrayList<File> levelFiles = new ArrayList<File>(Arrays.asList(folder.file().listFiles(Constants.filenameFilter)));
+			levels = new ArrayList<FileHandle>();
+			for (File f : levelFiles) {
+				levels.add(Gdx.files.local("Custom/" + f.getName()));
+			}
+		}
+		else {
+			levels = new ArrayList();
+			for (int i = 0; i < numLevels; i++) {
+				levels.add(Gdx.files.internal("levels/" + i + ".lvl"));
+			}
+		}
 	}
 
 	/**
