@@ -111,6 +111,13 @@ public class OscWall extends BoxObstacle {
     }
 
     /**
+     * Get whether wall should be physical
+     */
+    public boolean isPhysical() {
+        return this.mainOscWallStrip.getFrame() >= 20 && this.mainOscWallStrip.getFrame() <= 50;
+    }
+
+    /**
      * Set whether the wall is on its way going up
      * @param goingUp true if wall is on its way going up
      */

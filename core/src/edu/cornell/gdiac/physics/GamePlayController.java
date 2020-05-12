@@ -452,8 +452,12 @@ public class GamePlayController extends WorldController {
             //System.out.println(ep.getPosition());
 //        	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor() + possessed.getWidth() / 2,2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor() + possessed.getHeight() / 2, 2))) <= 1)  {
         	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor(),2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor(), 2))) <= 1)  {
-        		isInPillar = true;
-        	    possessed.setCurrentCharge((int)possessed.getCurrentCharge() + 2);
+        	    if(spirit.hasLaunched) {
+        	    	isInPillar = false;
+				} else {
+					possessed.setCurrentCharge((int) possessed.getCurrentCharge() + 2);
+					isInPillar = true;
+				}
 			}
 		}
 

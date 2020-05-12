@@ -1173,6 +1173,14 @@ public class HostModel extends BoxObstacle {
         this.inPillar = inPillar;
     }
 
+    /** Return whether host is in energy pillar
+     *
+     * @return true if host is in pillar.
+     */
+    public boolean isInPillar() {
+        return this.inPillar;
+    }
+
     /**
      * Draws the host object, the charge UI bar, and the shadow.
      *

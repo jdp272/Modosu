@@ -223,10 +223,10 @@ public class CollisionController implements ContactListener {
         }
 
         // Check for Spirit and Host Collision with OscWall
-        if ((bd1.getName() == "oscWall" && !((OscWall) bd1).isGoingUp() && body2.getUserData() == spirit) ||
-                (body2.getUserData() == spirit && bd1.getName() == "oscWall" && !((OscWall) bd1).isGoingUp()) ||
-            (bd1.getName() == "oscWall" && !((OscWall) bd1).isGoingUp() && bd2.getName() == "host") ||
-                    (bd1.getName() == "host" && bd2.getName() == "oscWall" && !((OscWall) bd2).isGoingUp())) {
+        if ((bd1.getName() == "oscWall" && !((OscWall) bd1).isPhysical() && body2.getUserData() == spirit) ||
+                (body2.getUserData() == spirit && bd1.getName() == "oscWall" && !((OscWall) bd1).isPhysical()) ||
+            (bd1.getName() == "oscWall" && !((OscWall) bd1).isPhysical() && bd2.getName() == "host") ||
+                    (bd1.getName() == "host" && bd2.getName() == "oscWall" && !((OscWall) bd2).isPhysical())) {
             contact.setEnabled(false);
         }
 
