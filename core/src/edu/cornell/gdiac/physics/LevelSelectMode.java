@@ -40,6 +40,7 @@ public class LevelSelectMode extends WorldController implements Screen {
     private static final String NEXT_FILE = "shared/next.png";
     private static final String CLICK_SOUND = "shared/click.mp3";
     private static final String HOVER_SOUND = "shared/hover.mp3";
+    private static final String BACK_FILE = "shared/backbutton.png";
 
     private static final String FONT_FILE = "shared/Asul.ttf";
     private static final int FONT_SIZE = 42;
@@ -53,6 +54,7 @@ public class LevelSelectMode extends WorldController implements Screen {
     private TextureRegion backgroundTexture;
     private TextureRegion nextTexture;
     private TextureRegion prevTexture;
+    private TextureRegion backTexture;
 
     /** Vectors that maintain the positions of the level buttons */
     private Vector2 oneStart;
@@ -69,6 +71,8 @@ public class LevelSelectMode extends WorldController implements Screen {
     private Vector2 prevEnd;
     private Vector2 customStart;
     private Vector2 customEnd;
+    private Vector2 backStart;
+    private Vector2 backEnd;
 
     private boolean onCustom;
 
@@ -95,7 +99,7 @@ public class LevelSelectMode extends WorldController implements Screen {
 
     private Color colorNext;
     private Color colorPrev;
-
+    private Color colorBack;
     private Color customColor;
 
 
@@ -190,6 +194,8 @@ public class LevelSelectMode extends WorldController implements Screen {
         assets.add(FOUR_FILE);
         manager.load(NEXT_FILE, Texture.class);
         assets.add(NEXT_FILE);
+        manager.load(BACK_FILE, Texture.class);
+        assets.add(BACK_FILE);
 
         // Load the font
         FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -219,6 +225,7 @@ public class LevelSelectMode extends WorldController implements Screen {
         backgroundTexture = createTexture(manager,BACKG_FILE,false);
         nextTexture = createTexture(manager,NEXT_FILE,false);
         prevTexture = createTexture(manager,NEXT_FILE, false);
+        backTexture = createTexture(manager,BACK_FILE, false);
         prevTexture.flip(true,false);
 
         levelFont = manager.get(FONT_FILE,BitmapFont.class);
@@ -232,11 +239,12 @@ public class LevelSelectMode extends WorldController implements Screen {
         threeEnd = new Vector2(width*0.65f, height*0.55f);
         fourStart = new Vector2( width*0.80f,height*0.23f);
         fourEnd = new Vector2(width*0.88f, height*0.59f);
-        nextStart = new Vector2(fourStart.x - nextTexture.getRegionWidth(), backgroundTexture.getRegionHeight()*0.8f);
+        nextStart = new Vector2(width*0.95f, height*0.45f);
         nextEnd = new Vector2(nextStart.x+nextTexture.getRegionWidth(), nextStart.y+nextTexture.getRegionHeight());
-        prevStart = new Vector2(oneEnd.x , backgroundTexture.getRegionHeight()*0.8f);
+        prevStart = new Vector2(width*0.05f , nextStart.y);
         prevEnd = new Vector2(prevStart.x+nextTexture.getRegionWidth(), prevStart.y+nextTexture.getRegionHeight());
-
+        backStart = new Vector2(width*0.05f,  height*0.83f);
+        backEnd = new Vector2(backStart.x + backTexture.getRegionWidth(), backStart.y + backTexture.getRegionHeight());
         customStart = new Vector2(width - 150,height - 50);
         customEnd = new Vector2(customStart.x+100, customStart.y+nextTexture.getRegionHeight());
 
@@ -270,6 +278,7 @@ public class LevelSelectMode extends WorldController implements Screen {
         colorFour = colorUnhovered;
         colorNext = colorUnhovered;
         colorPrev = colorUnhovered;
+        colorBack = colorUnhovered;
         customColor = colorUnhovered;
 
         onCustom = false;
@@ -333,6 +342,9 @@ public class LevelSelectMode extends WorldController implements Screen {
     public void draw(float dt) {
         canvas.begin();
         canvas.draw(backgroundTexture, 0, 0);
+
+        // Draw back button
+        canvas.draw(backTexture, colorBack, 0f, 0f, backStart.x, backStart.y, 0, 1, 1);
 
         if (page != pages-1) {
             canvas.draw(nextTexture, colorNext, 0f, 0f, nextStart.x, nextStart.y, 0, 1, 1);
@@ -458,6 +470,13 @@ public class LevelSelectMode extends WorldController implements Screen {
             }
         }
 
+        if(screenX >= backStart.x && screenX <= backEnd.x) {
+            if (screenY >= backStart.y && screenY <= backEnd.y) {
+                pressState = 7;
+                isPressed = true;
+            }
+        }
+
     }
 
 
@@ -519,6 +538,12 @@ public class LevelSelectMode extends WorldController implements Screen {
             if (screenX >= customStart.x && screenX <= customEnd.x) {
                 setCustom(!onCustom);
             }
+
+            if (screenX >= backStart.x && screenX <= backEnd.x) {
+                if (screenY >= backStart.y && screenY <= backEnd.y && pressState == 7) {
+                    listener.exitScreen(this,WorldController.EXIT_MENU);
+                }
+            }
         }
         colorOne = colorUnhovered;
         colorTwo = colorUnhovered;
@@ -526,6 +551,7 @@ public class LevelSelectMode extends WorldController implements Screen {
         colorFour = colorUnhovered;
         colorNext = colorUnhovered;
         colorPrev = colorUnhovered;
+        colorBack = colorUnhovered;
         hoverButton = false;
         isPressed = false;
     }
@@ -549,6 +575,7 @@ public class LevelSelectMode extends WorldController implements Screen {
             colorFour = colorUnhovered;
             colorNext = colorUnhovered;
             colorPrev = colorUnhovered;
+            colorBack = colorUnhovered;
             customColor = colorUnhovered;
 
             if (screenX >= oneStart.x && screenX <= oneEnd.x) {
@@ -641,6 +668,19 @@ public class LevelSelectMode extends WorldController implements Screen {
                         customColor = colorUnhovered;
                         hoverCustom = false;
                     }
+                }
+            }
+            if (screenX >= backStart.x && screenX <= backEnd.x) {
+                if (screenY >= backStart.y && screenY <= backEnd.y) {
+                    colorBack = Color.TEAL;
+                    if (!hoverButton) {
+                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverButton = true;
+                    }
+                }
+                else {
+                    colorBack = colorUnhovered;
+                    hoverButton = false;
                 }
             }
 
