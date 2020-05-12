@@ -120,6 +120,8 @@ public class InputController {
 	private Vector2 mousePosition;
 	/** The crosshair cache (for using as a return value) */
 	private Vector2 mousePositionCache;
+	/** The bounds rectangle when zoomed */
+	private Rectangle boundsCache;
 
 	private float height;
 
@@ -374,6 +376,7 @@ public class InputController {
 	public InputController() {
 		mousePosition = new Vector2();
 		mousePositionCache = new Vector2();
+		boundsCache = new Rectangle();
 	}
 
 	/**
@@ -481,7 +484,7 @@ public class InputController {
 	 * @param bounds The input bounds for the crosshair.
 	 * @param scale  The drawing scale
 	 */
-	public void readInput(Rectangle bounds, Vector2 scale) {
+	public void readInput(Rectangle bounds, Vector2 scale, float zoom) {
 		// Copy state from last animation frame
 		// Helps us ignore buttons that are held down
 		primePrevious  = primePressed;
@@ -501,7 +504,7 @@ public class InputController {
 		menuPrevious = menuPressed;
 		instructionPrevious = instructionPressed;
 
-		readKeyboard(bounds, scale, false);
+		readKeyboard(bounds, scale, zoom, false);
 
 	}
 
@@ -514,7 +517,7 @@ public class InputController {
 	 *
 	 * @param secondary true if the keyboard should give priority to a gamepad
 	 */
-	private void readKeyboard(Rectangle bounds, Vector2 scale, boolean secondary) {
+	private void readKeyboard(Rectangle bounds, Vector2 scale, float zoom, boolean secondary) {
 		// Give priority to gamepad results
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
 		debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.H));
@@ -557,13 +560,23 @@ public class InputController {
 			vertical -= 1.0f;
 		}
 
+		boundsCache.set(bounds);
+		boundsCache.width *= zoom;
+		boundsCache.height *= zoom;
+		boundsCache.x = Constants.scalePoint(bounds.x, zoom, bounds.width);
+		boundsCache.y = Constants.scalePoint(bounds.y, zoom, bounds.height);
+
 		// Mouse results
 		tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		leftJustClicked = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		mousePosition.set(Gdx.input.getX(), Gdx.input.getY());
 		mousePosition.scl(1/scale.x,-1/scale.y);
-		mousePosition.y += bounds.height;
-		clampPosition(bounds);
+
+		mousePosition.x = Constants.scalePoint(mousePosition.x, zoom, bounds.width);
+		mousePosition.y = Constants.scalePoint(mousePosition.y, zoom, bounds.height);
+
+		mousePosition.y += zoom * bounds.height;
+		clampPosition(boundsCache);
 	}
 
 	/**

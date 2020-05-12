@@ -233,9 +233,11 @@ public class HostController {
                         }
                         possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal() * obstacleFactor);
                         possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical() * obstacleFactor);
-//                        if((Math.abs(this.lastPosition.dst2(possessed.getPosition())) > 0.000000000001f)) {
-//                            this.moved = true;
-//                        }
+                        if(input.getVertical() != 0 || input.getHorizontal() != 0) {
+                            this.moved = true;
+                        }else{
+                            this.moved = false;
+                        }
 
 
 //                        if(this.moved) {

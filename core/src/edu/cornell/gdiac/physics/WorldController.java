@@ -974,7 +974,7 @@ public abstract class WorldController implements Screen {
 	public boolean preUpdate(float dt) {
 		InputController input = InputController.getInstance();
 		if (this instanceof LevelDesignerMode) {
-			input.readInput(bounds, scale);
+			input.readInput(bounds, scale, canvas.getZoom());
 		}
 		else{
 			input.readInput();
@@ -1177,7 +1177,7 @@ public abstract class WorldController implements Screen {
 			host.drawShadow(canvas);
 		}
 		for(HostModel host : hostDrawLayer) {
-			host.draw(canvas);
+			host.drawBody(canvas);
 		}
 		for(SpiritModel spirit : spiritDrawLayer) {
 			spirit.draw(canvas);

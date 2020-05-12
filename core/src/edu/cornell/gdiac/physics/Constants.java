@@ -22,4 +22,7 @@ public class Constants {
         }
     };
 
+    public static float scalePoint(float f, float zoom, float width) {
+        return ((f - width/2) * zoom) + width/2;
+    }
 }

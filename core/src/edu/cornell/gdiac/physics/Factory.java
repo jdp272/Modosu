@@ -218,6 +218,10 @@ public class Factory {
     /** Can be set. If true, instantiated objects are sensors */
     public boolean makeSensors;
 
+    /** Can be set. If true, new objects are the size of a tile */
+    public boolean makeTileSized;
+
+
     public Factory(
             Vector2 scale,
             Texture spiritBodyTexture,
@@ -372,6 +376,10 @@ public class Factory {
         wall.setBodyType(BodyDef.BodyType.StaticBody);
         wall.setSensor(makeSensors);
         wall.setName("wall");
+        if(makeTileSized) {
+            wall.setWidth(Constants.TILE_WIDTH);
+            wall.setHeight(Constants.TILE_HEIGHT);
+        }
         return wall;
     }
 
@@ -396,6 +404,10 @@ public class Factory {
         wall.setBodyType(BodyDef.BodyType.StaticBody);
         wall.setSensor(makeSensors);
         wall.setName("wall");
+        if(makeTileSized) {
+            wall.setWidth(Constants.TILE_WIDTH);
+            wall.setHeight(Constants.TILE_HEIGHT);
+        }
         return wall;
     }
 
@@ -469,6 +481,10 @@ public class Factory {
         water.setBodyType(BodyDef.BodyType.StaticBody);
         water.setSensor(makeSensors);
         water.setName("water");
+        if(makeTileSized) {
+            water.setWidth(Constants.TILE_WIDTH);
+            water.setHeight(Constants.TILE_HEIGHT);
+        }
         return water;
     }
 
@@ -490,6 +506,10 @@ public class Factory {
         sand.setBodyType(BodyDef.BodyType.KinematicBody);
         sand.setSensor(makeSensors);
         sand.setName("sand");
+        if(makeTileSized) {
+            sand.setWidth(Constants.TILE_WIDTH);
+            sand.setHeight(Constants.TILE_HEIGHT);
+        }
         return sand;
     }
 
@@ -524,6 +544,10 @@ public class Factory {
         oscWall.setBodyType(BodyDef.BodyType.KinematicBody);
         oscWall.setSensor(makeSensors);
         oscWall.setName("oscWall");
+        if(makeTileSized) {
+            oscWall.setWidth(Constants.TILE_WIDTH);
+            oscWall.setHeight(Constants.TILE_HEIGHT);
+        }
         return oscWall;
     }
 
@@ -575,6 +599,10 @@ public class Factory {
         ped.setPedestalStrip(new FilmStrip(pedestalTexture, PEDESTAL_ROWS, PEDESTAL_COLS, PEDESTAL_SIZE));
         ped.setName("pedestal");
         ped.setSensor(makeSensors);
+        if(makeTileSized) {
+            ped.setWidth(Constants.TILE_WIDTH);
+            ped.setHeight(Constants.TILE_HEIGHT);
+        }
         return ped;
     }
 
@@ -612,6 +640,10 @@ public class Factory {
         host.setCurrentCharge(currentCharge);
         host.setName("host");
         host.setSensor(makeSensors);
+        if(makeTileSized) {
+            host.setWidth(Constants.TILE_WIDTH);
+            host.setHeight(Constants.TILE_HEIGHT);
+        }
         return host;
     }
 }

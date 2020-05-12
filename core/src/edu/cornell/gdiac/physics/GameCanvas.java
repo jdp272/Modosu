@@ -61,7 +61,7 @@ public class GameCanvas {
 	}
 
 	public static final float ZOOM_IN_MULTIPLIER = 1.25f;
-	public static final float ZOOM_OUT_MULTIPLIER = 2.f;
+	public static final float ZOOM_OUT_MULTIPLIER = 1.75f;
 
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
@@ -218,9 +218,6 @@ public class GameCanvas {
 			}
 		}
 
-
-
-
 		camera.update();
 
 		return camPos.set(camera.position.x, camera.position.y);
@@ -326,6 +323,15 @@ public class GameCanvas {
 	 */
 	public Vector2 getSize() {
 		return new Vector2(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+	}
+
+	/**
+	 * Returns the current zoom of the camera
+	 *
+	 * @return the current zoom of the camera
+	 */
+	public float getZoom() {
+		return camera.zoom;
 	}
 	
 	/**

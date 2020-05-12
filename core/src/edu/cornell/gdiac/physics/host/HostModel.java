@@ -1174,11 +1174,22 @@ public class HostModel extends BoxObstacle {
     }
 
     /**
-     * Draws the host object, but not the charge UI bar.
+     * Draws the host object, the charge UI bar, and the shadow.
      *
      * @param canvas Drawing context
      */
     public void draw(GameCanvas canvas) {
+        drawShadow(canvas);
+        drawCharge(canvas);
+        drawBody(canvas);
+    }
+
+    /**
+     * Draws the host object, but not the charge UI bar or shadow.
+     *
+     * @param canvas Drawing context
+     */
+    public void drawBody(GameCanvas canvas) {
         float chargeProgression = (float) currentCharge / maxCharge;
         /**
          * The Warning Color

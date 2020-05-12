@@ -21,7 +21,6 @@ public abstract class Terrain extends BoxObstacle {
     private boolean downLeft;
     private boolean downRight;
 
-
     /**
      * Creates a new terrain tile at the origin.
      *
@@ -92,26 +91,35 @@ public abstract class Terrain extends BoxObstacle {
 
     /**
      * Sets the frame for this terrain tile to be the given frame in the filmstrip
+     * This function will also update the hit box
      *
      * @param frame The frame to set for this terrain tile, between 0 and 15, incl
      */
     public void setFrame(int frame) {
-        terrainStrip.setFrame(frame);
-        this.frame = frame;
-        if(frame==1 || frame==3 || frame==5 || frame==6 || frame==10 || frame>12){
-            PolygonShape s = new PolygonShape();
-            s.setAsBox(getWidth()/2,getHeight()/4,new Vector2(0, getHeight()/4),0);
-            shape = s;
-        }else{
-            PolygonShape s = new PolygonShape();
-            s.setAsBox(getWidth()/2,getHeight()/2,new Vector2(0, 0),0);
-            shape = s;
-        }
+        setFrame(frame, true);
     }
 
-    public void setFrameLvlDsgn(int frame) {
+    /**
+     * Sets the frame for this terrain tile to be the given frame in the filmstrip
+     * Can optionally update the hitbox, if updateHitbox is true.
+     *
+     * @param frame The frame to set for this terrain tile, between 0 and 15, incl
+     * @param updateHitbox If the hitbox should be updated
+     */
+    public void setFrame(int frame, boolean updateHitbox) {
         terrainStrip.setFrame(frame);
         this.frame = frame;
+        if(updateHitbox) {
+            if (frame == 1 || frame == 3 || frame == 5 || frame == 6 || frame == 10 || frame > 12) {
+                PolygonShape s = new PolygonShape();
+                s.setAsBox(getWidth() / 2, getHeight() / 4, new Vector2(0, getHeight() / 4), 0);
+                shape = s;
+            } else {
+                PolygonShape s = new PolygonShape();
+                s.setAsBox(getWidth() / 2, getHeight() / 2, new Vector2(0, 0), 0);
+                shape = s;
+            }
+        }
     }
 
     /**
@@ -187,11 +195,7 @@ public abstract class Terrain extends BoxObstacle {
                 }
             }
         }
-        if(lvlDsgn) {
-            setFrameLvlDsgn(index);
-        } else {
-            setFrame(index);
-        }
+        setFrame(index, !lvlDsgn);
     }
 
     /**
