@@ -1023,6 +1023,12 @@ public abstract class WorldController implements Screen {
 		}
 
 		if (input.didPause() || HUD.getPauseClicked()) {
+			if (isPaused) {
+				isPaused = false;
+				wasPaused = true;
+				hud.resumeGame();
+				return true;
+			}
 			arrow = null;
 			pressedPause = true;
 			return false;
