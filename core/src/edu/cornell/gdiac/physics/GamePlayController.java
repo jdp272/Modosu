@@ -407,7 +407,6 @@ public class GamePlayController extends WorldController {
 			cache.set(spirit.getPosition());
 			cache.scl(scale.x, scale.y);
 		}
-		System.out.println(panTarget);
 
 		// Handle camera panning
 		canvas.setCamTarget(cache);

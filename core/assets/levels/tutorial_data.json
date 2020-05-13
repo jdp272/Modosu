@@ -1,11 +1,12 @@
 {tutorials:[
   {location:{x:700,y:50},instructions:"Click and drag to aim, then let go to propel your spirit through the air.",countdown:6},
   {location:{x:700,y:400},instructions:"Control your possessed golem with WASD. Possess all golems to win the level.",countdown:11},
-  {location:{x:125,y:300},instructions:"If you possess one golem for too long, it will overcharge and die. Move quickly through the level to win.",countdown:13},
-  {location:{x:600,y:400},instructions:"Shoot at and bounce off of walls to reach far-away golems.",countdown:9},
-  {location:{x:600,y:400},instructions:"You may need to retrace your steps in order to possess every golem.",countdown:20},
-  {location:{x:700,y:350},instructions:"Some golems are unstable, and their overcharge bar will already be partially filled.",countdown:10},
-  {location:{x:125,y:400},instructions:"Some golems will move around on their own.",countdown:7},
-  {location:{x:125,y:300},instructions:"While inside a pillar's energy ring, your golem will overcharge faster.",countdown:15},
-  {location:{x:125,y:200},instructions:"You can pan the camera before starting and you can always press Z to zoom out. Press ESC to pause.",countdown:15}
+  {location:{x:60,y:40},instructions:"If you possess one golem for too long, it will overcharge and die. Move quickly through the level to win.",countdown:13},
+  {location:{x:30,y:300},instructions:"Shoot at and bounce off of walls to reach far-away golems.",countdown:9},
+  {location:{x:60,y:45},instructions:"You may need to retrace your steps in order to possess every golem.",countdown:20},
+  {location:{x:60,y:45},instructions:"Some golems are unstable, and their overcharge bar will already be partially filled.",countdown:10},
+  {location:{x:70,y:400},instructions:"Some golems will move around on their own.",countdown:7},
+  {location:{x:125,y:300},instructions:"While inside a pillar's energy ring, your golem will overcharge faster.",countdown:19},
+  {location:{x:80,y:300},instructions:"Some walls will oscillate up and down.",countdown:9},
+  {location:{x:60,y:200},instructions:"You can pan the camera before starting and you can always press Z to zoom out. Press ESC to pause.",countdown:15}
 ]}
