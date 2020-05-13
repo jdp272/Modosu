@@ -484,7 +484,7 @@ public class InputController {
 		secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Keys.DOWN));
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
-//		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		pausePressed  = (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE));
 		zoomPressed = Gdx.input.isKeyJustPressed(Input.Keys.Z);
 
 		upPressed = Gdx.input.isKeyPressed(Input.Keys.UP);
