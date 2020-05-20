@@ -144,8 +144,9 @@ public class GDXRoot extends Game implements ScreenListener {
 	private void reset() {
 
 		canvas  = new GameCanvas();
-		loading = new LoadingMode(canvas,manager,1);
+		//loading = new LoadingMode(canvas,manager,1);
 
+		loading.setCanvas(canvas);
 		loading.setScreenListener(this);
 
 		setScreen(loading);
