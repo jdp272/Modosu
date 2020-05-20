@@ -333,6 +333,12 @@ public class GamePlayController extends WorldController {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void update(float delta) {
+		// Stop the walking sounds when paused
+		if (pressedPause) {
+			sound.stop(WALK_SAND_SOUND);
+			sound.stop(WALK_SOUND);
+			return;
+		}
 
 		// Animate oscWalls
 		for(OscWall ow : oscWalls) {
@@ -369,8 +375,7 @@ public class GamePlayController extends WorldController {
 		}
 
 		// If player is still playing and moving
-		if (!isFailure() & !isComplete() & hostController.isMoving()) {
-
+		if (!isFailure() && !isComplete() && hostController.isMoving()) {
 			// Determine if the player is in sand
 			String walkingSound = collisionController.getInSand() ? WALK_SAND_SOUND : WALK_SOUND;
 			// If unmuted, then play the correct walking sound
