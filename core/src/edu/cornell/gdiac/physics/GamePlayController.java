@@ -98,6 +98,9 @@ public class GamePlayController extends WorldController {
 
 	private boolean isActiveScreen;
 
+	private boolean launchedFirstShot;
+
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -206,7 +209,7 @@ public class GamePlayController extends WorldController {
 		setMenu(false);
 
 		renderHUD = true;
-
+		launchedFirstShot = false;
 		System.out.println("just called play game music");
 		MusicController.getInstance().play("gameMusic");
 		// MusicController.getInstance().setVolume(40);
@@ -330,6 +333,7 @@ public class GamePlayController extends WorldController {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void update(float delta) {
+
 		// Animate oscWalls
 		for(OscWall ow : oscWalls) {
 			ow.updateAnimation();
@@ -387,7 +391,14 @@ public class GamePlayController extends WorldController {
 			sound.play(FAILURE_SOUND, FAILURE_SOUND, false, 1.2f*sound.getVolume());
 		}
 
-		HUD.update(delta);
+		// Check if HUD timer should update
+		if (!launchedFirstShot && spirit.hasLaunched) {
+			launchedFirstShot = true;
+		}
+
+		if (launchedFirstShot) {
+			HUD.update(delta);
+		}
 
 		// Get arrow and draw if applicable
 		arrow = hostController.getArrow();
