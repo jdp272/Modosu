@@ -96,6 +96,8 @@ public class GamePlayController extends WorldController {
 
 	public boolean inCustom;
 
+	private boolean isActiveScreen;
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -178,6 +180,14 @@ public class GamePlayController extends WorldController {
 		// Levels were loaded here but I don't think that's necessary because reset does it too
 		// and is always called when gameplay controller first loads up
 
+	}
+
+	/**
+	 * Setter that sets screen to be active
+	 * @param isActive is true if gameplay screen is active
+	 */
+	public void setIsActiveScreen(boolean isActive) {
+		this.isActiveScreen = isActive;
 	}
 
 
@@ -409,8 +419,10 @@ public class GamePlayController extends WorldController {
 		}
 
 		// Handle camera panning
-		canvas.setCamTarget(cache);
-		canvas.updateCamera();
+        if(isActiveScreen) {
+			canvas.setCamTarget(cache);
+			canvas.updateCamera();
+		}
 
 		// Handle camera zooming
 		if (InputController.getInstance().didZoom() && !spirit.hasLaunched) {
