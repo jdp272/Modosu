@@ -399,10 +399,11 @@ public class HostModel extends BoxObstacle {
     /**
      * The number of frames that have elapsed since the last animation update
      */
-    private int elapsedFrames = 0;
+    private int walkFrame = 0;
     private int pedFrames = 0;
     private int armFrame = 0;
-    private int posFrame =0;
+    private int posFrame = 0;
+    private int wakeFrame= 0;
 
     /**
      * The number of frames that should pass before the animation updates
@@ -410,8 +411,9 @@ public class HostModel extends BoxObstacle {
      * 4 seems to look pretty good
      */
     private int framesPerUpdate = 2;
-    private int pedFramesPerUpdate = 12;
+    private int pedFramesPerUpdate = 5;
     private int posFramesPerUpdate = 3;
+    private int wakeFramesPerUpdate = 2;
 
     /**
      * Whether or not the animation should be updated on this frame
@@ -420,6 +422,7 @@ public class HostModel extends BoxObstacle {
     private boolean updateFrame;
     private boolean pedUpdateFrame;
     private boolean posFrameUpdate;
+    private boolean wakeFrameUpdate;
 
 
     /**
@@ -979,22 +982,41 @@ public class HostModel extends BoxObstacle {
         return isDone;
     }
 
-    public void animateWakingUp() {
-
-    }
-
     public boolean animateDeath() {
         int frame = HOST_START;
         if(hostStrip != null) {
             frame = hostStrip.getFrame();
         }
-        System.out.println(frame);
 
         if(frame >= HOST_START && frame < HOST_FINISH) {
             frame++;
         }
         hostStrip.setFrame(frame);
         return frame == HOST_FINISH;
+    }
+
+    public boolean animateWakingUp() {
+        wakeFrame++;
+        wakeFrameUpdate = false;
+
+        int frame = HOST_START;
+        if(hostWakingUp != null) {
+            frame = hostWakingUp.getFrame();
+        }
+
+        System.out.println(wakeFrame);
+        if(wakeFrame == wakeFramesPerUpdate) {
+            wakeFrameUpdate = true;
+            wakeFrame = 0;
+        }
+
+        if(wakeFrameUpdate) {
+            if (frame >= HOST_WAKE_UP_START && frame < HOST_WAKE_UP_FINISH) {
+                frame++;
+            }
+        }
+        hostWakingUp.setFrame(frame);
+        return frame == HOST_WAKE_UP_FINISH;
     }
 
 
@@ -1018,11 +1040,11 @@ public class HostModel extends BoxObstacle {
         if (!this.isPedestal) {
 
             // To allow framerate control of this animation
-            elapsedFrames++;
+            walkFrame++;
             updateFrame = false;
-            if (elapsedFrames >= framesPerUpdate) {
+            if (walkFrame >= framesPerUpdate) {
                 updateFrame = true;
-                elapsedFrames = 0;
+                walkFrame = 0;
             }
             // I'm a little concerned about slowing all animation within the host using one thing, because
             // if the framerate is sufficiently low it might feel unresponsive because the golem does not immediately
@@ -1135,7 +1157,6 @@ public class HostModel extends BoxObstacle {
                 }
 
                 if(hostStrip != null && glyphStrip != null && armStrip != null && deadStrip != null) {
-                    deadStrip.setFrame(frame);
                     hostStrip.setFrame(frame);
                     glyphStrip.setFrame(frame);
                     armStrip.setFrame(this.armFrame);
@@ -1231,6 +1252,7 @@ public class HostModel extends BoxObstacle {
                         canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                         // WHEN GOLEM DIES
                     } else {
+                        hostStrip = deadStrip;
                         canvas.draw(hostStrip, Color.WHITE, deadStrip.getRegionWidth() / 2f, deadStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                     }
 
@@ -1242,9 +1264,15 @@ public class HostModel extends BoxObstacle {
                     canvas.draw(armStrip, Color.WHITE, armStrip.getRegionWidth() / 2f, armStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), sx, sy);
                 }
 
+
+                // HOST WAKING UP ANIMATION KINDA GLITCHY AND DOESN'T WORK.
+//                if(!this.hasPlayedPossessionBefore && this.isPossessed && !animateWakingUp()) {
+//                    canvas.draw(hostWakingUp, Color.WHITE, hostWakingUp.getRegionWidth() / 2f, hostWakingUp.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.25f, 0.25f);
+//                }
+
                 if(!this.hasPlayedPossession && this.isPossessed && !animatePossession()) {
                     if(this.isFizzle) {
-                        canvas.draw(possessionStrip, Color.RED, possessionStrip.getRegionWidth() / 2f, possessionStrip.getRegionHeight() / 1.8f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.8f, 0.8f);
+                        canvas.draw(possessionStrip, warningColor, possessionStrip.getRegionWidth() / 2f, possessionStrip.getRegionHeight() / 1.8f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.8f, 0.8f);
                     } else {
                         canvas.draw(possessionStrip, Color.WHITE, possessionStrip.getRegionWidth() / 2f, possessionStrip.getRegionHeight() / 1.8f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.8f, 0.8f);
                     }

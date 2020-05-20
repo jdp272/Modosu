@@ -223,6 +223,15 @@ public class GameCanvas {
 		return camPos.set(camera.position.x, camera.position.y);
 	}
 
+	/**
+	 * Forces the camera to zoom
+	 * @param zoom the amount of zoom to zoom
+	 */
+	public void forceZoom(float zoom) {
+		camera.zoom = zoom;
+		camera.update();
+	}
+
 	public void toggleZoom() {
 		if (zoomingOut) {
 			zoomIn();

@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.util.MusicController;
 import edu.cornell.gdiac.util.ScreenListener;
 
@@ -54,6 +55,8 @@ public class GDXRoot extends Game implements ScreenListener {
 	private LevelSelectMode levelSelect;
 	/** Credits screen controller */
 	private Credits credits;
+	/** Default Zoom for All Other Screens */
+	private static int DEFAULT_ZOOM = 1;
 
 	/** Stores whether to exit to level designer after a level is selected */
 	private boolean goLevelDesigner = false;
@@ -142,8 +145,10 @@ public class GDXRoot extends Game implements ScreenListener {
 	}
 
 	private void reset() {
+	    canvas.forceZoom(DEFAULT_ZOOM);
+		controller.setIsActiveScreen(false);
+		canvas.forceCamPosition(new Vector2(canvas.getWidth() / 2, canvas.getHeight() / 2));
 
-		canvas  = new GameCanvas();
 		loading = new LoadingMode(canvas,manager,1);
 
 		loading.setScreenListener(this);
@@ -171,6 +176,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
 			controller.reset();
+			controller.setIsActiveScreen(true);
 			//loading.dispose();
 			setScreen(controller);
 		}
@@ -183,6 +189,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelSelect.setScreenListener(this);
 			levelSelect.setCanvas(canvas);
 			levelSelect.setForceCustom(true);
+			controller.setIsActiveScreen(true);
 			levelSelect.reset();
 			setScreen(levelSelect);
 		}
@@ -194,6 +201,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelSelect.setScreenListener(this);
 			levelSelect.setCanvas(canvas);
 			levelSelect.setForceCustom(false);
+			controller.setIsActiveScreen(true);
 			levelSelect.reset();
 			setScreen(levelSelect);
 		}

@@ -1051,6 +1051,7 @@ public abstract class WorldController implements Screen {
 			isPaused = false;
 			setMenu(true);
 			listener.exitScreen(this, EXIT_MENU);
+			return false;
 		}
 		else if (countdown > 0) {
 			countdown--;
