@@ -413,7 +413,6 @@ public class LoadingMode implements Screen {
 		 flappingTexture_3.dispose();
 	}
 
-
 //	public void setCanvas(GameCanvas canvas) {
 //		this.canvas = canvas;
 //		resize(canvas.getWidth(), canvas.getHeight());

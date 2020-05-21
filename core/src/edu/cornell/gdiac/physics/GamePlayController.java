@@ -100,7 +100,6 @@ public class GamePlayController extends WorldController {
 
 	private boolean launchedFirstShot;
 
-
 	/**
 	 * Preloads the assets for this controller.
 	 *
