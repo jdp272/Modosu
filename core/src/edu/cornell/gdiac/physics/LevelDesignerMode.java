@@ -25,11 +25,8 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.SoundController;
 
-import javax.swing.*;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 
 /**
@@ -62,8 +59,12 @@ public class LevelDesignerMode extends WorldController {
     /**
      * Texture file for background image
      */
-    private static final String BACKG_FILE = "shared/background.png";
-    /**
+    private static final String BACKG_DAY_FILE = "shared/background.png";
+	/**
+	 * Texture file for background night image
+	 */
+	private static final String BACKG_NIGHT_FILE = "shared/nightbackground.png";
+	/**
      * Texture file for host footprints
      */
     private static final String FOOTPRINT_FILE = "host/footprints.png";
@@ -283,8 +284,8 @@ public class LevelDesignerMode extends WorldController {
 		assets.add(CROSS_FILE);
 		manager.load(FOREG_FILE, Texture.class);
 		assets.add(FOREG_FILE);
-		manager.load(BACKG_FILE, Texture.class);
-		assets.add(BACKG_FILE);
+		manager.load(BACKG_DAY_FILE, Texture.class);
+		assets.add(BACKG_DAY_FILE);
 		manager.load(FOOTPRINT_FILE, Texture.class);
 		assets.add(FOOTPRINT_FILE);
 
@@ -311,7 +312,7 @@ public class LevelDesignerMode extends WorldController {
 		}
 
 		crosshairTexture = createTexture(manager,CROSS_FILE,false);
-		backgroundTexture = createTexture(manager,BACKG_FILE,false);
+		backgroundTexture = createTexture(manager, BACKG_DAY_FILE,false);
 		foregroundTexture = createTexture(manager,FOREG_FILE,false);
 		footprintTexture = createTexture(manager, FOOTPRINT_FILE, false);
 
