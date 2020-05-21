@@ -404,9 +404,9 @@ public class LoadingMode implements Screen {
 		 wakingGolemTexture.dispose();
 		 loadingBackgroundTexture.dispose();
 
-//		 flyingTexture_1.dispose();
-//		 flyingTexture_2.dispose();
-//		 flyingTexture_3.dispose();
+		 flyingTexture_1.dispose();
+		 flyingTexture_2.dispose();
+		 flyingTexture_3.dispose();
 
 		 flappingTexture_1.dispose();
 		 flappingTexture_2.dispose();
@@ -689,6 +689,9 @@ public class LoadingMode implements Screen {
 		if (updateFrameLoading) {
 			if ((this.golemWakingStrip.getFrame() < this.golemWakingStrip.getSize() - 1)) {
 				this.golemWakingStrip.setFrame(this.golemWakingStrip.getFrame() + 1); }
+			else {
+				this.golemWakingStrip.setFrame(4);
+			}
 
 			if ((this.loadingTextStrip.getFrame() < this.loadingTextStrip.getSize() - 1)) {
 				this.loadingTextStrip.setFrame(this.loadingTextStrip.getFrame() + 1);
