@@ -263,7 +263,11 @@ public class CollisionController implements ContactListener {
                 body1.getUserData() == spirit && bd2.getName() == "edge" ||
                 bd1.getName() == "edge" && body2.getUserData() == spirit ||
                 body1.getUserData() == spirit && bd2.getName() == "corner" ||
-                bd1.getName() == "corner" && body2.getUserData() == spirit) {
+                bd1.getName() == "corner" && body2.getUserData() == spirit ||
+                bd1.getName() == "energyPillar" && body2.getUserData() == spirit ||
+                body1.getUserData() == spirit && bd2.getName() == "energyPillar" ||
+                bd1.getName() == "oscWall" && ((OscWall) bd1).isPhysical() && body2.getUserData() == spirit ||
+                body1.getUserData() == spirit && bd2.getName() == "oscWall" && ((OscWall) bd2).isPhysical()) {
                 spirit.setDidBounce(true);
                 spirit.setPosAtBounce(new Vector2(spirit.getPosition()));
                 bounced = true;
