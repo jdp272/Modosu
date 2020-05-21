@@ -17,7 +17,6 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
@@ -34,7 +33,6 @@ import edu.cornell.gdiac.physics.host.ArrowModel;
 import edu.cornell.gdiac.physics.host.FootPrintModel;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.*;
-import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.MusicController;
 import edu.cornell.gdiac.util.PooledList;
 import edu.cornell.gdiac.util.ScreenListener;
@@ -87,7 +85,7 @@ public abstract class WorldController implements Screen {
 
 	private static String FONT_FILE = "shared/AveriaSerifLibre.ttf";
 	/** Texture file for background image */
-	private static final String BACKG_FILE = "shared/background.png";
+	private static final String BACKG_DAY_FILE = "shared/background.png";
 	/** Texture file for host sprite EAST */
 	private static final String HOST_FILE_E = "host/golemWalk_E.png";
 	/** Texture file for host sprite NORTH */
@@ -363,8 +361,8 @@ public abstract class WorldController implements Screen {
 		
 		worldAssetState = AssetState.LOADING;
 		// Load the shared tiles.
-		manager.load(BACKG_FILE,Texture.class);
-		assets.add(BACKG_FILE);
+		manager.load(BACKG_DAY_FILE,Texture.class);
+		assets.add(BACKG_DAY_FILE);
 		manager.load(HOST_FILE_E, Texture.class);
 		assets.add(HOST_FILE_E);
 		manager.load(HOST_FILE_N, Texture.class);
@@ -488,7 +486,7 @@ public abstract class WorldController implements Screen {
 		}
 		
 		// Allocate the tiles
-		backgroundTexture = createTexture(manager,BACKG_FILE, true);
+		backgroundTexture = createTexture(manager, BACKG_DAY_FILE, true);
 		wallTex = createTexture(manager, WALL_FILE, true);
 		arrowTex = new Texture(ARROW_FILE);
 
