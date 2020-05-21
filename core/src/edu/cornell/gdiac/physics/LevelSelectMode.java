@@ -250,12 +250,12 @@ public class LevelSelectMode extends WorldController implements Screen {
         levelFont = manager.get(FONT_FILE,BitmapFont.class);
         float height = backgroundTexture.getRegionHeight();
         float width = backgroundTexture.getRegionWidth();
-        oneStart = new Vector2(width*0.14f,height*0.20f);
+        oneStart = new Vector2(width*0.14f,height*0.15f);
         oneEnd = new Vector2(width*0.22f,height*0.59f);
         twoStart = new Vector2( width*0.34f,height*0.25f);
         twoEnd = new Vector2(width*0.41f, height*0.59f);
         threeStart = new Vector2( width*0.59f,height*0.13f);
-        threeEnd = new Vector2(width*0.65f, height*0.55f);
+        threeEnd = new Vector2(width*0.65f, height*0.59f);
         fourStart = new Vector2( width*0.80f,height*0.23f);
         fourEnd = new Vector2(width*0.88f, height*0.59f);
         nextStart = new Vector2(width*0.95f, height*0.45f);
@@ -289,7 +289,9 @@ public class LevelSelectMode extends WorldController implements Screen {
         input = InputController.getInstance();
         page = 0;
 
-        colorHovered = new Color(Color.rgb565(190f,245f,253f));
+        //old color
+        //colorHovered = new Color(Color.rgb565(190f,245f,253f));
+        colorHovered = new Color(Color.rgb565(210f,251f,248f));
         colorUnhovered = Color.WHITE;
         colorOne = colorUnhovered;
         colorTwo = colorUnhovered;
@@ -382,19 +384,19 @@ public class LevelSelectMode extends WorldController implements Screen {
             center.x = (twoEnd.x+twoStart.x)/2;
             levelFont.setColor(colorTwo);
             name = levels.get(page * 4 + 1).file().getName();
-            canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y);
+            canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y+backgroundTexture.getRegionHeight()*0.1f);
         }
         if (page*4 + 2 < levels.size()) {
             center.x = (threeEnd.x+threeStart.x)/2;
             levelFont.setColor(colorThree);
             name = levels.get(page * 4 + 2).file().getName();
-            canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y-backgroundTexture.getRegionHeight()*0.1f);
+            canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y-backgroundTexture.getRegionHeight()*0.07f);
         }
         if (page*4 + 3 < levels.size()) {
             center.x = (fourEnd.x+fourStart.x)/2;
             levelFont.setColor(colorFour);
             name = levels.get(page * 4 + 3).file().getName();
-            canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y);
+            canvas.drawText(name.substring(0, name.length() - 4), levelFont, center.x, center.y+backgroundTexture.getRegionHeight()*0.1f);
         }
 
         center.x = (customEnd.x+customStart.x)/2;
@@ -409,7 +411,11 @@ public class LevelSelectMode extends WorldController implements Screen {
             name = "Presets";
         }
         canvas.drawText(name, levelFont, center.x, center.y);
-        levelFont.getData().setScale(1f, 1f);
+
+        if(onCustom)
+            levelFont.getData().setScale(.8f, .8f);
+        else
+            levelFont.getData().setScale(1f, 1f);
 
         levelFont.setColor(colorUnhovered);
         canvas.end();
