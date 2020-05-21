@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -45,25 +46,36 @@ public class Factory {
     private Texture hostNewPossession;
     private Texture hostGenPossession;
     private Texture hostArmTexture;
-    private Texture wallTexture;
+    private Texture wallDayTexture;
+    private Texture wallNightTexture;
     private Texture waterTexture;
+    private Texture waterNightTexture;
     private Texture cornerTexture;
+    private Texture cornerNightTexture;
     private Texture sandTexture;
+    private Texture sandNightTexture;
     private Texture cornerSandTexture;
+    private Texture cornerSandNightTexture;
     private Texture pedestalTexture;
+    private Texture pedestalNightTexture;
     private Texture spiritBodyTexture;
     private Texture spiritHeadTexture;
     private Texture spiritTailTexture;
     private Texture borderEdgeTexture;
+    private Texture borderEdgeNightTexture;
     private Texture borderCornerTexture;
+    private Texture borderCornerNightTexture;
     private Texture energyPillarBodyTexture;
     private Texture energyPillarBodyChargeTexture;
     private Texture energyPillarRadiusTexture;
     private Texture oscWallVertTexture;
+    private Texture oscWallVertNightTexture;
     private Texture oscWallVertGaugeTexture;
     private Texture oscWallHorzTexture;
+    private Texture oscWallHorzNightTexture;
     private Texture oscWallHorzGaugeTexture;
     private Texture rootsTexture;
+    private Texture rootsNightTexture;
 
     /** The shadow texture for hosts. Not a film strip, so can be stored here */
     private TextureRegion hostShadowRegion;
@@ -215,6 +227,10 @@ public class Factory {
     /** The draw scale of objects */
     private Vector2 scale;
 
+    /** Opacity of night */
+    private Color opacity;
+
+
     /** Can be set. If true, instantiated objects are sensors */
     public boolean makeSensors;
 
@@ -257,22 +273,33 @@ public class Factory {
             Texture hostNewPossession,
             Texture hostGenPossession,
             Texture hostWakeUp,
-            Texture wallTexture,
+            Texture wallDayTexture,
+            Texture wallNightTexture,
             Texture waterTexture,
+            Texture waterNightTexture,
             Texture cornerTexture,
+            Texture cornerNightTexture,
             Texture sandTexture,
+            Texture sandNightTexture,
             Texture cornerSandTexture,
+            Texture cornerSandNightTexture,
             Texture pedestalTexture,
+            Texture pedestalNightTexture,
             Texture borderEdgeTexture,
+            Texture borderEdgeNightTexture,
             Texture borderCornerTexture,
+            Texture borderCornerNightTexture,
             Texture energyPillarBodyTexture,
             Texture energyPillarBodyChargeTexture,
             Texture energyPillarRadiusTexture,
             Texture oscWallVertTexture,
+            Texture oscWallVertNightTexture,
             Texture oscWallVertGaugeTexture,
             Texture oscWallHorzTexture,
+            Texture oscWallHorzNightTexture,
             Texture oscWallHorzGaugeTexture,
-            Texture rootsTexture
+            Texture rootsTexture,
+            Texture rootsNightTexture
     ) {
         this.scale = scale;
         this.spiritBodyTexture = spiritBodyTexture;
@@ -308,22 +335,33 @@ public class Factory {
         this.hostWakingUp = hostWakeUp;
         this.hostNewPossession = hostNewPossession;
         this.hostGenPossession = hostGenPossession;
-        this.wallTexture = wallTexture;
+        this.wallDayTexture = wallDayTexture;
+        this.wallNightTexture = wallNightTexture;
         this.waterTexture = waterTexture;
+        this.waterNightTexture = waterNightTexture;
         this.cornerTexture = cornerTexture;
+        this.cornerNightTexture = cornerNightTexture;
         this.sandTexture = sandTexture;
+        this.sandNightTexture = sandNightTexture;
         this.cornerSandTexture = cornerSandTexture;
+        this.cornerSandNightTexture = cornerSandNightTexture;
         this.pedestalTexture = pedestalTexture;
+        this.pedestalNightTexture = pedestalNightTexture;
         this.borderEdgeTexture = borderEdgeTexture;
+        this.borderEdgeNightTexture = borderEdgeNightTexture;
         this.borderCornerTexture = borderCornerTexture;
+        this.borderCornerNightTexture = borderCornerNightTexture;
         this.energyPillarBodyChargeTexture = energyPillarBodyChargeTexture;
         this.energyPillarBodyTexture = energyPillarBodyTexture;
         this.energyPillarRadiusTexture = energyPillarRadiusTexture;
         this.oscWallVertTexture = oscWallVertTexture;
+        this.oscWallVertNightTexture = oscWallVertNightTexture;
         this.oscWallVertGaugeTexture = oscWallVertGaugeTexture;
         this.oscWallHorzTexture = oscWallHorzTexture;
+        this.oscWallHorzNightTexture = oscWallHorzNightTexture;
         this.oscWallHorzGaugeTexture = oscWallHorzGaugeTexture;
         this.rootsTexture = rootsTexture;
+        this.rootsNightTexture = rootsNightTexture;
 
         this.hostShadowRegion = new TextureRegion(hostShadow);
     }
@@ -337,8 +375,11 @@ public class Factory {
                 frame
         );
         FilmStrip tex = new FilmStrip(rootsTexture, ROOTS_ROWS, ROOTS_COLUMNS);
+        FilmStrip texNight = new FilmStrip(rootsNightTexture, ROOTS_ROWS, ROOTS_COLUMNS);
         tex.setFrame(frame);
+        texNight.setFrame(frame);
         roots.setTexture(tex);
+        roots.setNightTexture(texNight, opacity);
         roots.setDrawScale(scale);
         roots.setBodyType(BodyDef.BodyType.StaticBody);
         roots.setSensor(true); // They should never obstruct other objects
@@ -370,7 +411,7 @@ public class Factory {
                 y,
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT,
-                new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE)
+                new FilmStrip(wallDayTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE)
         );
         wall.setDrawScale(scale);
         wall.setBodyType(BodyDef.BodyType.StaticBody);
@@ -385,21 +426,26 @@ public class Factory {
 
     public Wall makeWall(float x, float y, int primaryFrame, int leftFrame, int rightFrame,
                          int frontEdgeFrame, int backEdgeFrame,
-                         int lowerLeftCornerFrame, int lowerRightCornerFrame) {
+                         int lowerLeftCornerFrame, int lowerRightCornerFrame, Color opacity) {
+
+        this.opacity = opacity;
         Wall wall = new Wall(
                 x,
                 y,
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT,
-                new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE),
+                new FilmStrip(wallDayTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE),
+                new FilmStrip(wallNightTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE),
                 primaryFrame,
                 leftFrame,
                 rightFrame,
                 frontEdgeFrame,
                 backEdgeFrame,
                 lowerLeftCornerFrame,
-                lowerRightCornerFrame
+                lowerRightCornerFrame,
+                opacity
         );
+
         wall.setDrawScale(scale);
         wall.setBodyType(BodyDef.BodyType.StaticBody);
         wall.setSensor(makeSensors);
@@ -437,6 +483,8 @@ public class Factory {
                 side,
                 frame,
                 new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS)
+                //new FilmStrip(borderEdgeNightTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS),
+                //opacity
         );
         edge.selectable = false;
         edge.setDrawScale(scale);
@@ -453,7 +501,9 @@ public class Factory {
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT,
                 c,
-                new FilmStrip(borderCornerTexture, BORDER_CORNER_ROWS, BORDER_CORNER_COLUMNS)
+                new FilmStrip(borderCornerTexture, BORDER_CORNER_ROWS, BORDER_CORNER_COLUMNS),
+                new FilmStrip(borderCornerNightTexture, BORDER_CORNER_ROWS, BORDER_CORNER_COLUMNS),
+                opacity
         );
         corner.selectable = false;
         corner.setDrawScale(scale);
@@ -474,8 +524,11 @@ public class Factory {
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT
         );
+
         water.setTerrainStrip(new FilmStrip(waterTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
-        water.setCornerStrip(new FilmStrip(cornerTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
+        water.setTerrainNightStrip(new FilmStrip(waterNightTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE), opacity);
+        water.setCornerStrip(new FilmStrip(cornerTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE),
+                             new FilmStrip(cornerNightTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
         water.setDrawScale(scale);
         water.setFrame(frame);
         water.setBodyType(BodyDef.BodyType.StaticBody);
@@ -500,7 +553,9 @@ public class Factory {
                 Constants.TILE_HEIGHT
         );
         sand.setTerrainStrip(new FilmStrip(sandTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE));
-        sand.setCornerStrip(new FilmStrip(cornerSandTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
+        sand.setTerrainNightStrip(new FilmStrip(sandNightTexture, WATER_ROWS, WATER_COLUMNS, WATER_SIZE), opacity);
+        sand.setCornerStrip(new FilmStrip(cornerSandTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE),
+                            new FilmStrip(cornerSandNightTexture, WATER_CORNER_ROWS, WATER_CORNER_COLUMNS, WATER_CORNER_SIZE));
         sand.setDrawScale(scale);
         sand.setFrame(frame);
         sand.setBodyType(BodyDef.BodyType.KinematicBody);
@@ -537,6 +592,11 @@ public class Factory {
                 new FilmStrip(oscWallHorzGaugeTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE),
                 new FilmStrip(oscWallVertTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE),
                 new FilmStrip(oscWallVertGaugeTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE));
+
+        oscWall.setOscWallNightStrips(new FilmStrip(oscWallHorzNightTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE),
+                new FilmStrip(oscWallVertNightTexture, OSC_WALL_VERT_ROWS, OSC_WALL_VERT_COLS, OSC_WALL_SIZE),
+                opacity);
+
         oscWall.setMainStrip(isVert, isGoingUp);
         oscWall.setVert(isVert);
         oscWall.setGoingUp(isGoingUp);
@@ -582,12 +642,12 @@ public class Factory {
     }
 
     public HostModel makePedestal(float x, float y) {
-        return makePedestalInternal(x, y, pedestalTexture);
+        return makePedestalInternal(x, y, pedestalTexture, pedestalNightTexture);
     }
 
     // TODO: add medium and large host make functions
 
-    private HostModel makePedestalInternal(float x, float y, Texture pedestalTexture) {
+    private HostModel makePedestalInternal(float x, float y, Texture pedestalTexture, Texture pedestalNightTexture) {
         HostModel ped = new HostModel(
                 x,
                 y,
@@ -597,6 +657,7 @@ public class Factory {
         );
         ped.setDrawScale(scale);
         ped.setPedestalStrip(new FilmStrip(pedestalTexture, PEDESTAL_ROWS, PEDESTAL_COLS, PEDESTAL_SIZE));
+        ped.setPedestalNightStrip(new FilmStrip(pedestalNightTexture, PEDESTAL_ROWS, PEDESTAL_COLS, PEDESTAL_SIZE), opacity);
         ped.setName("pedestal");
         ped.setSensor(makeSensors);
         if(makeTileSized) {

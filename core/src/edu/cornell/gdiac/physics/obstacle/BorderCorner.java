@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.physics.obstacle;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.util.FilmStrip;
@@ -28,17 +29,28 @@ public class BorderCorner extends BoxObstacle {
 
     /** The filmstrip to be used for rendering this corner */
     private FilmStrip cornerStrip;
+    /** The filmstrip to be used for rendering this corner */
+    private FilmStrip cornerNightStrip;
+    /** The filmstrip to be used for rendering this corner */
+    private TextureRegion cornerNightTexture;
 
 //    /** The frame within the border edge filmstrip to be used */
 //    private int frame;
 
     /** A cache vector for computation and for passing as a parameter */
     private Vector2 cache;
+    /** Color of night opacity */
+    private Color opacity;
 
-    public BorderCorner(float x, float y, float width, float height, Corner corner, FilmStrip edgeStrip) {
+    public BorderCorner(float x, float y, float width, float height, Corner corner, FilmStrip edgeStrip, FilmStrip edgeNightStrip, Color opacity) {
         super(x, y, width, height);
+        this.opacity = opacity;
         this.cornerStrip = edgeStrip;
+        this.cornerNightStrip = edgeNightStrip;
         setTexture(this.cornerStrip);
+        cornerNightTexture = this.cornerNightStrip;
+        origin.set(cornerNightTexture.getRegionWidth()/2.0f, cornerNightTexture.getRegionHeight()/2.0f);
+
         setCorner(corner);
 
 //        this.frame = frame;
@@ -61,18 +73,22 @@ public class BorderCorner extends BoxObstacle {
     public void setCorner(Corner corner) {
         this.corner = corner;
         switch(this.corner) {
-        case TOP_LEFT:
-            this.cornerStrip.setFrame(0);
-            break;
-        case TOP_RIGHT:
-            this.cornerStrip.setFrame(1);
-            break;
-        case BOTTOM_LEFT:
-            this.cornerStrip.setFrame(2);
-            break;
-        case BOTTOM_RIGHT:
-            this.cornerStrip.setFrame(3);
-            break;
+            case TOP_LEFT:
+                this.cornerStrip.setFrame(0);
+                this.cornerNightStrip.setFrame(0);
+                break;
+            case TOP_RIGHT:
+                this.cornerStrip.setFrame(1);
+                this.cornerNightStrip.setFrame(1);
+                break;
+            case BOTTOM_LEFT:
+                this.cornerStrip.setFrame(2);
+                this.cornerNightStrip.setFrame(2);
+                break;
+            case BOTTOM_RIGHT:
+                this.cornerStrip.setFrame(3);
+                this.cornerNightStrip.setFrame(3);
+                break;
         }
     }
 
@@ -168,28 +184,29 @@ public class BorderCorner extends BoxObstacle {
         // initially starts in the center of the corner tile.
         float x = getX(), y = getY();
         switch(corner) {
-        case TOP_LEFT:
-            x -= 1.5 * TILE_WIDTH;
-            y -= 0.5 * TILE_WIDTH;
-            break;
-        case TOP_RIGHT:
-            x -= 0.5 * TILE_WIDTH;
-            y -= 0.5 * TILE_WIDTH;
-            break;
-        case BOTTOM_LEFT:
-            x -= 1.5 * TILE_WIDTH;
-            y -= 1.5 * TILE_WIDTH;
-            break;
-        case BOTTOM_RIGHT:
-            x -= 0.5 * TILE_WIDTH;
-            y -= 1.5 * TILE_WIDTH;
-            break;
+            case TOP_LEFT:
+                x -= 1.5 * TILE_WIDTH;
+                y -= 0.5 * TILE_WIDTH;
+                break;
+            case TOP_RIGHT:
+                x -= 0.5 * TILE_WIDTH;
+                y -= 0.5 * TILE_WIDTH;
+                break;
+            case BOTTOM_LEFT:
+                x -= 1.5 * TILE_WIDTH;
+                y -= 1.5 * TILE_WIDTH;
+                break;
+            case BOTTOM_RIGHT:
+                x -= 0.5 * TILE_WIDTH;
+                y -= 1.5 * TILE_WIDTH;
+                break;
         }
 
         x *= drawScale.x;
         y *= drawScale.y;
 
         canvas.draw(texture, Color.WHITE, x, y, drawScale.x * CORNER_SCALE * TILE_WIDTH, drawScale.y * CORNER_SCALE * TILE_WIDTH);
+        canvas.draw(cornerNightTexture, opacity, x, y, drawScale.x * CORNER_SCALE * TILE_WIDTH, drawScale.y * CORNER_SCALE * TILE_WIDTH);
 
 //        canvas.draw(texture, Color.WHITE,origin.x + TILE_WIDTH,origin.y + TILE_WIDTH,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
     }

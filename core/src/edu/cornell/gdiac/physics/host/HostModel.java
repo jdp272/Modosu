@@ -145,6 +145,11 @@ public class HostModel extends BoxObstacle {
     FilmStrip pedestalHost;
 
     /**
+     * The texture filmstrip for the host that is the pedestal
+     */
+    FilmStrip pedestalHostNight;
+
+    /**
      * The texture filmstrip for animation of a possession
      */
     FilmStrip possessionStrip;
@@ -835,6 +840,12 @@ public class HostModel extends BoxObstacle {
         pedestalHost.setFrame(0);
     }
 
+    public void setPedestalNightStrip(FilmStrip strip, Color opacity) {
+        this.pedestalHostNight = strip;
+        pedestalHostNight.setFrame(0);
+        this.opacity = opacity;
+    }
+
     public void setChargeStrip(FilmStrip chargeStrip, int currentCharge) {
         this.hostChargeUI = chargeStrip;
         this.hostChargeUI.setFrame((int) ((currentCharge / this.maxCharge) * HOST_CHARGE_UI_END));
@@ -1181,8 +1192,10 @@ public class HostModel extends BoxObstacle {
         if (pedUpdateFrame) {
             if (this.pedestalHost.getFrame() < PEDESTAL_FINISH) {
                 this.pedestalHost.setFrame(this.pedestalHost.getFrame() + 1);
+                this.pedestalHostNight.setFrame(this.pedestalHostNight.getFrame() + 1);
             } else {
                 this.pedestalHost.setFrame(PEDESTAL_START);
+                this.pedestalHostNight.setFrame(PEDESTAL_START);
             }
         }
     }
@@ -1231,6 +1244,7 @@ public class HostModel extends BoxObstacle {
             // Make pedestal clear when no longer in possession.
             if (this.isPossessed) {
                 canvas.draw(pedestalHost, Color.WHITE, pedestalHost.getRegionWidth() / 2f, pedestalHost.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.3f, 0.3f);
+                canvas.draw(pedestalHostNight, opacity, pedestalHostNight.getRegionWidth() / 2f, pedestalHostNight.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.3f, 0.3f);
             } else {
                 canvas.draw(pedestalHost, Color.CLEAR, pedestalHost.getRegionWidth() / 2f, pedestalHost.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.3f, 0.3f);
             }
