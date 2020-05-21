@@ -76,17 +76,17 @@ public class HostController {
     /**
      * Minimum speed for shot spirit
      */
-    private static final float MINIMUM_SHOT_SPEED = 10f;
+    private static final float MINIMUM_SHOT_SPEED = 7f;
 
     /**
      * Maximum speed for shot spirit
      */
-    private static final float MAXIMUM_SHOT_SPEED = 20f;
+    private static final float MAXIMUM_SHOT_SPEED = 21f;
 
     /**
      * Multiplier for velocity of spirit when shot
      */
-    private static final float SHOOTING_MULTIPLIER = 2f;
+    private static final float SHOOTING_MULTIPLIER = 2.1f;
 
     /**
      * Minimum distance to target before going to next instruction, for autonomous mode
@@ -254,7 +254,7 @@ public class HostController {
                     float vx = SHOOTING_MULTIPLIER * shootVector.x / scale.x;
                     float vy = SHOOTING_MULTIPLIER * shootVector.y / scale.y;
 
-                    float magnitude = Math.abs(vx * vx + vy * vy);
+                    float magnitude = (float) Math.sqrt(Math.abs(vx * vx + vy * vy));
 
                     // Spirit Controller that deals with shooting the spirit
 
