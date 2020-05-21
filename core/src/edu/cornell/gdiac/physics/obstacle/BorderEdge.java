@@ -29,12 +29,20 @@ public class BorderEdge extends BoxObstacle {
 
     /** The filmstrip to be used for rendering this edge */
     private FilmStrip edgeStrip;
+    /** The filmstrip to be used for rendering this edge */
+    private FilmStrip edgeNightStrip;
+    /** The texture region to be used for rendering this edge */
+    private TextureRegion edgeNightTexture;
+
+
 
 //    /** The frame within the border edge filmstrip to be used */
 //    private int frame;
 
     /** A cache vector for computation and for passing as a parameter */
     private Vector2 cache;
+    /** Opacity of night */
+    private Color opacity;
 
     public BorderEdge(float x, float y, float width, float height, Side side, FilmStrip edgeStrip) {
         super(x, y, width, height);
@@ -48,14 +56,19 @@ public class BorderEdge extends BoxObstacle {
         this.cache = new Vector2();
     }
 
-    public BorderEdge(float x, float y, float width, float height, Side side, int frame, FilmStrip edgeStrip) {
+    public BorderEdge(float x, float y, float width, float height, Side side, int frame, FilmStrip edgeStrip, FilmStrip edgeNightStrip, Color opacity) {
         super(x, y, width, height);
         this.edgeStrip = edgeStrip;
+        this.edgeNightStrip = edgeNightStrip;
         setTexture(this.edgeStrip);
+        edgeNightTexture = this.edgeNightStrip;
+        origin.set(edgeNightTexture.getRegionWidth()/2.0f, edgeNightTexture.getRegionHeight()/2.0f);
+
         setSide(side);
 
-//        this.frame = frame;
+        this.opacity = opacity;
         this.edgeStrip.setFrame(frame);
+        this.edgeNightStrip.setFrame(frame);
 
         this.cache = new Vector2();
     }
@@ -81,15 +94,19 @@ public class BorderEdge extends BoxObstacle {
         switch(this.side) {
         case TOP:
             this.edgeStrip.setFrame(0);
+            this.edgeNightStrip.setFrame(0);
             break;
         case BOTTOM:
             this.edgeStrip.setFrame(9);
+            this.edgeNightStrip.setFrame(9);
             break;
         case LEFT:
             this.edgeStrip.setFrame(18);
+            this.edgeNightStrip.setFrame(18);
             break;
         case RIGHT:
             this.edgeStrip.setFrame(27);
+            this.edgeNightStrip.setFrame(27);
             break;
         }
     }
@@ -106,14 +123,18 @@ public class BorderEdge extends BoxObstacle {
                 if(distance == 1) {
                     if(nearbySide == Side.LEFT) {
                         this.edgeStrip.setFrame(5);
+                        this.edgeNightStrip.setFrame(5);
                     } else if(nearbySide == Side.RIGHT) {
                         this.edgeStrip.setFrame(7);
+                        this.edgeNightStrip.setFrame(7);
                     }
                 } else if(distance == 2) {
                     if(nearbySide == Side.LEFT) {
                         this.edgeStrip.setFrame(6);
+                        this.edgeNightStrip.setFrame(6);
                     } else if(nearbySide == Side.RIGHT) {
                         this.edgeStrip.setFrame(8);
+                        this.edgeNightStrip.setFrame(8);
                     }
                 }
                 break;
@@ -121,8 +142,10 @@ public class BorderEdge extends BoxObstacle {
                 if(distance == 1) {
                     if(nearbySide == Side.LEFT) {
                         this.edgeStrip.setFrame(11);
+                        this.edgeNightStrip.setFrame(11);
                     } else if(nearbySide == Side.RIGHT) {
                         this.edgeStrip.setFrame(12);
+                        this.edgeNightStrip.setFrame(12);
                     }
                 }
                 break;
@@ -130,8 +153,10 @@ public class BorderEdge extends BoxObstacle {
                 if(distance == 1) {
                     if(nearbySide == Side.BOTTOM) {
                         this.edgeStrip.setFrame(21);
+                        this.edgeNightStrip.setFrame(21);
                     } else if(nearbySide == Side.TOP) {
                         this.edgeStrip.setFrame(22);
+                        this.edgeNightStrip.setFrame(22);
                     }
                 }
                 break;
@@ -139,8 +164,10 @@ public class BorderEdge extends BoxObstacle {
                 if(distance == 1) {
                     if(nearbySide == Side.BOTTOM) {
                         this.edgeStrip.setFrame(30);
+                        this.edgeNightStrip.setFrame(30);
                     } else if(nearbySide == Side.TOP) {
                         this.edgeStrip.setFrame(31);
+                        this.edgeNightStrip.setFrame(31);
                     }
                 }
                 break;
@@ -242,7 +269,9 @@ public class BorderEdge extends BoxObstacle {
         }
 
         setScaling(texture);
+        setScaling(edgeNightTexture);
         canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,side.angle,sx,sy);
+        //canvas.draw(edgeNightTexture, opacity,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,side.angle,sx,sy);
     }
 
     /**

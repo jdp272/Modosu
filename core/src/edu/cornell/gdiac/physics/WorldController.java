@@ -86,6 +86,8 @@ public abstract class WorldController implements Screen {
 	private static String FONT_FILE = "shared/AveriaSerifLibre.ttf";
 	/** Texture file for background image */
 	private static final String BACKG_DAY_FILE = "shared/background.png";
+	/** Texture file for background night image */
+	private static final String BACKG_NIGHT_FILE = "shared/night/background.png";
 	/** Texture file for host sprite EAST */
 	private static final String HOST_FILE_E = "host/golemWalk_E.png";
 	/** Texture file for host sprite NORTH */
@@ -159,8 +161,10 @@ public abstract class WorldController implements Screen {
 	private static String HOST_SHADOW_FILE = "host/shadow.png";
 	/** Texture file for arrow sprite */
 	private static final String ARROW_FILE = "shared/arrow.png";
-	/** File to texture for Walls */
-	private static String WALL_FILE = "shared/wallSpritesheet_v04.png";
+	/** File to texture for Walls Day */
+	private static String WALL_DAY_FILE = "shared/wallSpritesheet_v04.png";
+	/** File to texture for Walls Night*/
+	private static String WALL_NIGHT_FILE = "shared/night/wallSpritesheet.png";
 	/** File to texture for Water */
 	private static String WATER_FILE = "shared/waterspritesheet.png";
 	/** File to texture for Water corners */
@@ -173,8 +177,12 @@ public abstract class WorldController implements Screen {
 	private static String PEDESTAL_FILE = "shared/spirit_pedestal.png";
 	/** File to texture for borders */
 	private static String BORDER_EDGE_FILE = "shared/forest.png";
-	/** File to texture for borders */
+	/** File to texture for night borders */
+	private static String BORDER_EDGE_NIGHT_FILE = "shared/night/backdropspritesheet.png";
+	/** File to texture for corners */
 	private static String BORDER_CORNER_FILE = "shared/forestcorners.png";
+	/** File to texture for night corners */
+	private static String BORDER_CORNER_NIGHT_FILE = "shared/night/backdropcorners.png";
 	/** File to texture for Energy Pillar body */
 	private static String  ENERGY_PILLAR_BODY_FILE = "shared/energyPillar_base.png";
 	/** File to texture for Energy Pillar Charge */
@@ -205,9 +213,13 @@ public abstract class WorldController implements Screen {
 	protected BitmapFont threeFont;
 	protected BitmapFont fourFont;
 	/** Texture asset for background image */
-	private TextureRegion backgroundTexture;
+	private TextureRegion backgroundDayTexture;
+	/** Texture asset for background image */
+	private TextureRegion backgroundNightTexture;
 	/** The texture for walls */
-	protected TextureRegion wallTex;
+	protected TextureRegion wallDayTex;
+	/** The texture for walls */
+	protected TextureRegion wallNightTex;
 	/** The texture for the arrow */
 	protected Texture arrowTex;
 	/** Texture for Host SpriteSheet EAST*/
@@ -270,8 +282,10 @@ public abstract class WorldController implements Screen {
 	private static Texture hostGaugeTexture;
 	/** Texture for Host Shadow */
 	private static Texture hostShadowTexture;
-	/** Texture for Wall SpriteSheet */
-	private static Texture wallTexture;
+	/** Texture for Wall Day SpriteSheet */
+	private static Texture wallDayTexture;
+	/** Texture for Wall Night SpriteSheet */
+	private static Texture wallNightTexture;
 	/** Texture for Water SpriteSheet */
 	private static Texture waterTexture;
 	/** Texture for Water Corner SpriteSheet */
@@ -290,8 +304,12 @@ public abstract class WorldController implements Screen {
 	private static Texture spiritTailTexture;
 	/** Texture for border edges */
 	private static Texture borderEdgeTexture;
+	/** Texture for border night edges */
+	private static Texture borderEdgeNightTexture;
 	/** Texture for border corners */
 	private static Texture borderCornerTexture;
+	/** Texture for border night corners */
+	private static Texture borderCornerNightTexture;
 	/** Texture for Energy Pillar Body Texture */
 	private static Texture energyPillarBody;
 	/** Texture for Energy Pillar Body Lights Texture */
@@ -363,6 +381,8 @@ public abstract class WorldController implements Screen {
 		// Load the shared tiles.
 		manager.load(BACKG_DAY_FILE,Texture.class);
 		assets.add(BACKG_DAY_FILE);
+		manager.load(BACKG_NIGHT_FILE,Texture.class);
+		assets.add(BACKG_NIGHT_FILE);
 		manager.load(HOST_FILE_E, Texture.class);
 		assets.add(HOST_FILE_E);
 		manager.load(HOST_FILE_N, Texture.class);
@@ -423,8 +443,10 @@ public abstract class WorldController implements Screen {
 		assets.add(HOST_GAUGE_FILE);
 		manager.load(HOST_SHADOW_FILE, Texture.class);
 		assets.add(HOST_SHADOW_FILE);
-		manager.load(WALL_FILE, Texture.class);
-		assets.add(WALL_FILE);
+		manager.load(WALL_DAY_FILE, Texture.class);
+		assets.add(WALL_DAY_FILE);
+		manager.load(WALL_NIGHT_FILE, Texture.class);
+		assets.add(WALL_NIGHT_FILE);
 		manager.load(WATER_FILE, Texture.class);
 		assets.add(WATER_FILE);
 		manager.load(CORNER_FILE, Texture.class);
@@ -443,8 +465,12 @@ public abstract class WorldController implements Screen {
 		assets.add(SPIRIT_TAIL_FILE);
 		manager.load(BORDER_EDGE_FILE, Texture.class);
 		assets.add(BORDER_EDGE_FILE);
+		manager.load(BORDER_EDGE_NIGHT_FILE, Texture.class);
+		assets.add(BORDER_EDGE_NIGHT_FILE);
 		manager.load(BORDER_CORNER_FILE, Texture.class);
 		assets.add(BORDER_CORNER_FILE);
+		manager.load(BORDER_CORNER_NIGHT_FILE, Texture.class);
+		assets.add(BORDER_CORNER_NIGHT_FILE);
 		manager.load(ENERGY_PILLAR_BODY_CHARGE_FILE, Texture.class);
 		assets.add(ENERGY_PILLAR_BODY_CHARGE_FILE);
 		manager.load(ENERGY_PILLAR_BODY_FILE, Texture.class);
@@ -486,8 +512,10 @@ public abstract class WorldController implements Screen {
 		}
 		
 		// Allocate the tiles
-		backgroundTexture = createTexture(manager, BACKG_DAY_FILE, true);
-		wallTex = createTexture(manager, WALL_FILE, true);
+		backgroundDayTexture = createTexture(manager, BACKG_DAY_FILE, true);
+		backgroundNightTexture = createTexture(manager, BACKG_NIGHT_FILE, true);
+		wallDayTex = createTexture(manager, WALL_DAY_FILE, true);
+		wallNightTex = createTexture(manager, WALL_NIGHT_FILE, true);
 		arrowTex = new Texture(ARROW_FILE);
 
 		// Allocate the font
@@ -537,7 +565,8 @@ public abstract class WorldController implements Screen {
 		hostWakingUpTexture = manager.get(HOST_WAKING_UP_FILE, Texture.class);
 		hostGaugeTexture = manager.get(HOST_GAUGE_FILE, Texture.class);
 		hostShadowTexture = manager.get(HOST_SHADOW_FILE, Texture.class);
-		wallTexture = manager.get(WALL_FILE, Texture.class);
+		wallDayTexture = manager.get(WALL_DAY_FILE, Texture.class);
+		wallNightTexture = manager.get(WALL_NIGHT_FILE, Texture.class);
 		waterTexture = manager.get(WATER_FILE, Texture.class);
 		cornerTexture = manager.get(CORNER_FILE, Texture.class);
 		sandTexture = manager.get(SAND_FILE, Texture.class);
@@ -546,7 +575,9 @@ public abstract class WorldController implements Screen {
 		spiritHeadTexture = manager.get(SPIRIT_HEAD_FILE, Texture.class);
 		spiritTailTexture = manager.get(SPIRIT_TAIL_FILE, Texture.class);
 		borderEdgeTexture = manager.get(BORDER_EDGE_FILE, Texture.class);
+		borderEdgeNightTexture = manager.get(BORDER_EDGE_NIGHT_FILE, Texture.class);
 		borderCornerTexture = manager.get(BORDER_CORNER_FILE, Texture.class);
+		borderCornerNightTexture = manager.get(BORDER_CORNER_NIGHT_FILE, Texture.class);
 		energyPillarBody = manager.get(ENERGY_PILLAR_BODY_FILE, Texture.class);
 		energyPillarCharge = manager.get(ENERGY_PILLAR_BODY_CHARGE_FILE, Texture.class);
 		energyPillarRadius = manager.get(ENERGY_PILLAR_RADIUS_FILE, Texture.class);
@@ -557,7 +588,6 @@ public abstract class WorldController implements Screen {
 		rootsTexture = manager.get(DECORATIVE_ROOTS_FILE, Texture.class);
 
 
-		// Set the proper textures in the factory
 		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture,
 				hostGaugeTexture, hostShadowTexture, hostTextureE, hostTextureN, hostTextureNE, hostTextureNW,
 				hostTextureS, hostTextureSE, hostTextureSW, hostTextureW, hostGlyphTextureE,
@@ -566,8 +596,8 @@ public abstract class WorldController implements Screen {
 				hostDeathTextureN, hostDeathTextureNE, hostDeathTextureNW, hostDeathTextureS,
 				hostDeathTextureSE, hostDeathTextureSW, hostDeathTextureW, hostArmsTexture,
 				hostNewPossessionTexture, hostGenPossessionTexture, hostWakingUpTexture,
-				wallTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture,
-				pedestalTexture, borderEdgeTexture, borderCornerTexture, energyPillarBody,
+				wallDayTexture, wallNightTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture,
+				pedestalTexture, borderEdgeTexture, borderEdgeNightTexture, borderCornerTexture, borderCornerNightTexture, energyPillarBody,
 				energyPillarCharge, energyPillarRadius, oscWallVert, oscWallVertGauge,
 				oscWallHorz, oscWallGaugeHorz, rootsTexture);
 
@@ -1171,7 +1201,12 @@ public abstract class WorldController implements Screen {
 
 				// Draw only the part of the texture that is in game, using the
 				// texture coordinates
-				canvas.draw(backgroundTexture.getTexture(), Color.WHITE,
+
+				canvas.draw(backgroundDayTexture.getTexture(), Color.WHITE,
+						(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
+						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
+
+				canvas.draw(backgroundNightTexture.getTexture(), new Color(1,1,1,.33f*(currentLevel%4)),
 						(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
 						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
 

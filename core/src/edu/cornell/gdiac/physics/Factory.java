@@ -1,5 +1,6 @@
 package edu.cornell.gdiac.physics;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -45,7 +46,8 @@ public class Factory {
     private Texture hostNewPossession;
     private Texture hostGenPossession;
     private Texture hostArmTexture;
-    private Texture wallTexture;
+    private Texture wallDayTexture;
+    private Texture wallNightTexture;
     private Texture waterTexture;
     private Texture cornerTexture;
     private Texture sandTexture;
@@ -55,7 +57,9 @@ public class Factory {
     private Texture spiritHeadTexture;
     private Texture spiritTailTexture;
     private Texture borderEdgeTexture;
+    private Texture borderEdgeNightTexture;
     private Texture borderCornerTexture;
+    private Texture borderCornerNightTexture;
     private Texture energyPillarBodyTexture;
     private Texture energyPillarBodyChargeTexture;
     private Texture energyPillarRadiusTexture;
@@ -215,6 +219,10 @@ public class Factory {
     /** The draw scale of objects */
     private Vector2 scale;
 
+    /** Opacity of night */
+    private Color opacity;
+
+
     /** Can be set. If true, instantiated objects are sensors */
     public boolean makeSensors;
 
@@ -257,14 +265,17 @@ public class Factory {
             Texture hostNewPossession,
             Texture hostGenPossession,
             Texture hostWakeUp,
-            Texture wallTexture,
+            Texture wallDayTexture,
+            Texture wallNightTexture,
             Texture waterTexture,
             Texture cornerTexture,
             Texture sandTexture,
             Texture cornerSandTexture,
             Texture pedestalTexture,
             Texture borderEdgeTexture,
+            Texture borderEdgeNightTexture,
             Texture borderCornerTexture,
+            Texture borderCornerNightTexture,
             Texture energyPillarBodyTexture,
             Texture energyPillarBodyChargeTexture,
             Texture energyPillarRadiusTexture,
@@ -308,14 +319,17 @@ public class Factory {
         this.hostWakingUp = hostWakeUp;
         this.hostNewPossession = hostNewPossession;
         this.hostGenPossession = hostGenPossession;
-        this.wallTexture = wallTexture;
+        this.wallDayTexture = wallDayTexture;
+        this.wallNightTexture = wallNightTexture;
         this.waterTexture = waterTexture;
         this.cornerTexture = cornerTexture;
         this.sandTexture = sandTexture;
         this.cornerSandTexture = cornerSandTexture;
         this.pedestalTexture = pedestalTexture;
         this.borderEdgeTexture = borderEdgeTexture;
+        this.borderEdgeNightTexture = borderEdgeNightTexture;
         this.borderCornerTexture = borderCornerTexture;
+        this.borderCornerNightTexture = borderCornerNightTexture;
         this.energyPillarBodyChargeTexture = energyPillarBodyChargeTexture;
         this.energyPillarBodyTexture = energyPillarBodyTexture;
         this.energyPillarRadiusTexture = energyPillarRadiusTexture;
@@ -370,7 +384,7 @@ public class Factory {
                 y,
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT,
-                new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE)
+                new FilmStrip(wallDayTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE)
         );
         wall.setDrawScale(scale);
         wall.setBodyType(BodyDef.BodyType.StaticBody);
@@ -385,21 +399,26 @@ public class Factory {
 
     public Wall makeWall(float x, float y, int primaryFrame, int leftFrame, int rightFrame,
                          int frontEdgeFrame, int backEdgeFrame,
-                         int lowerLeftCornerFrame, int lowerRightCornerFrame) {
+                         int lowerLeftCornerFrame, int lowerRightCornerFrame, Color opacity) {
+
+        this.opacity = opacity;
         Wall wall = new Wall(
                 x,
                 y,
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT,
-                new FilmStrip(wallTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE),
+                new FilmStrip(wallDayTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE),
+                new FilmStrip(wallNightTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE),
                 primaryFrame,
                 leftFrame,
                 rightFrame,
                 frontEdgeFrame,
                 backEdgeFrame,
                 lowerLeftCornerFrame,
-                lowerRightCornerFrame
+                lowerRightCornerFrame,
+                opacity
         );
+
         wall.setDrawScale(scale);
         wall.setBodyType(BodyDef.BodyType.StaticBody);
         wall.setSensor(makeSensors);
@@ -436,7 +455,9 @@ public class Factory {
                 Constants.TILE_HEIGHT,
                 side,
                 frame,
-                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS)
+                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS),
+                new FilmStrip(borderEdgeNightTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS),
+                opacity
         );
         edge.selectable = false;
         edge.setDrawScale(scale);
@@ -453,7 +474,9 @@ public class Factory {
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT,
                 c,
-                new FilmStrip(borderCornerTexture, BORDER_CORNER_ROWS, BORDER_CORNER_COLUMNS)
+                new FilmStrip(borderCornerTexture, BORDER_CORNER_ROWS, BORDER_CORNER_COLUMNS),
+                new FilmStrip(borderCornerNightTexture, BORDER_CORNER_ROWS, BORDER_CORNER_COLUMNS),
+                opacity
         );
         corner.selectable = false;
         corner.setDrawScale(scale);
