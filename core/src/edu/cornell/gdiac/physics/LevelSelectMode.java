@@ -187,6 +187,7 @@ public class LevelSelectMode extends WorldController implements Screen {
      */
     public void setPages() {
         pages = (int) Math.ceil(levels.size() / 4.0);
+        if (onCustom && levels.size() % 4 == 0) pages++;
     }
 
     /**
@@ -379,7 +380,9 @@ public class LevelSelectMode extends WorldController implements Screen {
             canvas.draw(prevTexture, colorPrev, 0f, 0f, prevStart.x, prevStart.y, 0, 1, 1);
         }
         levelFont.setColor(colorOne);
-        String name = levels.get(page * 4).file().getName();
+        try {
+            String name = levels.get(page * 4).file().getName();
+
         Vector2 center = new Vector2((oneEnd.x+oneStart.x)/2,(oneEnd.y+oneStart.y)/2);
         canvas.drawText(name.substring(0,name.length()-4), levelFont, center.x, center.y);
 
@@ -414,7 +417,10 @@ public class LevelSelectMode extends WorldController implements Screen {
             name = "Presets";
         }
         canvas.drawText(name, levelFont, center.x, center.y);
-
+        }
+        catch (Exception e) {
+            System.out.println("No levels to load on this page");
+        }
         if(onCustom)
             levelFont.getData().setScale(.8f, .8f);
         else
