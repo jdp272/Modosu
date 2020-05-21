@@ -1032,7 +1032,7 @@ public class LoadingMode implements Screen {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE)) {
 					colorStart = colorHovered;
 					if (!hoverButton) {
-						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -1046,7 +1046,7 @@ public class LoadingMode implements Screen {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X+(lvlSelect.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlSelect = colorHovered;
 					if (!hoverButton) {
-						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -1060,7 +1060,7 @@ public class LoadingMode implements Screen {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (lvlDesign.getWidth()*scale*BUTTON_SCALE)) {
 					colorLvlDesign = colorHovered;
 					if (!hoverButton) {
-						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -1074,7 +1074,7 @@ public class LoadingMode implements Screen {
 				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth()*scale*BUTTON_SCALE)) {
 					colorCredits = colorHovered;
 					if (!hoverButton) {
-						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
@@ -1087,14 +1087,14 @@ public class LoadingMode implements Screen {
 				if (screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE)) {
 					colorQuit = colorHovered;
 					if (!hoverButton) {
-						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
 				else if (screenX >= MUTE_X && screenX <= MUTE_X + (mute.getWidth()*scale*BUTTON_SCALE)) {
 					colorMute = colorHovered;
 					if (!hoverButton) {
-						sound.play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+						sound.playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
 						hoverButton = true;
 					}
 				}
