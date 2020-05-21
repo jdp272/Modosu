@@ -411,6 +411,7 @@ public class Factory {
                 y,
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT,
+                new FilmStrip(wallNightTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE),
                 new FilmStrip(wallDayTexture, WALL_ROWS, WALL_COLUMNS, WALL_SIZE)
         );
         wall.setDrawScale(scale);

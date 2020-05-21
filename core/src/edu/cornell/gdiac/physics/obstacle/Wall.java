@@ -89,8 +89,8 @@ public class Wall extends BoxObstacle {
     /** Opacity of night wall */
     private Color opacity;
 
-    public Wall(float x, float y, float width, float height, FilmStrip wallStrip) {
-        this(x, y, width, height, wallStrip, null, WALL_FRONT,
+    public Wall(float x, float y, float width, float height, FilmStrip wallStrip, FilmStrip wallNightStrip) {
+        this(x, y, width, height, wallStrip, wallNightStrip, WALL_FRONT,
                 NO_SIDE, NO_SIDE, NO_SIDE, NO_SIDE, NO_SIDE, NO_SIDE, Color.WHITE);
     }
 
