@@ -167,14 +167,24 @@ public abstract class WorldController implements Screen {
 	private static String WALL_NIGHT_FILE = "shared/night/wallSpritesheet.png";
 	/** File to texture for Water */
 	private static String WATER_FILE = "shared/waterspritesheet.png";
+	/** File to texture for Water Night */
+	private static String WATER_NIGHT_FILE = "shared/night/waterspritesheet.png";
 	/** File to texture for Water corners */
 	private static String CORNER_FILE = "shared/water_corners_spritesheet.png";
+	/** File to texture for Water corners */
+	private static String CORNER_NIGHT_FILE = "shared/night/water_corners_spritesheet.png";
 	/** File to texture for sand */
 	private static String SAND_FILE = "shared/sandspritesheet.png";
+	/** File to texture for sand night */
+	private static String SAND_NIGHT_FILE = "shared/night/sand.png";
 	/** File to texture for Sand corners */
 	private static String CORNER_SAND_FILE = "shared/sand_corners_spritesheet.png";
+	/** File to texture for Sand corners */
+	private static String CORNER_SAND_NIGHT_FILE = "shared/night/sand_corners_spritesheet.png";
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_FILE = "shared/spirit_pedestal.png";
+	/** File to texture for Pedestal */
+	private static String PEDESTAL_NIGHT_FILE = "shared/night/phoenix_pedestal.png";
 	/** File to texture for borders */
 	private static String BORDER_EDGE_FILE = "shared/forest.png";
 	/** File to texture for night borders */
@@ -189,17 +199,23 @@ public abstract class WorldController implements Screen {
 	private static String ENERGY_PILLAR_BODY_CHARGE_FILE = "shared/energyPillar_lights.png";
 	/** File to texture for Energy Pillar Radius */
 	private static String ENERGY_PILLAR_RADIUS_FILE = "shared/energyRing.png";
-	/** File to texture for Energy Pillar Radius */
+	/** File to texture for Backdrop Roots */
 	private static String DECORATIVE_ROOTS_FILE = "shared/rootsspritesheet.png";
+	/** File to texture for Backdrop Roots */
+	private static String DECORATIVE_ROOTS_NIGHT_FILE = "shared/night/backdroproots.png";
 
 
 	/** File to texture for OscWall Horz */
 	public static String OSC_WALL_HORZ_FILE = "shared/horizontalGateSpritesheet.png";
+	/** File to texture for OscWall Horz */
+	public static String OSC_WALL_HORZ_NIGHT_FILE = "shared/night/horizontalGateSpritesheet.png";
 	/** File to texture for OscWall Horz Gauge */
 	public static String OSC_WALL_HORZ_GAUGE_FILE = "shared/horizontalGateLightSpritesheet.png";
 
 	/** File to texture for OscWall Horz */
 	public static String OSC_WALL_VERT_FILE = "shared/verticalGateSpritesheet.png";
+	/** File to texture for OscWall Horz */
+	public static String OSC_WALL_VERT_NIGHT_FILE = "shared/night/verticalGateSpritesheet.png";
 	/** File to texture for OscWall Horz Gauge */
 	public static String OSC_WALL_VERT_GAUGE_FILE = "shared/verticalGateLightSpritesheet.png";
 
@@ -288,14 +304,24 @@ public abstract class WorldController implements Screen {
 	private static Texture wallNightTexture;
 	/** Texture for Water SpriteSheet */
 	private static Texture waterTexture;
+	/** Texture for Water Night SpriteSheet */
+	private static Texture waterNightTexture;
 	/** Texture for Water Corner SpriteSheet */
 	private static Texture cornerTexture;
+	/** Texture for Water Corner Night SpriteSheet */
+	private static Texture cornerNightTexture;
 	/** Texture for Sand SpriteSheet */
 	private static Texture sandTexture;
+	/** Texture for Sand SpriteSheet */
+	private static Texture sandNightTexture;
 	/** Texture for Sand Corner SpriteSheet */
 	private static Texture cornerSandTexture;
+	/** Texture for Sand Corner SpriteSheet */
+	private static Texture cornerSandNightTexture;
 	/** Texture for Pedestal SpriteSheet */
 	private static Texture pedestalTexture;
+	/** Texture for Pedestal SpriteSheet */
+	private static Texture pedestalNightTexture;
 	/** Texture for Spirit Head Texture */
 	private static Texture spiritHeadTexture;
 	/** Texture for Spirit Body Texture */
@@ -318,14 +344,20 @@ public abstract class WorldController implements Screen {
 	private static Texture energyPillarRadius;
 	/** Texture for Osc Wall Horz */
 	private static Texture oscWallHorz;
+	/** Texture for Osc Wall Horz */
+	private static Texture oscWallHorzNight;
 	/** Texture for Osc Wall Gauge Horz */
 	private static Texture oscWallGaugeHorz;
 	/** Texture for Osc Wall Vert */
 	private static Texture oscWallVert;
+	/** Texture for Osc Wall Vert */
+	private static Texture oscWallVertNight;
 	/** Texture for Osc Wall Vert Gauge */
 	private static Texture oscWallVertGauge;
 	/** Texture for decorative roots */
 	private static Texture rootsTexture;
+	/** Texture for decorative roots */
+	private static Texture rootsNightTexture;
 
 	/** List of footprints for level editor */
 	private ArrayList<FootPrintModel> footprints;
@@ -449,16 +481,26 @@ public abstract class WorldController implements Screen {
 		assets.add(WALL_NIGHT_FILE);
 		manager.load(WATER_FILE, Texture.class);
 		assets.add(WATER_FILE);
+		manager.load(WATER_NIGHT_FILE, Texture.class);
+		assets.add(WATER_NIGHT_FILE);
 		manager.load(CORNER_FILE, Texture.class);
 		assets.add(CORNER_FILE);
+		manager.load(CORNER_NIGHT_FILE, Texture.class);
+		assets.add(CORNER_NIGHT_FILE);
 		manager.load(SAND_FILE, Texture.class);
 		assets.add(SAND_FILE);
+		manager.load(SAND_NIGHT_FILE, Texture.class);
+		assets.add(SAND_NIGHT_FILE);
 		manager.load(CORNER_SAND_FILE, Texture.class);
 		assets.add(CORNER_SAND_FILE);
+		manager.load(CORNER_SAND_NIGHT_FILE, Texture.class);
+		assets.add(CORNER_SAND_NIGHT_FILE);
 		manager.load(ARROW_FILE, Texture.class);
 		assets.add(ARROW_FILE);
 		manager.load(PEDESTAL_FILE, Texture.class);
 		assets.add(PEDESTAL_FILE);
+		manager.load(PEDESTAL_NIGHT_FILE, Texture.class);
+		assets.add(PEDESTAL_NIGHT_FILE);
 		manager.load(SPIRIT_HEAD_FILE, Texture.class);
 		assets.add(SPIRIT_HEAD_FILE);
 		manager.load(SPIRIT_TAIL_FILE, Texture.class);
@@ -479,14 +521,20 @@ public abstract class WorldController implements Screen {
 		assets.add(ENERGY_PILLAR_RADIUS_FILE);
 		manager.load(OSC_WALL_HORZ_FILE, Texture.class);
 		assets.add(OSC_WALL_HORZ_FILE);
+		manager.load(OSC_WALL_HORZ_NIGHT_FILE, Texture.class);
+		assets.add(OSC_WALL_HORZ_NIGHT_FILE);
 		manager.load(OSC_WALL_HORZ_GAUGE_FILE, Texture.class);
 		assets.add(OSC_WALL_HORZ_GAUGE_FILE);
 		manager.load(OSC_WALL_VERT_FILE, Texture.class);
 		assets.add(OSC_WALL_VERT_FILE);
+		manager.load(OSC_WALL_VERT_NIGHT_FILE, Texture.class);
+		assets.add(OSC_WALL_VERT_NIGHT_FILE);
 		manager.load(OSC_WALL_VERT_GAUGE_FILE, Texture.class);
 		assets.add(OSC_WALL_VERT_GAUGE_FILE);
 		manager.load(DECORATIVE_ROOTS_FILE, Texture.class);
 		assets.add(DECORATIVE_ROOTS_FILE);
+		manager.load(DECORATIVE_ROOTS_NIGHT_FILE, Texture.class);
+		assets.add(DECORATIVE_ROOTS_NIGHT_FILE);
 
 		// Load the font
 		FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -568,10 +616,15 @@ public abstract class WorldController implements Screen {
 		wallDayTexture = manager.get(WALL_DAY_FILE, Texture.class);
 		wallNightTexture = manager.get(WALL_NIGHT_FILE, Texture.class);
 		waterTexture = manager.get(WATER_FILE, Texture.class);
+		waterNightTexture = manager.get(WATER_NIGHT_FILE, Texture.class);
 		cornerTexture = manager.get(CORNER_FILE, Texture.class);
+		cornerNightTexture =  manager.get(CORNER_NIGHT_FILE, Texture.class);
 		sandTexture = manager.get(SAND_FILE, Texture.class);
+		sandNightTexture = manager.get(SAND_NIGHT_FILE, Texture.class);
 		cornerSandTexture = manager.get(CORNER_SAND_FILE, Texture.class);
+		cornerSandNightTexture = manager.get(CORNER_SAND_NIGHT_FILE, Texture.class);
 		pedestalTexture = manager.get(PEDESTAL_FILE, Texture.class);
+		pedestalNightTexture = manager.get(PEDESTAL_NIGHT_FILE, Texture.class);
 		spiritHeadTexture = manager.get(SPIRIT_HEAD_FILE, Texture.class);
 		spiritTailTexture = manager.get(SPIRIT_TAIL_FILE, Texture.class);
 		borderEdgeTexture = manager.get(BORDER_EDGE_FILE, Texture.class);
@@ -582,10 +635,13 @@ public abstract class WorldController implements Screen {
 		energyPillarCharge = manager.get(ENERGY_PILLAR_BODY_CHARGE_FILE, Texture.class);
 		energyPillarRadius = manager.get(ENERGY_PILLAR_RADIUS_FILE, Texture.class);
 		oscWallHorz = manager.get(OSC_WALL_HORZ_FILE, Texture.class);
+		oscWallHorzNight = manager.get(OSC_WALL_HORZ_NIGHT_FILE, Texture.class);
 		oscWallGaugeHorz = manager.get(OSC_WALL_HORZ_GAUGE_FILE, Texture.class);
 		oscWallVert = manager.get(OSC_WALL_VERT_FILE, Texture.class);
+		oscWallVertNight = manager.get(OSC_WALL_VERT_NIGHT_FILE, Texture.class);
 		oscWallVertGauge = manager.get(OSC_WALL_VERT_GAUGE_FILE, Texture.class);
 		rootsTexture = manager.get(DECORATIVE_ROOTS_FILE, Texture.class);
+		rootsNightTexture = manager.get(DECORATIVE_ROOTS_NIGHT_FILE, Texture.class);
 
 
 		factory = new Factory(scale, spiritBodyTexture, spiritHeadTexture, spiritTailTexture,
@@ -596,10 +652,10 @@ public abstract class WorldController implements Screen {
 				hostDeathTextureN, hostDeathTextureNE, hostDeathTextureNW, hostDeathTextureS,
 				hostDeathTextureSE, hostDeathTextureSW, hostDeathTextureW, hostArmsTexture,
 				hostNewPossessionTexture, hostGenPossessionTexture, hostWakingUpTexture,
-				wallDayTexture, wallNightTexture, waterTexture, cornerTexture, sandTexture, cornerSandTexture,
-				pedestalTexture, borderEdgeTexture, borderEdgeNightTexture, borderCornerTexture, borderCornerNightTexture, energyPillarBody,
-				energyPillarCharge, energyPillarRadius, oscWallVert, oscWallVertGauge,
-				oscWallHorz, oscWallGaugeHorz, rootsTexture);
+				wallDayTexture, wallNightTexture, waterTexture, waterNightTexture, cornerTexture, cornerNightTexture, sandTexture, sandNightTexture, cornerSandTexture, cornerSandNightTexture,
+				pedestalTexture, pedestalNightTexture, borderEdgeTexture, borderEdgeNightTexture, borderCornerTexture, borderCornerNightTexture, energyPillarBody,
+				energyPillarCharge, energyPillarRadius, oscWallVert, oscWallVertNight, oscWallVertGauge,
+				oscWallHorz, oscWallHorzNight, oscWallGaugeHorz, rootsTexture, rootsNightTexture);
 
 		// Set the proper textures in the factory
 		loader = new Loader(factory);
@@ -1170,7 +1226,7 @@ public abstract class WorldController implements Screen {
 	 * @param delta The drawing context
 	 */
 	public void draw(float delta) {
-		canvas.clear();
+		canvas.clear(currentLevel%4);
 
 		// Clear the lists so they can be repopulated
 		edgeDrawLayer.clear();

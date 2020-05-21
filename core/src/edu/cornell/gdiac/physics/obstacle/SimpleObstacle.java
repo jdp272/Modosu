@@ -39,8 +39,14 @@ public abstract class SimpleObstacle extends Obstacle {
 	/** The texture for the shape. */
 	protected TextureRegion texture;
 
+	/** The texture for the shape. */
+	protected TextureRegion textureNight;
+
 	/** The texture origin for drawing */
 	protected Vector2 origin;
+
+	/** The texture origin for drawing */
+	protected Color opacity;
 	
 	/// BodyDef Methods
 	/**
@@ -768,6 +774,13 @@ public abstract class SimpleObstacle extends Obstacle {
 		texture = value;
 		origin.set(texture.getRegionWidth()/2.0f, texture.getRegionHeight()/2.0f);
 	}
+
+	public void setNightTexture(TextureRegion value, Color opacity) {
+		this.opacity = opacity;
+		textureNight = value;
+		origin.set(textureNight.getRegionWidth()/2.0f, textureNight.getRegionHeight()/2.0f);
+	}
+
 	
 	/**
 	 * Draws the physics object.
@@ -777,6 +790,10 @@ public abstract class SimpleObstacle extends Obstacle {
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
+		}
+
+		if (textureNight != null) {
+			canvas.draw(textureNight,opacity,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
 		}
 	}
 	

@@ -73,22 +73,22 @@ public class BorderCorner extends BoxObstacle {
     public void setCorner(Corner corner) {
         this.corner = corner;
         switch(this.corner) {
-        case TOP_LEFT:
-            this.cornerStrip.setFrame(0);
-            this.cornerNightStrip.setFrame(0);
-            break;
-        case TOP_RIGHT:
-            this.cornerStrip.setFrame(1);
-            this.cornerNightStrip.setFrame(1);
-            break;
-        case BOTTOM_LEFT:
-            this.cornerStrip.setFrame(2);
-            this.cornerNightStrip.setFrame(2);
-            break;
-        case BOTTOM_RIGHT:
-            this.cornerStrip.setFrame(3);
-            this.cornerNightStrip.setFrame(3);
-            break;
+            case TOP_LEFT:
+                this.cornerStrip.setFrame(0);
+                this.cornerNightStrip.setFrame(0);
+                break;
+            case TOP_RIGHT:
+                this.cornerStrip.setFrame(1);
+                this.cornerNightStrip.setFrame(1);
+                break;
+            case BOTTOM_LEFT:
+                this.cornerStrip.setFrame(2);
+                this.cornerNightStrip.setFrame(2);
+                break;
+            case BOTTOM_RIGHT:
+                this.cornerStrip.setFrame(3);
+                this.cornerNightStrip.setFrame(3);
+                break;
         }
     }
 
@@ -184,29 +184,29 @@ public class BorderCorner extends BoxObstacle {
         // initially starts in the center of the corner tile.
         float x = getX(), y = getY();
         switch(corner) {
-        case TOP_LEFT:
-            x -= 1.5 * TILE_WIDTH;
-            y -= 0.5 * TILE_WIDTH;
-            break;
-        case TOP_RIGHT:
-            x -= 0.5 * TILE_WIDTH;
-            y -= 0.5 * TILE_WIDTH;
-            break;
-        case BOTTOM_LEFT:
-            x -= 1.5 * TILE_WIDTH;
-            y -= 1.5 * TILE_WIDTH;
-            break;
-        case BOTTOM_RIGHT:
-            x -= 0.5 * TILE_WIDTH;
-            y -= 1.5 * TILE_WIDTH;
-            break;
+            case TOP_LEFT:
+                x -= 1.5 * TILE_WIDTH;
+                y -= 0.5 * TILE_WIDTH;
+                break;
+            case TOP_RIGHT:
+                x -= 0.5 * TILE_WIDTH;
+                y -= 0.5 * TILE_WIDTH;
+                break;
+            case BOTTOM_LEFT:
+                x -= 1.5 * TILE_WIDTH;
+                y -= 1.5 * TILE_WIDTH;
+                break;
+            case BOTTOM_RIGHT:
+                x -= 0.5 * TILE_WIDTH;
+                y -= 1.5 * TILE_WIDTH;
+                break;
         }
 
         x *= drawScale.x;
         y *= drawScale.y;
 
         canvas.draw(texture, Color.WHITE, x, y, drawScale.x * CORNER_SCALE * TILE_WIDTH, drawScale.y * CORNER_SCALE * TILE_WIDTH);
-        //canvas.draw(cornerNightTexture, opacity, x, y, drawScale.x * CORNER_SCALE * TILE_WIDTH, drawScale.y * CORNER_SCALE * TILE_WIDTH);
+        canvas.draw(cornerNightTexture, opacity, x, y, drawScale.x * CORNER_SCALE * TILE_WIDTH, drawScale.y * CORNER_SCALE * TILE_WIDTH);
 
 //        canvas.draw(texture, Color.WHITE,origin.x + TILE_WIDTH,origin.y + TILE_WIDTH,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
     }
