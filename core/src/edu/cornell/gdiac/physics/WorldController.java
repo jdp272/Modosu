@@ -692,7 +692,7 @@ public abstract class WorldController implements Screen {
 	protected ArrayList<FileHandle> levels;
 
 	/** Input if paused was pressed */
-	private boolean pressedPause = false;
+	protected boolean pressedPause = false;
 	/** Whether game is currently paused */
 	private boolean isPaused = false;
 	/** Whether game was just paused */
@@ -1263,7 +1263,9 @@ public abstract class WorldController implements Screen {
 		// Check to hid tutorial
 		if (!tutorial.didCompleteTutorial()) {
 			tutorial.drawTutorial(delta);
-			tutorial.updateTutorial(delta);
+			if (!isPaused) {
+				tutorial.updateTutorial(delta);
+			}
 		}
 	}
 	
@@ -1292,20 +1294,19 @@ public abstract class WorldController implements Screen {
 		if (active) {
 			updateGP = preUpdate(delta);
 
-			/** If it was the first time the player pressed pause */
-			if (pressedPause) {
-				System.out.println("PRESSED PAUSE");
-				isPaused = true;
-				hud.pauseGame();
-				pressedPause = false;
-			}
-
 			draw(delta);
 
 			/** If the game isnt paused or switching screens, continue updating GP */
-			if (updateGP && !isPaused) {
+			if ((updateGP && !isPaused) || pressedPause) {
 				update(delta); // This is the one that must be defined.
 				postUpdate(delta);
+			}
+
+			/** If it was the first time the player pressed pause */
+			if (pressedPause) {
+				isPaused = true;
+				hud.pauseGame();
+				pressedPause = false;
 			}
 
 			/** Draw the HUD (on top of the environment */
