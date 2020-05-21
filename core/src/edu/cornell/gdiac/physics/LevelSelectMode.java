@@ -85,6 +85,8 @@ public class LevelSelectMode extends WorldController implements Screen {
     private boolean hoverButton;
     /** Mouse is currently hovering over the Custom Button */
     private boolean hoverCustom;
+    /** Mouse is currently hovering over the Back Button */
+    private boolean hoverBack;
     /** Volume of hover sound */
     private static float hoverVolume = .25f;
 
@@ -304,6 +306,7 @@ public class LevelSelectMode extends WorldController implements Screen {
 
         onCustom = false;
         hoverCustom = false;
+        hoverBack = false;
 
 
 //        File folder = new File("levels");
@@ -728,14 +731,14 @@ public class LevelSelectMode extends WorldController implements Screen {
             if (screenX >= backStart.x && screenX <= backEnd.x) {
                 if (screenY >= backStart.y && screenY <= backEnd.y) {
                     colorBack = Color.TEAL;
-                    if (!hoverButton) {
+                    if (!hoverBack) {
                         SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
-                        hoverButton = true;
+                        hoverBack = true;
                     }
                 }
                 else {
                     colorBack = colorUnhovered;
-                    hoverButton = false;
+                    hoverBack = false;
                 }
             }
 
