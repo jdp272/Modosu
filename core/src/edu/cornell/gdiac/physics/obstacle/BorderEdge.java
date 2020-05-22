@@ -272,25 +272,31 @@ public class BorderEdge extends BoxObstacle {
                 frame = (random.nextInt(4) % 2) + 13;
                 break;
             case LEFT:
-                if(adjFrame == 28) {
-                    frame = adjFrame + 1;
+                if(adjFrame == 29) {
+                    // Pair order is reversed
+                    frame = adjFrame - 1;
                 } else if (canStartPair) {
                     frame = random.nextInt(3) + 26;
+
+                    // Ensure frame never starts at the wrong one
+                    if(frame == 28) frame = 29;
+
                 } else {
                     frame = (random.nextInt(4) % 2) + 26;
                 }
 
                 break;
             case RIGHT:
-                if(adjFrame == 41) {
-                    frame = adjFrame + 1;
+                if(adjFrame == 42) {
+                    frame = adjFrame - 1;
                 } else if (canStartPair) {
                     frame = random.nextInt(3) + 39;
+
+                    // Ensure frame never starts at the wrong one
+                    if(frame == 41) frame = 42;
                 } else {
                     frame = (random.nextInt(4) % 2) + 39;
                 }
-
-                frame = random.nextInt(3) + 39;
                 break;
             default:
                 System.out.println("Invalid side from BorderEdge.setSide()");

@@ -172,7 +172,7 @@ public abstract class WorldController implements Screen {
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_FILE = "shared/spirit_pedestal.png";
 	/** File to texture for borders */
-	private static String BORDER_EDGE_FILE = "shared/finalbackdropv3.png";
+	private static String BORDER_EDGE_FILE = "shared/backdropv4.png";
 	/** File to texture for borders */
 	private static String BORDER_CORNER_FILE = "shared/forestcorners.png";
 	/** File to texture for Energy Pillar body */

@@ -1135,7 +1135,7 @@ public class LevelDesignerMode extends WorldController {
 								(BorderEdge)board.get(i, j - 1) : null;
 
 						// Can start a pair if >2 tiles from top border
-						border.resetFrame((board.getTopBorder() - 1) - i > 2, adjEdge);
+						border.resetFrame((board.getTopBorder() - 1) - j >= 2, adjEdge);
 					}
 					board.addNewObstacle(border);
 					addObject(border);
@@ -1157,7 +1157,7 @@ public class LevelDesignerMode extends WorldController {
 								(BorderEdge)board.get(i, j - 1) : null;
 
 						// Can start a pair if >2 tiles from top border
-						border.resetFrame((board.getTopBorder() - 1) - i > 2, adjEdge);
+						border.resetFrame((board.getTopBorder() - 1) - j >= 2, adjEdge);
 					}
 					board.addNewObstacle(border);
 					addObject(border);
