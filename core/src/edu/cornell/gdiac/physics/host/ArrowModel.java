@@ -29,9 +29,10 @@ public class ArrowModel {
         arrTextureHead = arrTextHead;
         arrTextureDash = arrTextDash;
         start = golemPos;
+        setVelocityRepresented(v, b);
         velocityRepresented = new Vector2(0,0);
         velocityRepresentedCache = new Vector2(0,0);
-        setVelocityRepresented(v, b);
+
     }
 
     public void setCurrLoc(Vector2 golemPos) {
