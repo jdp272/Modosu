@@ -25,14 +25,12 @@ public class ArrowModel {
 
 
     /** Creates an instance of an arrow to show direction */
-    public ArrowModel(Texture arrTextHead, Texture arrTextDash, Vector2 golemPos, Vector2 v, boolean b) {
+    public ArrowModel(Texture arrTextHead, Texture arrTextDash, Vector2 golemPos) {
         arrTextureHead = arrTextHead;
         arrTextureDash = arrTextDash;
         start = golemPos;
-        setVelocityRepresented(v, b);
         velocityRepresented = new Vector2(0,0);
         velocityRepresentedCache = new Vector2(0,0);
-
     }
 
     public void setCurrLoc(Vector2 golemPos) {
