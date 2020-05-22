@@ -472,9 +472,10 @@ public class LevelDesignerMode extends WorldController {
 //			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
 //			Collections.sort(levels);
 //		}
+
         getLevels(fromCustom || newLevel);
 
-	    refreshFootprints();
+//	    refreshFootprints();
 
 		Vector2 gravity = new Vector2(world.getGravity());
 
@@ -639,6 +640,8 @@ public class LevelDesignerMode extends WorldController {
         addObject(bottomRight);
 
         updateCornerPositions();
+
+        refreshFootprints();
 
         // Properly set the borders to use up the center of the board array, so
         // it can be expanded in all directions

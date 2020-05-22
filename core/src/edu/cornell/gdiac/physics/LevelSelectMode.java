@@ -188,7 +188,6 @@ public class LevelSelectMode extends WorldController implements Screen {
      */
     public void setPages() {
         pages = (int) Math.ceil(levels.size() / 4.0);
-        if (onCustom && levels.size() % 4 == 0) pages++;
     }
 
     /**

@@ -58,6 +58,9 @@ public abstract class WorldController implements Screen {
 	/** The number of levels */
 	protected static final int NUM_LEVELS = 32; //////////////// CHANGE DEPENDING ON AMOUNT OF LEVELS ///////////////
 
+	public static int levelReached;
+	public static int customId;
+
 	/**
 	 * Tracks the asset state.  Otherwise subclasses will try to load assets 
 	 */
