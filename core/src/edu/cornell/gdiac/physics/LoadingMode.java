@@ -737,7 +737,6 @@ public class LoadingMode implements Screen {
 					break;
 			}
 			if (drawStrip != null) {
-				//System.out.println("DRAWING: " + onFilmStrip);
 				canvas.draw(drawStrip, Color.WHITE, 0, 0, 1024, 576);
 			}
 

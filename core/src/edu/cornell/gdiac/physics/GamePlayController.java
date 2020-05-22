@@ -230,10 +230,9 @@ public class GamePlayController extends WorldController {
 		FileHandle levelToLoad;
 
 		int levelIndex = ((currentLevel%levels.size()) + levels.size()) % levels.size();
-		currentLevel = levelIndex;
 
 		// TODO These are currently the same so if everything works this if statement can be removed
-		if(inCustom) { levelToLoad = levels.get(levelIndex); }
+		if (inCustom) { levelToLoad = levels.get(levelIndex); }
 		else { levelToLoad = levels.get(levelIndex); }
 
 		level = loader.loadLevel(levelToLoad, levelIndex, !inCustom);
