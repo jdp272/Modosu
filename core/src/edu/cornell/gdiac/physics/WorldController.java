@@ -1,18 +1,5 @@
 /*
  * WorldController.java
- *
- * This is the most important new class in this lab.  This class serves as a combination 
- * of the CollisionController and GameplayController from the previous lab.  There is not 
- * much to do for collisions; Box2d takes care of all of that for us.  This controller 
- * invokes Box2d and then performs any after the fact modifications to the data 
- * (e.g. gameplay).
- *
- * If you study this class, and the contents of the edu.cornell.cs3152.physics.obstacles
- * package, you should be able to understand how the Physics engine works.
- *
- * Author: Walker M. White
- * Based on original PhysicsDemo Lab by Don Holden, 2007
- * LibGDX version, 2/6/2015
  */
 package edu.cornell.gdiac.physics;
 
@@ -42,18 +29,8 @@ import java.io.File;
 import java.util.*;
 
 /**
- * Base class for a world-specific controller.
- *
- *
- * A world has its own objects, assets, and input controller.  Thus this is 
- * really a mini-GameEngine in its own right.  The only thing that it does
- * not do is create a GameCanvas; that is shared with the main application.
- *
- * You will notice that asset loading is not done with static methods this time.  
- * Instance asset loading makes it easier to process our game modes in a loop, which 
- * is much more scalable. However, we still want the assets themselves to be static.
- * This is the purpose of our AssetState variable; it ensures that multiple instances
- * place nicely with the static assets.
+ * Base class for a game, which may be either the game for playing or the level
+ * designer. Shared assets and drawing is handled here.
  */
 public abstract class WorldController implements Screen {
 	/** The number of levels */
@@ -377,6 +354,10 @@ public abstract class WorldController implements Screen {
 	public HUD hud;
 
 	public Tutorial tutorial;
+
+	/** Used by GamePlayController to reset correctly based on if custom
+	 * levels are being used. Also used in world controller for drawing. */
+	public boolean inCustom;
 
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
@@ -784,7 +765,6 @@ public abstract class WorldController implements Screen {
 	/** Whether to update Gameplay controller */
 	private	boolean updateGP;
 
-
 	/** list of level files*/
 	protected ArrayList<FileHandle> levels;
 
@@ -856,7 +836,6 @@ public abstract class WorldController implements Screen {
 		Preferences prefs = Gdx.app.getPreferences("Preferences");
 		prefs.putInteger("level", currentLevel);
 		prefs.flush();
-//		System.out.println("Prefs set");
 	}
 
 	/**
@@ -1142,7 +1121,7 @@ public abstract class WorldController implements Screen {
 			reset();
 		}
 
-		if ((input.didPause() || HUD.getPauseClicked()) && renderHUD) {
+		if ((input.didPause() || hud.getPauseClicked()) && renderHUD) {
 			if (isPaused) {
 				isPaused = false;
 				wasPaused = true;
@@ -1161,10 +1140,12 @@ public abstract class WorldController implements Screen {
 			return false;
 		} else if (input.didAdvance()) {
 			isPaused = false;
+			if (currentLevel == NUM_LEVELS - 1) { currentLevel = -1; }
 			listener.exitScreenLevel(currentLevel+1);
 			return false;
 		} else if (input.didRetreat()) {
 			isPaused = false;
+			if (currentLevel == 0) { currentLevel = NUM_LEVELS; }
 			listener.exitScreenLevel(currentLevel-1);
 			return false;
 		} else if (input.didMenu()) {
@@ -1256,7 +1237,7 @@ public abstract class WorldController implements Screen {
 	 * @param delta The drawing context
 	 */
 	public void draw(float delta) {
-		canvas.clear(currentLevel, renderHUD);
+		canvas.clear(currentLevel, renderHUD && !inCustom);
 
 		// Clear the lists so they can be repopulated
 		edgeDrawLayer.clear();
@@ -1272,9 +1253,7 @@ public abstract class WorldController implements Screen {
 
 		// Use the lower left corner of tiles, not the center, to start drawing the canvas
 		for(float x = 0; x < scale.x * dimensions.x; x += canvas.getWidth()) {
-//			System.out.println("x = " + x);
 			for(float y = 0; y < scale.y * dimensions.y; y += canvas.getHeight()) {
-//				System.out.println("y = " + y);
 
 				// Calculate the width and height of the canvas segment. If the
 				// board doesn't extend the entire way, find the desired dimensions
@@ -1288,15 +1267,13 @@ public abstract class WorldController implements Screen {
 						(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
 						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
 
-				if (renderHUD) {
+				if (renderHUD && !inCustom) {
 					canvas.draw(backgroundNightTexture.getTexture(), new Color(1,1,1,1 - currentLevel/32.0f),
 							(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
 							0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
 				}
-//				canvas.draw(backgroundTexture, Color.WHITE, TILE_WIDTH * scale.x * x, TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
 			}
 		}
-//		canvas.draw(backgroundTexture, Color.WHITE, 0, 0,canvas.getWidth(),canvas.getHeight());
 		canvas.end();
 
 		for(Obstacle obj : objects) {
