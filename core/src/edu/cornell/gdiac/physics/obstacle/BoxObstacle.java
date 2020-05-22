@@ -233,9 +233,12 @@ public class BoxObstacle extends SimpleObstacle {
 	 */
 	public void draw(GameCanvas canvas) {
 		if (texture == null) return;
-
 		setScaling(texture);
 		canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+
+		if (textureNight == null) return;
+		setScaling(textureNight);
+		canvas.draw(textureNight,opacity,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
 	}
 
 	

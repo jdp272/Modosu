@@ -79,18 +79,18 @@ public class BorderEdge extends BoxObstacle {
     public void setSide(Side side) {
         this.side = side;
         switch(this.side) {
-        case TOP:
-            this.edgeStrip.setFrame(0);
-            break;
-        case BOTTOM:
-            this.edgeStrip.setFrame(9);
-            break;
-        case LEFT:
-            this.edgeStrip.setFrame(18);
-            break;
-        case RIGHT:
-            this.edgeStrip.setFrame(27);
-            break;
+            case TOP:
+                this.edgeStrip.setFrame(0);
+                break;
+            case BOTTOM:
+                this.edgeStrip.setFrame(9);
+                break;
+            case LEFT:
+                this.edgeStrip.setFrame(18);
+                break;
+            case RIGHT:
+                this.edgeStrip.setFrame(27);
+                break;
         }
     }
 
