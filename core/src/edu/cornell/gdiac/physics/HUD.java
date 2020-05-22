@@ -219,10 +219,7 @@ public class HUD {
         sfxSlider.setValue(SoundController.getInstance().getVolume());
         sfxSlider.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("SFX SLIDED: " + sfxSlider.getValue());
-                SoundController.getInstance().setVolume(sfxSlider.getValue()/100f);
-            }
+            public void changed(ChangeEvent event, Actor actor) { SoundController.getInstance().setVolume(sfxSlider.getValue()/100f); }
         });
 
         pauseTable.add(sfxSlider).colspan(2);
@@ -237,10 +234,7 @@ public class HUD {
         Button menu = new Button(menuStyle);
 
         menu.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("MENU BUTTON CLICKED");
-                menuButtonClicked = true;
-            }
+            public void clicked(InputEvent event, float x, float y) { menuButtonClicked = true; }
         });
 
         pauseTable.add(menu).width(ICON_SIZE_SMALL).height(ICON_SIZE_SMALL).padRight(60);
@@ -252,10 +246,7 @@ public class HUD {
         Button retry = new Button(retryStyle);
 
         retry.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("RETRY BUTTON CLICKED");
-                retryButtonClicked = true;
-            }
+            public void clicked(InputEvent event, float x, float y) { retryButtonClicked = true; }
         });
 
         pauseTable.add(retry).width(ICON_SIZE_BIG).height(ICON_SIZE_BIG);
@@ -320,7 +311,6 @@ public class HUD {
     }
 
     public void pauseGame() {
-        System.out.println("Paused");
         retryButtonClicked = false;
         menuButtonClicked = false;
         playButtonClicked = false;

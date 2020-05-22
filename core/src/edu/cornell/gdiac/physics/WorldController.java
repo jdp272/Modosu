@@ -831,7 +831,6 @@ public abstract class WorldController implements Screen {
 	 * @param l The level number
 	 */
 	public void setCurrentLevel(int l) {
-		System.out.println("SET CURRENT LEVEL TO:" + l);
 		currentLevel = l;
 		Preferences prefs = Gdx.app.getPreferences("Preferences");
 		prefs.putInteger("level", currentLevel);
