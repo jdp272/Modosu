@@ -1340,6 +1340,9 @@ public abstract class WorldController implements Screen {
 		}
 		canvas.end();
 
+		// Draw the arrow
+		if (arrow != null) { arrow.draw(canvas); }
+
 		if (debug) {
 			canvas.beginDebug();
 			for(Obstacle obj : objects) {
