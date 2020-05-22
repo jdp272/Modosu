@@ -192,17 +192,12 @@ public abstract class WorldController implements Screen {
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_NIGHT_FILE = "shared/night/phoenix_pedestal.png";
 	/** File to texture for borders */
-//<<<<<<< HEAD
-//	private static String BORDER_EDGE_FILE = "shared/forest.png";
-//	/** File to texture for night borders */
-//	private static String BORDER_EDGE_NIGHT_FILE = "shared/night/backdropspritesheet.png";
-//	/** File to texture for corners */
-//=======
+
 	private static String BORDER_EDGE_FILE = "shared/backdropv5.png";
 	/** File to texture for night borders */
 	private static String BORDER_EDGE_NIGHT_FILE = "shared/night/backdropv5.png";
 	/** File to texture for corners */
-//>>>>>>> edges
+
 	private static String BORDER_CORNER_FILE = "shared/forestcorners.png";
 	/** File to texture for night corners */
 	private static String BORDER_CORNER_NIGHT_FILE = "shared/night/backdropcorners.png";
@@ -1240,12 +1235,6 @@ public abstract class WorldController implements Screen {
 		while (iterator.hasNext()) {
 			PooledList<Obstacle>.Entry entry = iterator.next();
 			Obstacle obj = entry.getValue();
-//			if(obj instanceof BoxObstacle){
-//				((BoxObstacle) obj).alive -= 1;
-//				if(((BoxObstacle) obj).alive == 0){
-//					obj.markRemoved(true);
-//				}
-//			}
 			if (obj.isRemoved()) {
 				obj.deactivatePhysics(world);
 				entry.remove();
@@ -1281,10 +1270,6 @@ public abstract class WorldController implements Screen {
 
 		canvas.begin();
 
-//		System.out.println("Drawing");
-//		System.out.println("dimensions: " + dimensions);
-//		System.out.println("scale: " + scale);
-//		System.out.println("canvas size: (" + canvas.getWidth() + ", " + canvas.getHeight() + ")");
 		// Use the lower left corner of tiles, not the center, to start drawing the canvas
 		for(float x = 0; x < scale.x * dimensions.x; x += canvas.getWidth()) {
 //			System.out.println("x = " + x);

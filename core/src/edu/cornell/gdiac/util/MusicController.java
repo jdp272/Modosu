@@ -1,20 +1,6 @@
 /*
- * SoundController.java
- *
- * Sound management in LibGDX is horrible.  It is the absolute worse thing
- * about the engine.  Furthermore, because of OpenAL bugs in OS X, it is
- * even worse than that.  There is a lot of magic vodoo that you have to
- * do to get everything working properly.  This class hides all of that
- * for you and makes it easy to play sound effects.
- * 
- * Note that this class is an instance of a Singleton.  There is only one
- * SoundController at a time.  The constructor is hidden and you cannot
- * make your own sound controller.  Instead, you use the method getInstance()
- * to get the current sound controller.
- *
- * Author: Walker M. White
- * Based on original PhysicsDemo Lab by Don Holden, 2007
- * LibGDX version, 2/6/2015
+ * MusicController.java
+ * Manages all the music interactions in the game.
  */
 package edu.cornell.gdiac.util;
 
@@ -58,8 +44,10 @@ public class MusicController {
 
 	private String musicNextName;
 
+	/** True if crossfading is reversing */
 	private boolean reverse;
 
+	/** Restore to this volume when unmuted */
 	private float prevMusicVolume;
 
 	/**
@@ -71,7 +59,7 @@ public class MusicController {
 		reverse = false;
 		musicNext = null;
 		musicVolume = 0.5f;
-		prevMusicVolume =0.5f;
+		prevMusicVolume = 0.5f;
 	}
 
 	/**
@@ -191,11 +179,9 @@ public class MusicController {
 
 			}
 			else if (musicNameToPlay != musicName) {
-				//System.out.println("get into start");
 				crossFading = true;
 
 				if (musicToPlay != null) {
-					System.out.println("start normal crossfading");
 					musicNext = musicToPlay;
 					musicNextName = musicNameToPlay;
 

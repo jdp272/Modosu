@@ -10,8 +10,6 @@ import edu.cornell.gdiac.physics.GameCanvas;
 public class ArrowModel {
     /** The start position of this arrow */
     private Vector2 start;
-    /** The current position of the mouse in screen coordinates */
-    private Vector2 currLoc;
     /** The true velocity if the spirit was shot */
     private Vector2 velocityRepresented;
     /** The true velocity if the spirit was shot cache */
@@ -31,7 +29,6 @@ public class ArrowModel {
         arrTextureHead = arrTextHead;
         arrTextureDash = arrTextDash;
         start = golemPos;
-        currLoc = golemPos;
         velocityRepresented = new Vector2(0,0);
         velocityRepresentedCache = new Vector2(0,0);
     }
@@ -45,16 +42,16 @@ public class ArrowModel {
 
         // Determine the color based on whether the velocity passes threshold
         if (pastThreshold) { c =Color.WHITE; }
-        else { c = Color.RED; }
+        else { c = new Color(0, 0, 0, 0.3f); }
 
         // Draw the arrow
         canvas.begin();
         float lengthArrow = sx * arrTextureDash.getWidth();
-        canvas.draw(arrTextureDash, c, 0, arrTextureDash.getHeight()/2, start.x + velocityRepresentedCache.setLength(25f).x,
-                start.y + + velocityRepresentedCache.setLength(25f).y,  velocityRepresented.angleRad(), sx, .1f);
+        canvas.draw(arrTextureDash, c, 0, arrTextureDash.getHeight()/2, start.x + velocityRepresentedCache.setLength(15f).x,
+                start.y + + velocityRepresentedCache.setLength(15f).y,  velocityRepresented.angleRad(), sx, .10f);
 
         canvas.draw(arrTextureHead, c, arrTextureHead.getWidth()/2, arrTextureHead.getHeight()/2, start.x + velocityRepresented.setLength(lengthArrow).x,
-                start.y + velocityRepresented.setLength(lengthArrow).y,  velocityRepresented.angleRad(), .25f, .25f);
+                start.y + velocityRepresented.setLength(lengthArrow).y,  velocityRepresented.angleRad(), .22f, .22f);
         canvas.end();
     }
 

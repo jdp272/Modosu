@@ -53,9 +53,9 @@ public class GamePlayController extends WorldController {
 	private SoundController sound;
 
 	/** The asset for the bounce sound of a wall and spirit */
-	private static final String  BOUNCE_WALL_SOUND = "host/bouncewall2.mp3";
+	private static final String  BOUNCE_WALL_SOUND = "host/bouncewall.mp3";
 	/** The asset for the bounce sound of an edge or corner and spirit */
-	private static final String  BOUNCE_BOUND_SOUND = "host/bouncebound2.mp3";
+	private static final String  BOUNCE_BOUND_SOUND = "host/bouncebound.mp3";
 	/** The asset for the possession sound */
 	private static final String  POSSESSION_SOUND = "host/possession2.wav";
 	/** The asset for the slingshot sound */
@@ -415,7 +415,7 @@ public class GamePlayController extends WorldController {
 			if(!collisionController.getInSand()){
 				sound.stop(WALK_SAND_SOUND);
 			}
-			sound.play(walkingSound, walkingSound, true, sound.getVolume()*.50f);
+			sound.play(walkingSound, walkingSound, true, sound.getVolume()*.30f);
 		}
 		// Stop playing if player is no longer moving
 		else {
@@ -426,7 +426,7 @@ public class GamePlayController extends WorldController {
 		// Check lose condition
 		if (hostController.getPossessedBlownUp() && !isComplete() && !isFailure()) {
 			setFailure(true);
-			sound.play(FAILURE_SOUND, FAILURE_SOUND, false, 1.5f*sound.getVolume());
+			sound.play(FAILURE_SOUND, FAILURE_SOUND, false, .25f*sound.getVolume());
 		}
 
 		// Check if HUD timer should update
@@ -449,7 +449,7 @@ public class GamePlayController extends WorldController {
 		}
 
 		// Calculate spirit's screen coordinates from box2d coordinates
-		if (possessed.isPedestal() && !spirit.hasLaunched){
+		if (possessed.isPedestal() && !spirit.hasLaunched) {
 			if (InputController.getInstance().didTertiary()) {
 				panTarget.x = pedestal.getPosition().x;
 				panTarget.y = pedestal.getPosition().y;
@@ -462,13 +462,12 @@ public class GamePlayController extends WorldController {
 		    cache.set(panTarget);
 		}
 		else {
-//			System.out.println("Not panning");
 			cache.set(spirit.getPosition());
 			cache.scl(scale.x, scale.y);
 		}
 
 		// Handle camera panning
-        if(isActiveScreen) {
+        if (isActiveScreen) {
 			canvas.setCamTarget(cache);
 			canvas.updateCamera();
 		}
@@ -535,21 +534,18 @@ public class GamePlayController extends WorldController {
 		// Deal with random ambient sounds
 		if (Math.random() > .999){
 			double test = Math.random();
-
-			if (getCurrentLevel() < 8){
+			if (getCurrentLevel() % NUM_LEVELS < NUM_LEVELS/4){
 				//frog and cricket full
 				if (test >= .50) SoundController.getInstance().play(CRICKET_NOISE, CRICKET_NOISE, false,.50f * SoundController.getInstance().getVolume());
 				else  SoundController.getInstance().play(FROG_NOISE, FROG_NOISE, false, .50f * SoundController.getInstance().getVolume());
 			}
-			else if (getCurrentLevel() < 16){
+			else if (getCurrentLevel() % NUM_LEVELS < 2 * NUM_LEVELS/4){
 				//frogs faded
 				if (test >= .50) SoundController.getInstance().play(FROG_NOISE, FROG_NOISE, false, .25f * SoundController.getInstance().getVolume());
 				//leaves on
 				else SoundController.getInstance().play(LEAF_NOISE, LEAF_NOISE, false, .50f * SoundController.getInstance().getVolume());
-
-
 			}
-			else if (getCurrentLevel() < 25) {
+			else if (getCurrentLevel() % NUM_LEVELS < 3 * NUM_LEVELS/4) {
 				//leaves and cicadas
 				if (test >= .80) SoundController.getInstance().play(CICADA_NOISE, CICADA_NOISE, false, .40f * SoundController.getInstance().getVolume());
 				else if (test >= .60) SoundController.getInstance().play(LEAF_NOISE, LEAF_NOISE, false, .40f * SoundController.getInstance().getVolume());
@@ -559,7 +555,7 @@ public class GamePlayController extends WorldController {
 				else if (test >= .20) SoundController.getInstance().play(BIRD_NOISE_2, BIRD_NOISE_2, false, .25f * SoundController.getInstance().getVolume());
 				else SoundController.getInstance().play(BIRD_NOISE_3, BIRD_NOISE_3, false, .25f * SoundController.getInstance().getVolume());
 			}
-			else{
+			else {
 				//birds on
 				if (test >= .75) SoundController.getInstance().play(BIRD_NOISE_1, BIRD_NOISE_1, false,.40f * SoundController.getInstance().getVolume());
 				else if (test >= .50) SoundController.getInstance().play(BIRD_NOISE_2, BIRD_NOISE_2, false, .40f * SoundController.getInstance().getVolume());
