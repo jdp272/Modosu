@@ -391,7 +391,21 @@ public class LoadingMode implements Screen {
 		sound.allocate(manager, HOVER_SOUND);
 		music.play("menuMusic");
 	}
-	
+
+	/**
+	 * Resets the values
+	 */
+	public void reset() {
+		isPressed = false;
+		colorStart = colorUnhovered;
+		colorLvlDesign = colorUnhovered;
+		colorLvlSelect = colorUnhovered;
+		colorCredits = colorUnhovered;
+		colorQuit = colorUnhovered;
+		colorMute = colorUnhovered;
+		hoverButton = false;
+	}
+
 	/**
 	 * Called when this screen should release all resources.
 	 */

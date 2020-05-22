@@ -149,6 +149,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controller.setIsActiveScreen(false);
 		canvas.forceCamPosition(new Vector2(canvas.getWidth() / 2, canvas.getHeight() / 2));
 
+		loading.reset();
 		loading.setScreenListener(this);
 		loading.activate();
 
