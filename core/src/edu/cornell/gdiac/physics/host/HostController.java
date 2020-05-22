@@ -157,8 +157,9 @@ public class HostController {
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand, EnergyPillar[] energyPillars, boolean wasPaused) {
         ticks++;
+
         // Removes the arrow that was clicked when paused
-        if (wasPaused) arrow = null;
+        if (wasPaused) { arrow = null; return; }
 
         // Brings the spirit to the center of the host
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
