@@ -372,7 +372,7 @@ public abstract class WorldController implements Screen {
 	/** List of footprints for level editor */
 	private ArrayList<FootPrintModel> footprints;
 
-	public ArrowModel arrow;
+	public  ArrowModel arrow;
 
 	public HUD hud;
 
