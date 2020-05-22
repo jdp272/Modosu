@@ -34,10 +34,6 @@ import java.util.*;
 public class LevelSelectMode extends WorldController implements Screen {
     /** Texture file for background image */
     private static final String BACKG_FILE = "shared/levelselectbackground.png";
-    private static final String ONE_FILE = "shared/1.png";
-    private static final String TWO_FILE = "shared/2.png";
-    private static final String THREE_FILE = "shared/3.png";
-    private static final String FOUR_FILE = "shared/4.png";
     private static final String NEXT_FILE = "shared/next.png";
     private static final String CLICK_SOUND = "shared/click.mp3";
     private static final String HOVER_SOUND = "shared/hover.mp3";
@@ -206,14 +202,6 @@ public class LevelSelectMode extends WorldController implements Screen {
         assetState = AssetState.LOADING;
         manager.load(BACKG_FILE, Texture.class);
         assets.add(BACKG_FILE);
-        manager.load(ONE_FILE, Texture.class);
-        assets.add(ONE_FILE);
-        manager.load(TWO_FILE, Texture.class);
-        assets.add(TWO_FILE);
-        manager.load(THREE_FILE, Texture.class);
-        assets.add(THREE_FILE);
-        manager.load(FOUR_FILE, Texture.class);
-        assets.add(FOUR_FILE);
         manager.load(NEXT_FILE, Texture.class);
         assets.add(NEXT_FILE);
         manager.load(BACK_FILE, Texture.class);

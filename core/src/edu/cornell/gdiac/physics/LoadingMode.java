@@ -263,6 +263,10 @@ public class LoadingMode implements Screen {
 		budget = millis;
 	}
 
+	public void activate() {
+		music.play("menuMusic");
+	}
+
 	/**
 	 * Creates a LoadingMode with the default budget, size and position.
 	 *
@@ -413,11 +417,6 @@ public class LoadingMode implements Screen {
 		 flappingTexture_3.dispose();
 	}
 
-//	public void setCanvas(GameCanvas canvas) {
-//		this.canvas = canvas;
-//		resize(canvas.getWidth(), canvas.getHeight());
-//	}
-
 	/**
 	 * Update the status of this player mode.
 	 *
@@ -428,12 +427,6 @@ public class LoadingMode implements Screen {
 	 * @param delta Number of seconds since last animation frame
 	 */
 	public void update(float delta) {
-		if (input.didPressLeft()){
-			System.out.println("LEFT");
-		}
-		if (input.didPressRight()) {
-			System.out.println("RIGHT");
-		}
 		if (playButton == null) {
 			manager.update(budget);
 			this.progress = manager.getProgress();
@@ -514,8 +507,6 @@ public class LoadingMode implements Screen {
 			canvas.draw(quit, buttonPressed == pressState.QUIT && isPressed ? Color.SKY : colorQuit, 0, 0,
 					QUIT_X, QUIT_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-			//System.out.println(sound.isUnmuted());
-			//System.out.println(music.isUnmuted());
 			if (sound.isUnmuted() && music.isUnmuted()) {
 				canvas.draw(unmute, buttonPressed == pressState.MUTE && isPressed ? Color.SKY : colorMute, 0,0, MUTE_X, MUTE_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 			}

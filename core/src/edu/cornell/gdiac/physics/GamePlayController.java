@@ -68,7 +68,20 @@ public class GamePlayController extends WorldController {
 	private static final String  WALK_SOUND = "host/walk.mp3";
 	/** The asset for the golem walking sound on sand */
 	private static final String  WALK_SAND_SOUND = "host/sandwalk.mp3";
-
+	/** The asset for bird noise 1 */
+	private static final String  BIRD_NOISE_1 = "shared/bird1.mp3";
+	/** The asset for bird noise 2 */
+	private static final String  BIRD_NOISE_2 = "shared/bird2.mp3";
+	/** The asset for bird noise 3 */
+	private static final String  BIRD_NOISE_3 = "shared/bird3.mp3";
+	/** The asset for cricket noise */
+	private static final String  CRICKET_NOISE = "shared/cricket.mp3";
+	/** The asset for cicada noise */
+	private static final String  CICADA_NOISE = "shared/cicadas.mp3";
+	/** The asset for frog noise 1*/
+	private static final String  FROG_NOISE = "shared/frog.mp3";
+	/** The asset for leave noise*/
+	private static final String  LEAF_NOISE = "shared/leaves.mp3";
 
 	private AssetState assetState = AssetState.EMPTY;
 
@@ -133,6 +146,20 @@ public class GamePlayController extends WorldController {
 		assets.add(WALK_SOUND);
 		manager.load(WALK_SAND_SOUND, Sound.class);
 		assets.add(WALK_SAND_SOUND);
+		manager.load(BIRD_NOISE_1, Sound.class);
+		assets.add(BIRD_NOISE_1);
+		manager.load(BIRD_NOISE_2, Sound.class);
+		assets.add(BIRD_NOISE_2);
+		manager.load(BIRD_NOISE_3, Sound.class);
+		assets.add(BIRD_NOISE_3);
+		manager.load(CRICKET_NOISE, Sound.class);
+		assets.add(CRICKET_NOISE);
+		manager.load(CICADA_NOISE, Sound.class);
+		assets.add(CICADA_NOISE);
+		manager.load(FROG_NOISE, Sound.class);
+		assets.add(FROG_NOISE);
+		manager.load(LEAF_NOISE, Sound.class);
+		assets.add(LEAF_NOISE);
 
 
 		super.preLoadContent(manager);
@@ -159,6 +186,13 @@ public class GamePlayController extends WorldController {
 		sound.allocate(manager, LAUNCH_SOUND);
 		sound.allocate(manager, WALK_SOUND);
 		sound.allocate(manager, WALK_SAND_SOUND);
+		sound.allocate(manager, BIRD_NOISE_1);
+		sound.allocate(manager, BIRD_NOISE_2);
+		sound.allocate(manager, BIRD_NOISE_3);
+		sound.allocate(manager, FROG_NOISE);
+		sound.allocate(manager, CRICKET_NOISE);
+		sound.allocate(manager, CICADA_NOISE);
+		sound.allocate(manager, LEAF_NOISE);
 		super.loadContent(manager);
 		assetState = AssetState.COMPLETE;
 	}
@@ -500,6 +534,25 @@ public class GamePlayController extends WorldController {
 
 
 		// Update sounds
+		if (Math.random() > .995){
+			double test = Math.random();
+
+			//morning noises
+			if (getCurrentLevel() % 8 <= 3) {
+				if (test >= .75) SoundController.getInstance().play(BIRD_NOISE_1, BIRD_NOISE_1, false,.50f * SoundController.getInstance().getVolume());
+				else if (test >= .50) SoundController.getInstance().play(BIRD_NOISE_2, BIRD_NOISE_2, false, .50f * SoundController.getInstance().getVolume());
+				else if (test >= .25) SoundController.getInstance().play(BIRD_NOISE_3, BIRD_NOISE_3, false, .50f * SoundController.getInstance().getVolume());
+				else SoundController.getInstance().play(LEAF_NOISE, LEAF_NOISE, false, .50f * SoundController.getInstance().getVolume());
+			}
+			//night noises
+			else {
+				if (test >= .66) SoundController.getInstance().play(CRICKET_NOISE, CRICKET_NOISE, false,.50f * SoundController.getInstance().getVolume());
+				else if (test >= .33) SoundController.getInstance().play(FROG_NOISE, FROG_NOISE, false, .50f * SoundController.getInstance().getVolume());
+				else SoundController.getInstance().play(CICADA_NOISE, CICADA_NOISE, false, .50f * SoundController.getInstance().getVolume());
+			}
+		}
+
+
 		sound.getInstance().update();
 
 		// Not paused anymore

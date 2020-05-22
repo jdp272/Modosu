@@ -196,6 +196,7 @@ public class MusicController {
 				crossFading = true;
 
 				if (musicToPlay != null) {
+					System.out.println("start normal crossfading");
 					musicNext = musicToPlay;
 					musicNextName = musicNameToPlay;
 
@@ -212,7 +213,7 @@ public class MusicController {
 					musicNext.play();
 				}
 			}
-			else{
+			else {
 				System.out.println("Should go into here");
 			}
 
