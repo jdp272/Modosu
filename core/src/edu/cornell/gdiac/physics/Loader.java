@@ -5,6 +5,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -328,7 +329,7 @@ public class Loader {
      *
      * @return A complete Level object that is the json file deserialized
      */
-    public Level loadLevel(FileHandle f) {
+    public Level loadLevel(FileHandle f, int level) {
         // If this ever breaks try putting .readString() at the end of internal(f)
         // Can't load from a file handle because the file system is weird when
         // exported to a .jar
@@ -340,6 +341,9 @@ public class Loader {
         // Load tutorial data
         int tutorialNum = levelData.tutorialNum;
 
+        // Opacity of the nightmode
+        Color opacity = new Color(1,1,1,.33f*(level%4));
+
         // Create the walls
         Wall[] walls = new Wall[levelData.wallData.length];
         WallData oData; // A simple reference to the data being processed
@@ -348,7 +352,7 @@ public class Loader {
             walls[i] = factory.makeWall(oData.origin.x, oData.origin.y,
                     oData.primaryFrame, oData.leftFrame, oData.rightFrame,
                     oData.frontEdgeFrame, oData.backEdgeFrame,
-                    oData.lowerLeftCornerFrame, oData.lowerRightCornerFrame);
+                    oData.lowerLeftCornerFrame, oData.lowerRightCornerFrame, opacity);
 
             // walls[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.dimensions.y);
         }

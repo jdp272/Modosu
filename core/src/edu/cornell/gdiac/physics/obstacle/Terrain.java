@@ -10,8 +10,12 @@ public abstract class Terrain extends BoxObstacle {
 
     /** The textures for the terrain */
     protected FilmStrip terrainStrip;
+    /** The textures for the terrain */
+    protected FilmStrip terrainNightStrip;
     /** The textures for the corner layover that goes over the tile */
     private FilmStrip cornerStrip;
+    /** The textures for the corner layover that goes over the tile */
+    private FilmStrip cornerNightStrip;
 
     /** The frame in the main terrain film strip for this tile */
     protected int frame;
@@ -73,13 +77,27 @@ public abstract class Terrain extends BoxObstacle {
     }
 
     /**
+     * sets the FilmStrip for the terrain
+     *
+     * @param nightStrip for the terrain
+     */
+    public void setTerrainNightStrip (FilmStrip nightStrip, Color opacity) {
+        terrainNightStrip = nightStrip;
+        terrainNightStrip.setFrame(0);
+        this.setNightTexture(nightStrip, opacity);
+
+    }
+
+    /**
      * sets the FilmStrip for the corner texture
      *
      * @param strip for the corner
      */
-    public void setCornerStrip (FilmStrip strip) {
+    public void setCornerStrip (FilmStrip strip, FilmStrip nightStrip) {
         cornerStrip = strip;
         cornerStrip.setFrame(0);
+        cornerNightStrip = nightStrip;
+        cornerNightStrip.setFrame(0);
     }
 
     /**
@@ -108,6 +126,7 @@ public abstract class Terrain extends BoxObstacle {
      */
     public void setFrame(int frame, boolean updateHitbox) {
         terrainStrip.setFrame(frame);
+        terrainNightStrip.setFrame(frame);
         this.frame = frame;
         if(updateHitbox) {
             if (frame == 1 || frame == 3 || frame == 5 || frame == 6 || frame == 10 || frame > 12) {
@@ -248,22 +267,31 @@ public abstract class Terrain extends BoxObstacle {
         super.draw(canvas);
 
         setScaling(cornerStrip);
+        setScaling(cornerNightStrip);
 
         if(upLeft) {
             cornerStrip.setFrame(0);
+            cornerNightStrip.setFrame(0);
             canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerStrip.getRegionWidth())+0.01f, (64.f / cornerStrip.getRegionHeight())+0.01f);
+            canvas.draw(cornerNightStrip, opacity, cornerNightStrip.getRegionWidth() / 2, cornerNightStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerNightStrip.getRegionWidth())+0.01f, (64.f / cornerNightStrip.getRegionHeight())+0.01f);
         }
         if(upRight) {
             cornerStrip.setFrame(1);
+            cornerNightStrip.setFrame(1);
             canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerStrip.getRegionWidth())+0.01f, (64.f / cornerStrip.getRegionHeight())+0.01f);
+            canvas.draw(cornerNightStrip, opacity, cornerNightStrip.getRegionWidth() / 2, cornerNightStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerNightStrip.getRegionWidth())+0.01f, (64.f / cornerNightStrip.getRegionHeight())+0.01f);
         }
         if(downLeft) {
             cornerStrip.setFrame(2);
+            cornerNightStrip.setFrame(2);
             canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerStrip.getRegionWidth())+0.01f, (64.f / cornerStrip.getRegionHeight())+0.01f);
+            canvas.draw(cornerNightStrip, opacity, cornerNightStrip.getRegionWidth() / 2, cornerNightStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerNightStrip.getRegionWidth())+0.01f, (64.f / cornerNightStrip.getRegionHeight())+0.01f);
         }
         if(downRight) {
             cornerStrip.setFrame(3);
+            cornerNightStrip.setFrame(3);
             canvas.draw(cornerStrip, Color.WHITE, cornerStrip.getRegionWidth() / 2, cornerStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerStrip.getRegionWidth())+0.01f, (64.f / cornerStrip.getRegionHeight())+0.01f);
+            canvas.draw(cornerNightStrip, opacity, cornerNightStrip.getRegionWidth() / 2, cornerNightStrip.getRegionHeight() / 2, getX() * drawScale.x, getY() * drawScale.y, getAngle(), (64.f / cornerNightStrip.getRegionWidth())+0.01f, (64.f / cornerNightStrip.getRegionHeight())+0.01f);
         }
     }
 }

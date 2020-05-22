@@ -98,7 +98,7 @@ public class SoundController {
 	private static SoundController controller;
 	
 	/** Keeps track of all of the allocated sound resources */
-	private IdentityMap<String,Sound> soundbank;
+	public IdentityMap<String,Sound> soundbank;
 	/** Keeps track of all of the "active" sounds */
 	private IdentityMap<String,ActiveSound> actives;
 	/** Support class for garbage collection */
@@ -268,7 +268,23 @@ public class SoundController {
 		}
 		return false;
 	}
-	
+
+
+	public boolean playHover(String key, String filename, boolean loop, float volume) {
+		if (isUnmuted){
+
+			// If there is a sound for this key, stop it
+			Sound sound = soundbank.get(filename);
+
+			// Play the new sound and add it
+			long id = sound.play(volume);
+
+			return true;
+		}
+		return false;
+	}
+
+
 	/**
 	 * Stops the sound, allowing its key to be reused.
 	 * 

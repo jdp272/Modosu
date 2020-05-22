@@ -10,17 +10,26 @@ public class OscWall extends BoxObstacle {
     /** The Horizontal Wall Strip */
     protected FilmStrip horzOscWallStrip;
 
+    /** The Horizontal Wall Strip */
+    protected FilmStrip horzOscWallNightStrip;
+
     /** The Horizontal Charge Indicator */
     protected FilmStrip horzOscWallGaugeStrip;
 
     /** The Vertical Wall Strip */
     protected FilmStrip vertOscWallStrip;
 
+    /** The Vertical Wall Strip */
+    protected FilmStrip vertOscWallNightStrip;
+
     /** The Vertical Charge Indicator */
     protected FilmStrip vertOscWallGaugeStrip;
 
     /** The main strip this object will use */
     protected FilmStrip mainOscWallStrip;
+
+    /** The main strip this object will use */
+    protected FilmStrip mainOscWallNightStrip;
 
     /** THe main gauge strip this object will use */
     protected FilmStrip mainOscWallGaugeStrip;
@@ -33,6 +42,9 @@ public class OscWall extends BoxObstacle {
 
     /** Whether the Gate is Up or Down for Physics */
     protected boolean isUp;
+
+    /** Opacity of Night */
+    protected Color opacity;
 
 
     /**
@@ -167,9 +179,14 @@ public class OscWall extends BoxObstacle {
             if (isVert) {
                 mainOscWallStrip = vertOscWallStrip;
                 mainOscWallGaugeStrip = vertOscWallGaugeStrip;
+
+                mainOscWallNightStrip = vertOscWallNightStrip;
+
             } else {
                 mainOscWallStrip = horzOscWallStrip;
                 mainOscWallGaugeStrip = horzOscWallGaugeStrip;
+
+                mainOscWallNightStrip = horzOscWallNightStrip;
             }
 
             if (isGoingUp) {
@@ -212,6 +229,10 @@ public class OscWall extends BoxObstacle {
         if(mainOscWallStrip != null && mainOscWallGaugeStrip != null) {
             mainOscWallStrip.setFrame(frame);
             mainOscWallGaugeStrip.setFrame(frame);
+
+            if (mainOscWallNightStrip != null) {
+                mainOscWallNightStrip.setFrame(frame);
+            }
         }
     }
 
@@ -228,19 +249,27 @@ public class OscWall extends BoxObstacle {
         if(isVert) {
             this.mainOscWallStrip = vertOscWallStrip;
             this.mainOscWallGaugeStrip = vertOscWallGaugeStrip;
+
+            this.mainOscWallNightStrip = vertOscWallNightStrip;
         }
         else {
             this.mainOscWallStrip = horzOscWallStrip;
             this.mainOscWallGaugeStrip = horzOscWallGaugeStrip;
+
+            this.mainOscWallNightStrip = horzOscWallNightStrip;
         }
 
         if(this.isGoingUp) {
             this.mainOscWallStrip.setFrame(WALL_RISE_START_FRAME);
             this.mainOscWallGaugeStrip.setFrame(WALL_RISE_START_FRAME);
+
+            this.mainOscWallNightStrip.setFrame(WALL_RISE_START_FRAME);
         }
         else {
             this.mainOscWallStrip.setFrame(WALL_FALLING_START_FRAME);
             this.mainOscWallGaugeStrip.setFrame(WALL_FALLING_START_FRAME);
+
+            this.mainOscWallNightStrip.setFrame(WALL_FALLING_START_FRAME);
         }
     }
 
@@ -252,13 +281,26 @@ public class OscWall extends BoxObstacle {
      * @param vertOscWallGaugeStrip the strip that corresponds to the gauge for the vertical formation
      */
     public void setOscWallStrips(FilmStrip horzOscWallStrip, FilmStrip horzOscWallGaugeStrip, FilmStrip vertOscWallStrip, FilmStrip vertOscWallGaugeStrip) {
-
         this.horzOscWallStrip = horzOscWallStrip;
         this.horzOscWallGaugeStrip = horzOscWallGaugeStrip;
 
         this.vertOscWallStrip = vertOscWallStrip;
         this.vertOscWallGaugeStrip = vertOscWallGaugeStrip;
     }
+
+    /**
+     * Sets the default strips for the OscWall
+     * @param horzOscWallStrip the strip that corresponds to the strip of the wall in horizontal formation
+     * @param vertOscWallStrip the strip that corresponds to the strip of the wall in vertical formation
+     * @param opacity the strip that corresponds to the strip of the wall in vertical formation
+     */
+    public void setOscWallNightStrips(FilmStrip horzOscWallStrip, FilmStrip vertOscWallStrip, Color opacity) {
+        this.horzOscWallNightStrip = horzOscWallStrip;
+        this.vertOscWallNightStrip = vertOscWallStrip;
+
+        this.opacity = opacity;
+    }
+
 
     /**
      * Draws the Pillar, Radius, and Charge of Pillar
@@ -273,6 +315,7 @@ public class OscWall extends BoxObstacle {
 
         if(this.mainOscWallStrip != null && this.mainOscWallGaugeStrip != null) {
             canvas.draw(mainOscWallStrip,Color.WHITE, (float)mainOscWallStrip.getRegionWidth() / 2f, (float)mainOscWallStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.25f, 0.25f);
+            canvas.draw(mainOscWallNightStrip,opacity, (float)mainOscWallStrip.getRegionWidth() / 2f, (float)mainOscWallStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.25f, 0.25f);
             if(!this.isUp && !this.isGoingUp) {
                 mainColor = goingDownColor;
                 if((delayPercentage <= 0.6f && delayPercentage > 0.4f) || (delayPercentage <= 1f && delayPercentage > 0.8f)) {
@@ -285,7 +328,5 @@ public class OscWall extends BoxObstacle {
                 canvas.draw(mainOscWallGaugeStrip, mainColor, (float)mainOscWallGaugeStrip.getRegionWidth() / 2f, (float)mainOscWallGaugeStrip.getRegionHeight() / 2f, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 0.25f, 0.25f);
             }
         }
-
-
     }
 }

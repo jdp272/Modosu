@@ -40,8 +40,9 @@ public class GameOver extends WorldController implements Screen {
     private Image golemImg;
     private Image semiBackground;
     private Image screenShotImage;
+    private Image finishBackground;
 
-//    private Pixmap pixmap;
+    //    private Pixmap pixmap;
 //    private Texture screenShotTexture;
     private Texture transparentTexture;
 
@@ -52,6 +53,7 @@ public class GameOver extends WorldController implements Screen {
     /** Constants */
     private static final String WIN_LEVEL_TEXT = "level complete!";
     private static final String FAIL_LEVEL_TEXT = "level failed";
+    private static final String FINISH_GAME_TEXT = "completed all levels!";
     private static final int ICON_SIZE_SMALL = 60;
     private static final int ICON_SIZE_BIG = 75;
     private static final float ALPHA_BKG = .75f;
@@ -61,6 +63,9 @@ public class GameOver extends WorldController implements Screen {
     private static final String TEXTURE_ATLAS_FILE = "shared/gameIcons.txt";
     private static final String WINGOLEM_ICON = "shared/GameComplete/happygolem.png";
     private static final String LOSEGOLEM_ICON = "shared/GameComplete/sadgolem.png";
+    private static final String FINISHGOLEM_ICON = "shared/GameComplete/finishgolem.png";
+
+    private static final String FINISHSCREEN = "shared/GameComplete/finish.png";
 
     /** Skin file names */
     private static final String sMENU = "menu_icon";
@@ -73,6 +78,9 @@ public class GameOver extends WorldController implements Screen {
     /** Texture assets for game icons */
     private TextureRegion winGolemTexture;
     private TextureRegion loseGolemTexture;
+    private TextureRegion finishGolemTexture;
+
+    private TextureRegion finishScreenTexture;
 
     /** Listener that will update the player mode when we are done */
     private ScreenListener listener;
@@ -105,6 +113,11 @@ public class GameOver extends WorldController implements Screen {
         assets.add(WINGOLEM_ICON);
         manager.load(LOSEGOLEM_ICON, Texture.class);
         assets.add(LOSEGOLEM_ICON);
+        manager.load(FINISHGOLEM_ICON, Texture.class);
+        assets.add(FINISHGOLEM_ICON);
+
+        manager.load(FINISHSCREEN, Texture.class);
+        assets.add(FINISHSCREEN);
 
         super.preLoadContent(manager);
     }
@@ -127,6 +140,9 @@ public class GameOver extends WorldController implements Screen {
         textureAtlas = manager.get(TEXTURE_ATLAS_FILE);
         winGolemTexture = createTexture(manager,WINGOLEM_ICON,false);
         loseGolemTexture = createTexture(manager,LOSEGOLEM_ICON,false);
+        finishGolemTexture = createTexture(manager, FINISHGOLEM_ICON, false);
+
+        finishScreenTexture = createTexture(manager, FINISHSCREEN, false);
 
         super.loadContent(manager);
         assetState = AssetState.COMPLETE;
@@ -199,11 +215,24 @@ public class GameOver extends WorldController implements Screen {
 //        semiBackground.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
 //        semiBackground.getColor().a= ALPHA_BKG;
 //        stage.addActor(semiBackground);
+        /** Set last WIN background **/
+        boolean lastWin = NUM_LEVELS == currentLevel+1 && !isFail;
+        if (lastWin) {
+            finishBackground = new Image(finishScreenTexture);
+            finishBackground.setSize(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+            stage.addActor(finishBackground);
+        }
 
-        /** Change variables depending on WIN vs FAIL */
-        columnNum = isFail ? 2 : 3;
-        labelText = isFail ? FAIL_LEVEL_TEXT : WIN_LEVEL_TEXT;
-        golemTexture = isFail ? loseGolemTexture : winGolemTexture;
+        /** Change variables depending on WIN vs FAIL or lastWin */
+        if (lastWin) {
+            columnNum = 2;
+            labelText = FINISH_GAME_TEXT;
+            golemTexture = finishGolemTexture;
+        } else {
+            columnNum = isFail ? 2 : 3;
+            labelText = isFail ? FAIL_LEVEL_TEXT : WIN_LEVEL_TEXT;
+            golemTexture = isFail ? loseGolemTexture : winGolemTexture;
+        }
 
         /** Level Label */
         Label.LabelStyle font = new Label.LabelStyle(displayFont, Color.WHITE);
@@ -215,7 +244,11 @@ public class GameOver extends WorldController implements Screen {
 
         /** Golem Image */
         golemImg = new Image(golemTexture);
-        table.add(golemImg).width(200).height(200).colspan(columnNum);
+        if (lastWin)
+            table.add(golemImg).width(512).height(200).colspan(columnNum);
+        else
+            table.add(golemImg).width(200).height(200).colspan(columnNum);
+
 
         /** Add Row in Table */
         table.row().uniform().pad(30);
@@ -228,7 +261,7 @@ public class GameOver extends WorldController implements Screen {
 
         menu.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("MENU BUTTON CLICKED");
+                //System.out.println("MENU BUTTON CLICKED");
                 menuButtonClicked = true;
             }
         });
@@ -236,7 +269,7 @@ public class GameOver extends WorldController implements Screen {
         table.add(menu).width(ICON_SIZE_SMALL).height(ICON_SIZE_SMALL);
 
         /** Next Button */
-        if (!isFail) {
+        if (!isFail && !lastWin) {
             Button.ButtonStyle nextStyle = new Button.ButtonStyle();
             nextStyle.up = skin.getDrawable(sNEXT);
             nextStyle.down = skin.getDrawable(sNEXT_CLICKED);
@@ -244,7 +277,7 @@ public class GameOver extends WorldController implements Screen {
 
             next.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
-                    System.out.println("NEXT BUTTON CLICKED");
+                    //System.out.println("NEXT BUTTON CLICKED");
                     nextButtonClicked = true;
                 }
             });
@@ -260,7 +293,7 @@ public class GameOver extends WorldController implements Screen {
 
         retry.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("RETRY BUTTON CLICKED");
+                //System.out.println("RETRY BUTTON CLICKED");
                 retryButtonClicked = true;
             }
         });

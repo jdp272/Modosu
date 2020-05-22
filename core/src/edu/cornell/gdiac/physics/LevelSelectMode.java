@@ -13,6 +13,7 @@ package edu.cornell.gdiac.physics;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
@@ -81,6 +82,8 @@ public class LevelSelectMode extends WorldController implements Screen {
     private boolean hoverButton;
     /** Mouse is currently hovering over the Custom Button */
     private boolean hoverCustom;
+    /** Mouse is currently hovering over the Back Button */
+    private boolean hoverBack;
     /** Volume of hover sound */
     private static float hoverVolume = .25f;
 
@@ -292,6 +295,7 @@ public class LevelSelectMode extends WorldController implements Screen {
 
         onCustom = false;
         hoverCustom = false;
+        hoverBack = false;
 
 
 //        File folder = new File("levels");
@@ -364,7 +368,9 @@ public class LevelSelectMode extends WorldController implements Screen {
             canvas.draw(prevTexture, colorPrev, 0f, 0f, prevStart.x, prevStart.y, 0, 1, 1);
         }
         levelFont.setColor(colorOne);
-        String name = levels.get(page * 4).file().getName();
+        try {
+            String name = levels.get(page * 4).file().getName();
+
         Vector2 center = new Vector2((oneEnd.x+oneStart.x)/2,(oneEnd.y+oneStart.y)/2);
         canvas.drawText(name.substring(0,name.length()-4), levelFont, center.x, center.y);
 
@@ -399,7 +405,10 @@ public class LevelSelectMode extends WorldController implements Screen {
             name = "Presets";
         }
         canvas.drawText(name, levelFont, center.x, center.y);
-
+        }
+        catch (Exception e) {
+            System.out.println("No levels to load on this page");
+        }
         if(onCustom)
             levelFont.getData().setScale(.8f, .8f);
         else
@@ -621,90 +630,12 @@ public class LevelSelectMode extends WorldController implements Screen {
             colorBack = colorUnhovered;
             customColor = colorUnhovered;
 
-            if (screenX >= oneStart.x && screenX <= oneEnd.x) {
-                if (screenY >= oneStart.y && screenY <= oneEnd.y) {
-                    colorOne = colorHovered;
-                    if (!hoverButton) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
-                        hoverButton = true;
-                    }
-                }
-                else {
-                    colorOne = colorUnhovered;
-                    hoverButton = false;
-                }
-            }
-            if (screenX >= twoStart.x && screenX <= twoEnd.x && (page*4 + 1 < levels.size() || goToDesigner)) {
-                if (screenY >= twoStart.y && screenY <= twoEnd.y) {
-                    colorTwo = colorHovered;
-                    if (!hoverButton) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
-                        hoverButton = true;
-                    }
-                }
-                else {
-                    colorTwo = colorUnhovered;
-                    hoverButton = false;
-                }
-            }
-            if (screenX >= threeStart.x && screenX <= threeEnd.x && (page*4 + 2 < levels.size() || goToDesigner)) {
-                if (screenY >= threeStart.y && screenY <= threeEnd.y) {
-                    colorThree = colorHovered;
-                    if (!hoverButton) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
-                        hoverButton = true;
-                    }
-                }
-                else {
-                    colorThree = colorUnhovered;
-                    hoverButton = false;
-                }
-            }
-            if (screenX >= fourStart.x && screenX <= fourEnd.x && (page*4 + 3 < levels.size() || goToDesigner)) {
-                if (screenY >= fourStart.y && screenY <= fourEnd.y) {
-                    colorFour = colorHovered;
-                    if (!hoverButton) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
-                        hoverButton = true;
-                    }
-                }
-                else {
-                    colorFour = colorUnhovered;
-                    hoverButton = false;
-                }
-            }
-            if (screenX >= nextStart.x && screenX <= nextEnd.x && page != pages-1) {
-                if (screenY >= nextStart.y && screenY <= nextEnd.y) {
-                    colorNext = colorHovered;
-                    if (!hoverButton) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
-                        hoverButton = true;
-                    }
-                }
-                else {
-                    colorPrev = colorUnhovered;
-                    hoverButton = false;
-                }
-            }
-            if (screenX >= prevStart.x && screenX <= prevEnd.x && page != 0) {
-                if (screenY >= prevStart.y && screenY <= prevEnd.y) {
-                    colorPrev = colorHovered;
-                    if (!hoverButton) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
-                        hoverButton = true;
-                    }
-                }
-                else {
-                    colorPrev = colorUnhovered;
-                    hoverButton = false;
-                }
-            }
             if (screenX >= customStart.x && screenX <= customEnd.x) {
                 if(!forceCustom) {
                     if (screenY >= customStart.y && screenY <= customEnd.y) {
                         customColor = colorHovered;
                         if (!hoverCustom) {
-                            SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                            SoundController.getInstance().playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
                             hoverCustom = true;
                         }
                     } else {
@@ -716,16 +647,99 @@ public class LevelSelectMode extends WorldController implements Screen {
             if (screenX >= backStart.x && screenX <= backEnd.x) {
                 if (screenY >= backStart.y && screenY <= backEnd.y) {
                     colorBack = Color.TEAL;
-                    if (!hoverButton) {
-                        SoundController.getInstance().play(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
-                        hoverButton = true;
+                    if (!hoverBack) {
+                        SoundController.getInstance().playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverBack = true;
                     }
                 }
                 else {
                     colorBack = colorUnhovered;
+                    hoverBack = false;
+                }
+            }
+            if (screenX >= oneStart.x && screenX <= oneEnd.x) {
+                if (screenY >= oneStart.y && screenY <= oneEnd.y) {
+                    colorOne = colorHovered;
+                    if (!hoverButton) {
+                        SoundController.getInstance().playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverButton = true;
+                    }
+                }
+                else {
+                    colorOne = colorUnhovered;
                     hoverButton = false;
                 }
             }
+            else if (screenX >= twoStart.x && screenX <= twoEnd.x && (page*4 + 1 < levels.size() || goToDesigner)) {
+                if (screenY >= twoStart.y && screenY <= twoEnd.y) {
+                    colorTwo = colorHovered;
+                    if (!hoverButton) {
+                        SoundController.getInstance().playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverButton = true;
+                    }
+                }
+                else {
+                    colorTwo = colorUnhovered;
+                    hoverButton = false;
+                }
+            }
+            else if (screenX >= threeStart.x && screenX <= threeEnd.x && (page*4 + 2 < levels.size() || goToDesigner)) {
+                if (screenY >= threeStart.y && screenY <= threeEnd.y) {
+                    colorThree = colorHovered;
+                    if (!hoverButton) {
+                        SoundController.getInstance().playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverButton = true;
+                    }
+                }
+                else {
+                    colorThree = colorUnhovered;
+                    hoverButton = false;
+                }
+            }
+            else if (screenX >= fourStart.x && screenX <= fourEnd.x && (page*4 + 3 < levels.size() || goToDesigner)) {
+                if (screenY >= fourStart.y && screenY <= fourEnd.y) {
+                    colorFour = colorHovered;
+                    if (!hoverButton) {
+                        SoundController.getInstance().playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverButton = true;
+                    }
+                }
+                else {
+                    colorFour = colorUnhovered;
+                    hoverButton = false;
+                }
+            }
+            else if (screenX >= nextStart.x && screenX <= nextEnd.x && page != pages-1) {
+                if (screenY >= nextStart.y && screenY <= nextEnd.y) {
+                    colorNext = colorHovered;
+                    if (!hoverButton) {
+                        SoundController.getInstance().playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverButton = true;
+                    }
+                }
+                else {
+                    colorPrev = colorUnhovered;
+                    hoverButton = false;
+                }
+            }
+            else if (screenX >= prevStart.x && screenX <= prevEnd.x && page != 0) {
+                if (screenY >= prevStart.y && screenY <= prevEnd.y) {
+                    colorPrev = colorHovered;
+                    if (!hoverButton) {
+                        SoundController.getInstance().playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+                        hoverButton = true;
+                    }
+                }
+                else {
+                    colorPrev = colorUnhovered;
+                    hoverButton = false;
+                }
+            }
+            else{
+                colorPrev = colorUnhovered;
+                hoverButton = false;
+            }
+
 
         }
     }

@@ -472,9 +472,10 @@ public class LevelDesignerMode extends WorldController {
 //			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
 //			Collections.sort(levels);
 //		}
+
         getLevels(fromCustom || newLevel);
 
-	    refreshFootprints();
+//	    refreshFootprints();
 
 		Vector2 gravity = new Vector2(world.getGravity());
 
@@ -640,6 +641,8 @@ public class LevelDesignerMode extends WorldController {
 
         updateCornerPositions();
 
+        refreshFootprints();
+
         // Properly set the borders to use up the center of the board array, so
         // it can be expanded in all directions
 
@@ -684,7 +687,7 @@ public class LevelDesignerMode extends WorldController {
 		}
         //levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
 
-       level = loader.loadLevel(levelToLoad);
+       level = loader.loadLevel(levelToLoad, 0);
 
 		dimensions = level.dimensions;
 		lowerLeft.setZero();
