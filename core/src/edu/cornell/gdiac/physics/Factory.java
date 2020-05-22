@@ -464,7 +464,8 @@ public class Factory {
                 Constants.TILE_WIDTH,
                 Constants.TILE_HEIGHT,
                 side,
-                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS)
+                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS),
+                new FilmStrip(borderEdgeNightTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS)
         );
         edge.selectable = false;
         edge.setDrawScale(scale);
@@ -482,7 +483,9 @@ public class Factory {
                 Constants.TILE_HEIGHT,
                 side,
                 frame,
-                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS)
+                new FilmStrip(borderEdgeTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS),
+                new FilmStrip(borderEdgeNightTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS),
+                opacity
                 //new FilmStrip(borderEdgeNightTexture, BORDER_EDGE_ROWS, BORDER_EDGE_COLUMNS),
                 //opacity
         );
