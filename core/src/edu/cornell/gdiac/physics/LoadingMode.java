@@ -146,7 +146,7 @@ public class LoadingMode implements Screen {
 	/** Mouse is currently hovering over a button */
 	private boolean hoverButton;
 	/** Volume of hover sound */
-	private static float hoverVolume = .40f;
+	private float hoverVolume;
 
 	/** Color of start button */
 	private Color colorStart;
@@ -337,6 +337,7 @@ public class LoadingMode implements Screen {
 
 		mute = null;
 		unmute = null;
+		hoverVolume = .30f;
 		
 		// No progress so far.		
 		progress   = 0;
@@ -454,7 +455,7 @@ public class LoadingMode implements Screen {
 			music.update();
 
 			input.readInput();
-			hoverVolume = .40f*sound.getVolume();
+			hoverVolume = .30f*sound.getVolume();
 
 
 			float screenY = input.getMousePosition().y;

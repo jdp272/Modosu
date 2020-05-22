@@ -854,7 +854,7 @@ public abstract class WorldController implements Screen {
 		Preferences prefs = Gdx.app.getPreferences("Preferences");
 		prefs.putInteger("level", currentLevel);
 		prefs.flush();
-		System.out.println("Prefs set");
+//		System.out.println("Prefs set");
 	}
 
 	/**
@@ -876,7 +876,7 @@ public abstract class WorldController implements Screen {
 		Preferences prefs = Gdx.app.getPreferences("Preferences");
 		prefs.putInteger("level", currentLevel);
 		prefs.flush();
-		System.out.println("Prefs set");
+//		System.out.println("Prefs set");
 	}
 
 	/**
@@ -1018,7 +1018,7 @@ public abstract class WorldController implements Screen {
 		Preferences prefs = Gdx.app.getPreferences("Preferences");
 		if (prefs.contains("level")) {
 			currentLevel = prefs.getInteger("level");
-			System.out.println("prefs got");
+//			System.out.println("prefs got");
 		}
 		else {
 			currentLevel = 0;
