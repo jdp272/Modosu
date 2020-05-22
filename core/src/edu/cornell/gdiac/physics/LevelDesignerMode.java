@@ -1374,7 +1374,7 @@ public class LevelDesignerMode extends WorldController {
 			if(deselected instanceof CornerObstacle) {
 				processBorderChange((CornerObstacle)deselected);
 			} else if(deselected != null) {
-				if (deselected instanceof HostModel) {
+				if (deselected instanceof HostModel && deselected.getName() != "pedestal") {
 					System.out.println("Golem placed");
 					lastGolem = (HostModel)deselected;
 					if(!showedHostMessage) {

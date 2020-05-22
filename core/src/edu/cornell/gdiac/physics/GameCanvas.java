@@ -466,13 +466,16 @@ public class GameCanvas {
 	
 	/**
 	 * Clear the screen so we can start a new animation frame
+	 *
+	 * @param level The level number for calculating night color
+	 * @param renderNight If false, automatically renders as daytime
 	 */
-	public void clear(float level, boolean inGameplay) {
+	public void clear(float level, boolean renderNight) {
     	// Clear the screen
 		float v1 = 43f + 0.8f*(level%32);
 		float v2 = 65f + 0.4f*(level%32);
 
-		if (inGameplay) {
+		if (renderNight) {
 			Gdx.gl.glClearColor(21f/256f, v1/256f, v2/256f, 1.0f);
 		} else {
 			Gdx.gl.glClearColor(21f/256f, 68f/256f, 76f/256f, 1.0f);
