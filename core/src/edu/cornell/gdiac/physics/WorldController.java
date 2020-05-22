@@ -1303,7 +1303,6 @@ public abstract class WorldController implements Screen {
 						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
 
 				if (renderHUD && !inCustom) {
-					System.out.println(currentLevel);
 					canvas.draw(backgroundNightTexture.getTexture(), new Color(1,1,1,1 - currentLevel/32.0f),
 							(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
 							0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
