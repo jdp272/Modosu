@@ -63,11 +63,11 @@ public class ArrowModel {
         pastThreshold = metThreshold;
 
         // Change scaling
-        if (velocityRepresented.len()/200 < 2.2) {
+        if (velocityRepresented.len()/200 < 1.33) {
             sx = velocityRepresented.len()/200;
         }
         else {
-            sx = 2.2f;
+            sx = 1.33f;
         }
     }
 }
