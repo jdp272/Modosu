@@ -262,7 +262,7 @@ public class GamePlayController extends WorldController {
 			levelToLoad = levels.get(levelIndex);
 		}
 
-		level = loader.loadLevel(levelToLoad, levelIndex);
+		level = loader.loadLevel(levelToLoad, levelIndex, true);
 
 		/* Load in Tutorial */
 		tutorial.reset();

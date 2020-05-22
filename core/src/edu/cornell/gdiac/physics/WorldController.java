@@ -1289,10 +1289,11 @@ public abstract class WorldController implements Screen {
 						(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
 						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
 
-				canvas.draw(backgroundNightTexture.getTexture(), new Color(1,1,1,1 - currentLevel/32.0f),
-						(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
-						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
-
+				if (renderHUD) {
+					canvas.draw(backgroundNightTexture.getTexture(), new Color(1,1,1,1 - currentLevel/32.0f),
+							(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
+							0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
+				}
 //				canvas.draw(backgroundTexture, Color.WHITE, TILE_WIDTH * scale.x * x, TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
 			}
 		}
