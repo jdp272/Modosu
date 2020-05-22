@@ -22,7 +22,7 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import java.util.ArrayList;
 
 /**
- * A static class that can be used for loading a level from a json file
+ * A class that can be used for loading and saving levels from json files
  */
 public class Loader {
 
@@ -356,8 +356,6 @@ public class Loader {
                     oData.primaryFrame, oData.leftFrame, oData.rightFrame,
                     oData.frontEdgeFrame, oData.backEdgeFrame,
                     oData.lowerLeftCornerFrame, oData.lowerRightCornerFrame, opacity);
-
-            // walls[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.dimensions.y);
         }
 
         WaterTile[] water = new WaterTile[levelData.waterData.length];
@@ -452,19 +450,4 @@ public class Loader {
         }
         return null;
     }
-
-//    /**
-//     * Output tutorials. For development purposes only
-//     */
-//    public void outputTutorials() {
-//        Tutorials tutorials = new Tutorials();
-//        tutorials.tutorials = new TutorialData[1];
-//
-//        tutorials.tutorials[0] = new TutorialData();
-//        tutorials.tutorials[0].instructions = "TEST TUTORIAL MESSAGE";
-//        tutorials.tutorials[0].countdown = 60;
-//        tutorials.tutorials[0].location = new Vector2(200, 200);
-//
-//        json.toJson(tutorials, new FileHandle(TUTORIAL_DATA_PATH));
-//    }
 }

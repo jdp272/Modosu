@@ -34,17 +34,8 @@ import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.util.*;
 
 /**
- * Class that provides a loading screen for the state of the game.
- *
- * You still DO NOT need to understand this class for this lab.  We will talk about this
- * class much later in the course.  This class provides a basic template for a loading
- * screen to be used at the start of the game or between levels.  Feel free to adopt
- * this to your needs.
- *
- * You will note that this mode has some textures that are not loaded by the AssetManager.
- * You are never required to load through the AssetManager.  But doing this will block
- * the application.  That is why we try to have as few resources as possible for this
- * loading screen.
+ * Class that provides a loading screen for the state of the game, as well as
+ * the main menu
  */
 public class LoadingMode implements Screen {
 	// Textures necessary to support the loading screen

@@ -42,18 +42,8 @@ import java.io.File;
 import java.util.*;
 
 /**
- * Base class for a world-specific controller.
- *
- *
- * A world has its own objects, assets, and input controller.  Thus this is 
- * really a mini-GameEngine in its own right.  The only thing that it does
- * not do is create a GameCanvas; that is shared with the main application.
- *
- * You will notice that asset loading is not done with static methods this time.  
- * Instance asset loading makes it easier to process our game modes in a loop, which 
- * is much more scalable. However, we still want the assets themselves to be static.
- * This is the purpose of our AssetState variable; it ensures that multiple instances
- * place nicely with the static assets.
+ * Base class for a game, which may be either the game for playing or the level
+ * designer. Shared assets and drawing is handled here.
  */
 public abstract class WorldController implements Screen {
 	/** The number of levels */
@@ -190,17 +180,10 @@ public abstract class WorldController implements Screen {
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_NIGHT_FILE = "shared/night/phoenix_pedestal.png";
 	/** File to texture for borders */
-//<<<<<<< HEAD
-//	private static String BORDER_EDGE_FILE = "shared/forest.png";
-//	/** File to texture for night borders */
-//	private static String BORDER_EDGE_NIGHT_FILE = "shared/night/backdropspritesheet.png";
-//	/** File to texture for corners */
-//=======
 	private static String BORDER_EDGE_FILE = "shared/backdropv5.png";
 	/** File to texture for night borders */
 	private static String BORDER_EDGE_NIGHT_FILE = "shared/night/backdropv5.png";
 	/** File to texture for corners */
-//>>>>>>> edges
 	private static String BORDER_CORNER_FILE = "shared/forestcorners.png";
 	/** File to texture for night corners */
 	private static String BORDER_CORNER_NIGHT_FILE = "shared/night/backdropcorners.png";
@@ -858,7 +841,6 @@ public abstract class WorldController implements Screen {
 		Preferences prefs = Gdx.app.getPreferences("Preferences");
 		prefs.putInteger("level", currentLevel);
 		prefs.flush();
-//		System.out.println("Prefs set");
 	}
 
 	/**
@@ -1239,12 +1221,6 @@ public abstract class WorldController implements Screen {
 		while (iterator.hasNext()) {
 			PooledList<Obstacle>.Entry entry = iterator.next();
 			Obstacle obj = entry.getValue();
-//			if(obj instanceof BoxObstacle){
-//				((BoxObstacle) obj).alive -= 1;
-//				if(((BoxObstacle) obj).alive == 0){
-//					obj.markRemoved(true);
-//				}
-//			}
 			if (obj.isRemoved()) {
 				obj.deactivatePhysics(world);
 				entry.remove();
@@ -1280,15 +1256,9 @@ public abstract class WorldController implements Screen {
 
 		canvas.begin();
 
-//		System.out.println("Drawing");
-//		System.out.println("dimensions: " + dimensions);
-//		System.out.println("scale: " + scale);
-//		System.out.println("canvas size: (" + canvas.getWidth() + ", " + canvas.getHeight() + ")");
 		// Use the lower left corner of tiles, not the center, to start drawing the canvas
 		for(float x = 0; x < scale.x * dimensions.x; x += canvas.getWidth()) {
-//			System.out.println("x = " + x);
 			for(float y = 0; y < scale.y * dimensions.y; y += canvas.getHeight()) {
-//				System.out.println("y = " + y);
 
 				// Calculate the width and height of the canvas segment. If the
 				// board doesn't extend the entire way, find the desired dimensions
@@ -1307,10 +1277,8 @@ public abstract class WorldController implements Screen {
 							(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
 							0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
 				}
-//				canvas.draw(backgroundTexture, Color.WHITE, TILE_WIDTH * scale.x * x, TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
 			}
 		}
-//		canvas.draw(backgroundTexture, Color.WHITE, 0, 0,canvas.getWidth(),canvas.getHeight());
 		canvas.end();
 
 		for(Obstacle obj : objects) {

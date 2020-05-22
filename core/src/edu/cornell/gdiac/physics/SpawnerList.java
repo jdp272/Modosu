@@ -86,8 +86,6 @@ public class SpawnerList {
         spawnerList = new ArrayList<Spawner>();
     }
 
-    // Add to documentation: obj should have already been added to the world
-
     /**
      * Adds a new spawner obstacle to the list of spawners. The obstacle will be
      * like a button, and the new object will be created centered at the
@@ -104,9 +102,6 @@ public class SpawnerList {
      *             that is called when the spawner is clicked.
      */
     public void addSpawner(BoxObstacle obj, CallbackFunction func) {
-
-//        obj.setX((canvas.getWidth() + camTarget.x) / scale.x - boxSpawn.getWidth() / 2.f);
-//        obj.setY((canvas.getHeight() + camTarget.y) / scale.y - boxSpawn.getHeight() / 2.f);
         obj.setWidth(Constants.TILE_WIDTH);
         obj.setHeight(Constants.TILE_HEIGHT);
 

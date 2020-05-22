@@ -29,7 +29,6 @@ import java.util.*;
 
 /**
  * Manages the level selection of Modosu
- *
  */
 public class LevelSelectMode extends WorldController implements Screen {
     /** Texture file for background image */
@@ -163,20 +162,6 @@ public class LevelSelectMode extends WorldController implements Screen {
 
         getLevels(custom);
         setPages();
-//        File folder;
-//        folder = Gdx.files.local("Custom").file();
-//
-//
-//        if(levels != null) {
-//            pages = (int) Math.ceil(levels.size() / 4.0) + 1;
-//            System.out.println(levels.size());
-//        } else {
-//            if (custom) {
-//                pages = (int) Math.ceil(folder.listFiles(Constants.filenameFilter).length / 4.0) + 1;
-//            } else {
-//                pages = numLevels / 4 + 1;
-//            }
-//        }
     }
 
     /**
@@ -739,8 +724,6 @@ public class LevelSelectMode extends WorldController implements Screen {
                 colorPrev = colorUnhovered;
                 hoverButton = false;
             }
-
-
         }
     }
 }

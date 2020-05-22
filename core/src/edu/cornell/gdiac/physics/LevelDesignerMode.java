@@ -30,13 +30,7 @@ import java.util.ArrayList;
 
 
 /**
- * Gameplay specific controller for the ragdoll fishtank.
- * <p>
- * You will notice that asset loading is not done with static methods this time.
- * Instance asset loading makes it easier to process our game modes in a loop, which
- * is much more scalable. However, we still want the assets themselves to be static.
- * This is the purpose of our AssetState variable; it ensures that multiple instances
- * place nicely with the static assets.
+ * Controller for the game mode in which levels are designed
  */
 public class LevelDesignerMode extends WorldController {
     /**
@@ -470,16 +464,6 @@ public class LevelDesignerMode extends WorldController {
 
 		canvas.resetZoom();
 
-//		if(fromCustom || newLevel){
-//			File folder = new File("Custom");
-//			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
-//			Collections.sort(levels);
-//		}else{
-//			File folder = new File("levels");
-//			levels = new ArrayList<File>(Arrays.asList(folder.listFiles(Constants.filenameFilter)));
-//			Collections.sort(levels);
-//		}
-
         getLevels(fromCustom || newLevel);
 
 //	    refreshFootprints();
@@ -505,17 +489,10 @@ public class LevelDesignerMode extends WorldController {
 		FileHandle f = new FileHandle("out.lvl");
 
 		world = new World(gravity,false);
-
-//		level = loader.loadLevel(f);
-
         setComplete(false);
         setFailure(false);
 
         if (loadBoard) {
-//			bottomBorder = 0;
-//			leftBorder = 0;
-
-//			initialBottomBorder = bottomBorder
 
             // Not checking to ensure that these borders are within the array
             // bounds because no screen should be so large that the max board
@@ -554,9 +531,6 @@ public class LevelDesignerMode extends WorldController {
 
         HostModel hostSpawn = factory.makeSmallHost(0.f, 0.f);
         addObject(hostSpawn);
-
-//		SpiritModel spiritSpawn = factory.makeSpirit(0.f, 0.f);
-//		addObject(spiritSpawn);
 
         HostModel pedestalSpawn = factory.makePedestal(0.f, 0.f);
         addObject(pedestalSpawn);
@@ -613,12 +587,6 @@ public class LevelDesignerMode extends WorldController {
             }
         });
 
-//		spawnList.addSpawner(edgeSpawn, new SpawnerList.CallbackFunction() {
-//			public Obstacle makeObject(float x, float y, Obstacle lastCreated) {
-//				return factory.makeBorder(x, y);
-//			}
-//		});
-
         selector = new ObstacleSelector(world);
         selector.setTexture(crosshairTexture);
         selector.setDrawScale(scale);
@@ -652,12 +620,6 @@ public class LevelDesignerMode extends WorldController {
 
         // Properly set the borders to use up the center of the board array, so
         // it can be expanded in all directions
-
-//		topBorder =    (MAX_BOARD_TILES / 2) + (screenTileWidth()  / 2);
-//		bottomBorder = (MAX_BOARD_TILES / 2) - (screenTileWidth()  / 2);
-//
-//		leftBorder =   (MAX_BOARD_TILES / 2) - (screenTileHeight() / 2);
-//		rightBorder =  (MAX_BOARD_TILES / 2) + (screenTileHeight() / 2);
     }
 
     /**
@@ -692,7 +654,6 @@ public class LevelDesignerMode extends WorldController {
 		}else{
 			levelToLoad = Gdx.files.internal(getLevelName());
 		}
-        //levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
 
        level = loader.loadLevel(levelToLoad, 0, false);
 
@@ -703,8 +664,6 @@ public class LevelDesignerMode extends WorldController {
         dimensions.y = board.getHeight();
         lowerLeft.x = board.getLeftOffset();
         lowerLeft.y = board.getBottomOffset();
-
-//		System.out.println("dimensions: " + dimensions + ", lowerLeft: " + lowerLeft);
 
         for (Obstacle obj : level.walls) {
             if (board.addNewObstacle(obj)) {
@@ -1589,9 +1548,6 @@ public class LevelDesignerMode extends WorldController {
 			}
         }
 
-//		dimensionsCache.set((rightBorder - leftBorder) * Constants.TILE_WIDTH, (topBorder - bottomBorder) * Constants.TILE_WIDTH);
-//		System.out.println(dimensionsCache);
-
         // For now, until the types used for levels are fixed
         Wall[] wallArray = new Wall[wallList.size()];
         wallList.toArray(wallArray);
@@ -1626,59 +1582,4 @@ public class LevelDesignerMode extends WorldController {
 
         reset();
     }
-
-//	/**
-//	 * Draw the physics objects together with foreground and background
-//	 *
-//	 * This is completely overridden to support custom background and foreground art.
-//	 *
-//	 * @param dt Timing values from parent loop
-//	 */
-//	public void draw(float dt) {
-//		canvas.clear();
-//
-//		// Draw background unscaled.
-//		canvas.begin();
-//
-//		// Use the lower left corner of tiles, not the center, to start drawing the canvas
-//		for(float x = xTileToCoord(leftBorder, true); x < xTileToCoord(rightBorder, true); x += Constants.TILE_WIDTH * screenTileWidth()) {
-//			for(float y = yTileToCoord(bottomBorder, true); y < yTileToCoord(topBorder, true); y += Constants.TILE_WIDTH * screenTileHeight()) {
-//
-//				// Calculate the width and height of the canvas segment. If the
-//				// board doesn't extend the entire way, find the desired dimensions
-//				float width = Math.min(canvas.getWidth(), scale.x * (xTileToCoord(rightBorder, true) - x));
-//				float height = Math.min(canvas.getHeight(), scale.y * (yTileToCoord(topBorder, true) - y));
-//
-//				// Draw only the part of the texture that is in game
-//				canvas.draw(backgroundTexture.getTexture(), scale.x * x, scale.y * y,  width, height,
-//						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
-//
-////				canvas.draw(backgroundTexture, Color.WHITE, Constants.TILE_WIDTH * scale.x * x, Constants.TILE_WIDTH * scale.y * y,canvas.getWidth(),canvas.getHeight());
-//			}
-//		}
-////		canvas.draw(backgroundTexture, Color.WHITE, 0, 0,canvas.getWidth(),canvas.getHeight());
-//		canvas.end();
-//
-//		canvas.begin();
-//
-//		for(Obstacle obj : objects) {
-//			obj.draw(canvas);
-//		}
-//		canvas.end();
-//
-//		if (isDebug()) {
-//			canvas.beginDebug();
-//			for(Obstacle obj : objects) {
-//				obj.drawDebug(canvas);
-//			}
-//			canvas.endDebug();
-//		}
-//
-//		// Draw foreground last. The foreground indicates what is within the bounds of the game and what is outside
-////		canvas.begin();
-////		canvas.draw(foregroundTexture, FORE_COLOR,  Constants.TILE_WIDTH * scale.x * leftBorder, Constants.TILE_WIDTH * scale.y * bottomBorder, scale.x * Constants.TILE_WIDTH * (rightBorder - leftBorder), scale.y * Constants.TILE_WIDTH * (topBorder - bottomBorder));
-////		selector.draw(canvas);
-////		canvas.end();
-//	}
-
 }
