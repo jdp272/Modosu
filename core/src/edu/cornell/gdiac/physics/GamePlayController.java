@@ -415,7 +415,7 @@ public class GamePlayController extends WorldController {
 			if(!collisionController.getInSand()){
 				sound.stop(WALK_SAND_SOUND);
 			}
-			sound.play(walkingSound, walkingSound, true, sound.getVolume()*.80f);
+			sound.play(walkingSound, walkingSound, true, sound.getVolume()*.50f);
 		}
 		// Stop playing if player is no longer moving
 		else {
@@ -426,7 +426,7 @@ public class GamePlayController extends WorldController {
 		// Check lose condition
 		if (hostController.getPossessedBlownUp() && !isComplete() && !isFailure()) {
 			setFailure(true);
-			sound.play(FAILURE_SOUND, FAILURE_SOUND, false, 1.2f*sound.getVolume());
+			sound.play(FAILURE_SOUND, FAILURE_SOUND, false, 1.5f*sound.getVolume());
 		}
 
 		// Check if HUD timer should update
@@ -532,27 +532,45 @@ public class GamePlayController extends WorldController {
 		}
 		*/
 
-
-		// Update sounds
-		if (Math.random() > .995){
+		// Deal with random ambient sounds
+		if (Math.random() > .999){
 			double test = Math.random();
 
-			//morning noises
-			if (getCurrentLevel() % 8 <= 3) {
-				if (test >= .75) SoundController.getInstance().play(BIRD_NOISE_1, BIRD_NOISE_1, false,.50f * SoundController.getInstance().getVolume());
-				else if (test >= .50) SoundController.getInstance().play(BIRD_NOISE_2, BIRD_NOISE_2, false, .50f * SoundController.getInstance().getVolume());
-				else if (test >= .25) SoundController.getInstance().play(BIRD_NOISE_3, BIRD_NOISE_3, false, .50f * SoundController.getInstance().getVolume());
-				else SoundController.getInstance().play(LEAF_NOISE, LEAF_NOISE, false, .50f * SoundController.getInstance().getVolume());
+			if (getCurrentLevel() < 8){
+				//frog and cricket full
+				if (test >= .50) SoundController.getInstance().play(CRICKET_NOISE, CRICKET_NOISE, false,.50f * SoundController.getInstance().getVolume());
+				else  SoundController.getInstance().play(FROG_NOISE, FROG_NOISE, false, .50f * SoundController.getInstance().getVolume());
 			}
-			//night noises
-			else {
-				if (test >= .66) SoundController.getInstance().play(CRICKET_NOISE, CRICKET_NOISE, false,.50f * SoundController.getInstance().getVolume());
-				else if (test >= .33) SoundController.getInstance().play(FROG_NOISE, FROG_NOISE, false, .50f * SoundController.getInstance().getVolume());
-				else SoundController.getInstance().play(CICADA_NOISE, CICADA_NOISE, false, .50f * SoundController.getInstance().getVolume());
+			else if (getCurrentLevel() < 16){
+				//frogs faded
+				if (test >= .50) SoundController.getInstance().play(FROG_NOISE, FROG_NOISE, false, .25f * SoundController.getInstance().getVolume());
+				//leaves on
+				else SoundController.getInstance().play(LEAF_NOISE, LEAF_NOISE, false, .50f * SoundController.getInstance().getVolume());
+
+
+			}
+			else if (getCurrentLevel() < 25) {
+				//leaves and cicadas
+				if (test >= .80) SoundController.getInstance().play(CICADA_NOISE, CICADA_NOISE, false, .40f * SoundController.getInstance().getVolume());
+				else if (test >= .60) SoundController.getInstance().play(LEAF_NOISE, LEAF_NOISE, false, .40f * SoundController.getInstance().getVolume());
+
+				//bird faded
+				else if (test >= .40) SoundController.getInstance().play(BIRD_NOISE_1, BIRD_NOISE_1, false,.25f * SoundController.getInstance().getVolume());
+				else if (test >= .20) SoundController.getInstance().play(BIRD_NOISE_2, BIRD_NOISE_2, false, .25f * SoundController.getInstance().getVolume());
+				else SoundController.getInstance().play(BIRD_NOISE_3, BIRD_NOISE_3, false, .25f * SoundController.getInstance().getVolume());
+			}
+			else{
+				//birds on
+				if (test >= .75) SoundController.getInstance().play(BIRD_NOISE_1, BIRD_NOISE_1, false,.40f * SoundController.getInstance().getVolume());
+				else if (test >= .50) SoundController.getInstance().play(BIRD_NOISE_2, BIRD_NOISE_2, false, .40f * SoundController.getInstance().getVolume());
+				else if (test >= .25) SoundController.getInstance().play(BIRD_NOISE_3, BIRD_NOISE_3, false, .40f * SoundController.getInstance().getVolume());
+
+				//cicadas faded
+				else SoundController.getInstance().play(CICADA_NOISE, CICADA_NOISE, false, .25f * SoundController.getInstance().getVolume());
 			}
 		}
 
-
+		//Update sounds
 		sound.getInstance().update();
 
 		// Not paused anymore
