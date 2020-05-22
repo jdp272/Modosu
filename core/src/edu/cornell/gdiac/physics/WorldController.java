@@ -379,6 +379,10 @@ public abstract class WorldController implements Screen {
 
 	public Tutorial tutorial;
 
+	/** Used by GamePlayController to reset correctly based on if custom
+	 * levels are being used. Also used in world controller for drawing. */
+	public boolean inCustom;
+
 	/** Whether to render the HUD */
 	protected boolean renderHUD;
 
@@ -1296,7 +1300,8 @@ public abstract class WorldController implements Screen {
 						(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
 						0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());
 
-				if (renderHUD) {
+				if (renderHUD && !inCustom) {
+					System.out.println(currentLevel);
 					canvas.draw(backgroundNightTexture.getTexture(), new Color(1,1,1,1 - currentLevel/32.0f),
 							(scale.x * lowerLeft.x) + x, (scale.y * lowerLeft.y) + y,  width, height,
 							0.f, 0.f, width / canvas.getWidth(), height / canvas.getHeight());

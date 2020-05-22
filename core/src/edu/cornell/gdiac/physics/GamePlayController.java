@@ -107,8 +107,6 @@ public class GamePlayController extends WorldController {
 
 	private final float panSpeed = 10f;
 
-	public boolean inCustom;
-
 	private boolean isActiveScreen;
 
 	private boolean launchedFirstShot;
@@ -252,6 +250,7 @@ public class GamePlayController extends WorldController {
 		FileHandle levelToLoad;
 
 		int levelIndex = ((currentLevel%levels.size()) + levels.size()) % levels.size();
+		currentLevel = levelIndex;
 
 		// TODO These are currently the same so if everything works this if statement can be removed
 		if(inCustom) {
@@ -262,7 +261,7 @@ public class GamePlayController extends WorldController {
 			levelToLoad = levels.get(levelIndex);
 		}
 
-		level = loader.loadLevel(levelToLoad, levelIndex, true);
+		level = loader.loadLevel(levelToLoad, levelIndex, !inCustom);
 
 		/* Load in Tutorial */
 		tutorial.reset();

@@ -329,7 +329,7 @@ public class Loader {
      *
      * @return A complete Level object that is the json file deserialized
      */
-    public Level loadLevel(FileHandle f, int level, boolean isGameplay) {
+    public Level loadLevel(FileHandle f, int level, boolean useNight) {
         // If this ever breaks try putting .readString() at the end of internal(f)
         // Can't load from a file handle because the file system is weird when
         // exported to a .jar
@@ -342,7 +342,7 @@ public class Loader {
         int tutorialNum = levelData.tutorialNum;
 
         // Opacity of the nightmode
-        float value = isGameplay ? 1 - level/32.0f : 0;
+        float value = useNight ? 1 - level/32.0f : 0;
         Color opacity = new Color(1,1,1, value);
 
         factory.setOpacity(opacity);
