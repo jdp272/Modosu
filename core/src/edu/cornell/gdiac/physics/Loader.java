@@ -342,7 +342,7 @@ public class Loader {
         int tutorialNum = levelData.tutorialNum;
 
         // Opacity of the nightmode
-        Color opacity = new Color(1,1,1,.33f*(level%4));
+        Color opacity = new Color(1,1,1, 1 - level/32.0f);
 
         // Create the walls
         Wall[] walls = new Wall[levelData.wallData.length];
