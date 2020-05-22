@@ -1059,6 +1059,12 @@ public class LevelDesignerMode extends WorldController {
 	 * orientations. Also updates each terrain tile (water, sand, and wall)
 	 */
 	private void setBordersAndUpdateTerrain() {
+		// How many edges are needed next to the corner
+		final int EDGES_NEXT_TO_CORNER_BOTTOM = 1;
+		final int EDGES_NEXT_TO_CORNER_LEFT = 1;
+		final int EDGES_NEXT_TO_CORNER_RIGHT = 1;
+		final int EDGES_NEXT_TO_CORNER_TOP = 2;
+
 		// Update terrain tiles based on the new borders and add walls
 		for(int i = board.getLeftBorder(); i < board.getRightBorder(); i++) {
 			for(int j = board.getBottomBorder(); j < board.getTopBorder(); j++) {
@@ -1103,10 +1109,22 @@ public class LevelDesignerMode extends WorldController {
 					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.BOTTOM);
 
 					// Indicate that the edge is next to the left or right side
-					if(i - board.getLeftBorder() == 1) {
-						border.setNextToSide(1, BorderEdge.Side.LEFT);
-					} else if((board.getRightBorder() - 1) - i == 1) {
-						border.setNextToSide(1, BorderEdge.Side.RIGHT);
+					if(i - board.getLeftBorder() <= EDGES_NEXT_TO_CORNER_BOTTOM) {
+						border.setNextToSide(i - board.getLeftBorder(), BorderEdge.Side.LEFT);
+					} else if((board.getRightBorder() - 1) - i <= EDGES_NEXT_TO_CORNER_BOTTOM) {
+						border.setNextToSide((board.getRightBorder() - 1) - i, BorderEdge.Side.RIGHT);
+					} else {
+						// For now, hardcoding in the logic of which edges can
+						// be next to which other edges
+
+						// Get the adjacent edge to pass in
+						BorderEdge adjEdge = board.get(i - 1, j) instanceof BorderEdge ?
+								(BorderEdge)board.get(i - 1, j) : null;
+
+						// Can start a pair if distance to border is greater
+						// than the number of reserved edges (+1 to include
+						// the other edge of the pair)
+						border.resetFrame((board.getRightBorder() - 1) - i > EDGES_NEXT_TO_CORNER_BOTTOM + 1, adjEdge);
 					}
 					board.addNewObstacle(border);
 					addObject(border);
@@ -1115,10 +1133,24 @@ public class LevelDesignerMode extends WorldController {
 				} else if(i == board.getLeftBorder()) {
 					board.set(null, i, j);
 					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.LEFT);
-					if(j - board.getBottomBorder() == 1) {
-						border.setNextToSide(1, BorderEdge.Side.BOTTOM);
-					} else if((board.getTopBorder() - 1) - j == 1) {
-						border.setNextToSide(1, BorderEdge.Side.TOP);
+
+					// Ensure that the edges next to the corner are set properly
+					if(j - board.getBottomBorder() <= EDGES_NEXT_TO_CORNER_LEFT) {
+						border.setNextToSide(j - board.getBottomBorder(), BorderEdge.Side.BOTTOM);
+					} else if((board.getTopBorder() - 1) - j <= EDGES_NEXT_TO_CORNER_LEFT) {
+						border.setNextToSide((board.getTopBorder() - 1) - j, BorderEdge.Side.TOP);
+					} else {
+						// For now, hardcoding in the logic of which edges can
+						// be next to which other edges
+
+						// Get the adjacent edge to pass in
+						BorderEdge adjEdge = board.get(i, j - 1) instanceof BorderEdge ?
+								(BorderEdge)board.get(i, j - 1) : null;
+
+						// Can start a pair if distance to border is greater
+						// than the number of reserved edges (+1 to include
+						// the other edge of the pair)
+						border.resetFrame((board.getTopBorder() - 1) - j > EDGES_NEXT_TO_CORNER_LEFT + 1, adjEdge);
 					}
 					board.addNewObstacle(border);
 					addObject(border);
@@ -1127,10 +1159,22 @@ public class LevelDesignerMode extends WorldController {
 				} else if(i == board.getRightBorder() - 1) {
 					board.set(null, i, j);
 					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.RIGHT);
-					if(i - board.getBottomBorder() == 1) {
-						border.setNextToSide(1, BorderEdge.Side.BOTTOM);
-					} else if((board.getTopBorder() - 1) - i == 1) {
-						border.setNextToSide(1, BorderEdge.Side.TOP);
+					if(j - board.getBottomBorder() <= EDGES_NEXT_TO_CORNER_RIGHT) {
+						border.setNextToSide(j - board.getBottomBorder(), BorderEdge.Side.BOTTOM);
+					} else if((board.getTopBorder() - 1) - j <= EDGES_NEXT_TO_CORNER_RIGHT) {
+						border.setNextToSide((board.getTopBorder() - 1) - j, BorderEdge.Side.TOP);
+					} else {
+						// For now, hardcoding in the logic of which edges can
+						// be next to which other edges
+
+						// Get the adjacent edge to pass in
+						BorderEdge adjEdge = board.get(i, j - 1) instanceof BorderEdge ?
+								(BorderEdge)board.get(i, j - 1) : null;
+
+						// Can start a pair if distance to border is greater
+						// than the number of reserved edges (+1 to include
+						// the other edge of the pair)
+						border.resetFrame((board.getTopBorder() - 1) - j > EDGES_NEXT_TO_CORNER_RIGHT + 1, adjEdge);
 					}
 					board.addNewObstacle(border);
 					addObject(border);
@@ -1139,10 +1183,34 @@ public class LevelDesignerMode extends WorldController {
 				} else if(j == board.getTopBorder() - 1) {
 					board.set(null, i, j);
 					BorderEdge border = factory.makeBorder(xCoord, yCoord, BorderEdge.Side.TOP);
-					if(i - board.getLeftBorder() <= 2) {
+
+					// Ensure that the edges next to the corner are set properly
+					if(i - board.getLeftBorder() <= EDGES_NEXT_TO_CORNER_TOP) {
 						border.setNextToSide(i - board.getLeftBorder(), BorderEdge.Side.LEFT);
-					} else if((board.getRightBorder() - 1) - i <= 2) {
+					} else if((board.getRightBorder() - 1) - i <= EDGES_NEXT_TO_CORNER_TOP) {
 						border.setNextToSide((board.getRightBorder() - 1) - i, BorderEdge.Side.RIGHT);
+					} else {
+						// For now, hardcoding in the logic of which edges can
+						// be next to which other edges
+
+						// Get the adjacent edge to pass in
+						BorderEdge adjEdge = board.get(i - 1, j) instanceof BorderEdge ?
+								(BorderEdge)board.get(i - 1, j) : null;
+
+						boolean canStartPair;
+
+						// Manually ensure that two doorway-type pairs of edges
+						// cannot be adjacent
+						if(adjEdge.getFrame() == 4 || adjEdge.getFrame() == 6) {
+							canStartPair = false;
+						} else {
+							// Can start a pair if distance to border is greater
+							// than the number of reserved edges (+1 to include
+							// the other edge of the pair)
+							canStartPair = (board.getRightBorder() - 1) - i > EDGES_NEXT_TO_CORNER_TOP + 1;
+						}
+
+						border.resetFrame(canStartPair, adjEdge);
 					}
 					board.addNewObstacle(border);
 					addObject(border);

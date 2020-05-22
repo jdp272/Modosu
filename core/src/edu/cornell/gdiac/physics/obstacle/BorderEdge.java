@@ -7,6 +7,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.util.FilmStrip;
 
+import java.util.Random;
+
 public class BorderEdge extends BoxObstacle {
     /**
      * An enum for the different possible border sides this edge can be on.
@@ -24,20 +26,71 @@ public class BorderEdge extends BoxObstacle {
         public final float angle;
     }
 
+//    /**
+//     * An enum that represents the edge frame
+//     */
+//    private enum Frame {
+//        // Top frames
+//        DEFAULT_A_TOP_FRAME(0, false),
+//        DEFAULT_B_TOP_FRAME(1, false),
+//        DEFAULT_C_TOP_FRAME(2, false),
+//        LEFT_GATE_A_TOP_FRAME(3, true),
+//        RIGHT_GATE_A_TOP_FRAME(4, false),
+//        LEFT_GATE_B_TOP_FRAME(5, true),
+//        RIGHT_GATE_B_TOP_FRAME(6, false),
+//        LEFT_PAIR_TOP_FRAME(7, true),
+//        RIGHT_PAIR_TOP_FRAME(8, false),
+//        LEFT_LEFT_TOP_FRAME(9, true),
+//        LEFT_MID_TOP_FRAME(10, false),
+//        RIGHT_MID_TOP_FRAME(11, true),
+//        RIGHT_RIGHT_TOP_FRAME(12, false),
+//
+//        RIGHT_RIGHT_TOP_FRAME(12, false),
+//
+//        ;
+//
+//        /**
+//         * Constructs the frame
+//         *
+//         * @param frame The frame number
+//         * @param startsPair Whether the frame is on the left side of a pair,
+//         *                   and the adjacent edge must match
+//         */
+//        Frame(int frame, boolean startsPair) {
+//            this.frame = frame;
+//            this.startsPair = startsPair;
+//        }
+//
+//        /** The frame number */
+//        public final int frame;
+//        /** Whether the frame is on the left/bottom side of a pair, and the
+//         *  adjacent edge must match */
+//        public final boolean startsPair;
+//    };
+
+
     /** The side that this edge goes along */
     private Side side;
+
+    /** Whether the frame is on the left/bottom side of a pair, and the
+     *  adjacent edge must match */
+    private boolean startsPair;
 
     /** The filmstrip to be used for rendering this edge */
     private FilmStrip edgeStrip;
 
-//    /** The frame within the border edge filmstrip to be used */
-//    private int frame;
+    // For generating random numbers for the art variants
+    private final int seed;
+    private Random random;
 
     /** A cache vector for computation and for passing as a parameter */
     private Vector2 cache;
 
     public BorderEdge(float x, float y, float width, float height, Side side, FilmStrip edgeStrip) {
         super(x, y, width, height);
+        seed = (int)(Math.random() * 1000);
+        random = new Random(seed);
+
         this.edgeStrip = edgeStrip;
         setTexture(this.edgeStrip);
         setSide(side);
@@ -50,6 +103,9 @@ public class BorderEdge extends BoxObstacle {
 
     public BorderEdge(float x, float y, float width, float height, Side side, int frame, FilmStrip edgeStrip) {
         super(x, y, width, height);
+        seed = (int)(Math.random() * 1000);
+        random = new Random(seed);
+
         this.edgeStrip = edgeStrip;
         setTexture(this.edgeStrip);
         setSide(side);
@@ -70,28 +126,185 @@ public class BorderEdge extends BoxObstacle {
      */
     public Side getSide() { return side; }
 
+//    private void setFrameObj(int frame) {
+//        switch(frame) {
+//            case 0:
+//                frameObj = Frame.DEFAULT_A_TOP_FRAME;
+//                break;
+//            case 1:
+//                frameObj = Frame.DEFAULT_B_TOP_FRAME;
+//                break;
+//            case 2:
+//                frameObj = Frame.DEFAULT_C_TOP_FRAME;
+//                break;
+//            case 3:
+//                frameObj = Frame.LEFT_GATE_A_TOP_FRAME;
+//                break;
+//            case 4:
+//                frameObj = Frame.RIGHT_GATE_A_TOP_FRAME;
+//                break;
+//            case 5:
+//                frameObj = Frame.LEFT_GATE_B_TOP_FRAME;
+//                break;
+//            case 6:
+//                frameObj = Frame.RIGHT_GATE_B_TOP_FRAME;
+//                break;
+//            case 7:
+//                frameObj = Frame.LEFT_PAIR_TOP_FRAME;
+//                break;
+//            case 8:
+//                frameObj = Frame.RIGHT_PAIR_TOP_FRAME;
+//                break;
+//            case 9:
+//                frameObj = Frame.LEFT_LEFT_TOP_FRAME;
+//                break;
+//            case 10:
+//                frameObj = Frame.LEFT_MID_TOP_FRAME;
+//                break;
+//            case 11:
+//                frameObj = Frame.RIGHT_MID_TOP_FRAME;
+//                break;
+//            case 12:
+//                frameObj = Frame.RIGHT_RIGHT_TOP_FRAME;
+//                break;
+//        }
+//
+//    }
+
+    public int getInt() {
+        random.setSeed(seed);
+        return random.nextInt(Integer.MAX_VALUE);
+    }
+
     /**
      * Set the side of this border to the specified side. This also updates the
-     * frame to correspond to the default image for the side
+     * frame to correspond to the default image for the side and based on the
+     * given adjacent left or above edge (if applicable).
      *
      * @param side The new side for this border edge
      */
     public void setSide(Side side) {
+        random.setSeed(seed);
         this.side = side;
+
+        int frame;
+
+        switch(this.side) {
+        case TOP:
+            frame = random.nextInt(6);
+            int numSingleEdges = 3;
+
+            // If frame is one of the pairs, make it the left side
+            if(frame >= numSingleEdges) {
+                frame -= numSingleEdges;
+                frame *= 2; // Have to skip the right side of the pairs
+                frame += numSingleEdges;
+            }
+
+            break;
+        case BOTTOM:
+            // For some reason, nextInt(2) never seemed to give 0...
+            frame = (random.nextInt(4) % 2) + 13;
+            break;
+        case LEFT:
+            frame = random.nextInt(3) + 26;
+            break;
+        case RIGHT:
+            frame = random.nextInt(3) + 39;
+            break;
+        default:
+            System.out.println("Invalid side from BorderEdge.setSide()");
+            assert false;
+            return;
+        }
+
+        this.edgeStrip.setFrame(frame);
+//        setFrameObj(frame); // Updates the internally stored frame object
+
+        // An adjacent frame is required to complete the pair for these frames
+        // These are the pairs that start the pairs (on the left or bottom side)
+        startsPair = (frame == 3 || frame == 5 || frame == 7 || frame == 28 || frame == 41);
+    }
+
+
+    /**
+     * Set the side of this border to the specified side. This also updates the
+     * frame to correspond to the default image for the side and based on the
+     * given adjacent left or below edge (if applicable).
+     *
+     * @param canStartPair Whether this tile should be able to start a pair.
+     *                     May be false if a pair just ended or if the next tile
+     *                     is the automatically placed one next to a corner
+     * @param leftOrBelow The adjacent border edge. When side is TOP or BOTTOM,
+     *                 that edge should be left, and when side is LEFT or RIGHT,
+     *                 that edge should be below. If there is none, use null.
+     */
+    public void resetFrame(boolean canStartPair, BorderEdge leftOrBelow) {
+        if(leftOrBelow == null) return;
+
+        random.setSeed(seed);
+        this.side = side;
+
+        int frame;
+
+        int adjFrame = leftOrBelow.edgeStrip.getFrame();
         switch(this.side) {
             case TOP:
-                this.edgeStrip.setFrame(0);
+                if(adjFrame == 3 || adjFrame == 5 || adjFrame == 7) {
+                    frame = adjFrame + 1;
+                } else if (canStartPair) {
+                    frame = random.nextInt(6);
+                    int numSingleEdges = 3;
+
+                    // If frame is one of the pairs, make it the left side
+                    if (frame >= numSingleEdges) {
+                        frame -= numSingleEdges;
+                        frame *= 2; // Have to skip the right side of the pairs
+                        frame += numSingleEdges;
+                    }
+                } else {
+                    frame = random.nextInt(3);
+                }
+
                 break;
             case BOTTOM:
-                this.edgeStrip.setFrame(9);
+                // For some reason, nextInt(2) never seemed to give 0...
+                frame = (random.nextInt(4) % 2) + 13;
                 break;
             case LEFT:
-                this.edgeStrip.setFrame(18);
+                if(adjFrame == 29) {
+                    // Pair order is reversed
+                    frame = adjFrame - 1;
+                } else if (canStartPair) {
+                    frame = random.nextInt(3) + 26;
+
+                    // Ensure frame never starts at the wrong one
+                    if(frame == 28) frame = 29;
+
+                } else {
+                    frame = (random.nextInt(4) % 2) + 26;
+                }
+
                 break;
             case RIGHT:
-                this.edgeStrip.setFrame(27);
+                if(adjFrame == 42) {
+                    frame = adjFrame - 1;
+                } else if (canStartPair) {
+                    frame = random.nextInt(3) + 39;
+
+                    // Ensure frame never starts at the wrong one
+                    if(frame == 41) frame = 42;
+                } else {
+                    frame = (random.nextInt(4) % 2) + 39;
+                }
                 break;
+            default:
+                System.out.println("Invalid side from BorderEdge.setSide()");
+                assert false;
+                return;
         }
+
+        this.edgeStrip.setFrame(frame);
     }
 
     /**
@@ -105,128 +318,47 @@ public class BorderEdge extends BoxObstacle {
             case TOP:
                 if(distance == 1) {
                     if(nearbySide == Side.LEFT) {
-                        this.edgeStrip.setFrame(5);
+                        this.edgeStrip.setFrame(9);
                     } else if(nearbySide == Side.RIGHT) {
-                        this.edgeStrip.setFrame(7);
+                        this.edgeStrip.setFrame(12);
                     }
                 } else if(distance == 2) {
                     if(nearbySide == Side.LEFT) {
-                        this.edgeStrip.setFrame(6);
+                        this.edgeStrip.setFrame(10);
                     } else if(nearbySide == Side.RIGHT) {
-                        this.edgeStrip.setFrame(8);
+                        this.edgeStrip.setFrame(11);
                     }
                 }
                 break;
             case BOTTOM:
                 if(distance == 1) {
                     if(nearbySide == Side.LEFT) {
-                        this.edgeStrip.setFrame(11);
+                        this.edgeStrip.setFrame(15);
                     } else if(nearbySide == Side.RIGHT) {
-                        this.edgeStrip.setFrame(12);
+                        this.edgeStrip.setFrame(16);
                     }
                 }
                 break;
             case LEFT:
                 if(distance == 1) {
                     if(nearbySide == Side.BOTTOM) {
-                        this.edgeStrip.setFrame(21);
+                        this.edgeStrip.setFrame(31);
                     } else if(nearbySide == Side.TOP) {
-                        this.edgeStrip.setFrame(22);
+                        this.edgeStrip.setFrame(30);
                     }
                 }
                 break;
             case RIGHT:
                 if(distance == 1) {
                     if(nearbySide == Side.BOTTOM) {
-                        this.edgeStrip.setFrame(30);
+                        this.edgeStrip.setFrame(44);
                     } else if(nearbySide == Side.TOP) {
-                        this.edgeStrip.setFrame(31);
+                        this.edgeStrip.setFrame(43);
                     }
                 }
                 break;
         }
     }
-
-//    /**
-//     * @return The frame for this border edge
-//     */
-//    public int getFrame() { return frame; }
-
-//    /**
-//     * Sets the correct frame of this wall tile, based on the adjacent tiles.
-//     * Each boolean indicates if there is a wall in the corresponding direction
-//     *
-//     * @param above If there is a wall above this tile
-//     * @param below If there is a wall below this tile
-//     * @param left If there is a wall left of this tile
-//     * @param right If there is a wall right of this tile
-//     * @param belowIsTop If there is a wall below, and it not a front wall
-//     * @param leftIsTop If there is a wall to the left, and it not a front wall
-//     * @param rightIsTop If there is a wall to the right, and it not a front wall
-//     * @param lowerLeftIsTop If there is a wall down and to the left, and it is not a front wall
-//     * @param lowerRightIsTop If there is a wall down and to the right, and it is not a front wall
-//     * @param alt If the position has an alternate texture, this indicates if it
-//     *            should be used instead of the primary one
-//     */
-//    public void setFrame(boolean above, boolean below, boolean left, boolean right,
-//                         boolean belowIsTop, boolean leftIsTop, boolean rightIsTop,
-//                         boolean lowerLeftIsTop, boolean lowerRightIsTop,
-//                         boolean alt) {
-//
-//        // Draw the ceiling only if a wall is below this one
-//        if(below) {
-//            primaryFrame = alt ? WALL_TOP_B : WALL_TOP_A;
-//            if(!belowIsTop) {
-//                frontEdgeFrame = FRONT_EDGE;
-//            } else {
-//                frontEdgeFrame = NO_SIDE;
-//            }
-//        } else {
-//            primaryFrame = WALL_FRONT;
-//            frontEdgeFrame = NO_SIDE;
-//        }
-//
-//        // Draw the left and right borders if there is no wall to that side,
-//        // or if it is a front wall and this wall is not
-//        if(leftIsTop || (primaryFrame == WALL_FRONT && left)) {
-//            leftFrame = NO_SIDE;
-//        } else {
-//            if(primaryFrame == WALL_FRONT) {
-//                leftFrame = WALL_LEFT_FRONT;
-//            } else {
-//                leftFrame = WALL_LEFT_TOP;
-//            }
-//        }
-//        if(rightIsTop || (primaryFrame == WALL_FRONT && right)) {
-//            rightFrame = NO_SIDE;
-//        } else {
-//            if(primaryFrame == WALL_FRONT) {
-//                rightFrame = WALL_RIGHT_FRONT;
-//            } else {
-//                rightFrame = WALL_RIGHT_TOP;
-//            }
-//        }
-//
-//        // Draw the back rim only if there is no wall behind this one
-//        if(!above) {
-//            backEdgeFrame = BACK_EDGE;
-//        } else {
-//            backEdgeFrame = NO_SIDE;
-//        }
-//
-//        // Draw the corners only if below is a top, that side is a top, and the
-//        // tile diagonal below is not a top wall
-//        if(belowIsTop && leftIsTop && !lowerLeftIsTop) {
-//            lowerLeftCornerFrame = LOWER_LEFT_CORNER;
-//        } else {
-//            lowerLeftCornerFrame = NO_SIDE;
-//        }
-//        if(belowIsTop && rightIsTop && !lowerRightIsTop) {
-//            lowerRightCornerFrame = LOWER_RIGHT_CORNER;
-//        } else {
-//            lowerRightCornerFrame = NO_SIDE;
-//        }
-//    }
 
     @Override
     protected void setScaling(TextureRegion tex) {

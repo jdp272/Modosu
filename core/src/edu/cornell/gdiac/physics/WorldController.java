@@ -190,10 +190,17 @@ public abstract class WorldController implements Screen {
 	/** File to texture for Pedestal */
 	private static String PEDESTAL_NIGHT_FILE = "shared/night/phoenix_pedestal.png";
 	/** File to texture for borders */
-	private static String BORDER_EDGE_FILE = "shared/forest.png";
+//<<<<<<< HEAD
+//	private static String BORDER_EDGE_FILE = "shared/forest.png";
+//	/** File to texture for night borders */
+//	private static String BORDER_EDGE_NIGHT_FILE = "shared/night/backdropspritesheet.png";
+//	/** File to texture for corners */
+//=======
+	private static String BORDER_EDGE_FILE = "shared/backdropv5.png";
 	/** File to texture for night borders */
-	private static String BORDER_EDGE_NIGHT_FILE = "shared/night/backdropspritesheet.png";
+	private static String BORDER_EDGE_NIGHT_FILE = "shared/night/backdropv5.png";
 	/** File to texture for corners */
+//>>>>>>> edges
 	private static String BORDER_CORNER_FILE = "shared/forestcorners.png";
 	/** File to texture for night corners */
 	private static String BORDER_CORNER_NIGHT_FILE = "shared/night/backdropcorners.png";
