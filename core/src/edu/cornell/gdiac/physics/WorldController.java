@@ -17,6 +17,7 @@
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
@@ -843,6 +844,10 @@ public abstract class WorldController implements Screen {
 	public void setCurrentLevel(int l) {
 		System.out.println("SET CURRENT LEVEL TO:" + l);
 		currentLevel = l;
+		Preferences prefs = Gdx.app.getPreferences("Preferences");
+		prefs.putInteger("level", currentLevel);
+		prefs.flush();
+		System.out.println("Prefs set");
 	}
 
 	/**
@@ -861,6 +866,10 @@ public abstract class WorldController implements Screen {
 		// currentLevel = (int) Math.min(currentLevel + 1, MAX_NUM_LEVELS);
 		// TODO: Game Complete When Beat All Levels -- currently loops
 		currentLevel = (currentLevel + 1) % NUM_LEVELS;
+		Preferences prefs = Gdx.app.getPreferences("Preferences");
+		prefs.putInteger("level", currentLevel);
+		prefs.flush();
+		System.out.println("Prefs set");
 	}
 
 	/**
@@ -999,7 +1008,14 @@ public abstract class WorldController implements Screen {
 		active = false;
 		renderHUD = true;
 		countdown = -1;
-		currentLevel = 0;
+		Preferences prefs = Gdx.app.getPreferences("Preferences");
+		if (prefs.contains("level")) {
+			currentLevel = prefs.getInteger("level");
+			System.out.println("prefs got");
+		}
+		else {
+			currentLevel = 0;
+		}
 		dimensions = new Vector2();
 		lowerLeft = new Vector2();
 		footprints = new ArrayList<>();
