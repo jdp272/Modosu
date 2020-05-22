@@ -34,17 +34,8 @@ import com.badlogic.gdx.math.Vector2;
 import edu.cornell.gdiac.util.*;
 
 /**
- * Class that provides a loading screen for the state of the game.
- *
- * You still DO NOT need to understand this class for this lab.  We will talk about this
- * class much later in the course.  This class provides a basic template for a loading
- * screen to be used at the start of the game or between levels.  Feel free to adopt
- * this to your needs.
- *
- * You will note that this mode has some textures that are not loaded by the AssetManager.
- * You are never required to load through the AssetManager.  But doing this will block
- * the application.  That is why we try to have as few resources as possible for this
- * loading screen.
+ * Class that provides a loading screen for the state of the game, as well as
+ * the main menu
  */
 public class LoadingMode implements Screen {
 	// Textures necessary to support the loading screen
@@ -400,7 +391,21 @@ public class LoadingMode implements Screen {
 		sound.allocate(manager, HOVER_SOUND);
 		music.play("menuMusic");
 	}
-	
+
+	/**
+	 * Resets the values
+	 */
+	public void reset() {
+		isPressed = false;
+		colorStart = colorUnhovered;
+		colorLvlDesign = colorUnhovered;
+		colorLvlSelect = colorUnhovered;
+		colorCredits = colorUnhovered;
+		colorQuit = colorUnhovered;
+		colorMute = colorUnhovered;
+		hoverButton = false;
+	}
+
 	/**
 	 * Called when this screen should release all resources.
 	 */
@@ -508,7 +513,6 @@ public class LoadingMode implements Screen {
 			canvas.draw(quit, buttonPressed == pressState.QUIT && isPressed ? Color.SKY : colorQuit, 0, 0,
 					QUIT_X, QUIT_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-			System.out.println("sound: " + sound.isUnmuted() + "music:" + music.isUnmuted());
 			if (sound.isUnmuted() || music.isUnmuted() || (music.getVolume() != 0 || sound.getVolume() != 0)) {
 				canvas.draw(unmute, buttonPressed == pressState.MUTE && isPressed ? Color.SKY : colorMute, 0,0, MUTE_X, MUTE_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 			}
@@ -619,32 +623,26 @@ public class LoadingMode implements Screen {
 		if (updateFrameMenu) {
 			if (this.flyingPhoenixStrip_1.getFrame() < this.flyingPhoenixStrip_1.getSize() - 1) {
 				this.flyingPhoenixStrip_1.setFrame(this.flyingPhoenixStrip_1.getFrame() + 1);
-					//System.out.println("UPDATED STRIP 1: " + this.flyingPhoenixStrip_1.getFrame());
 					onFilmStrip = 1; }
 			else if ((this.flyingPhoenixStrip_1.getFrame() >= this.flyingPhoenixStrip_1.getSize() - 1)
 					&& this.flyingPhoenixStrip_2.getFrame() < this.flyingPhoenixStrip_2.getSize() - 1) {
 						this.flyingPhoenixStrip_2.setFrame(this.flyingPhoenixStrip_2.getFrame() + 1);
-					//System.out.println("UPDATED STRIP 2: " + this.flyingPhoenixStrip_2.getFrame());
 					onFilmStrip = 2; }
 			else if ((this.flyingPhoenixStrip_2.getFrame() >= this.flyingPhoenixStrip_2.getSize() - 1)
 					&& this.flyingPhoenixStrip_3.getFrame() < this.flyingPhoenixStrip_3.getSize() - 1) {
 					this.flyingPhoenixStrip_3.setFrame(this.flyingPhoenixStrip_3.getFrame() + 1);
-					//System.out.println("UPDATED STRIP 3: " + this.flyingPhoenixStrip_3.getFrame());
 					onFilmStrip = 3; }
 			else if ((this.flyingPhoenixStrip_3.getFrame() >= this.flyingPhoenixStrip_3.getSize() - 1)
 					&& this.flappingPhoenixStrip_1.getFrame() < this.flappingPhoenixStrip_1.getSize() - 1) {
 					this.flappingPhoenixStrip_1.setFrame(this.flappingPhoenixStrip_1.getFrame() + 1);
-					//System.out.println("UPDATED STRIP 4: " + this.flappingPhoenixStrip_1.getFrame());
 					onFilmStrip = 4; }
 			else if ((this.flappingPhoenixStrip_1.getFrame() >= this.flappingPhoenixStrip_1.getSize() - 1)
 					&& this.flappingPhoenixStrip_2.getFrame() < this.flappingPhoenixStrip_2.getSize() - 1) {
 					this.flappingPhoenixStrip_2.setFrame(this.flappingPhoenixStrip_2.getFrame() + 1);
-					//System.out.println("UPDATED STRIP 5: " + this.flappingPhoenixStrip_2.getFrame());
 					onFilmStrip = 5; }
 			else if ((this.flappingPhoenixStrip_2.getFrame() >= this.flappingPhoenixStrip_2.getSize() - 1)
 					&& this.flappingPhoenixStrip_3.getFrame() < this.flappingPhoenixStrip_3.getSize() - 1) {
 					this.flappingPhoenixStrip_3.setFrame(this.flappingPhoenixStrip_3.getFrame() + 1);
-					//System.out.println("UPDATED STRIP 6: " + this.flappingPhoenixStrip_3.getFrame());
 					onFilmStrip = 6; }
 			else {
 				this.flappingPhoenixStrip_1.setFrame(FRAME_START);
@@ -932,7 +930,6 @@ public class LoadingMode implements Screen {
 	 * @param screenY the y-coordinate of the mouse on the screen
 	 */	
 	public void updateReleased(float screenX, float screenY) {
-		//System.out.println("released!");
 		if (isPressed) {
 			if(screenX >= BUTTON_X && screenX <= BUTTON_X + (playButton.getWidth()*scale*BUTTON_SCALE) ) {
 				if (screenY >= START_Y && screenY <= START_Y + (playButton.getHeight()*scale*BUTTON_SCALE) ) {

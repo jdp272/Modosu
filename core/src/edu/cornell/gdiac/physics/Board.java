@@ -1,7 +1,5 @@
 package edu.cornell.gdiac.physics;
 
-import edu.cornell.gdiac.physics.obstacle.BorderCorner;
-import edu.cornell.gdiac.physics.obstacle.BorderEdge;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 public class Board {

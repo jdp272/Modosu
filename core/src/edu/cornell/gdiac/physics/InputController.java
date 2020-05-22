@@ -72,8 +72,6 @@ public class InputController {
 	/** Whether the pause button was pressed */
 	private boolean pausePressed;
 
-	/** Whether the tutorial next button was pressed */
-	private boolean tutorialNextPressed;
 
 	/** If a new obstacle button was pressed */
 	private boolean boxPressed;
@@ -170,30 +168,6 @@ public class InputController {
 	}
 
 	/**
-	 * Returns true if the primary action button was pressed.
-	 *
-	 * This is a one-press button. It only returns true at the moment it was
-	 * pressed, and returns false at any frame afterwards.
-	 *
-	 * @return true if the primary action button was pressed.
-	 */
-	public boolean didPrimary() {
-		return primePressed && !primePrevious;
-	}
-
-	/**
-	 * Returns true if the secondary action button was pressed.
-	 *
-	 * This is a one-press button. It only returns true at the moment it was
-	 * pressed, and returns false at any frame afterwards.
-	 *
-	 * @return true if the secondary action button was pressed.
-	 */
-	public boolean didSecondary() {
-		return secondPressed && !secondPrevious;
-	}
-
-	/**
 	 * Returns true if the tertiary action button was pressed.
 	 *
 	 * This is a sustained button. It will returns true as long as the player
@@ -235,9 +209,7 @@ public class InputController {
 	 *
 	 * @return true if the player wants to go toggle the debug mode.
 	 */
-	public boolean didDebug() {
-		return debugPressed && !debugPrevious;
-	}
+	public boolean didDebug() { return debugPressed && !debugPrevious; }
 
 	/**
 	 * Returns true if the exit button was pressed.
@@ -262,13 +234,6 @@ public class InputController {
 	 */
 	public boolean didPause() { return pausePressed; }
 
-	/**
-	 * Returns true if continued tutorial.
-	 *
-	 * @return true if the continue tutorial was pressed.
-	 */
-	public boolean didAdvanceTutorial() { return tutorialNextPressed; }
-
 
 	public boolean didIsPressed() { return mousePressed; }
 
@@ -278,28 +243,6 @@ public class InputController {
 	 * @return true if the player wants to go toggle the debug mode.
 	 */
 	public boolean didRelease() { return mousePressedPrevious && !mousePressed; }
-
-
-	/**
-	 * Returns true if the new box button was pressed.
-	 *
-	 * @return true if the new box button was pressed.
-	 */
-	public boolean newBox() { return boxPressed && !boxPrevious; }
-
-	/**
-	 * Returns true if the new host button was pressed.
-	 *
-	 * @return true if the new host button was pressed.
-	 */
-	public boolean newHost() { return hostPressed && !hostPrevious; }
-
-	/**
-	 * Returns true if the new spirit button was pressed.
-	 *
-	 * @return true if the new spirit button was pressed.
-	 */
-	public boolean newSpirit() { return spiritPressed && !spiritPrevious; }
 
 	/**
 	 * Returns true if the clear button was pressed.
@@ -522,9 +465,7 @@ public class InputController {
 	}
 
 	/**
-	 *
 	 * This controller reads input from the keyboard.
-	 *
 	 */
 	private void readKeyboard() {
 		updateKeyboard(false);
@@ -581,10 +522,4 @@ public class InputController {
 		mousePosition.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, mousePosition.x));
 		mousePosition.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, mousePosition.y));
 	}
-
-
-
-
-
-
 }

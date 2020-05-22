@@ -8,5 +8,7 @@
   {location:{x:70,y:400},instructions:"Some golems will move around on their own.",countdown:7},
   {location:{x:125,y:300},instructions:"While inside a pillar's energy ring, your golem will overcharge faster.",countdown:19},
   {location:{x:80,y:300},instructions:"Some walls will oscillate up and down.",countdown:9},
-  {location:{x:60,y:200},instructions:"You can pan the camera before starting and you can always press Z to zoom out. Press ESC to pause.",countdown:15}
+  {location:{x:60,y:200},instructions:"You can pan the camera before starting and you can always press Z to zoom out. Press ESC to pause.",countdown:15},
+  {location:{x:60,y:100},instructions:"Venture deeper into the ruins to revive the golems and lift the twilight!",countdown:9}
+
 ]}

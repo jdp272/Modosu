@@ -1,11 +1,9 @@
 package edu.cornell.gdiac.physics.host;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import edu.cornell.gdiac.physics.GameCanvas;
-import edu.cornell.gdiac.physics.HUD;
 import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.obstacle.EnergyPillar;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
@@ -70,8 +68,6 @@ public class HostController {
 
     private Vector2 spiritCache;
 
-    private Vector2 lastPosition;
-
     /**
      * Constant to change the speed of golem movement
      */
@@ -134,7 +130,6 @@ public class HostController {
         moved = false;
         canvas = c;
         this.energyPillars = energyPillars;
-        this.lastPosition = new Vector2(pedestal.getPosition());
     }
 
     /**
@@ -162,8 +157,9 @@ public class HostController {
      */
     public void update(float dt, HostModel possessed, SpiritModel spirit, HostModel pedestal, boolean inSand, EnergyPillar[] energyPillars, boolean wasPaused) {
         ticks++;
+
         // Removes the arrow that was clicked when paused
-        if (wasPaused) arrow = null;
+        if (wasPaused) { arrow = null; return; }
 
         // Brings the spirit to the center of the host
         if (spirit.getGoToCenter() && !spirit.getIsPossessing()) {
@@ -210,7 +206,6 @@ public class HostController {
                 spirit.setVY(0f);
             }
 
-
             // If its possible to increment the charge of the host
             if (possessed.incCurrentCharge()) {
 
@@ -224,27 +219,12 @@ public class HostController {
                             ep.setChargeProgression(chargeProgression);
                         }
 
-//                        if(ticks % 30 == 0) {
-//                            this.lastPosition = new Vector2(possessed.getPosition());
-//                        }
-
                         float obstacleFactor = 1;
-                        if (inSand) {
-                            obstacleFactor = .5f;
-                        }
+                        if (inSand) { obstacleFactor = .5f; }
                         possessed.setVX(HOST_MOVEMENT_SPEED * input.getHorizontal() * obstacleFactor);
                         possessed.setVY(HOST_MOVEMENT_SPEED * input.getVertical() * obstacleFactor);
-                        if(input.getVertical() != 0 || input.getHorizontal() != 0) {
-                            this.moved = true;
-                        }else{
-                            this.moved = false;
-                        }
-
-
-//                        if(this.moved) {
-//                            possessed.updateAnimation(possessed.getLinearVelocity());
-//                        }
-
+                        if (input.getVertical() != 0 || input.getHorizontal() != 0) { this.moved = true; }
+                        else { this.moved = false; }
                     }
 
 
@@ -328,7 +308,6 @@ public class HostController {
             if (possessed.getCurrentCharge() > possessed.getMaxCharge()) {
                 possessedBlownUp = true && possessed.animateDeath();
             }
-
         }
 
 

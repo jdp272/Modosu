@@ -121,7 +121,6 @@ public class MusicController {
 	 */
 	public void setUnmuted(boolean value) {
 		isUnmuted = value;
-		//System.out.println("set music.unmuted to " + value);
 		// If just got muted and currently playing
 		if (!isUnmuted && isPlaying()) {
 			if (musicNext != null && crossFading) {
@@ -137,7 +136,7 @@ public class MusicController {
 				reverse = false;
 				music.play();
 			}
-			//System.out.println("set volulme of music to 0");
+
 			music.setVolume(0);
 			if (musicNext != null) { musicNext.setVolume(0); }
 			prevMusicVolume = musicVolume;
@@ -164,7 +163,6 @@ public class MusicController {
 	public void play(String musicNameToPlay){
 		// Some music is currently playing
 		if (music != null){
-			//System.out.println("trying to play: " + musicNameToPlay);
 			Music musicToPlay = musicHolder.get(musicNameToPlay);
 
 			// If while cross fading, another change happens
@@ -198,27 +196,18 @@ public class MusicController {
 					musicNext.play();
 				}
 			}
-			else {
-				System.out.println("Should go into here");
-			}
-
 		}
 		// No music is currently playing
 		else {
-			//System.out.println("no music is playing so making it!");
 			Music musicToPlay = musicHolder.get(musicNameToPlay);
 			if (musicToPlay != null) {
 				musicName = musicNameToPlay;
 				music = musicToPlay;
 			}
-			else {
-				//System.out.println("The music you're trying to play isnt in the holder.");
-			}
 		}
 
 		if (music != null && !crossFading && !reverse) {
 			music.setVolume( isUnmuted() ? musicVolume : 0f);
-			//System.out.println("this is the musics volume " + musicVolume);
 			music.setLooping(true);
 			music.play();
 		}
@@ -232,12 +221,6 @@ public class MusicController {
 	public boolean isPlaying() {
 		if (music != null ) { return music.isPlaying(); }
 		return false;
-	}
-
-	public void stop(String musicName){
-		if (music != null) {
-			music.stop();
-		}
 	}
 
 	/**
@@ -269,7 +252,6 @@ public class MusicController {
 			else {
 				// Forward cross fade
 				if (!reverse) {
-					//System.out.println("forward");
 					// Update cross fade volumes
 					music.setVolume(music.getVolume() - (.015f * music.getVolume()));
 					musicNext.setVolume(musicNext.getVolume() + (.015f * musicNext.getVolume()));
@@ -283,12 +265,10 @@ public class MusicController {
 						music.play();
 						musicName = musicNextName;
 						musicNextName = null;
-						//System.out.println("finished forward");
 					}
 				}
 				// Reversed cross fade
 				else {
-					//System.out.println("backward");
 					// Update cross fade volumes
 					musicNext.setVolume(musicNext.getVolume() - (.015f * musicNext.getVolume()));
 					music.setVolume(music.getVolume() + (.015f * music.getVolume()));
@@ -302,7 +282,6 @@ public class MusicController {
 						music.setVolume(maximumThreshold);
 						musicNextName = null;
 						music.play();
-						//System.out.println("finished reverse");
 					}
 				}
 			}

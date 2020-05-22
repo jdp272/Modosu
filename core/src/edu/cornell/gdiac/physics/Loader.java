@@ -6,14 +6,11 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.*;
@@ -22,7 +19,7 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import java.util.ArrayList;
 
 /**
- * A static class that can be used for loading a level from a json file
+ * A class that can be used for loading and saving levels from json files
  */
 public class Loader {
 
@@ -329,7 +326,7 @@ public class Loader {
      *
      * @return A complete Level object that is the json file deserialized
      */
-    public Level loadLevel(FileHandle f, int level, boolean isGameplay) {
+    public Level loadLevel(FileHandle f, int level, boolean useNight) {
         // If this ever breaks try putting .readString() at the end of internal(f)
         // Can't load from a file handle because the file system is weird when
         // exported to a .jar
@@ -342,7 +339,7 @@ public class Loader {
         int tutorialNum = levelData.tutorialNum;
 
         // Opacity of the nightmode
-        float value = isGameplay ? 1 - level/32.0f : 0;
+        float value = useNight ? 1 - level/32.0f : 0;
         Color opacity = new Color(1,1,1, value);
 
         factory.setOpacity(opacity);
@@ -356,8 +353,6 @@ public class Loader {
                     oData.primaryFrame, oData.leftFrame, oData.rightFrame,
                     oData.frontEdgeFrame, oData.backEdgeFrame,
                     oData.lowerLeftCornerFrame, oData.lowerRightCornerFrame, opacity);
-
-            // walls[i] = new BoxObstacle(oData.origin.x, oData.origin.y, oData.dimensions.x, oData.dimensions.y);
         }
 
         WaterTile[] water = new WaterTile[levelData.waterData.length];
@@ -410,16 +405,6 @@ public class Loader {
         for (int i = 0; i < levelData.hostData.length; i++) {
             hData = levelData.hostData[i];
 
-
-            /* NOTES: I'm assuming that eventually we'll have a simple creator
-             for hosts, like a factory method or something, which we only need
-             to give coordinates and the charge time. At that point, this can be
-             easily updated with that.
-
-             This also assumes that a zero charge time means it has no time
-             limit
-
-             */
             hosts.add(factory.makeSmallHost(hData.location.x, hData.location.y, hData.instructions, hData.currentCharge));
         }
 
@@ -452,19 +437,4 @@ public class Loader {
         }
         return null;
     }
-
-//    /**
-//     * Output tutorials. For development purposes only
-//     */
-//    public void outputTutorials() {
-//        Tutorials tutorials = new Tutorials();
-//        tutorials.tutorials = new TutorialData[1];
-//
-//        tutorials.tutorials[0] = new TutorialData();
-//        tutorials.tutorials[0].instructions = "TEST TUTORIAL MESSAGE";
-//        tutorials.tutorials[0].countdown = 60;
-//        tutorials.tutorials[0].location = new Vector2(200, 200);
-//
-//        json.toJson(tutorials, new FileHandle(TUTORIAL_DATA_PATH));
-//    }
 }

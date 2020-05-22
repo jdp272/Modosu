@@ -116,9 +116,10 @@ public class SoundController {
 	/** The number of sounds we have played this animation frame */
 	private int current;
 
-	/** The default volume of sounds for this controller */
+	/** The default volume of sound */
 	private float soundVolume;
 
+	/** The previous volume of sound before mute was pressed */
 	private float prevSoundVolume;
 
 	/** 
@@ -309,17 +310,7 @@ public class SoundController {
 		snd.sound.setVolume(snd.id, 0.0f); 
 		actives.remove(key);
 	}
-	
-	/**
-	 * Returns true if the sound instance is currently active
-	 * 
-	 * @param key	The sound instance identifier
-	 * 
-	 * @return true if the sound instance is currently active
-	 */
-	public boolean isActive(String key) {
-		return actives.containsKey(key);
-	}
+
 	
 	/**
 	 * Updates the current frame of the sound controller.

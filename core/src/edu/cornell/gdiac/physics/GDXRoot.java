@@ -1,17 +1,7 @@
 /*
  * GDXRoot.java
- *
- * This is the primary class file for running the game.  It is the "static main" of
- * LibGDX.  In the first lab, we extended ApplicationAdapter.  In previous lab
- * we extended Game.  This is because of a weird graphical artifact that we do not
- * understand.  Transparencies (in 3D only) is failing when we use ApplicationAdapter. 
- * There must be some undocumented OpenGL code in setScreen.
- *
- * Author: Walker M. White
- * Based on original PhysicsDemo Lab by Don Holden, 2007
- * LibGDX version, 2/6/2015
  */
- package edu.cornell.gdiac.physics;
+package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -40,9 +30,6 @@ import edu.cornell.gdiac.util.ScreenListener;
 public class GDXRoot extends Game implements ScreenListener {
 	/** AssetManager to load game assets (textures, sounds, etc.) */
 	private AssetManager manager;
-
-	/** AssetManager to load game assets (textures, sounds, etc.) */
-	private AssetManager managerLoad;
 	/** Drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas; 
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
@@ -72,7 +59,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	public GDXRoot() {
 		// Start loading with the asset manager
 		manager = new AssetManager();
-		managerLoad = new AssetManager();
 
 		// Add font support to the asset manager
 		FileHandleResolver resolver = new InternalFileHandleResolver();
@@ -149,14 +135,12 @@ public class GDXRoot extends Game implements ScreenListener {
 		controller.setIsActiveScreen(false);
 		canvas.forceCamPosition(new Vector2(canvas.getWidth() / 2, canvas.getHeight() / 2));
 
+		loading.reset();
 		loading.setScreenListener(this);
 		loading.activate();
 
 		setScreen(loading);
-
 	}
-
-
 
 	/**
 	 * The given screen has made a request to exit its player mode.
@@ -167,7 +151,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param exitCode The state of the screen upon exit
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
-		// Going to gameplay mode from main menu through start
+		// Going to gamePlay mode from main menu through start
 		if (screen == loading && exitCode == WorldController.EXIT_PLAY) {
 			goLevelDesigner = false;
 
@@ -176,7 +160,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			controller.setCanvas(canvas);
 			controller.reset();
 			controller.setIsActiveScreen(true);
-			//loading.dispose();
+
 			setScreen(controller);
 		}
 
@@ -204,7 +188,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			levelSelect.reset();
 			setScreen(levelSelect);
 		}
-
 		else if (exitCode == WorldController.EXIT_GAME) {
 			goLevelDesigner = false;
 			gameOver.loadContent(manager);
@@ -242,7 +225,6 @@ public class GDXRoot extends Game implements ScreenListener {
 		}
 	}
 
-
 	/**
 	 * The given screen has made a request to exit its player mode
 	 * and enter the game mode on a specific level. ONLY CALLED FROM GAME OVER
@@ -250,12 +232,10 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param level The level to start the game at
 	 */
 	public void exitScreenLevel(int level) {
-		System.out.println(level);
 		controller.loadContent(manager);
 		controller.setScreenListener(this);
 		controller.setCanvas(canvas);
 		controller.setCurrentLevel(level);
-		controller.inCustom = false;
 		controller.reset();
 
 		setScreen(controller);
@@ -268,22 +248,17 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param level The level to start the game at
 	 */
 	public void exitScreenLevel(int level, int page) {
-
-		if(goLevelDesigner) {
+		if (goLevelDesigner) {
 			levelDesigner.loadContent(manager);
 			levelDesigner.setScreenListener(this);
 			levelDesigner.setCanvas(canvas);
 			levelDesigner.setCurrentLevel(level + (page*4));
-			if(level == -1){
-				levelDesigner.setLoadBoard(false);
-			}
+			if (level == -1) { levelDesigner.setLoadBoard(false); }
 			levelDesigner.reset();
 
 			setScreen(levelDesigner);
 		}
-		else {
-			exitScreenLevel(level + (page*4));
-		}
+		else { exitScreenLevel(level + (page*4)); }
 
 	}
 
@@ -294,8 +269,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * @param level The level to start the game at
 	 */
 	public void exitScreenLevel(int level, int page, boolean custom) {
-
-		if(goLevelDesigner) {
+		if (goLevelDesigner) {
 			levelDesigner.loadContent(manager);
 			levelDesigner.setScreenListener(this);
 			levelDesigner.setCanvas(canvas);
@@ -311,8 +285,8 @@ public class GDXRoot extends Game implements ScreenListener {
 
 			setScreen(levelDesigner);
 		}
+
 		else {
-			System.out.println(level + (page*4));
 			controller.loadContent(manager);
 			controller.setScreenListener(this);
 			controller.setCanvas(canvas);
@@ -322,7 +296,5 @@ public class GDXRoot extends Game implements ScreenListener {
 
 			setScreen(controller);
 		}
-
 	}
-
 }

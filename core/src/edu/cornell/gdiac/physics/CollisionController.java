@@ -2,11 +2,9 @@ package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import edu.cornell.gdiac.physics.obstacle.DeadZone;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.host.HostModel;
 import edu.cornell.gdiac.physics.obstacle.OscWall;
-import edu.cornell.gdiac.physics.obstacle.Wall;
 import edu.cornell.gdiac.physics.spirit.SpiritModel;
 
 import java.util.ArrayList;
@@ -99,16 +97,12 @@ public class CollisionController implements ContactListener {
         // Reset all the fields to reflect this current frame if needed
         clear();
         prevHostPossessed = hostPossessed;
-        // hostPossessed = null;
 
         Fixture fix1 = contact.getFixtureA();
         Fixture fix2 = contact.getFixtureB();
 
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
-
-        Obstacle bd1 = (Obstacle) body1.getUserData();
-        Obstacle bd2 = (Obstacle) body2.getUserData();
 
         // Collision handling to determine if the spirit collides with any hosts
         for (HostModel r : hostList) {
@@ -178,8 +172,6 @@ public class CollisionController implements ContactListener {
             }
         }
     }
-
-    private Vector2 cache = new Vector2();
 
     /**
      * Unused ContactListener method
@@ -252,9 +244,6 @@ public class CollisionController implements ContactListener {
                     (body1.getUserData() == r && body2.getUserData() == spirit))) {
                 contact.setEnabled(false);
             }
-
-            // TODO : change boolean flag if in sand NEED TO MAKE HITBOXES MOREO PRECISE
-
         }
 
         // Recognize spirit against a wall to play sound
@@ -317,5 +306,4 @@ public class CollisionController implements ContactListener {
     }
 
     public boolean getBounceOnBounds() { return bounceOnBounds; }
-
 }

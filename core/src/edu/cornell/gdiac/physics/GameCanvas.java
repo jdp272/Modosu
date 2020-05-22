@@ -154,6 +154,8 @@ public class GameCanvas {
 		camPos = new Vector2();
 
 		camera.zoom = ZOOM_IN_MULTIPLIER;
+		targetZoom = ZOOM_IN_MULTIPLIER;
+		zooming = false;
 	}
 		
     /**
@@ -230,6 +232,13 @@ public class GameCanvas {
 	public void forceZoom(float zoom) {
 		camera.zoom = zoom;
 		camera.update();
+	}
+
+	/**
+	 * Forces the camera to zoom to initial zooming equal to zooming in
+	 */
+	public void resetZoom() {
+		forceZoom(ZOOM_IN_MULTIPLIER);
 	}
 
 	public void toggleZoom() {
@@ -457,13 +466,16 @@ public class GameCanvas {
 	
 	/**
 	 * Clear the screen so we can start a new animation frame
+	 *
+	 * @param level The level number for calculating night color
+	 * @param renderNight If false, automatically renders as daytime
 	 */
-	public void clear(float level, boolean inGameplay) {
+	public void clear(float level, boolean renderNight) {
     	// Clear the screen
 		float v1 = 43f + 0.8f*(level%32);
 		float v2 = 65f + 0.4f*(level%32);
 
-		if (inGameplay) {
+		if (renderNight) {
 			Gdx.gl.glClearColor(21f/256f, v1/256f, v2/256f, 1.0f);
 		} else {
 			Gdx.gl.glClearColor(21f/256f, 68f/256f, 76f/256f, 1.0f);

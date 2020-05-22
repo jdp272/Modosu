@@ -1,17 +1,10 @@
 /*
- * RocketWorldController.java
- *
- * This is one of the files that you are expected to modify. Please limit changes to
- * the regions that say INSERT CODE HERE.
- *
- * Author: Walker M. White
- * Based on original PhysicsDemo Lab by Don Holden, 2007
- * LibGDX version, 2/6/2015
+ * GamePlayController.java
  */
 package edu.cornell.gdiac.physics;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
@@ -28,15 +21,8 @@ import edu.cornell.gdiac.physics.spirit.SpiritModel;
 import edu.cornell.gdiac.util.MusicController;
 import edu.cornell.gdiac.util.SoundController;
 
-import javax.print.DocFlavor;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
 /**
- * Gameplay controller for Modosu.
+ * GamePlay controller for Modosu.
  *
  * You will notice that asset loading is not done with static methods this time.
  * Instance asset loading makes it easier to process our game modes in a loop, which
@@ -87,8 +73,6 @@ public class GamePlayController extends WorldController {
 
 	private Level level;
 
-	private int lvl;
-
 	protected HostModel possessed;
 
 	protected HostModel pedestal;
@@ -106,8 +90,6 @@ public class GamePlayController extends WorldController {
 	private final int lifePerBounce = 40;
 
 	private final float panSpeed = 10f;
-
-	public boolean inCustom;
 
 	private boolean isActiveScreen;
 
@@ -205,16 +187,11 @@ public class GamePlayController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		collisionController = new CollisionController();
-
-		lvl = 0;
 		world.setContactListener(collisionController);
 
 		sound = SoundController.getInstance();
 		// Initialize vectors
         cache = new Vector2();
-
-		// Levels were loaded here but I don't think that's necessary because reset does it too
-		// and is always called when gameplay controller first loads up
 
 	}
 
@@ -241,28 +218,25 @@ public class GamePlayController extends WorldController {
 		setFailure(false);
 		setMenu(false);
 
+		canvas.resetZoom();
+
 		renderHUD = true;
 		launchedFirstShot = false;
-		System.out.println("just called play game music");
+
 		MusicController.getInstance().play("gameMusic");
-		// MusicController.getInstance().setVolume(40);
 
 		Vector2 gravity = new Vector2(world.getGravity());
 
 		FileHandle levelToLoad;
 
 		int levelIndex = ((currentLevel%levels.size()) + levels.size()) % levels.size();
+		currentLevel = levelIndex;
 
 		// TODO These are currently the same so if everything works this if statement can be removed
-		if(inCustom) {
-//			System.out.println("Custom/" + levels.get(levelIndex).getName());
-			levelToLoad = levels.get(levelIndex);
-		} else {
-//			System.out.println("levels/" + levels.get(levelIndex).getName());
-			levelToLoad = levels.get(levelIndex);
-		}
+		if(inCustom) { levelToLoad = levels.get(levelIndex); }
+		else { levelToLoad = levels.get(levelIndex); }
 
-		level = loader.loadLevel(levelToLoad, levelIndex, true);
+		level = loader.loadLevel(levelToLoad, levelIndex, !inCustom);
 
 		/* Load in Tutorial */
 		tutorial.reset();
@@ -296,7 +270,7 @@ public class GamePlayController extends WorldController {
 		// Reset the collision controller
 		collisionController.reset();
 
-		for(Obstacle o : objects) {
+		for (Obstacle o : objects) {
 			o.deactivatePhysics(world);
 		}
 
@@ -481,36 +455,18 @@ public class GamePlayController extends WorldController {
 			canvas.zoomIn();
 		}
 
-		// Uncomment this if we want to zoom in when a shot is fired, but not when it's being aimed
-		/*
-		if (spirit.hasLaunched) {
-			canvas.zoomIn();
-		}
-		 */
-
-
 		if (!possessed.isPedestal() && (InputController.getInstance().getHorizontal() != 0 || InputController.getInstance().getVertical() != 0)) {
 			canvas.zoomIn();
 		}
 
-		// Zoom back in if you click to aim a shot; Want to see what players think about this
-		/*
-		if (InputController.getInstance().didTertiary()) {
-			canvas.zoomIn();
-		}
-		*/
-
 		Boolean isInPillar = false;
-		// CHECK IF POSSESSED IS IN ENERGY PILLAR RADIUS
+		// Check if possessed is in energy pillar radius
         for(EnergyPillar ep : energyPillars) {
-            //System.out.println(possessed.getPosition());
-            //System.out.println(ep.getPosition());
-//        	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor() + possessed.getWidth() / 2,2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor() + possessed.getHeight() / 2, 2))) <= 1)  {
-        	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor(),2)) + ((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor(), 2))) <= 1)  {
-        	    if(spirit.hasLaunched) {
-        	    	isInPillar = false;
-				} else {
-					possessed.setCurrentCharge((int) possessed.getCurrentCharge() + 2);
+        	if((Math.pow((possessed.getPosition().x - ep.getPosition().x), 2) / Math.pow(ep.getEnergyPillarMajor(),2)) +
+					((Math.pow((possessed.getPosition().y - ep.getPosition().y), 2))/(Math.pow(ep.getEnergyPillarMinor(), 2))) <= 1)  {
+        	    if (spirit.hasLaunched) { isInPillar = false; }
+        	    else {
+					possessed.setCurrentCharge(possessed.getCurrentCharge() + 2);
 					isInPillar = true;
 				}
 			}
@@ -522,14 +478,6 @@ public class GamePlayController extends WorldController {
 			spirit.decCurrentLife(lifePerBounce);
 			canvas.shakeCamera(15, 5);
 		}
-
-		/*
-		if (possessed.getImpact()) {
-			canvas.forceCamPosition(new Vector2(spirit.getPosition().x * scale.x, spirit.getPosition().y * scale.y));
-			canvas.shakeCamera(15, 5);
-			possessed.setImpact(false);
-		}
-		*/
 
 		// Deal with random ambient sounds
 		if (Math.random() > .999){

@@ -321,17 +321,15 @@ public class Wall extends BoxObstacle {
             return;
         }
 
-        // Update the scaling so the box is drawn correctly
-        setScaling(wallStrip);
-        setScaling(wallNightStrip);
-
         // Draw the primary frame
         wallStrip.setFrame(primaryFrame);
         wallNightStrip.setFrame(primaryFrame);
 
 //        canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
 
-        canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+        setScaling(wallStrip);
+        canvas.draw(texture,  Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+        setScaling(wallNightStrip);
         canvas.draw(textureNight, opacity,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
 
         // Draw the left side
@@ -339,7 +337,10 @@ public class Wall extends BoxObstacle {
             wallStrip.setFrame(leftFrame);
             wallNightStrip.setFrame(leftFrame);
 //            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
-            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+
+            setScaling(wallStrip);
+            canvas.draw(texture,  Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+            setScaling(wallNightStrip);
             canvas.draw(textureNight, opacity,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
         }
 
@@ -348,7 +349,7 @@ public class Wall extends BoxObstacle {
             wallStrip.setFrame(rightFrame);
             wallNightStrip.setFrame(rightFrame);
 //            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
-            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+            canvas.draw(texture,  Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
             canvas.draw(textureNight, opacity,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
         }
 
@@ -357,7 +358,10 @@ public class Wall extends BoxObstacle {
             wallStrip.setFrame(frontEdgeFrame);
             wallNightStrip.setFrame(frontEdgeFrame);
 //            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
-            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+
+            setScaling(wallStrip);
+            canvas.draw(texture,  Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+            setScaling(wallNightStrip);
             canvas.draw(textureNight, opacity,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
         }
 
@@ -366,14 +370,20 @@ public class Wall extends BoxObstacle {
             wallStrip.setFrame(lowerLeftCornerFrame);
             wallNightStrip.setFrame(lowerLeftCornerFrame);
 //            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
-            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+
+            setScaling(wallStrip);
+            canvas.draw(texture,  Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+            setScaling(wallNightStrip);
             canvas.draw(textureNight, opacity,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
         }
         if(lowerRightCornerFrame != NO_SIDE) {
             wallStrip.setFrame(lowerRightCornerFrame);
             wallNightStrip.setFrame(lowerRightCornerFrame);
 //            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
-            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+
+            setScaling(wallStrip);
+            canvas.draw(texture,  Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+            setScaling(wallNightStrip);
             canvas.draw(textureNight, opacity,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
         }
     }
@@ -414,15 +424,21 @@ public class Wall extends BoxObstacle {
             wallStrip.setFrame(backEdgeFrame);
             wallNightStrip.setFrame(backEdgeFrame);
 //            canvas.draw(texture, Color.WHITE,(int)origin.x,(int)origin.y,getX()*drawScale.x,(getY() + TILE_WIDTH)*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
-            canvas.draw(texture, Color.WHITE,(int)origin.x,(int)origin.y,getX()*drawScale.x,(getY() + TILE_WIDTH)*drawScale.y,getAngle(),sx,sy);
-            canvas.draw(textureNight, opacity,(int)origin.x,(int)origin.y,getX()*drawScale.x,(getY() + TILE_WIDTH)*drawScale.y,getAngle(),sx,sy);
+
+            setScaling(wallStrip);
+            canvas.draw(texture,  Color.WHITE,(int)origin.x,(int)origin.y,(int)(getX()*drawScale.x),(int)((getY() + TILE_WIDTH)*drawScale.y),getAngle(),sx,sy);
+            setScaling(wallNightStrip);
+            canvas.draw(textureNight, opacity,(int)origin.x,(int)origin.y,(int)(getX()*drawScale.x),(int)((getY() + TILE_WIDTH)*drawScale.y),getAngle(),sx,sy);
             // Draw the line behind the back edge and the wall, if this is a top wall
-            if(primaryFrame != WALL_FRONT) {
+            if(!isFrontWall()) {
                 wallStrip.setFrame(BACK_LINE);
                 wallNightStrip.setFrame(BACK_LINE);
 //                canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),getWidth() * drawScale.x / texture.getRegionWidth(), getHeight() * drawScale.y / texture.getRegionHeight());
-                canvas.draw(textureNight, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
-                canvas.draw(textureNight, opacity,(int)origin.x,(int)origin.y,getX()*drawScale.x,(getY() + TILE_WIDTH)*drawScale.y,getAngle(),sx,sy);
+
+                setScaling(wallStrip);
+                canvas.draw(texture,  Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
+                setScaling(wallNightStrip);
+                canvas.draw(textureNight, opacity,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),sx,sy);
             }
         }
     }

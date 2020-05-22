@@ -29,7 +29,6 @@ import java.util.*;
 
 /**
  * Manages the level selection of Modosu
- *
  */
 public class LevelSelectMode extends WorldController implements Screen {
     /** Texture file for background image */
@@ -95,10 +94,13 @@ public class LevelSelectMode extends WorldController implements Screen {
     private Color colorThree;
     /** Color of level four button */
     private Color colorFour;
-
+    /** Color of next button */
     private Color colorNext;
+    /** Color of prev button */
     private Color colorPrev;
+    /** Color of back button */
     private Color colorBack;
+    /** Color of custom button */
     private Color customColor;
 
 
@@ -116,7 +118,7 @@ public class LevelSelectMode extends WorldController implements Screen {
     public boolean goToDesigner;
 
     /** Whether the mouse is currently pressed down  */
-    private boolean   isPressed;
+    private boolean  isPressed;
 
     /** State of what was pressed down  */
     private int pressState;
@@ -163,20 +165,6 @@ public class LevelSelectMode extends WorldController implements Screen {
 
         getLevels(custom);
         setPages();
-//        File folder;
-//        folder = Gdx.files.local("Custom").file();
-//
-//
-//        if(levels != null) {
-//            pages = (int) Math.ceil(levels.size() / 4.0) + 1;
-//            System.out.println(levels.size());
-//        } else {
-//            if (custom) {
-//                pages = (int) Math.ceil(folder.listFiles(Constants.filenameFilter).length / 4.0) + 1;
-//            } else {
-//                pages = numLevels / 4 + 1;
-//            }
-//        }
     }
 
     /**
@@ -280,8 +268,6 @@ public class LevelSelectMode extends WorldController implements Screen {
         input = InputController.getInstance();
         page = 0;
 
-        //old color
-        //colorHovered = new Color(Color.rgb565(190f,245f,253f));
         colorHovered = new Color(Color.rgb565(210f,251f,248f));
         colorUnhovered = Color.WHITE;
         colorOne = colorUnhovered;
@@ -297,11 +283,7 @@ public class LevelSelectMode extends WorldController implements Screen {
         hoverCustom = false;
         hoverBack = false;
 
-
-//        File folder = new File("levels");
-
         getLevels(false);
-//        pages = (int)Math.ceil(folder.listFiles(Constants.filenameFilter).length/4.0);
     }
 
     /**
@@ -337,10 +319,9 @@ public class LevelSelectMode extends WorldController implements Screen {
 
         Vector2 pos = input.getMousePosition();
 
-        // Flip to match graphics coordinates
         float screenY = pos.y;
         float screenX = pos.x;
-        if (input.didLeftClick()){ updatePressed(screenX, screenY); }
+        if (input.didLeftClick()) { updatePressed(screenX, screenY); }
         else if (input.didRelease()) { updateReleased(screenX, screenY);}
         updateHover(screenX, screenY);
 
@@ -502,7 +483,6 @@ public class LevelSelectMode extends WorldController implements Screen {
                 isPressed = true;
             }
         }
-
     }
 
 
@@ -551,49 +531,18 @@ public class LevelSelectMode extends WorldController implements Screen {
 
             }
             if (screenX >= nextStart.x && screenX <= nextEnd.x && page != pages - 1) {
-                if (screenY >= nextStart.y && screenY <= nextEnd.y && pressState == 4) {
-                    System.out.println("Page = " + page + ", pages = " + pages);
-                    page++;
-                }
+                if (screenY >= nextStart.y && screenY <= nextEnd.y && pressState == 4) { page++; }
             }
+
             if (screenX >= prevStart.x && screenX <= prevEnd.x && page != 0) {
-                if (screenY >= prevStart.y && screenY <= prevEnd.y && pressState == 5) {
-                    page--;
-                }
+                if (screenY >= prevStart.y && screenY <= prevEnd.y && pressState == 5) { page--; }
             }
 
-            if (screenX >= customStart.x && screenX <= customEnd.x) {
-
-                /* TODO this should be removed but I'm too afraid to delete things right now
-                if (screenY >= customStart.y && screenY <= customEnd.y && pressState == 6) {
-                    page = 0;
-                    File folder;
-                    if(!onCustom) {
-                        folder = new File("Custom");
-                    }else{
-                        folder = new File("levels");
-                    }
-                    onCustom = !onCustom;
-                    getLevels(onCustom);
-
-                    if (onCustom) {
-                        pages = (int) Math.ceil(folder.listFiles(Constants.filenameFilter).length / 4.0) + 1;
-
-//                        if (goToDesigner) pages++;
-
-                    }
-                    else {
-                        pages = numLevels / 4 + 1;
-                    }
-                }
-
-                 */
-                setCustom(!onCustom);
-            }
+            if (screenX >= customStart.x && screenX <= customEnd.x) { setCustom(!onCustom); }
 
             if (screenX >= backStart.x && screenX <= backEnd.x) {
                 if (screenY >= backStart.y && screenY <= backEnd.y && pressState == 7) {
-                    listener.exitScreen(this,WorldController.EXIT_MENU);
+                    listener.exitScreen(this, WorldController.EXIT_MENU);
                 }
             }
         }
@@ -735,12 +684,10 @@ public class LevelSelectMode extends WorldController implements Screen {
                     hoverButton = false;
                 }
             }
-            else{
+            else {
                 colorPrev = colorUnhovered;
                 hoverButton = false;
             }
-
-
         }
     }
 }

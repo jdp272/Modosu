@@ -10,10 +10,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -147,9 +144,10 @@ public class HUD {
         Button pause = new Button(pauseStyle);
 
         pause.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 pauseButtonClicked = true;
-                System.out.println("CLICKED PAUSED");
+                return super.touchDown(event, x, y, pointer, button);
             }
         });
 
@@ -204,10 +202,7 @@ public class HUD {
         musicSlider.setValue(MusicController.getInstance().getVolume()*100f);
         musicSlider.addListener(new ChangeListener() {
             @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("MUSIC SLIDED: " + musicSlider.getValue());
-                MusicController.getInstance().setVolume(musicSlider.getValue()/100f);
-            }
+            public void changed(ChangeEvent event, Actor actor) { MusicController.getInstance().setVolume(musicSlider.getValue()/100f); }
         });
 
         pauseTable.add(musicSlider).colspan(2);
@@ -315,7 +310,7 @@ public class HUD {
     }
 
     /** Returns whether the pause button has been clicked */
-    public static boolean getPauseClicked() {
+    public boolean getPauseClicked() {
         if (pauseButtonClicked) {
             pauseButtonClicked = false;
             return true;

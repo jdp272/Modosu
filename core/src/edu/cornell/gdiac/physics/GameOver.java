@@ -260,10 +260,7 @@ public class GameOver extends WorldController implements Screen {
         Button menu = new Button(menuStyle);
 
         menu.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                //System.out.println("MENU BUTTON CLICKED");
-                menuButtonClicked = true;
-            }
+            public void clicked(InputEvent event, float x, float y) { menuButtonClicked = true; }
         });
 
         table.add(menu).width(ICON_SIZE_SMALL).height(ICON_SIZE_SMALL);
@@ -276,10 +273,7 @@ public class GameOver extends WorldController implements Screen {
             Button next = new Button(nextStyle);
 
             next.addListener(new ClickListener() {
-                public void clicked(InputEvent event, float x, float y) {
-                    //System.out.println("NEXT BUTTON CLICKED");
-                    nextButtonClicked = true;
-                }
+                public void clicked(InputEvent event, float x, float y) { nextButtonClicked = true; }
             });
 
             table.add(next).width(ICON_SIZE_BIG).width(ICON_SIZE_BIG).padLeft(40);
@@ -292,10 +286,7 @@ public class GameOver extends WorldController implements Screen {
         Button retry = new Button(retryStyle);
 
         retry.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                //System.out.println("RETRY BUTTON CLICKED");
-                retryButtonClicked = true;
-            }
+            public void clicked(InputEvent event, float x, float y) { retryButtonClicked = true; }
         });
 
         table.add(retry).width(ICON_SIZE_SMALL).height(ICON_SIZE_SMALL);
