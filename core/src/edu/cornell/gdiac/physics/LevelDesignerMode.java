@@ -372,7 +372,7 @@ public class LevelDesignerMode extends WorldController {
 		keyBindingsMessage = new TutorialData();
 		keyBindingsMessage.countdown = 10;
 		keyBindingsMessage.location = new Vector2(TUTORIAL_X, TUTORIAL_Y);
-		keyBindingsMessage.instructions = "Press ENTER to save, C to clear, and R to reset to the original loaded level.";
+		keyBindingsMessage.instructions = "Press ENTER to save, C to clear, R to reset to the original loaded level, and M to return to the menu.";
 
 		oscWallMessage = new TutorialData();
 		oscWallMessage.countdown = 7;
