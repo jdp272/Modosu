@@ -163,8 +163,10 @@ public abstract class WorldController implements Screen {
 	private static String HOST_GAUGE_FILE = "host/chargeGauge.png";
 	/** File to texture for Hosts' Shadow */
 	private static String HOST_SHADOW_FILE = "host/shadow.png";
-	/** Texture file for arrow sprite */
-	private static final String ARROW_FILE = "shared/arrow.png";
+	/** Texture file for arrow head */
+	private static final String ARROW_HEAD_FILE = "shared/arrowhead.png";
+	/** Texture file for arrow dash */
+	private static final String ARROW_DASH_FILE = "shared/arrowdash.png";
 	/** File to texture for Walls Day */
 	private static String WALL_DAY_FILE = "shared/wallSpritesheet_v04.png";
 	/** File to texture for Walls Night*/
@@ -247,8 +249,10 @@ public abstract class WorldController implements Screen {
 	protected TextureRegion wallDayTex;
 	/** The texture for walls */
 	protected TextureRegion wallNightTex;
-	/** The texture for the arrow */
-	protected Texture arrowTex;
+	/** The texture for the arrow head */
+	protected Texture arrowHeadTex;
+	/** The texture for the arrow dash */
+	protected Texture arrowDashTex;
 	/** Texture for Host SpriteSheet EAST*/
 	private static Texture hostTextureE;
 	/** Texture for Host SpriteSheet NORTH*/
@@ -506,8 +510,10 @@ public abstract class WorldController implements Screen {
 		assets.add(CORNER_SAND_FILE);
 		manager.load(CORNER_SAND_NIGHT_FILE, Texture.class);
 		assets.add(CORNER_SAND_NIGHT_FILE);
-		manager.load(ARROW_FILE, Texture.class);
-		assets.add(ARROW_FILE);
+		manager.load(ARROW_HEAD_FILE, Texture.class);
+		assets.add(ARROW_HEAD_FILE);
+		manager.load(ARROW_DASH_FILE, Texture.class);
+		assets.add(ARROW_DASH_FILE);
 		manager.load(PEDESTAL_FILE, Texture.class);
 		assets.add(PEDESTAL_FILE);
 		manager.load(PEDESTAL_NIGHT_FILE, Texture.class);
@@ -575,7 +581,8 @@ public abstract class WorldController implements Screen {
 		backgroundNightTexture = createTexture(manager, BACKG_NIGHT_FILE, true);
 		wallDayTex = createTexture(manager, WALL_DAY_FILE, true);
 		wallNightTex = createTexture(manager, WALL_NIGHT_FILE, true);
-		arrowTex = new Texture(ARROW_FILE);
+		arrowHeadTex = new Texture(ARROW_HEAD_FILE);
+		arrowDashTex = new Texture(ARROW_DASH_FILE);
 
 		// Allocate the font
 		if (manager.isLoaded(FONT_FILE)) {
@@ -1378,10 +1385,6 @@ public abstract class WorldController implements Screen {
 				obj.drawDebug(canvas);
 			}
 			canvas.endDebug();
-		}
-
-		if (arrow != null && !failed){
-			arrow.draw(canvas);
 		}
 
 		// Check to hid tutorial

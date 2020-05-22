@@ -508,7 +508,8 @@ public class LoadingMode implements Screen {
 			canvas.draw(quit, buttonPressed == pressState.QUIT && isPressed ? Color.SKY : colorQuit, 0, 0,
 					QUIT_X, QUIT_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-			if (sound.isUnmuted() && music.isUnmuted()) {
+			System.out.println("sound: " + sound.isUnmuted() + "music:" + music.isUnmuted());
+			if (sound.isUnmuted() || music.isUnmuted() || (music.getVolume() != 0 || sound.getVolume() != 0)) {
 				canvas.draw(unmute, buttonPressed == pressState.MUTE && isPressed ? Color.SKY : colorMute, 0,0, MUTE_X, MUTE_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 			}
 			else {
@@ -990,7 +991,6 @@ public class LoadingMode implements Screen {
 						isReady = false;
 						buttonPressed = pressState.NONE;
 					}
-					System.out.println("music unmuted is:" + !music.isUnmuted());
 					music.setUnmuted(!music.isUnmuted());
 					sound.setUnmuted(!sound.isUnmuted());
 				}

@@ -157,7 +157,6 @@ public class MusicController {
 		}
 		// If current playing and unmuted, but music is still silent
 		if (music.isPlaying() && isUnmuted && music.getVolume() == 0f) {
-			//System.out.println("set music back to volume " + prevMusicVolume);
 			setVolume(prevMusicVolume);
 		}
 

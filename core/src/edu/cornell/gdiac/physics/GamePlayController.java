@@ -291,7 +291,7 @@ public class GamePlayController extends WorldController {
 
 		spirit.setIsPossessing(true);
 
-		hostController = new HostController(level.hosts, scale, arrowTex, pedestal, canvas, energyPillars);
+		hostController = new HostController(level.hosts, scale, arrowHeadTex, arrowDashTex, pedestal, canvas, energyPillars);
 
 		// Reset the collision controller
 		collisionController.reset();

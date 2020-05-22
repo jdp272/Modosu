@@ -19,9 +19,13 @@ public class HostController {
      */
     private ArrayList<HostModel> hosts;
     /**
-     * The texture for the arrow created by the shot
+     * The texture for the arrow dash created by the shot
      */
-    private Texture arrowText;
+    private Texture arrowDash;
+    /**
+     * The texture for the arrow head created by the shot
+     */
+    private Texture arrowHead;
     /**
      * The arrow created by the shot
      */
@@ -113,10 +117,11 @@ public class HostController {
     /**
      * Creates and initialize a new instance of a HostController
      */
-    public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowTexture, HostModel pedestal, GameCanvas c, EnergyPillar[] energyPillars) {
+    public HostController(ArrayList<HostModel> h, Vector2 scale, Texture arrowHeadTexture, Texture arrowDashTexture, HostModel pedestal, GameCanvas c, EnergyPillar[] energyPillars) {
         input = InputController.getInstance();
         hosts = h;
-        arrowText = arrowTexture;
+        arrowHead = arrowHeadTexture;
+        arrowDash = arrowDashTexture;
         possessedBlownUp = false;
         launched = false;
         this.scale = scale;
@@ -260,7 +265,7 @@ public class HostController {
 
                     // Player input is pressed, so makes a new arrow
                     if (input.didLeftClick()) {
-                        arrow = new ArrowModel(arrowText, spiritCache.set(spirit.getPosition().scl(scale.x, scale.y)));
+                        arrow = new ArrowModel(arrowHead, arrowDash, spiritCache.set(spirit.getPosition().scl(scale.x, scale.y)));
                     }
 
                     // Arrow has been created, and mouse is held down so update the arrow

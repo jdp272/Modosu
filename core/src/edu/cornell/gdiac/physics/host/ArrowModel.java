@@ -14,20 +14,26 @@ public class ArrowModel {
     private Vector2 currLoc;
     /** The true velocity if the spirit was shot */
     private Vector2 velocityRepresented;
+    /** The true velocity if the spirit was shot cache */
+    private Vector2 velocityRepresentedCache;
     /** The horizontal scaling of this arrow */
     private float sx;
-    /** The texture for the arrow */
-    private Texture arrTexture;
+    /** The texture for the arrow head*/
+    private Texture arrTextureHead;
+    /** The texture for the arrow dash*/
+    private Texture arrTextureDash;
     /** Whether the arrow would have passed the minimum velocity for a shot*/
     private boolean pastThreshold;
 
 
     /** Creates an instance of an arrow to show direction */
-    public ArrowModel(Texture arrText, Vector2 golemPos) {
-        this.arrTexture = arrText;
+    public ArrowModel(Texture arrTextHead, Texture arrTextDash, Vector2 golemPos) {
+        arrTextureHead = arrTextHead;
+        arrTextureDash = arrTextDash;
         start = golemPos;
         currLoc = golemPos;
         velocityRepresented = new Vector2(0,0);
+        velocityRepresentedCache = new Vector2(0,0);
     }
 
     public void setCurrLoc(Vector2 golemPos) {
@@ -43,14 +49,19 @@ public class ArrowModel {
 
         // Draw the arrow
         canvas.begin();
-        canvas.draw(arrTexture, c, 0, arrTexture.getHeight()/2, start.x + velocityRepresented.setLength(40f).x,
-                start.y + velocityRepresented.setLength(40f).y,  velocityRepresented.angleRad(), sx, 1);
+        float lengthArrow = sx * arrTextureDash.getWidth();
+        canvas.draw(arrTextureDash, c, 0, arrTextureDash.getHeight()/2, start.x + velocityRepresentedCache.setLength(25f).x,
+                start.y + + velocityRepresentedCache.setLength(25f).y,  velocityRepresented.angleRad(), sx, .1f);
+
+        canvas.draw(arrTextureHead, c, arrTextureHead.getWidth()/2, arrTextureHead.getHeight()/2, start.x + velocityRepresented.setLength(lengthArrow).x,
+                start.y + velocityRepresented.setLength(lengthArrow).y,  velocityRepresented.angleRad(), .25f, .25f);
         canvas.end();
     }
 
     public void setVelocityRepresented(Vector2 velocity, boolean metThreshold) {
         // Set velocityRepresented to the actual velocity if the shot was fired
         velocityRepresented = velocity;
+        velocityRepresentedCache = velocity;
         // Set pastThreshold to whether it met the threshold or not
         pastThreshold = metThreshold;
 
