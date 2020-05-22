@@ -363,6 +363,12 @@ public class Factory {
         this.rootsNightTexture = rootsNightTexture;
 
         this.hostShadowRegion = new TextureRegion(hostShadow);
+
+        this.opacity = Color.WHITE;
+    }
+
+    public void setOpacity(Color opacity) {
+        this.opacity = opacity;
     }
 
     public DecorativeRoots makeDecorativeRoot(float x, float y, int frame) {

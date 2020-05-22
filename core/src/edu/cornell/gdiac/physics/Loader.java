@@ -345,6 +345,7 @@ public class Loader {
         float value = isGameplay ? 1 - level/32.0f : 0;
         Color opacity = new Color(1,1,1, value);
 
+        factory.setOpacity(opacity);
 
         // Create the walls
         Wall[] walls = new Wall[levelData.wallData.length];
