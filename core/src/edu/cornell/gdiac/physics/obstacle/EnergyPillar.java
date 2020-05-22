@@ -1,6 +1,7 @@
 package edu.cornell.gdiac.physics.obstacle;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import edu.cornell.gdiac.physics.GameCanvas;
@@ -65,7 +66,7 @@ public class EnergyPillar extends BoxObstacle {
     }
 
     public void setChargeProgression(float chargeProgression) {
-        this.chargeProgression = chargeProgression;
+        this.chargeProgression = MathUtils.lerp(this.chargeProgression, chargeProgression, 0.1f);
     }
 
     /**
