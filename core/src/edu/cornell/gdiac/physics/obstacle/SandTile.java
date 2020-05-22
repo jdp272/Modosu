@@ -58,6 +58,6 @@ public class SandTile extends Terrain {
 
     @Override
     public boolean continuousWithTile(Obstacle obj) {
-        return obj instanceof SandTile;
+        return obj instanceof SandTile || obj instanceof Wall;
     }
 }
