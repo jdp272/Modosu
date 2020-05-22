@@ -1353,11 +1353,11 @@ public abstract class WorldController implements Screen {
 		for(Obstacle obj : threeDimensionalDrawLayer) {
 			obj.draw(canvas);
 		}
-		for(BorderEdge edge : edgeDrawLayer) {
-			edge.drawNotTop(canvas);
-		}
 		for(Wall wall : wallDrawLayer) {
 			wall.drawTop(canvas);
+		}
+		for(BorderEdge edge : edgeDrawLayer) {
+			edge.drawNotTop(canvas);
 		}
 		for(HostModel host : hostDrawLayer) {
 			host.drawCharge(canvas);
