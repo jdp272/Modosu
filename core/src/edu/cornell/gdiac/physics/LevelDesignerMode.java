@@ -206,6 +206,8 @@ public class LevelDesignerMode extends WorldController {
 	private TutorialData oscWallMessage;
 	/** The message explaining the host usage */
 	private TutorialData hostMessage;
+	private boolean showedOscWallMessage;
+	private boolean showedHostMessage;
 
 	public String levelName;
 
@@ -373,12 +375,12 @@ public class LevelDesignerMode extends WorldController {
 		keyBindingsMessage.instructions = "Press ENTER to save, C to clear, and R to reset to the original loaded level.";
 
 		oscWallMessage = new TutorialData();
-		oscWallMessage.countdown = 5;
+		oscWallMessage.countdown = 7;
 		oscWallMessage.location = new Vector2(TUTORIAL_X, TUTORIAL_Y);
 		oscWallMessage.instructions = "Use arrow keys to raise, lower, and rotate oscillating walls.";
 
 		hostMessage = new TutorialData();
-		hostMessage.countdown = 5;
+		hostMessage.countdown = 7;
 		hostMessage.location = new Vector2(TUTORIAL_X, TUTORIAL_Y);
 		hostMessage.instructions = "When a golem is selected, UP and DOWN can adjust its charge. Press I after deslecting for instruction mode, to select where it should walk.";
 	}
@@ -460,8 +462,13 @@ public class LevelDesignerMode extends WorldController {
 			newLevel = false;
 		}
 
+		showedOscWallMessage = false;
+		showedHostMessage = false;
+
 		tutorial.reset();
 		tutorial.addTutorial(keyBindingsMessage);
+
+		canvas.resetZoom();
 
 //		if(fromCustom || newLevel){
 //			File folder = new File("Custom");
@@ -1328,7 +1335,10 @@ public class LevelDesignerMode extends WorldController {
 //				selector.select(mouseX, mouseY);
 				selector.select(spawnedObj);
 				if(spawnedObj instanceof OscWall) {
-					tutorial.addTutorial(oscWallMessage);
+					if(!showedOscWallMessage) {
+						tutorial.addTutorial(oscWallMessage);
+						showedOscWallMessage = true;
+					}
 				}
 				selecting = true;
 			}
@@ -1367,7 +1377,10 @@ public class LevelDesignerMode extends WorldController {
 				if (deselected instanceof HostModel) {
 					System.out.println("Golem placed");
 					lastGolem = (HostModel)deselected;
-					tutorial.addTutorial(hostMessage);
+					if(!showedHostMessage) {
+						tutorial.addTutorial(hostMessage);
+						showedHostMessage = true;
+					}
 				}
 				// The tile indices
 				int x = xCoordToTile(deselected.getX());

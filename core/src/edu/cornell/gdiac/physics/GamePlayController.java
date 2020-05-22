@@ -239,6 +239,8 @@ public class GamePlayController extends WorldController {
 		setFailure(false);
 		setMenu(false);
 
+		canvas.resetZoom();
+
 		renderHUD = true;
 		launchedFirstShot = false;
 		System.out.println("just called play game music");

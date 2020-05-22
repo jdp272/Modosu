@@ -154,6 +154,8 @@ public class GameCanvas {
 		camPos = new Vector2();
 
 		camera.zoom = ZOOM_IN_MULTIPLIER;
+		targetZoom = ZOOM_IN_MULTIPLIER;
+		zooming = false;
 	}
 		
     /**
@@ -230,6 +232,13 @@ public class GameCanvas {
 	public void forceZoom(float zoom) {
 		camera.zoom = zoom;
 		camera.update();
+	}
+
+	/**
+	 * Forces the camera to zoom to initial zooming equal to zooming in
+	 */
+	public void resetZoom() {
+		forceZoom(ZOOM_IN_MULTIPLIER);
 	}
 
 	public void toggleZoom() {
