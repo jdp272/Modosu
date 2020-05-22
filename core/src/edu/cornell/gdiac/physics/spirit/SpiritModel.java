@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import edu.cornell.gdiac.physics.GameCanvas;
-import edu.cornell.gdiac.physics.HUD;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.util.FilmStrip;
 
@@ -84,15 +83,6 @@ public class SpiritModel extends BoxObstacle {
         setFriction(SPIRIT_FRICTION);
         setRestitution(SPIRIT_RESTITUTION);
         setFixedRotation(true);
-//        float[] verts = {-0.25f,0,
-//                -0.2f,-0.2f,
-//                0,-0.25f,
-//                0.2f,-0.2f,
-//                0.25f,0,
-//                0.2f,0.2f,
-//                0,0.25f,
-//                -0.2f,0.2f};
-//        shape.set(verts);
 
         bounces = b;
         this.defaultLife = defaultLife;
@@ -200,10 +190,6 @@ public class SpiritModel extends BoxObstacle {
         return true;
     }
 
-    public boolean getHasLaunched() {
-        return hasLaunched;
-    }
-
     public void setHasLaunched(boolean launched) {
         hasLaunched = launched;
     }
@@ -299,13 +285,9 @@ public class SpiritModel extends BoxObstacle {
         if (updateFrame) {
             if (((this.spiritHeadStrip.getFrame() < this.spiritHeadStrip.getSize() - 1) &&
                     (this.spiritTailStrip.getFrame() < this.spiritTailStrip.getSize() - 1))) {
-//            if ((this.spiritBodyStrip.getFrame() < this.spiritBodyStrip.getSize() - 1) && (this.spiritHeadStrip.getFrame() < this.spiritHeadStrip.getSize() - 1) &&
-//                    (this.spiritTailStrip.getFrame() < this.spiritTailStrip.getSize() - 1)) {
-//                this.spiritBodyStrip.setFrame(this.spiritBodyStrip.getFrame() + 1);
                 this.spiritTailStrip.setFrame(this.spiritTailStrip.getFrame() + 1);
                 this.spiritHeadStrip.setFrame(this.spiritHeadStrip.getFrame() + 1);
             } else {
-//                this.spiritBodyStrip.setFrame(SPIRIT_FRAME_STARTING);
                 this.spiritHeadStrip.setFrame(SPIRIT_FRAME_STARTING);
                 this.spiritTailStrip.setFrame(SPIRIT_FRAME_STARTING);
             }
@@ -324,8 +306,6 @@ public class SpiritModel extends BoxObstacle {
         float disFromBounce = (Vector2.dst2(this.getPosition().x, this.getPosition().y, this.getPosAtBounce().x, this.getPosAtBounce().y)) / 8;
         Color lifeColor = new Color(1, 1, 1, lifeProgression);
         Color tailColor = new Color(1, 1,1, lifeProgression * disFromBounce);
-
-
 
         // Only draw spirit when it's flying
         if (!isPossessing && !goToCenter) {
