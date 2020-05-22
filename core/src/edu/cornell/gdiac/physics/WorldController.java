@@ -757,6 +757,14 @@ public abstract class WorldController implements Screen {
 	}
 
 	/**
+	 *  Gets the current level
+	 *
+	 */
+	public int getCurrentLevel() {
+		return currentLevel;
+	}
+
+	/**
 	 *  Increments the current level when won
 	 *
 	 */
