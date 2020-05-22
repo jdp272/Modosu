@@ -329,7 +329,7 @@ public class Loader {
      *
      * @return A complete Level object that is the json file deserialized
      */
-    public Level loadLevel(FileHandle f, int level) {
+    public Level loadLevel(FileHandle f, int level, boolean isGameplay) {
         // If this ever breaks try putting .readString() at the end of internal(f)
         // Can't load from a file handle because the file system is weird when
         // exported to a .jar
@@ -342,7 +342,9 @@ public class Loader {
         int tutorialNum = levelData.tutorialNum;
 
         // Opacity of the nightmode
-        Color opacity = new Color(1,1,1, 1 - level/32.0f);
+        float value = isGameplay ? 1 - level/32.0f : 0;
+        Color opacity = new Color(1,1,1, value);
+
 
         // Create the walls
         Wall[] walls = new Wall[levelData.wallData.length];

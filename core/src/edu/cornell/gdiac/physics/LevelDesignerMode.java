@@ -687,7 +687,7 @@ public class LevelDesignerMode extends WorldController {
 		}
         //levelToLoad = Gdx.files.internal("levels/custom" + currentLevel + ".lvl");
 
-       level = loader.loadLevel(levelToLoad, 0);
+       level = loader.loadLevel(levelToLoad, 0, false);
 
 		dimensions = level.dimensions;
 		lowerLeft.setZero();
