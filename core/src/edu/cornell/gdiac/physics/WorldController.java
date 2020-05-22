@@ -1260,7 +1260,7 @@ public abstract class WorldController implements Screen {
 	 * @param delta The drawing context
 	 */
 	public void draw(float delta) {
-		canvas.clear(currentLevel);
+		canvas.clear(currentLevel, renderHUD);
 
 		// Clear the lists so they can be repopulated
 		edgeDrawLayer.clear();

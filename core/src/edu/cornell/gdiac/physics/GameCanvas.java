@@ -458,12 +458,17 @@ public class GameCanvas {
 	/**
 	 * Clear the screen so we can start a new animation frame
 	 */
-	public void clear(float level) {
+	public void clear(float level, boolean inGameplay) {
     	// Clear the screen
 		float v1 = 43f + 0.8f*(level%32);
 		float v2 = 65f + 0.4f*(level%32);
 
-		Gdx.gl.glClearColor(21f/256f, v1/256f, v2/256f, 1.0f);
+		if (inGameplay) {
+			Gdx.gl.glClearColor(21f/256f, v1/256f, v2/256f, 1.0f);
+		} else {
+			Gdx.gl.glClearColor(21f/256f, 68f/256f, 76f/256f, 1.0f);
+		}
+
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 

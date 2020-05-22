@@ -29,6 +29,7 @@ public class SandTile extends Terrain {
      */
     public void setFrame(int frame) {
         terrainStrip.setFrame(frame);
+        terrainNightStrip.setFrame(frame);
         this.frame = frame;
         if(frame==1 || frame==3 || frame==5 || frame==6 || frame==10 || frame>12){
             PolygonShape s = new PolygonShape();
