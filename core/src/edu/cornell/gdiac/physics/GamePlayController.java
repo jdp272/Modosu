@@ -412,9 +412,8 @@ public class GamePlayController extends WorldController {
 			HUD.update(delta);
 		}
 
-		// Get arrow and draw if applicable
+		// Get arrow and set for world controller to draw, if applicable
 		arrow = hostController.getArrow();
-		if (arrow != null){ arrow.draw(canvas); }
 
 		// Update bouncing if applicable
 		if (collisionController.isBounced()) {
