@@ -1382,13 +1382,13 @@ public abstract class WorldController implements Screen {
 		if (active) {
 			updateGP = preUpdate(delta);
 
-			draw(delta);
-
 			/** If the game isnt paused or switching screens, continue updating GP */
 			if ((updateGP && !isPaused) || pressedPause) {
 				update(delta); // This is the one that must be defined.
 				postUpdate(delta);
 			}
+
+			draw(delta);
 
 			/** If it was the first time the player pressed pause */
 			if (pressedPause) {
