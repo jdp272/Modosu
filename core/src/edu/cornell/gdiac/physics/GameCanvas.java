@@ -458,9 +458,13 @@ public class GameCanvas {
 	/**
 	 * Clear the screen so we can start a new animation frame
 	 */
-	public void clear() {
+	public void clear(float level) {
     	// Clear the screen
-		Gdx.gl.glClearColor(21f/256f, 68f/256f, 76f/256f, 1.0f); // Homage to the XNA years
+		if (level == 0) { Gdx.gl.glClearColor(21f/256f, 68f/256f, 76f/256f, 1.0f);  }
+		if (level == 1) { Gdx.gl.glClearColor(21f/256f, 60f/256f, 72f/256f, 1.0f);  }
+		if (level == 2) { Gdx.gl.glClearColor(21f/256f, 52f/256f, 69f/256f, 1.0f);  }
+		if (level == 3) { Gdx.gl.glClearColor(21f/256f, 43f/256f, 65f/256f, 1.0f);  }
+
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
