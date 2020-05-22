@@ -1104,6 +1104,16 @@ public class LevelDesignerMode extends WorldController {
 						border.setNextToSide(1, BorderEdge.Side.LEFT);
 					} else if((board.getRightBorder() - 1) - i == 1) {
 						border.setNextToSide(1, BorderEdge.Side.RIGHT);
+					} else {
+						// For now, hardcoding in the logic of which edges can
+						// be next to which other edges
+
+						// Get the adjacent edge to pass in
+						BorderEdge adjEdge = board.get(i - 1, j) instanceof BorderEdge ?
+								(BorderEdge)board.get(i - 1, j) : null;
+
+						// Can start a pair if >2 tiles from right border
+						border.resetFrame((board.getRightBorder() - 1) - i > 2, adjEdge);
 					}
 					board.addNewObstacle(border);
 					addObject(border);
@@ -1116,6 +1126,16 @@ public class LevelDesignerMode extends WorldController {
 						border.setNextToSide(1, BorderEdge.Side.BOTTOM);
 					} else if((board.getTopBorder() - 1) - j == 1) {
 						border.setNextToSide(1, BorderEdge.Side.TOP);
+					} else {
+						// For now, hardcoding in the logic of which edges can
+						// be next to which other edges
+
+						// Get the adjacent edge to pass in
+						BorderEdge adjEdge = board.get(i, j - 1) instanceof BorderEdge ?
+								(BorderEdge)board.get(i, j - 1) : null;
+
+						// Can start a pair if >2 tiles from top border
+						border.resetFrame((board.getTopBorder() - 1) - i > 2, adjEdge);
 					}
 					board.addNewObstacle(border);
 					addObject(border);
@@ -1128,6 +1148,16 @@ public class LevelDesignerMode extends WorldController {
 						border.setNextToSide(1, BorderEdge.Side.BOTTOM);
 					} else if((board.getTopBorder() - 1) - i == 1) {
 						border.setNextToSide(1, BorderEdge.Side.TOP);
+					} else {
+						// For now, hardcoding in the logic of which edges can
+						// be next to which other edges
+
+						// Get the adjacent edge to pass in
+						BorderEdge adjEdge = board.get(i, j - 1) instanceof BorderEdge ?
+								(BorderEdge)board.get(i, j - 1) : null;
+
+						// Can start a pair if >2 tiles from top border
+						border.resetFrame((board.getTopBorder() - 1) - i > 2, adjEdge);
 					}
 					board.addNewObstacle(border);
 					addObject(border);
@@ -1140,6 +1170,25 @@ public class LevelDesignerMode extends WorldController {
 						border.setNextToSide(i - board.getLeftBorder(), BorderEdge.Side.LEFT);
 					} else if((board.getRightBorder() - 1) - i <= 2) {
 						border.setNextToSide((board.getRightBorder() - 1) - i, BorderEdge.Side.RIGHT);
+					} else {
+						// For now, hardcoding in the logic of which edges can
+						// be next to which other edges
+
+						// Get the adjacent edge to pass in
+						BorderEdge adjEdge = board.get(i - 1, j) instanceof BorderEdge ?
+								(BorderEdge)board.get(i - 1, j) : null;
+
+						boolean canStartPair;
+
+						if(adjEdge.getFrame() == 4 || adjEdge.getFrame() == 6) {
+							// Can't start a pair if next to a doorway looking pair
+							canStartPair = false;
+						} else {
+							// Can start a pair if >3 tiles from right border
+							canStartPair = (board.getRightBorder() - 1) - i > 3;
+						}
+
+						border.resetFrame(canStartPair, adjEdge);
 					}
 					board.addNewObstacle(border);
 					addObject(border);

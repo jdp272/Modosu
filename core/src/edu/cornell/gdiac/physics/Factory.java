@@ -191,8 +191,7 @@ public class Factory {
     /** Number of rows in the border edge image filmstrip */
     private static final int BORDER_EDGE_ROWS = 4;
     /** Number of columns in the border edge image filmstrip */
-    private static final int BORDER_EDGE_COLS = 9;
-    private static final int BORDER_EDGE_COLUMNS = 9;
+    private static final int BORDER_EDGE_COLUMNS = 13;
 
     /** Number of rows in the border corner image filmstrip */
     private static final int BORDER_CORNER_ROWS = 2;
