@@ -1106,7 +1106,7 @@ public abstract class WorldController implements Screen {
 			reset();
 		}
 
-		if (input.didPause() || HUD.getPauseClicked()) {
+		if ((input.didPause() || HUD.getPauseClicked()) && renderHUD) {
 			if (isPaused) {
 				isPaused = false;
 				wasPaused = true;
