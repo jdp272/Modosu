@@ -245,7 +245,7 @@ public class HostController {
 
                     // Player input is pressed, so makes a new arrow
                     if (input.didLeftClick()) {
-                        arrow = new ArrowModel(arrowHead, arrowDash, spiritCache.set(spirit.getPosition().scl(scale.x, scale.y)));
+                        arrow = new ArrowModel(arrowHead, arrowDash, spiritCache.set(spirit.getPosition().scl(scale.x, scale.y)), shootVector, magnitude > MINIMUM_SHOT_SPEED);
                     }
 
                     // Arrow has been created, and mouse is held down so update the arrow
