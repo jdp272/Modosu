@@ -1159,10 +1159,12 @@ public abstract class WorldController implements Screen {
 			return false;
 		} else if (input.didAdvance()) {
 			isPaused = false;
+			if (currentLevel == NUM_LEVELS - 1) { currentLevel = -1; }
 			listener.exitScreenLevel(currentLevel+1);
 			return false;
 		} else if (input.didRetreat()) {
 			isPaused = false;
+			if (currentLevel == 0) { currentLevel = NUM_LEVELS; }
 			listener.exitScreenLevel(currentLevel-1);
 			return false;
 		} else if (input.didMenu()) {
