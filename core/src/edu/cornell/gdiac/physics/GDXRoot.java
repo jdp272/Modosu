@@ -41,7 +41,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** Level selection screen controller */
 	private LevelSelectMode levelSelect;
 	/** Credits screen controller */
-	private Credits credits;
+//	private Credits credits;
 	/** Default Zoom for All Other Screens */
 	private static int DEFAULT_ZOOM = 1;
 
@@ -80,7 +80,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		levelDesigner = new LevelDesignerMode();
 		levelSelect = new LevelSelectMode();
 		gameOver = new GameOver();
-		credits = new Credits();
+//		credits = new Credits();
 
 		controller.preLoadContent(manager);
 		levelDesigner.preLoadContent(manager);
@@ -218,11 +218,11 @@ public class GDXRoot extends Game implements ScreenListener {
 			goLevelDesigner = false;
 			reset();
 		}
-		else if (exitCode == WorldController.EXIT_CREDITS) {
-			goLevelDesigner = false;
-			credits.setScreenListener(this);
-			setScreen(credits);
-		}
+//		else if (exitCode == WorldController.EXIT_CREDITS) {
+//			goLevelDesigner = false;
+//			credits.setScreenListener(this);
+//			setScreen(credits);
+//		}
 	}
 
 	/**
