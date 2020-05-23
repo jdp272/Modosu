@@ -444,8 +444,8 @@ public class LoadingMode implements Screen {
 				lvlDesign.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 				lvlSelect = new Texture(LVL_SLCT_FILE);
 				lvlSelect.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-				credits = new Texture(CREDITS_FILE);
-				credits.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+//				credits = new Texture(CREDITS_FILE);
+//				credits.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 				quit = new Texture(QUIT_FILE);
 				quit.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 				mute = new Texture(MUTE_FILE);
@@ -507,8 +507,8 @@ public class LoadingMode implements Screen {
 			canvas.draw(lvlDesign, buttonPressed == pressState.DESIGN && isPressed ? Color.SKY : colorLvlDesign, 0, 0,
 					BUTTON_X, LEVEL_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
-			canvas.draw(credits, buttonPressed == pressState.CREDITS && isPressed ? Color.SKY : colorCredits, 0, 0,
-					BUTTON_X, CREDITS_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
+//			canvas.draw(credits, buttonPressed == pressState.CREDITS && isPressed ? Color.SKY : colorCredits, 0, 0,
+//					BUTTON_X, CREDITS_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
 
 			canvas.draw(quit, buttonPressed == pressState.QUIT && isPressed ? Color.SKY : colorQuit, 0, 0,
 					QUIT_X, QUIT_Y, 0, BUTTON_SCALE*scale, BUTTON_SCALE*scale);
@@ -778,12 +778,12 @@ public class LoadingMode implements Screen {
 				listener.exitScreen(this,WorldController.EXIT_SELECT);
 			}
 
-			// Go to credits mode
-			if (isReady && buttonPressed == pressState.CREDITS && listener != null) {
-				buttonPressed = pressState.NONE;
-				resetAnimation();
-				listener.exitScreen(this, WorldController.EXIT_CREDITS);
-			}
+//			// Go to credits mode
+//			if (isReady && buttonPressed == pressState.CREDITS && listener != null) {
+//				buttonPressed = pressState.NONE;
+//				resetAnimation();
+//				listener.exitScreen(this, WorldController.EXIT_CREDITS);
+//			}
 
 			// Close game
 			if(isReady && buttonPressed == pressState.QUIT && listener != null) {
@@ -894,13 +894,13 @@ public class LoadingMode implements Screen {
 			}
 		}
 
-		if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
-			if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth() * scale * BUTTON_SCALE)) {
-				buttonPressed = pressState.CREDITS;
-				sound.play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
-				isPressed = true;
-			}
-		}
+//		if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
+//			if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth() * scale * BUTTON_SCALE)) {
+//				buttonPressed = pressState.CREDITS;
+//				sound.play(CLICK_SOUND, CLICK_SOUND, false, hoverVolume);
+//				isPressed = true;
+//			}
+//		}
 
 		if(screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE) ) {
 			if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE) ) {
@@ -960,15 +960,15 @@ public class LoadingMode implements Screen {
 				}
 			}
 
-			if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
-				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth() * scale * BUTTON_SCALE)) {
-					if (buttonPressed == pressState.CREDITS) { isReady = true; }
-					else {
-						isReady = false;
-						buttonPressed = pressState.NONE;
-					}
-				}
-			}
+//			if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
+//				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth() * scale * BUTTON_SCALE)) {
+//					if (buttonPressed == pressState.CREDITS) { isReady = true; }
+//					else {
+//						isReady = false;
+//						buttonPressed = pressState.NONE;
+//					}
+//				}
+//			}
 
 			if(screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE) ) {
 				if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE) ) {
@@ -1058,19 +1058,19 @@ public class LoadingMode implements Screen {
 				}
 			}
 
-			else if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
-				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth()*scale*BUTTON_SCALE)) {
-					colorCredits = colorHovered;
-					if (!hoverButton) {
-						sound.playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
-						hoverButton = true;
-					}
-				}
-				else {
-					colorCredits = colorUnhovered;
-					hoverButton = false;
-				}
-			}
+//			else if (screenY >= CREDITS_Y && screenY <= CREDITS_Y + (credits.getHeight()*scale*BUTTON_SCALE)) {
+//				if (screenX >= BUTTON_X && screenX <= BUTTON_X + (credits.getWidth()*scale*BUTTON_SCALE)) {
+//					colorCredits = colorHovered;
+//					if (!hoverButton) {
+//						sound.playHover(HOVER_SOUND, HOVER_SOUND, false, hoverVolume);
+//						hoverButton = true;
+//					}
+//				}
+//				else {
+//					colorCredits = colorUnhovered;
+//					hoverButton = false;
+//				}
+//			}
 			else if (screenY >= QUIT_Y && screenY <= QUIT_Y + (quit.getHeight()*scale*BUTTON_SCALE)) {
 				if (screenX >= QUIT_X && screenX <= QUIT_X + (quit.getWidth()*scale*BUTTON_SCALE)) {
 					colorQuit = colorHovered;
