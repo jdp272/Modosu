@@ -1,4 +1,9 @@
-Modosu by Ludic8
+# Modosu by Ludic8
+This is the game designed and built entirely Aidan Hobler, Connor Pugh, Grant Lee, Helen Wang, Jake Sanders, Jesse Potts, May Chen, and Stacy Wei as a semestor long project for CS 3152: Intro to Game Development. It is built in Java using LibGDX. See more details here: http://en-ci-gdiac.coecis.cornell.edu/gallery/modosu/
+
+Check out the latest release to play!
+
+## Notes
 
 Architecture:
 
